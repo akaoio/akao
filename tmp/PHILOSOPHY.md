@@ -9,8 +9,8 @@
 ### **Structure is enforced**
 Every file, class, and folder must follow rule-driven structure. This is not merely a suggestion or convention—it is the fundamental law that governs all code existence within Akao. Structure becomes the skeleton upon which all other principles rest. Without enforced structure, chaos emerges, maintainability dies, and the codebase becomes a digital wasteland. Akao treats structural violations as compilation errors, making disorder impossible rather than inconvenient.
 
-### **Self-validation**
-Akao must validate itself with no exceptions. The framework embodies the ancient principle "physician, heal thyself"—if Akao cannot maintain its own standards, it has no authority to impose them on others. This creates a recursive loop of integrity where the validator must constantly prove its own worthiness. Self-validation is both a technical requirement and a philosophical commitment to absolute honesty.
+### **Universal validation**
+Any project can be validated using `akao validate`, including Akao itself. Validation is not special or recursive—it's a standard operation that applies consistent rules to any codebase. The framework validates structure, enforces principles, and reports violations using the same systematic approach whether applied to Akao or any other project. This ensures validation logic is robust, well-tested, and universally applicable.
 
 ### **No rules without tests**
 Each rule must have measurable test coverage. Rules without tests are merely suggestions disguised as law. Every principle declared must be backed by executable proof that demonstrates both compliance and violation scenarios. This creates a feedback loop where rules are continuously validated against reality, ensuring they remain practical and enforceable rather than theoretical and aspirational.

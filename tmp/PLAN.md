@@ -6,13 +6,13 @@
 
 ## 📋 Executive Summary
 
-This document serves as the **complete implementation specification** for the Akao framework, a rule-based, self-validating C++ system for project structure enforcement, build management, and documentation generation. This plan is designed to be used as a single prompt to generate the entire codebase at once.
+This document serves as the **complete implementation specification** for the Akao framework, a rule-based C++ system for project structure enforcement, build management, and documentation generation. This plan is designed to be used as a single prompt to generate the entire codebase at once.
 
 **Key Constraints:**
 - Pure C++ implementation (C++17 or later)
 - Static linking preferred, no dynamic runtime dependencies
 - Must build on Linux (x86_64 + aarch64)
-- Self-validation from day one
+- Universal validation from day one
 - Every component must be traceable and testable
 - All components must be implemented in a single code generation session
 
@@ -26,6 +26,7 @@ Based on the normalized specifications, the complete Akao project structure is:
 akao/
 ├── .akao/                    # Framework runtime configuration
 │   ├── config.json          # Main configuration file
+│   ├── pipeline.yaml        # CI/CD pipeline configuration
 │   ├── profiles/             # Language-specific rule profiles
 │   │   ├── cpp.json         # C++ rules and build settings
 │   │   ├── js.json          # JavaScript rules and build settings
@@ -45,6 +46,14 @@ akao/
 │   │   └── hashes/          # File integrity hashes
 │   ├── meta.json            # Build metadata and dependencies
 │   └── hash.json            # Reproducible build verification
+├── .github/                  # Auto-generated CI/CD workflows
+│   ├── workflows/           # GitHub Actions workflows
+│   │   ├── ci.yml           # Continuous integration pipeline
+│   │   ├── cd.yml           # Continuous deployment pipeline
+│   │   ├── validate.yml     # Validation workflow
+│   │   ├── test.yml         # Testing workflow
+│   │   └── docs.yml         # Documentation generation workflow
+│   └── dependabot.yml       # Automated dependency updates
 ├── docs/                     # Auto-generated documentation
 │   ├── README.md            # Generated project overview
 │   ├── RULES.md             # Generated rule documentation
@@ -93,6 +102,19 @@ akao/
 │   │   └── plugin/          # Plugin system
 │   │       ├── plugin.cpp
 │   │       └── plugin.hpp
+│   ├── automation/          # CI/CD pipeline generation
+│   │   ├── pipeline/        # Pipeline configuration generator
+│   │   │   ├── pipeline.cpp
+│   │   │   └── pipeline.hpp
+│   │   ├── workflow/        # GitHub Actions workflow generator
+│   │   │   ├── workflow.cpp
+│   │   │   └── workflow.hpp
+│   │   ├── generator/       # Template-based generator
+│   │   │   ├── generator.cpp
+│   │   │   └── generator.hpp
+│   │   └── deployer/        # Automated deployment configuration
+│   │       ├── deployer.cpp
+│   │       └── deployer.hpp
 │   ├── project/             # Project management
 │   │   ├── manager/         # Project lifecycle management
 │   │   │   ├── manager.cpp
@@ -177,6 +199,7 @@ akao/
 ├── include/                  # C++ headers (mirrors src structure)
 │   ├── akao/                # Main header namespace
 │   │   ├── core/            # Core framework headers
+│   │   ├── automation/      # Automation system headers
 │   │   ├── rule/            # Rule engine headers
 │   │   ├── build/           # Build system headers
 │   │   ├── docgen/          # Documentation generator headers
@@ -187,6 +210,7 @@ akao/
 ├── tests/                    # Comprehensive test suite
 │   ├── unit/                # Unit tests (1 per class)
 │   │   ├── core/            # Core framework unit tests
+│   │   ├── automation/      # Automation system unit tests
 │   │   ├── rule/            # Rule engine unit tests
 │   │   ├── build/           # Build system unit tests
 │   │   ├── docgen/          # Doc generator unit tests
@@ -200,7 +224,7 @@ akao/
 │   │   ├── project_init.cpp     # Project initialization flow
 │   │   └── feature_mgmt.cpp     # Feature management flow
 │   ├── principles/          # Principle validation tests
-│   │   ├── self_validation.cpp  # Akao validates itself
+│   │   ├── principle_validation.cpp  # Universal validation principles
 │   │   ├── structure_rules.cpp  # Structure enforcement
 │   │   └── trace_audit.cpp      # Traceability verification
 │   └── fixtures/            # Test data and fixtures
@@ -228,19 +252,20 @@ akao/
 
 ### Core System Components
 
-The Akao framework consists of 5 major subsystems that must be implemented as a cohesive unit:
+The Akao framework consists of 6 major subsystems that must be implemented as a cohesive unit:
 
 1. **Core Framework** (`src/core/`) - Foundation services
 2. **Rule Engine** (`src/rule/`) - Rule parsing, validation, and reporting
 3. **Build System** (`src/build/`) - Dev/prod builds with dependency management
 4. **Documentation Generator** (`src/docgen/`) - Auto-generated documentation
 5. **CLI Interface** (`src/cli/`) - Command-line, TUI, and web interfaces
+6. **Automation System** (`src/automation/`) - CI/CD pipeline generation and management
 
 ### Implementation Strategy
 
 **Single-Pass Implementation**: All components must be implemented together to ensure:
 - Cross-component dependencies are properly resolved
-- Self-validation works from the start
+- Universal validation works from the start
 - Integration points are correctly designed
 - Consistent error handling and logging across all modules
 
@@ -315,42 +340,49 @@ tests/unit/rule/parser/
 3. **`src/cli/web/`** - Web UI backend
 4. **`src/cli/loader/`** - Plugin loader
 
+#### Automation System Classes:
+1. **`src/automation/pipeline/`** - CI/CD pipeline configuration generator
+2. **`src/automation/workflow/`** - GitHub Actions workflow generator
+3. **`src/automation/generator/`** - Template-based automation generator
+4. **`src/automation/deployer/`** - Automated deployment configuration
+
 ### Implementation Priority Order
 
 **Critical Path Components** (must be implemented first):
 1. **Core Framework** - Foundation for all other systems
 2. **Rule Engine** - Core validation functionality
 3. **CLI Command System** - User interface foundation
-4. **Trace System** - Audit and self-validation support
+4. **Trace System** - Audit and validation support
 5. **Project Management** - Project initialization and templates
 
 **Secondary Components** (can be implemented in parallel):
 1. **Build System** - Requires core framework
 2. **Documentation Generator** - Requires rule engine
-3. **Feature System** - Requires project management and core
-4. **Plugin System** - Requires all core systems
-5. **UI Enhancements** - TUI and Web interfaces
+3. **Automation System** - Requires core framework and project management
+4. **Feature System** - Requires project management and core
+5. **Plugin System** - Requires all core systems
+6. **UI Enhancements** - TUI and Web interfaces
 
 ---
 
 ## � Critical Implementation Details
 
-### Self-Validation Implementation
+### Universal Validation Implementation
 
-**Bootstrap Validation**: Akao must validate itself from the first working implementation:
+**Bootstrap Validation**: Akao applies validation to any project, including itself as a standard use case:
 
 ```cpp
-// Called before every major operation
-namespace akao::core {
-class SelfValidator {
+// Universal validation that works on any project
+namespace akao::rule {
+class Validator {
 public:
-    static bool validateSelf() {
-        auto validator = rule::Validator("."); 
+    static bool validateProject(const std::string& project_path) {
+        auto validator = rule::Validator(project_path); 
         auto violations = validator.validate();
         
         if (!violations.empty()) {
-            trace::log("SELF_VIOLATION", violations);
-            throw std::runtime_error("Akao violates its own principles");
+            trace::log("VALIDATION_VIOLATIONS", violations);
+            return false;
         }
         return true;
     }
@@ -358,11 +390,11 @@ public:
 }
 ```
 
-**Integration Points**: Self-validation must be called at:
-- Application startup
-- Before each command execution  
+**Integration Points**: Validation can be called at:
+- Application startup (on current project)
+- Before each command execution (optional validation check)
 - After code generation or modification
-- During test execution
+- During continuous integration (automated validation)
 
 ### Rule System Core Logic
 
@@ -418,10 +450,64 @@ private:
 }
 ```
 
-**Command Registration**: All commands support:
+**Command Registration**: All commands support identical functionality across interfaces:
 - CLI execution: `akao validate --rules=core`
-- TUI execution: Interactive mode
-- Web execution: REST API endpoints
+- TUI execution: Interactive mode with identical options
+- Web execution: REST API endpoints with same parameters
+
+**Interface Parity Implementation**:
+```cpp
+namespace akao::cli {
+// Core command abstraction ensuring interface consistency
+struct CommandRequest {
+    std::string command;
+    std::map<std::string, std::string> parameters;
+    std::vector<std::string> arguments;
+};
+
+struct CommandResponse {
+    int exit_code;
+    std::string output;
+    std::string error;
+    std::map<std::string, std::string> metadata;
+};
+
+class InterfaceController {
+public:
+    // Unified command execution regardless of interface
+    CommandResponse executeCommand(const CommandRequest& request);
+    
+    // Interface-specific adapters
+    int executeCLI(const std::vector<std::string>& args);
+    CommandResponse executeWeb(const std::string& json_request);
+    void executeTUI(const std::string& command);
+    
+    // Validation that all interfaces work identically
+    bool validateInterfaceParity();
+};
+
+// REST API for web interface
+class WebInterface {
+public:
+    void startServer(int port = 8080);
+    std::string handleRequest(const std::string& method, 
+                             const std::string& path,
+                             const std::string& body);
+private:
+    InterfaceController controller_;
+};
+
+// Terminal UI for interactive mode
+class TUIInterface {
+public:
+    void startInteractiveMode();
+    void displayMenu();
+    void handleUserInput(const std::string& input);
+private:
+    InterfaceController controller_;
+};
+}
+```
 
 ### Build System Architecture
 
@@ -518,6 +604,32 @@ public:
     // Dependency management
     std::vector<std::string> resolveDependencies(const Feature& feature);
     bool validateDependencies(const Feature& feature);
+    
+    // Security validation
+    bool validateFeatureSecurity(const Feature& feature);
+    void sandboxFeatureExecution(const Feature& feature);
+};
+
+class FeatureSecurity {
+public:
+    bool validateFeatureSignature(const Feature& feature);
+    bool checkFeaturePermissions(const Feature& feature);
+    SecurityContext createSandbox(const Feature& feature);
+    void enforceResourceLimits(const Feature& feature);
+    
+    struct SecurityContext {
+        std::set<std::string> allowed_paths;
+        std::set<std::string> allowed_network_hosts;
+        std::map<std::string, std::string> environment_restrictions;
+        ResourceLimits limits;
+    };
+    
+    struct ResourceLimits {
+        size_t max_memory_mb;
+        size_t max_disk_mb;
+        std::chrono::seconds max_execution_time;
+        bool network_access_allowed;
+    };
 };
 
 class RegistryClient {
@@ -531,6 +643,120 @@ public:
 };
 
 } // namespace akao::feature
+```
+
+### Automation System Architecture
+
+**CI/CD Pipeline Generation**:
+```cpp
+namespace akao::automation {
+
+struct PipelineConfig {
+    std::string name;
+    std::string version;
+    std::vector<std::string> triggers;        // "push", "pull_request", "schedule"
+    std::vector<std::string> platforms;      // "ubuntu-latest", "macos-latest"
+    std::map<std::string, std::string> env_vars;
+    std::vector<PipelineStep> steps;
+};
+
+struct PipelineStep {
+    std::string name;
+    std::string action;                       // "validate", "build", "test", "deploy"
+    std::map<std::string, std::string> parameters;
+    std::vector<std::string> dependencies;
+};
+
+class PipelineGenerator {
+public:
+    bool generatePipeline(const std::string& project_path);
+    PipelineConfig createDefaultPipeline(const ProjectConfig& project);
+    bool validatePipelineConfig(const PipelineConfig& config);
+    bool updateExistingPipeline(const PipelineConfig& config);
+};
+
+class WorkflowManager {
+public:
+    bool generateGitHubActions(const PipelineConfig& config);
+    bool createValidationWorkflow();
+    bool createTestingWorkflow(); 
+    bool createBuildWorkflow();
+    bool createDeploymentWorkflow();
+    bool createDocumentationWorkflow();
+};
+
+} // namespace akao::automation
+```
+
+### Metrics and Compliance System
+
+**Comprehensive Measurement Framework**:
+```cpp
+namespace akao::metrics {
+
+struct ComplianceMetric {
+    std::string principle_name;
+    float compliance_percentage;
+    std::vector<Violation> violations;
+    std::chrono::system_clock::time_point timestamp;
+    std::map<std::string, std::string> metadata;
+};
+
+struct SystemMetrics {
+    size_t files_scanned;
+    size_t rules_applied;
+    size_t violations_found;
+    std::chrono::milliseconds execution_time;
+    float test_coverage_percentage;
+    size_t lines_of_code;
+    size_t documentation_coverage;
+};
+
+class ComplianceScorer {
+public:
+    float calculateComplianceScore(const Project& project);
+    ComplianceReport generateComplianceReport();
+    std::vector<ComplianceMetric> trackHistoricalCompliance();
+    
+    bool meetsComplianceThreshold(float threshold);
+    void updateComplianceHistory(const ComplianceMetric& metric);
+    
+    struct ComplianceReport {
+        float overall_score;
+        std::vector<ComplianceMetric> principle_scores;
+        SystemMetrics system_metrics;
+        std::vector<std::string> recommendations;
+        std::chrono::system_clock::time_point generated_at;
+    };
+};
+
+class MetricsCollector {
+public:
+    void recordAction(const std::string& action, const ActionMetadata& metadata);
+    void recordViolation(const Violation& violation);
+    void recordPerformanceMetric(const std::string& operation, std::chrono::milliseconds duration);
+    void recordResourceUsage(const ResourceUsage& usage);
+    
+    SystemMetrics getSystemMetrics();
+    std::vector<ActionMetric> getActionHistory();
+    
+    struct ActionMetadata {
+        std::string command;
+        std::map<std::string, std::string> parameters;
+        std::chrono::system_clock::time_point timestamp;
+        std::string user;
+        std::string project_path;
+    };
+    
+    struct ResourceUsage {
+        size_t memory_usage_mb;
+        size_t disk_usage_mb;
+        float cpu_usage_percent;
+        std::chrono::milliseconds execution_time;
+    };
+};
+
+} // namespace akao::metrics
 ```
 
 ### File Format Specifications
@@ -589,6 +815,68 @@ public:
 }
 ```
 
+#### Pipeline Configuration (`.akao/pipeline.yaml`):
+```yaml
+version: "1.0"
+name: "akao-project-pipeline"
+
+triggers:
+  - push
+  - pull_request
+  - schedule: "0 2 * * *"  # Daily at 2 AM
+
+platforms:
+  - ubuntu-latest
+  - macos-latest
+
+environment:
+  CXX: "g++"
+  BUILD_TYPE: "Release"
+
+steps:
+  - name: "validate"
+    action: "akao validate"
+    parameters:
+      rules: "all"
+      fail_on_violation: true
+    
+  - name: "test"
+    action: "akao test"
+    depends_on: ["validate"]
+    parameters:
+      coverage_threshold: 95
+      
+  - name: "build-dev"
+    action: "akao build --dev"
+    depends_on: ["test"]
+    
+  - name: "build-prod"
+    action: "akao build --prod"
+    depends_on: ["test"]
+    parameters:
+      verify_hash: true
+      
+  - name: "docs"
+    action: "akao docgen"
+    depends_on: ["validate"]
+    
+  - name: "audit"
+    action: "akao audit"
+    depends_on: ["build-prod"]
+    parameters:
+      compliance_threshold: 90
+
+deployment:
+  enabled: true
+  strategy: "blue-green"
+  environments:
+    - name: "staging"
+      trigger: "push-to-main"
+    - name: "production"
+      trigger: "tag-release"
+      requires_approval: true
+```
+
 #### Project Template (`.akao/templates/projects/cpp/template.json`):
 ```json
 {
@@ -642,6 +930,59 @@ public:
 }
 ```
 
+#### Compliance Report Format (`.akao/audit.json`):
+```json
+{
+  "version": "1.0.0",
+  "generated_at": "2025-07-02T10:30:00Z",
+  "project": {
+    "name": "my-project",
+    "path": "/path/to/project",
+    "version": "1.0.0"
+  },
+  "overall_score": 92.5,
+  "compliance_threshold": 90.0,
+  "status": "COMPLIANT",
+  "principle_scores": [
+    {
+      "principle_name": "structure_enforced",
+      "compliance_percentage": 100.0,
+      "violations": [],
+      "status": "PASS"
+    },
+    {
+      "principle_name": "rules_have_tests",
+      "compliance_percentage": 95.2,
+      "violations": [
+        {
+          "file": "rules/custom/special.json",
+          "message": "Rule lacks corresponding test"
+        }
+      ],
+      "status": "WARNING"
+    }
+  ],
+  "system_metrics": {
+    "files_scanned": 1247,
+    "rules_applied": 45,
+    "violations_found": 3,
+    "test_coverage_percentage": 96.8,
+    "lines_of_code": 15420,
+    "documentation_coverage": 92.1,
+    "execution_time_ms": 2341
+  },
+  "recommendations": [
+    "Add test for custom rule in rules/custom/special.json",
+    "Improve documentation coverage for src/feature/loader module"
+  ],
+  "historical_trend": {
+    "previous_score": 89.2,
+    "score_change": "+3.3",
+    "trend": "IMPROVING"
+  }
+}
+```
+
 ---
 
 ## 🧪 Testing Requirements
@@ -683,37 +1024,79 @@ TEST_F(ConfigTest, RejectInvalidConfiguration) {
 } // namespace akao::core::test
 ```
 
-### Self-Validation Tests
+### Principle Validation Tests
 
-**Principle Validation**: Critical tests that ensure Akao follows its own rules:
+**Principle Testing Framework**: Critical tests that ensure all core principles are properly implemented:
 
 ```cpp
-// File: tests/principles/self_validation.cpp
+// File: tests/principles/principle_test_framework.cpp
 #include <gtest/gtest.h>
 #include "akao/rule/validator/validator.hpp"
 
 namespace akao::test {
 
-class SelfValidationTest : public ::testing::Test {
+class PrincipleTestFramework : public ::testing::Test {
 public:
-    void validateAkaoItself() {
-        rule::Validator validator(".");
+    bool testPrinciple(const std::string& principle_name, const std::string& project_path = ".") {
+        rule::Validator validator(project_path);
+        auto violations = validator.validatePrinciple(principle_name);
+        return violations.empty();
+    }
+    
+    void validateProjectCompliance(const std::string& project_path) {
+        rule::Validator validator(project_path);
         auto violations = validator.validate();
         
-        // Akao must have zero violations of its own rules
         ASSERT_EQ(violations.size(), 0) 
-            << "Akao violates its own principles: " 
+            << "Project violates principles: " 
             << violations[0].message;
     }
 };
 
-TEST_F(SelfValidationTest, StructureCompliance) {
-    validateAkaoItself();
+// Test each of the core principles
+TEST_F(PrincipleTestFramework, StructureEnforcement) {
+    EXPECT_TRUE(testPrinciple("structure_enforced"));
 }
 
-TEST_F(SelfValidationTest, NamingCompliance) {
-    // Validate naming conventions
-    validateAkaoItself();
+TEST_F(PrincipleTestFramework, UniversalValidation) {
+    EXPECT_TRUE(testPrinciple("universal_validation"));
+}
+
+TEST_F(PrincipleTestFramework, RulesHaveTests) {
+    EXPECT_TRUE(testPrinciple("rules_have_tests"));
+}
+
+TEST_F(PrincipleTestFramework, Traceability) {
+    EXPECT_TRUE(testPrinciple("traceability"));
+}
+
+TEST_F(PrincipleTestFramework, DocumentationAsCode) {
+    EXPECT_TRUE(testPrinciple("documentation_as_code"));
+}
+
+TEST_F(PrincipleTestFramework, OneClassPerFolder) {
+    EXPECT_TRUE(testPrinciple("one_class_per_folder"));
+}
+
+TEST_F(PrincipleTestFramework, LanguageIsolation) {
+    EXPECT_TRUE(testPrinciple("language_isolation"));
+}
+
+TEST_F(PrincipleTestFramework, InterfaceConsistency) {
+    EXPECT_TRUE(testPrinciple("cli_web_tui_consistency"));
+}
+
+TEST_F(PrincipleTestFramework, MeasurableActions) {
+    EXPECT_TRUE(testPrinciple("measurable_actions"));
+}
+
+TEST_F(PrincipleTestFramework, ExternalFeatureSandboxing) {
+    EXPECT_TRUE(testPrinciple("external_features_sandboxed"));
+}
+
+// Test Akao itself for compliance (as a standard test case)
+TEST_F(PrincipleTestFramework, AkaoProjectCompliance) {
+    validateProjectCompliance(".");
 }
 
 } // namespace akao::test
@@ -851,6 +1234,44 @@ private:
 }
 ```
 
+### Plugin Testing Framework
+
+**Plugin Validation and Testing**:
+```cpp
+namespace akao::plugin::test {
+
+class PluginTestFramework {
+public:
+    bool testPluginFunctionality(const AkaoPlugin* plugin);
+    bool testPluginSecurity(const AkaoPlugin* plugin);
+    bool testPluginCompatibility(const AkaoPlugin* plugin);
+    std::vector<PluginViolation> validatePluginCompliance(const AkaoPlugin* plugin);
+    
+    struct PluginViolation {
+        std::string plugin_name;
+        std::string violation_type;
+        std::string description;
+        std::string suggestion;
+    };
+    
+private:
+    bool validatePluginInterface(const AkaoPlugin* plugin);
+    bool testPluginSandboxing(const AkaoPlugin* plugin);
+    bool validatePluginMetadata(const AkaoPlugin* plugin);
+    bool testPluginResourceLimits(const AkaoPlugin* plugin);
+};
+
+// Plugin testing example
+TEST(PluginTestFramework, WasmPluginCompliance) {
+    auto wasm_plugin = loadPlugin("wasm-builder");
+    ASSERT_TRUE(testPluginSecurity(wasm_plugin.get()));
+    ASSERT_TRUE(testPluginFunctionality(wasm_plugin.get()));
+    ASSERT_TRUE(testPluginCompatibility(wasm_plugin.get()));
+}
+
+} // namespace akao::plugin::test
+```
+
 ---
 
 ## 📦 Complete Implementation Deliverables
@@ -885,7 +1306,7 @@ akao uninstall <feature>      # Remove installed feature
 # Core validation commands
 akao validate                 # Validate project structure and rules
 akao validate --rules=core    # Validate only core rules  
-akao validate --self-check    # Self-validation mode
+akao validate --project=path  # Validate specific project path
 
 # Testing commands
 akao test                     # Run all tests
@@ -902,6 +1323,13 @@ akao build --verify-hash      # Verify build reproducibility
 akao docgen                   # Generate all documentation
 akao docgen --rules           # Generate rule documentation only
 akao docgen --api             # Generate API documentation only
+
+# Automation commands
+akao pipeline generate        # Generate CI/CD pipeline configuration
+akao pipeline validate       # Validate pipeline configuration
+akao workflow create          # Create GitHub Actions workflows
+akao workflow update          # Update existing workflows
+akao deploy configure        # Configure deployment settings
 
 # Audit and metrics
 akao audit                    # Display system audit report
@@ -1046,7 +1474,7 @@ endif()
 
 **Quality Metrics**:
 - **Test Coverage**: Minimum 95% line coverage
-- **Self-Validation**: Zero violations of own principles
+- **Universal Validation**: Zero violations of own principles
 - **Documentation Coverage**: 100% of public APIs documented
 - **Rule Coverage**: Every principle has corresponding rule and test
 
@@ -1054,7 +1482,7 @@ endif()
 
 **Implementation Complete When**:
 1. ✅ All CLI commands work correctly
-2. ✅ Self-validation passes with zero violations  
+2. ✅ Universal validation passes with zero violations  
 3. ✅ All 15 core principles are enforced
 4. ✅ Test coverage exceeds 95%
 5. ✅ Documentation auto-generates correctly
@@ -1077,7 +1505,7 @@ endif()
 - **Dependencies**: Standard library only for core, minimal external dependencies
 
 ### Code Quality Standards
-- **Self-Validation**: System must validate itself without violations
+- **Universal Validation**: System must validate any project including itself without violations
 - **Test Coverage**: Minimum 95% line coverage required
 - **Documentation**: 100% public API documentation coverage
 - **Performance**: All operations must be deterministic and reproducible
@@ -1095,20 +1523,23 @@ endif()
 ## 🎯 Final Implementation Checklist
 
 ### Core System Completeness
-- [ ] **CLI Interface**: All commands (validate, test, build, docgen, audit, init, feature, registry) functional
+- [ ] **CLI Interface**: All commands (validate, test, build, docgen, audit, init, feature, registry, pipeline, workflow) functional
 - [ ] **Rule Engine**: JSON rule parsing, validation, and violation reporting  
 - [ ] **Build System**: Dev/prod builds with dependency management and caching
 - [ ] **Documentation Generator**: Auto-generation from code and rules
+- [ ] **Automation System**: CI/CD pipeline generation and GitHub Actions workflows
+- [ ] **Metrics System**: Comprehensive measurement and compliance scoring
 - [ ] **Trace System**: Complete audit logging and metrics collection
 - [ ] **Plugin System**: Plugin loading, management, and security sandboxing
 - [ ] **Project Management**: Project initialization, templates, and validation
 - [ ] **Feature System**: Feature management, registry integration, and dependency resolution
-- [ ] **Self-Validation**: Continuous validation of Akao against its own rules
+- [ ] **Universal Validation**: Validation system works on any project including Akao
 
 ### File System Outputs
 - [ ] **Binary**: Working `akao` executable in `.build/prod/`
-- [ ] **Configuration**: Complete `.akao/` directory with all required files
-- [ ] **Documentation**: Generated `docs/` with README, RULES, FEATURES, and API docs
+- [ ] **Configuration**: Complete `.akao/` directory with all required files including pipeline.yaml
+- [ ] **Automation**: Generated `.github/workflows/` with CI/CD pipeline files
+- [ ] **Documentation**: Generated `docs/` with README, RULES, PRINCIPLES, FEATURES, and API docs
 - [ ] **Rules**: Core rule definitions in `rules/core/` and `rules/cpp/`
 - [ ] **Templates**: Project and feature templates in `templates/`
 - [ ] **Features**: Feature management system in `features/`
@@ -1116,11 +1547,14 @@ endif()
 
 ### Principle Compliance  
 - [ ] **Structure Enforced**: One class per folder rule implemented and validated
-- [ ] **Self-Validation**: Akao validates itself with zero violations
+- [ ] **Universal Validation**: Validation system works on any project including Akao
 - [ ] **Rules Tested**: Every rule has corresponding test coverage
 - [ ] **Traceability**: All violations include stack traces and suggestions
 - [ ] **Documentation as Code**: All docs generated from rules and code
-- [ ] **Measurable Actions**: All operations logged and auditable
+- [ ] **Measurable Actions**: All operations logged and auditable with compliance scoring
+- [ ] **Interface Consistency**: CLI=Web=TUI functionality verified identical
+- [ ] **Feature Security**: External features properly sandboxed and validated
+- [ ] **Automation**: CI/CD pipeline generation functional
 - [ ] **Deterministic Builds**: Reproducible builds with hash verification
 
 ### Integration Validation
@@ -1139,7 +1573,7 @@ endif()
 
 ### Critical Success Factors
 1. **Start with Core Framework**: Implement config, filesystem, and trace systems first
-2. **Establish Self-Validation Early**: Build validation into every component from the start
+2. **Establish Universal Validation Early**: Build validation into every component from the start
 3. **Follow One-Class-Per-Folder**: Strictly adhere to the architectural principle
 4. **Implement Tests Alongside Code**: Write tests for each class as it's implemented
 5. **Generate Documentation**: Ensure docgen works from the beginning
@@ -1150,16 +1584,19 @@ endif()
 3. **Project Management**: Template system and project initialization
 4. **Rule Engine**: Rule loading, parsing, and validation  
 5. **Feature System**: Feature management and registry integration
-6. **Self-Validation**: Principle testing and compliance checking
-7. **Build System**: Dev/prod builds and dependency management
-8. **Documentation**: Template-based generation system
-9. **Plugin Architecture**: Extension points and plugin loading
-10. **Integration**: TUI/Web interfaces and final polish
+6. **Universal Validation**: Principle testing and compliance checking
+7. **Automation System**: CI/CD pipeline generation and workflow management
+8. **Build System**: Dev/prod builds and dependency management
+9. **Documentation**: Template-based generation system
+10. **Plugin Architecture**: Extension points and plugin loading
+11. **Integration**: TUI/Web interfaces and final polish
 
 ### Key Integration Points
-- **Self-validation must be called**: At startup, before commands, and during tests
+- **Universal validation available**: Can be called on any project including Akao at startup or on demand
 - **Trace logging is universal**: Every operation must generate audit entries
 - **Rule enforcement is comprehensive**: All principles must have corresponding rules
+- **Interface consistency enforced**: CLI=Web=TUI functionality must be identical
+- **Automation is integrated**: Pipeline generation works with all core operations
 - **Documentation must regenerate**: Any rule or code change triggers doc updates
 - **Build artifacts must be reproducible**: Hash verification for all outputs
 

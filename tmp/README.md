@@ -1,6 +1,6 @@
 # Akao Framework
 
-> **A unified, rule-based, self-validating framework written in C++ for structuring, building, testing, and documenting any software project.**
+> **A unified, rule-based framework written in C++ for structuring, building, testing, and documenting any software project.**
 
 ---
 
@@ -8,16 +8,17 @@
 
 Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in JSON or DSL, to validate structure, enforce best practices, automate builds, and generate documentation. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
 
-Akao validates itself. It measures itself. And it fails itself if its own principles are violated.
+Akao applies its own standards to itself, demonstrating that its validation system works universally across any project.
 
 ---
 
 ## 🧱 Core Capabilities
 
-✅ Self-validating repo architecture  
+✅ Universal validation system  
 ✅ Rule-driven validation system  
 ✅ Build engine for dev/prod (hot reload, optimized)  
 ✅ Auto-generated documentation and principle tracing  
+✅ Automated CI/CD pipeline generation  
 ✅ Audit logs, coverage, enforcement trace  
 ✅ Unified CLI + Web UI + TUI  
 ✅ Plugin system for targets (wasm, js, android, etc)  
@@ -44,7 +45,7 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 * C++ projects with strict structure and validation
 * Mixed-language repositories with rules per language
 * Validating large-scale enterprise codebases
-* Self-measuring framework development
+* Framework development with rigorous standards
 * Building rule-compliant plugins, mobile apps, APIs
 
 ---
@@ -97,6 +98,13 @@ akao build --dev              # Start build in hot-reload mode
 akao build --prod             # Production build with hashes
 akao docgen                   # Generate RULES.md, README.md, etc
 akao audit                    # Print audit of rules, coverage, status
+
+# Automation & CI/CD
+akao pipeline generate        # Generate CI/CD pipeline configuration
+akao pipeline validate       # Validate pipeline configuration
+akao workflow create          # Create GitHub Actions workflows
+akao workflow update          # Update existing workflows
+akao deploy configure        # Configure deployment settings
 ```
 
 ---

@@ -69,6 +69,12 @@ Akao is built as a modular C++ framework with clear architectural layers:
 - **Version Manager**: Feature versioning and compatibility
 - **Conflict Resolver**: Handle feature conflicts and dependencies
 
+### 7. Automation System (`src/automation/`)
+- **Pipeline Generator**: CI/CD pipeline configuration generator
+- **Workflow Manager**: GitHub Actions workflow management
+- **Template Engine**: Automated generation from templates
+- **Deployment Configurator**: Automated deployment setup
+
 ---
 
 ## 📁 Directory Structure
@@ -77,6 +83,7 @@ Akao is built as a modular C++ framework with clear architectural layers:
 akao/
 ├── .akao/                    # Framework configuration
 │   ├── config.json          # Main configuration
+│   ├── pipeline.yaml        # CI/CD pipeline configuration
 │   ├── profiles/             # Language-specific profiles
 │   ├── features/             # Installed features metadata
 │   │   ├── installed.json   # List of installed features
@@ -87,6 +94,14 @@ akao/
 │   │   └── custom.json      # Custom registries
 │   ├── trace.json           # Audit and error trace
 │   └── cache/               # Build and validation cache
+├── .github/                  # Auto-generated CI/CD workflows
+│   ├── workflows/           # GitHub Actions workflows
+│   │   ├── ci.yml           # Continuous integration
+│   │   ├── cd.yml           # Continuous deployment
+│   │   ├── validate.yml     # Validation workflow
+│   │   ├── test.yml         # Testing workflow
+│   │   └── docs.yml         # Documentation generation
+│   └── dependabot.yml       # Automated dependency updates
 ├── .build/                   # Build outputs
 │   ├── dev/                 # Development builds
 │   ├── prod/                # Production builds
@@ -94,6 +109,7 @@ akao/
 ├── docs/                     # Auto-generated documentation
 │   ├── README.md            # Generated project overview
 │   ├── RULES.md             # Generated rule documentation
+│   ├── PRINCIPLES.md        # Generated principle documentation
 │   ├── FEATURES.md          # Generated feature documentation
 │   └── api/                 # API documentation
 ├── rules/                    # Rule definitions
@@ -120,6 +136,7 @@ akao/
 │   ├── docgen/              # Documentation generator
 │   ├── cli/                 # Command-line interface
 │   ├── core/                # Core framework
+│   ├── automation/          # CI/CD pipeline generation
 │   ├── project/             # Project management
 │   └── feature/             # Feature management
 ├── include/                  # C++ headers (mirrors src structure)
@@ -182,6 +199,15 @@ akao/
 5. Update configuration and docs
 ```
 
+### Automation/CI/CD Flow
+```
+1. Analyze project structure and configuration
+2. Generate pipeline configuration (.akao/pipeline.yaml)
+3. Create GitHub Actions workflows (.github/workflows/)
+4. Configure automated validation, testing, and builds
+5. Set up deployment and release automation
+```
+
 ---
 
 ## 🧪 Testing Strategy
@@ -198,7 +224,7 @@ akao/
 
 ### Principle Tests
 - Validate that Akao follows its own rules
-- Self-validation on framework codebase
+- Universal validation on any codebase
 - Continuous principle compliance
 
 ---
