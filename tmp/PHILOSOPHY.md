@@ -6,23 +6,62 @@
 
 ## 🔍 Core Beliefs
 
-| Principle                                  | Description                                                                     |
-| ------------------------------------------ | ------------------------------------------------------------------------------- |
-| **Structure is enforced**                  | Every file, class, and folder must follow rule-driven structure.                |
-| **Self-validation**                        | Akao must validate itself with no exceptions.                                   |
-| **No rules without tests**                 | Each rule must have measurable test coverage.                                   |
-| **Every rule is traceable**                | Violations include stack trace, file, line, and suggestion.                     |
-| **Documentation is code**                  | All docs (README, RULES, PRINCIPLES) must be generated from actual rules/tests. |
-| **One class per folder**                   | Every folder must contain exactly one class and its tests.                      |
-| **One language per scope**                 | Multi-language repos must isolate languages clearly.                            |
-| **CLI = Web = TUI**                        | All tooling must behave identically across UI modes.                            |
-| **Every action is measurable**             | Coverage, logs, hash, audit state are enforced per commit.                      |
-| **Rules can be toggled, not skipped**      | All disabled rules are tracked.                                                 |
-| **Auto-update all doc**                    | Whenever rules change, documentation must change.                               |
-| **Everything must build dev + prod**       | Dev (live reload) and prod (deterministic) builds are mandatory.                |
-| **No external implicit behavior**          | Every dependency, path, and output must be declared.                            |
-| **Only one truth**                         | All configuration must converge to a single source of truth.                    |
-| **Observable, explainable, deterministic** | Nothing is magic; everything is reasoned, traceable, and intentional.           |
+### **Structure is enforced**
+Every file, class, and folder must follow rule-driven structure. This is not merely a suggestion or convention—it is the fundamental law that governs all code existence within Akao. Structure becomes the skeleton upon which all other principles rest. Without enforced structure, chaos emerges, maintainability dies, and the codebase becomes a digital wasteland. Akao treats structural violations as compilation errors, making disorder impossible rather than inconvenient.
+
+### **Self-validation**
+Akao must validate itself with no exceptions. The framework embodies the ancient principle "physician, heal thyself"—if Akao cannot maintain its own standards, it has no authority to impose them on others. This creates a recursive loop of integrity where the validator must constantly prove its own worthiness. Self-validation is both a technical requirement and a philosophical commitment to absolute honesty.
+
+### **No rules without tests**
+Each rule must have measurable test coverage. Rules without tests are merely suggestions disguised as law. Every principle declared must be backed by executable proof that demonstrates both compliance and violation scenarios. This creates a feedback loop where rules are continuously validated against reality, ensuring they remain practical and enforceable rather than theoretical and aspirational.
+
+### **Every rule is traceable**
+Violations include stack trace, file, line, and suggestion. When a rule is broken, the system must provide not just identification but education. Each violation becomes a teaching moment, complete with forensic evidence of exactly what went wrong and how to fix it. This transforms error messages from cryptic failures into guided learning experiences.
+
+### **Documentation is code**
+All documentation (README, RULES, PRINCIPLES) must be generated from actual rules and tests. Hand-written documentation lies by omission and becomes stale by neglect. Generated documentation cannot lie because it is extracted from the living, breathing codebase itself. This ensures that what is documented is what is implemented, and what is implemented is what is tested.
+
+### **One class per folder**
+Every folder must contain exactly one class and its tests. This principle enforces cognitive simplicity and prevents the common antipattern of "god folders" that become dumping grounds for related but distinct concerns. Each folder becomes a bounded context with clear responsibility, making navigation intuitive and refactoring safe.
+
+### **One language per scope**
+Multi-language repositories must isolate languages clearly. While polyglot systems are inevitable in modern development, they must be organized with surgical precision. Each language exists within its own realm, with clear boundaries and explicit interfaces. This prevents the chaos of mixed-language files and ensures that language-specific tooling can operate effectively.
+
+### **CLI = Web = TUI**
+All tooling must behave identically across user interface modes. The interface is merely the skin; the underlying logic must be invariant. A command that works in CLI must provide identical functionality through web API and terminal UI. This ensures that users can switch interfaces without relearning workflows or encountering inconsistent behavior.
+
+### **Every action is measurable**
+Coverage, logs, hash, audit state are enforced per commit. If an action cannot be measured, it effectively didn't happen. Every operation must leave traces that can be analyzed, audited, and verified. This creates a complete paper trail of system behavior, enabling forensic analysis of failures and empirical optimization of performance.
+
+### **Rules can be toggled, not skipped**
+All disabled rules are tracked. When a rule is disabled, the system must record why, when, and by whom. This prevents rules from being quietly ignored and ensures that temporary exceptions are eventually addressed. Disabled rules remain visible in all reporting, creating pressure to either fix the violation or formally acknowledge the exception.
+
+### **Auto-update all documentation**
+Whenever rules change, documentation must change automatically. Manual documentation updates are promises that will be broken. When code evolves, documentation must evolve in lockstep, without human intervention. This ensures that documentation reflects current reality rather than historical intentions.
+
+### **Everything must build dev + prod**
+Development (live reload) and production (deterministic) builds are mandatory. Every codebase must support both rapid iteration and reliable deployment. Development builds prioritize speed and debugging capability, while production builds prioritize optimization and reproducibility. Both must succeed for the system to be considered complete.
+
+### **No external implicit behavior**
+Every dependency, path, and output must be declared explicitly. Hidden dependencies are time bombs waiting to detonate in different environments. All external interactions must be made visible and manageable. This enables reliable builds, predictable deployments, and comprehensive security analysis.
+
+### **Only one truth**
+All configuration must converge to a single source of truth. Duplicate configuration is a breeding ground for inconsistency and confusion. Every configurable aspect of the system must have exactly one authoritative source, with all other references being derived or validated against that source.
+
+### **Observable, explainable, deterministic**
+Nothing is magic; everything is reasoned, traceable, and intentional. Every behavior must be explicable through logical chains of cause and effect. When something happens, the system must be able to explain why it happened and how to control it. This eliminates "works on my machine" problems and enables reliable debugging.
+
+### **Features are composable**
+Features must work together without conflicts or hidden dependencies. Each feature is a building block that can be combined with others to create more complex functionality. Features cannot make assumptions about the presence or absence of other features, and they must declare all their dependencies explicitly.
+
+### **Templates are validated**
+All project templates must pass the same rules as generated projects. Templates are not exempt from quality standards—they are held to even higher standards because they become the foundation for new projects. A template that generates non-compliant code is worse than no template at all.
+
+### **External features are sandboxed**
+Features from external sources run in controlled environments. Trust is not transitive—just because you trust Akao doesn't mean you should trust every feature that claims to work with Akao. External features operate within security boundaries that prevent them from compromising the host system or other features.
+
+### **Dependency resolution is explicit**
+All feature dependencies must be declared and resolved transparently. The system must be able to explain exactly why each dependency was included and how conflicts were resolved. This enables reproducible builds and prevents the emergence of phantom dependencies that work in development but fail in production.
 
 ---
 

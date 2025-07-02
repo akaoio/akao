@@ -54,12 +54,16 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 ```bash
 /                   # Root project
 ├── .akao/          # Runtime, profiles, trace, hash
+│   ├── features/   # Installed features and dependencies
+│   └── registry/   # External feature registries
 ├── .build/         # Dev & prod builds
 ├── docs/           # Auto-generated documentation
 ├── rules/          # JSON or DSL rule files
 ├── src/            # C++ classes (1 class per folder)
 ├── include/        # C++ headers (mirrors src)
 ├── tests/          # Principle & rule tests
+├── features/       # Project-specific features
+├── templates/      # Project and feature templates
 ├── plugins/        # Optional targets or language bindings
 ```
 
@@ -68,12 +72,31 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 ## 🧪 Commands
 
 ```bash
-akao validate         # Enforce structure and rules
-akao test             # Run unit & principle tests
-akao build --dev      # Start build in hot-reload mode
-akao build --prod     # Production build with hashes
-akao docgen           # Generate RULES.md, README.md, etc
-akao audit            # Print audit of rules, coverage, status
+# Project Management
+akao init                     # Initialize new Akao project with templates
+akao init --template=cpp      # Initialize with specific language template
+akao init --template=web      # Initialize web project template
+
+# Feature Management
+akao feature add <name>       # Add new feature to project
+akao feature remove <name>    # Remove feature from project
+akao feature list             # List all features in project
+akao feature info <name>      # Show feature details and dependencies
+
+# External Feature Management
+akao registry add <url>       # Add external feature registry
+akao registry list            # List available registries
+akao install <feature>        # Install feature from registry
+akao update <feature>         # Update installed feature
+akao uninstall <feature>      # Remove installed feature
+
+# Core Operations
+akao validate                 # Enforce structure and rules
+akao test                     # Run unit & principle tests
+akao build --dev              # Start build in hot-reload mode
+akao build --prod             # Production build with hashes
+akao docgen                   # Generate RULES.md, README.md, etc
+akao audit                    # Print audit of rules, coverage, status
 ```
 
 ---

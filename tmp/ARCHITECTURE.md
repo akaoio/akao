@@ -57,6 +57,18 @@ Akao is built as a modular C++ framework with clear architectural layers:
 - **Trace System**: Audit logging and error tracking
 - **Plugin API**: Extension point for custom rules
 
+### 6. Project Manager (`src/project/`)
+- **Template Engine**: Project initialization from templates
+- **Feature Manager**: Add/remove/update project features
+- **Registry Client**: External feature registry integration
+- **Dependency Resolver**: Feature dependency management
+
+### 7. Feature System (`src/feature/`)
+- **Feature Loader**: Load and validate features
+- **Package Manager**: Install/update external features
+- **Version Manager**: Feature versioning and compatibility
+- **Conflict Resolver**: Handle feature conflicts and dependencies
+
 ---
 
 ## 📁 Directory Structure
@@ -66,6 +78,13 @@ akao/
 ├── .akao/                    # Framework configuration
 │   ├── config.json          # Main configuration
 │   ├── profiles/             # Language-specific profiles
+│   ├── features/             # Installed features metadata
+│   │   ├── installed.json   # List of installed features
+│   │   ├── dependencies.json # Feature dependency graph
+│   │   └── cache/           # Feature download cache
+│   ├── registry/             # External registries
+│   │   ├── official.json    # Official Akao registry
+│   │   └── custom.json      # Custom registries
 │   ├── trace.json           # Audit and error trace
 │   └── cache/               # Build and validation cache
 ├── .build/                   # Build outputs
@@ -75,18 +94,34 @@ akao/
 ├── docs/                     # Auto-generated documentation
 │   ├── README.md            # Generated project overview
 │   ├── RULES.md             # Generated rule documentation
+│   ├── FEATURES.md          # Generated feature documentation
 │   └── api/                 # API documentation
 ├── rules/                    # Rule definitions
 │   ├── core/                # Core Akao rules
 │   ├── cpp/                 # C++ specific rules
 │   ├── js/                  # JavaScript specific rules
 │   └── custom/              # Project-specific rules
+├── features/                 # Project features
+│   ├── core/                # Core project features
+│   ├── external/            # Installed external features
+│   └── custom/              # Custom project features
+├── templates/                # Project and feature templates
+│   ├── projects/            # Project initialization templates
+│   │   ├── cpp/             # C++ project template
+│   │   ├── web/             # Web project template
+│   │   └── library/         # Library project template
+│   └── features/            # Feature templates
+│       ├── api/             # API feature template
+│       ├── database/        # Database feature template
+│       └── auth/            # Authentication feature template
 ├── src/                      # Source code (1 class per folder)
 │   ├── rule/                # Rule engine implementation
 │   ├── build/               # Build system implementation
 │   ├── docgen/              # Documentation generator
 │   ├── cli/                 # Command-line interface
-│   └── core/                # Core framework
+│   ├── core/                # Core framework
+│   ├── project/             # Project management
+│   └── feature/             # Feature management
 ├── include/                  # C++ headers (mirrors src structure)
 ├── tests/                    # Test suite
 │   ├── unit/                # Unit tests per class
@@ -127,6 +162,24 @@ akao/
 3. Generate markdown templates
 4. Cross-reference principles
 5. Write documentation files
+```
+
+### Project Initialization Flow
+```
+1. Select project template
+2. Generate base structure
+3. Apply language-specific rules
+4. Initialize configuration
+5. Validate initial structure
+```
+
+### Feature Management Flow
+```
+1. Discover available features
+2. Resolve dependencies
+3. Download and validate
+4. Integrate into project
+5. Update configuration and docs
 ```
 
 ---
@@ -201,12 +254,53 @@ Main configuration in `.akao/config.json`:
 ```json
 {
   "version": "1.0.0",
+  "project": {
+    "name": "my-project",
+    "type": "cpp",
+    "template": "library",
+    "features": ["core", "testing", "docs"]
+  },
   "language_profiles": ["cpp", "js"],
   "enabled_rules": ["*"],
   "disabled_rules": [],
   "build_targets": ["binary", "wasm"],
   "doc_output": "docs/",
-  "trace_level": "info"
+  "trace_level": "info",
+  "registries": [
+    {
+      "name": "official",
+      "url": "https://registry.akao.dev",
+      "enabled": true
+    }
+  ]
+}
+```
+
+Feature configuration in `.akao/features/installed.json`:
+```json
+{
+  "version": "1.0.0",
+  "features": [
+    {
+      "name": "core",
+      "version": "1.0.0",
+      "source": "builtin",
+      "dependencies": [],
+      "enabled": true
+    },
+    {
+      "name": "database",
+      "version": "2.1.0",
+      "source": "registry:official",
+      "repository": "https://github.com/akao-features/database",
+      "dependencies": ["core", "networking"],
+      "enabled": true,
+      "config": {
+        "driver": "postgresql",
+        "migrations": true
+      }
+    }
+  ]
 }
 ```
 
