@@ -1,23 +1,38 @@
 # Akao Framework
 
-> **A unified, rule-based, self-validating framework written in C++ for structuring, building, testing, and documenting any software project.**
+> **A unified, rule-based framework written in C++ for structuring, building, testing, and documenting any software project.**
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Core Capabilities](#core-capabilities)
+3. [Philosophy Highlights](#philosophy-highlights)
+4. [Use Cases](#use-cases)
+5. [Structure](#structure)
+6. [Commands](#commands)
+7. [Plugin Targets (Examples)](#plugin-targets-examples)
+8. [Licensing & Attribution](#licensing--attribution)
+9. [Interface Parity (CLI = Web = TUI = API)](#interface-parity-cli--web--tui--api)
+10. [Cross-Platform Support](#cross-platform-support)
+11. [Status](#status)
 
 ---
 
-## 🚀 Overview
+## Overview
 
-Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in JSON or DSL, to validate structure, enforce best practices, automate builds, and generate documentation. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
+Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in JSON, YAML, or TOML, to validate structure, enforce best practices, automate builds, and generate documentation. Each rule has a Global Rule Identifier (GID) in the format `akao:rule::<category>:<name>:v<version>` for precise tracking and management. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
 
-Akao validates itself. It measures itself. And it fails itself if its own principles are violated.
+Akao applies its own standards to itself, demonstrating that its validation system works universally across any project.
 
 ---
 
-## 🧱 Core Capabilities
+## Core Capabilities
 
-✅ Self-validating repo architecture  
+✅ Universal validation system  
 ✅ Rule-driven validation system  
 ✅ Build engine for dev/prod (hot reload, optimized)  
 ✅ Auto-generated documentation and principle tracing  
+✅ Automated CI/CD pipeline generation  
 ✅ Audit logs, coverage, enforcement trace  
 ✅ Unified CLI + Web UI + TUI  
 ✅ Plugin system for targets (wasm, js, android, etc)  
@@ -25,7 +40,7 @@ Akao validates itself. It measures itself. And it fails itself if its own princi
 
 ---
 
-## 🧠 Philosophy Highlights
+## Philosophy Highlights
 
 * Rules are the law. They govern everything.
 * All behavior is deterministic and reproducible.
@@ -39,17 +54,17 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 
 ---
 
-## 🧩 Use Cases
+## Use Cases
 
 * C++ projects with strict structure and validation
 * Mixed-language repositories with rules per language
 * Validating large-scale enterprise codebases
-* Self-measuring framework development
+* Framework development with rigorous standards
 * Building rule-compliant plugins, mobile apps, APIs
 
 ---
 
-## 📂 Structure
+## Structure
 
 ```bash
 /                   # Root project
@@ -69,7 +84,7 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 
 ---
 
-## 🧪 Commands
+## Commands
 
 ```bash
 # Project Management
@@ -92,16 +107,52 @@ akao uninstall <feature>      # Remove installed feature
 
 # Core Operations
 akao validate                 # Enforce structure and rules
+akao validate --gid=<gid>     # Validate specific rule by Global Rule Identifier
+akao validate --category=<cat> # Validate all rules in a category
 akao test                     # Run unit & principle tests
 akao build --dev              # Start build in hot-reload mode
 akao build --prod             # Production build with hashes
 akao docgen                   # Generate RULES.md, README.md, etc
 akao audit                    # Print audit of rules, coverage, status
+akao audit --gid=<gid>        # Audit specific rule compliance
+
+# Rule Management (GID-based)
+akao rule list                # List all rules with their categories
+akao rule list --format=gid   # List all rules showing their GIDs
+akao rule info --gid=<gid>    # Show detailed rule information by GID
+akao rule disable --gid=<gid> --reason="<reason>" # Disable rule (tracked)
+akao rule enable --gid=<gid>  # Re-enable previously disabled rule
+
+# RuleSet Management
+akao ruleset list             # List all available RuleSets
+akao ruleset info <name>      # Show RuleSet details and inheritance
+akao ruleset validate <name>  # Validate RuleSet definition and dependencies
+akao ruleset create <name>    # Create new RuleSet interactively
+
+# RuleSet-based Operations
+akao validate --ruleset=<name> # Validate using specific RuleSet
+akao audit --ruleset=<name>   # Audit compliance for specific RuleSet
+akao docgen --ruleset=<name>  # Generate docs for specific RuleSet rules
+
+# Graph Generation
+akao graph --type=rules --format=svg --output=rules.svg        # Rule dependency graph
+akao graph --type=rulesets --format=dot --output=rulesets.dot  # RuleSet relationships
+akao graph --type=project --format=json                        # Project structure (stdout)
+akao graph --type=features --format=png --output=features.png  # Feature dependencies
+akao graph --type=validation --format=svg                      # Validation flow graph
+akao graph --type=audit --format=dot --ruleset=security        # Audit compliance graph
+
+# Automation & CI/CD
+akao pipeline generate        # Generate CI/CD pipeline configuration
+akao pipeline validate       # Validate pipeline configuration
+akao workflow create          # Create GitHub Actions workflows
+akao workflow update          # Update existing workflows
+akao deploy configure        # Configure deployment settings
 ```
 
 ---
 
-## 🔌 Plugin Targets (Examples)
+## Plugin Targets (Examples)
 
 * wasm / web-assembly builds
 * js bindings (for Node.js)
@@ -117,7 +168,7 @@ Each plugin is declared in `plugins/*.json` with:
 
 ---
 
-## 📜 Licensing & Attribution
+## Licensing & Attribution
 
 * Akao core is MIT-licensed
 * The name "Akao" is trademarked by Son Nguyen
@@ -125,14 +176,79 @@ Each plugin is declared in `plugins/*.json` with:
 
 ---
 
-## 🧠 See Also
+## Interface Parity (CLI = Web = TUI = API)
 
-* [`ARCHITECTURE.md`](./ARCHITECTURE.md) – system layers and technical design
-* [`PHILOSOPHY.md`](./PHILOSOPHY.md) – full principle set and philosophical doctrine
+Akao provides **identical functionality** across all user interfaces:
+
+### Command Line Interface (CLI)
+```bash
+akao validate --gid="akao:rule::cpp:naming:snake_case:v1"
+akao build --dev --watch
+akao graph --type=rules --format=svg
+```
+
+### Web User Interface
+- Browser-based interface at `http://localhost:8080`
+- All CLI commands available through web forms
+- Real-time validation and build status
+- Interactive graph visualization
+
+### Text User Interface (TUI) 
+```bash
+akao --tui  # Launch interactive terminal interface
+```
+- Full-screen terminal interface with menus and forms
+- Keyboard navigation for all operations
+- Live dashboard with metrics and status
+
+### REST API
+```bash
+POST /api/validate HTTP/1.1
+Content-Type: application/json
+{
+  "gid": "akao:rule::cpp:naming:snake_case:v1",
+  "project_path": "/path/to/project"
+}
+
+GET /api/graph?type=rules&format=svg
+GET /api/rulesets
+POST /api/build {"profile": "dev", "watch": true}
+```
+
+**Interface Parity Guarantee:**
+- All commands produce identical results across interfaces
+- Error messages and status codes are consistent
+- Response formats are standardized (JSON/XML/YAML)
+- Automated tests verify parity across all interfaces
 
 ---
 
-## 🏁 Status
+## Cross-Platform Support
+
+Akao runs on **any language, any OS, any runtime**:
+
+### Supported Platforms
+- **Desktop**: Linux (x86_64, ARM64), macOS (Intel, Apple Silicon), Windows
+- **Mobile**: Android (NDK), iOS (Framework)
+- **Web**: WebAssembly (WASM) for browser execution
+- **Embedded**: Minimal footprint for constrained environments
+- **Cloud**: Docker containers, serverless functions
+
+### Language Support
+- **Native**: C++ (primary implementation)
+- **Bindings**: JavaScript/Node.js, Rust, Python, Go
+- **Multi-language repositories**: Mixed-language monorepo validation
+- **Language isolation**: Clear boundaries between language scopes
+
+### Runtime Environments
+- **Native binaries**: Direct OS execution
+- **Containers**: Docker, Podman, OCI-compliant runtimes
+- **Serverless**: AWS Lambda, Google Cloud Functions, Azure Functions
+- **CI/CD**: GitHub Actions, GitLab CI, Jenkins, any platform
+
+---
+
+## Status
 
 This README is auto-generated and must always match actual structure and rule definitions.
 Use `akao docgen` to regenerate.

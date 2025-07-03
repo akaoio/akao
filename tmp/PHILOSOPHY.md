@@ -2,21 +2,30 @@
 
 > Akao is not only a framework. It is a set of codified doctrines — enforced by rule, measured by trace, validated by code.
 
+## Table of Contents
+
+1. [Core Beliefs](#core-beliefs)
+2. [Inspirations](#inspirations)
+3. [Rules as Doctrine](#rules-as-doctrine)
+4. [Verification](#verification)
+5. [Usage](#usage)
+6. [Summary](#summary)
+
 ---
 
-## 🔍 Core Beliefs
+## Core Beliefs
 
 ### **Structure is enforced**
 Every file, class, and folder must follow rule-driven structure. This is not merely a suggestion or convention—it is the fundamental law that governs all code existence within Akao. Structure becomes the skeleton upon which all other principles rest. Without enforced structure, chaos emerges, maintainability dies, and the codebase becomes a digital wasteland. Akao treats structural violations as compilation errors, making disorder impossible rather than inconvenient.
 
-### **Self-validation**
-Akao must validate itself with no exceptions. The framework embodies the ancient principle "physician, heal thyself"—if Akao cannot maintain its own standards, it has no authority to impose them on others. This creates a recursive loop of integrity where the validator must constantly prove its own worthiness. Self-validation is both a technical requirement and a philosophical commitment to absolute honesty.
+### **Universal validation**
+Any project can be validated using `akao validate`, including Akao itself. Validation is not special or recursive—it's a standard operation that applies consistent rules to any codebase. The framework validates structure, enforces principles, and reports violations using the same systematic approach whether applied to Akao or any other project. This ensures validation logic is robust, well-tested, and universally applicable.
 
 ### **No rules without tests**
 Each rule must have measurable test coverage. Rules without tests are merely suggestions disguised as law. Every principle declared must be backed by executable proof that demonstrates both compliance and violation scenarios. This creates a feedback loop where rules are continuously validated against reality, ensuring they remain practical and enforceable rather than theoretical and aspirational.
 
 ### **Every rule is traceable**
-Violations include stack trace, file, line, and suggestion. When a rule is broken, the system must provide not just identification but education. Each violation becomes a teaching moment, complete with forensic evidence of exactly what went wrong and how to fix it. This transforms error messages from cryptic failures into guided learning experiences.
+Violations include Global Rule Identifier (GID), stack trace, file, line, and suggestion. When a rule is broken, the system must provide not just identification but education. Each violation becomes a teaching moment, complete with forensic evidence of exactly what went wrong and how to fix it. The GID system ensures that every rule has a globally unique identifier (format: `akao:rule::<category>:<name>:v<version>`) enabling precise tracking across audit logs, trace files, and compliance metrics. This transforms error messages from cryptic failures into guided learning experiences with full traceability.
 
 ### **Documentation is code**
 All documentation (README, RULES, PRINCIPLES) must be generated from actual rules and tests. Hand-written documentation lies by omission and becomes stale by neglect. Generated documentation cannot lie because it is extracted from the living, breathing codebase itself. This ensures that what is documented is what is implemented, and what is implemented is what is tested.
@@ -31,10 +40,10 @@ Multi-language repositories must isolate languages clearly. While polyglot syste
 All tooling must behave identically across user interface modes. The interface is merely the skin; the underlying logic must be invariant. A command that works in CLI must provide identical functionality through web API and terminal UI. This ensures that users can switch interfaces without relearning workflows or encountering inconsistent behavior.
 
 ### **Every action is measurable**
-Coverage, logs, hash, audit state are enforced per commit. If an action cannot be measured, it effectively didn't happen. Every operation must leave traces that can be analyzed, audited, and verified. This creates a complete paper trail of system behavior, enabling forensic analysis of failures and empirical optimization of performance.
+Coverage, logs, hash, audit state are enforced per commit using Global Rule Identifiers (GIDs) for precise tracking. If an action cannot be measured, it effectively didn't happen. Every operation must leave traces that can be analyzed, audited, and verified through the GID system. Each rule compliance check, violation, and remediation is tracked by its unique GID, creating a complete paper trail of system behavior. This enables forensic analysis of failures, empirical optimization of performance, and detailed compliance reporting per rule category.
 
 ### **Rules can be toggled, not skipped**
-All disabled rules are tracked. When a rule is disabled, the system must record why, when, and by whom. This prevents rules from being quietly ignored and ensures that temporary exceptions are eventually addressed. Disabled rules remain visible in all reporting, creating pressure to either fix the violation or formally acknowledge the exception.
+All disabled rules are tracked by their Global Rule Identifier (GID) with reason and audit trail. When a rule is disabled, the system must record why, when, by whom, and the specific GID being disabled. This prevents rules from being quietly ignored and ensures that temporary exceptions are eventually addressed. Disabled rules remain visible in all reporting with their full GID path, creating pressure to either fix the violation or formally acknowledge the exception through proper governance.
 
 ### **Auto-update all documentation**
 Whenever rules change, documentation must change automatically. Manual documentation updates are promises that will be broken. When code evolves, documentation must evolve in lockstep, without human intervention. This ensures that documentation reflects current reality rather than historical intentions.
@@ -63,9 +72,18 @@ Features from external sources run in controlled environments. Trust is not tran
 ### **Dependency resolution is explicit**
 All feature dependencies must be declared and resolved transparently. The system must be able to explain exactly why each dependency was included and how conflicts were resolved. This enables reproducible builds and prevents the emergence of phantom dependencies that work in development but fail in production.
 
+### **Every rule is part of at least one RuleSet**
+Individual rules must be organized into logical groupings through RuleSets. Orphaned rules create confusion and make it difficult to understand which rules apply to specific contexts or workflows. RuleSets provide organizational structure, inheritance hierarchies, and enable granular validation control. This ensures rules are discoverable, maintainable, and can be applied consistently across similar project contexts.
+
+### **Code must be graph-explorable**
+All system relationships must be visualizable through generated graphs. Complex systems become incomprehensible without visual representation of their structure and dependencies. Every aspect of the system—rule dependencies, RuleSet inheritance, project structure, feature relationships, validation flows, and compliance metrics—must be expressible as a graph that can be analyzed, navigated, and understood. This transforms abstract relationships into concrete, explorable visualizations.
+
+### **All logic must be explainable visually**
+Every operation, dependency, and relationship must be representable in visual form. Visual explanation is often clearer than textual explanation, particularly for complex systems with many interconnected components. When a validation fails, when a build breaks, or when a feature conflicts, the system must be able to generate graphs that show exactly what went wrong and why. This makes debugging faster, system comprehension deeper, and knowledge transfer more effective.
+
 ---
 
-## 📐 Inspirations
+## Inspirations
 
 While Akao is original in vision, its principles are strengthened by prior systems:
 
@@ -80,7 +98,7 @@ But unlike them, Akao combines enforcement, testing, auditing, and documentation
 
 ---
 
-## 🧠 Rules as Doctrine
+## Rules as Doctrine
 
 All principles must:
 
@@ -94,7 +112,7 @@ All principles must:
 
 ---
 
-## ✅ Verification
+## Verification
 
 Every principle here is:
 
@@ -107,7 +125,7 @@ Akao refuses to function in contradiction to its principles.
 
 ---
 
-## 🧩 Usage
+## Usage
 
 Whether a solo developer or an enterprise team:
 
@@ -119,7 +137,7 @@ Akao is strict not for ego, but for **precision, traceability, and reproducibili
 
 ---
 
-## 🧬 Summary
+## Summary
 
 * Rules = principles = code.
 * Tests = measurement = enforcement.
