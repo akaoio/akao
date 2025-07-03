@@ -1,12 +1,12 @@
 {
   "summary": {
-    "total_links": 507,
+    "total_links": 502,
     "valid_links": 502,
-    "invalid_links": 5,
+    "invalid_links": 0,
     "missing_anchors": 0,
     "external_unreachable": 0,
     "duplicated_links": 0,
-    "validation_timestamp": "2025-07-03T16:25:24.476773",
+    "validation_timestamp": "2025-07-03T16:41:01.647992",
     "directory": "/home/x/Projects/akao/tmp"
   },
   "links": [
@@ -364,51 +364,11 @@
     },
     {
       "file": "tmp/PLAN.md",
-      "line": 1183,
-      "text": "Rule Dependency Graph",
-      "link": "graphs/rules.svg",
-      "status": "invalid",
-      "suggestion": "Link format not supported. Use relative links (./file.md) for local files."
-    },
-    {
-      "file": "tmp/PLAN.md",
-      "line": 1186,
-      "text": "RuleSet Graph",
-      "link": "graphs/rulesets.svg",
-      "status": "invalid",
-      "suggestion": "Link format not supported. Use relative links (./file.md) for local files."
-    },
-    {
-      "file": "tmp/PLAN.md",
       "line": 1232,
       "text": "PHILOSOPHY.md",
       "link": "./PHILOSOPHY.md#core-beliefs",
       "status": "valid",
       "suggestion": ""
-    },
-    {
-      "file": "tmp/PLAN.md",
-      "line": 1888,
-      "text": "this, project_path",
-      "link": "const std::string& changed_file",
-      "status": "invalid",
-      "suggestion": "File 'const std::string& changed_file' does not exist in tmp/ directory."
-    },
-    {
-      "file": "tmp/PLAN.md",
-      "line": 2038,
-      "text": "&",
-      "link": "const Feature& f",
-      "status": "invalid",
-      "suggestion": "File 'const Feature& f' does not exist in tmp/ directory."
-    },
-    {
-      "file": "tmp/PLAN.md",
-      "line": 2265,
-      "text": "this",
-      "link": "const HttpRequest& req",
-      "status": "invalid",
-      "suggestion": "File 'const HttpRequest& req' does not exist in tmp/ directory."
     },
     {
       "file": "tmp/SUMMARY.md",
