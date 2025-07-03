@@ -6,7 +6,7 @@
 
 ## 🚀 Overview
 
-Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in JSON or DSL, to validate structure, enforce best practices, automate builds, and generate documentation. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
+Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in JSON, YAML, or TOML, to validate structure, enforce best practices, automate builds, and generate documentation. Each rule has a Global Rule Identifier (GID) in the format `akao:rule::<category>:<name>:v<version>` for precise tracking and management. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
 
 Akao applies its own standards to itself, demonstrating that its validation system works universally across any project.
 
@@ -93,11 +93,21 @@ akao uninstall <feature>      # Remove installed feature
 
 # Core Operations
 akao validate                 # Enforce structure and rules
+akao validate --gid=<gid>     # Validate specific rule by Global Rule Identifier
+akao validate --category=<cat> # Validate all rules in a category
 akao test                     # Run unit & principle tests
 akao build --dev              # Start build in hot-reload mode
 akao build --prod             # Production build with hashes
 akao docgen                   # Generate RULES.md, README.md, etc
 akao audit                    # Print audit of rules, coverage, status
+akao audit --gid=<gid>        # Audit specific rule compliance
+
+# Rule Management (GID-based)
+akao rule list                # List all rules with their categories
+akao rule list --format=gid   # List all rules showing their GIDs
+akao rule info --gid=<gid>    # Show detailed rule information by GID
+akao rule disable --gid=<gid> --reason="<reason>" # Disable rule (tracked)
+akao rule enable --gid=<gid>  # Re-enable previously disabled rule
 
 # Automation & CI/CD
 akao pipeline generate        # Generate CI/CD pipeline configuration

@@ -272,6 +272,395 @@ akao/
 
 ---
 
+## 🔍 Global Rule Identifier (GID) System
+
+### GID Format Specification
+
+**Every rule in the Akao framework must have a globally unique identifier (GID)** that ensures consistent reference, traceability, and management across all system components.
+
+**GID Structure:**
+```
+akao:rule::<category>:<name>:v<version>
+```
+
+**Format Components:**
+- `akao:rule::` - Fixed namespace prefix for all Akao rules
+- `<category>` - Rule category (cpp, structure, naming, testing, documentation, security, performance)
+- `<name>` - Specific rule identifier using snake_case
+- `v<version>` - Semantic version starting from v1
+
+**Examples:**
+```
+akao:rule::cpp:naming:snake_case:v1
+akao:rule::structure:one_class_per_folder:v1
+akao:rule::testing:coverage_minimum:v2
+akao:rule::documentation:auto_generation:v1
+akao:rule::security:sandbox_external_features:v1
+akao:rule::performance:startup_time_limit:v1
+akao:rule::naming:file_extensions:v1
+akao:rule::core:universal_validation:v1
+```
+
+### GID Integration Architecture
+
+**Rule File Integration:**
+All rule definition files (JSON, YAML, TOML) must include GID in their structure:
+
+```json
+// rules/naming.json
+{
+  "rules": [
+    {
+      "gid": "akao:rule::naming:snake_case:v1",
+      "name": "Snake Case Variables",
+      "description": "All variable names must use snake_case convention",
+      "category": "naming",
+      "severity": "error",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "applies_to": ["variables", "functions"],
+      "examples": {
+        "valid": ["user_name", "calculate_total"],
+        "invalid": ["userName", "calculateTotal"]
+      }
+    }
+  ]
+}
+```
+
+```yaml
+# rules/structure.yaml
+rules:
+  - gid: "akao:rule::structure:one_class_per_folder:v1"
+    name: "One Class Per Folder"
+    description: "Each folder must contain exactly one class implementation"
+    category: "structure"
+    severity: "error"
+    enforcement:
+      max_classes_per_folder: 1
+      required_files: ["*.hpp", "*.cpp"]
+    exceptions:
+      - "templates/"
+      - "tests/"
+```
+
+```toml
+# rules/testing.toml
+[[rules]]
+gid = "akao:rule::testing:coverage_minimum:v2"
+name = "Minimum Test Coverage"
+description = "All source files must have minimum 80% test coverage"
+category = "testing"
+severity = "warning"
+threshold = 0.80
+applies_to = ["src/**/*.cpp"]
+excludes = ["src/main.cpp"]
+```
+
+**Audit and Trace Integration:**
+All audit and trace files reference rules by GID:
+
+```json
+// .akao/trace.json
+{
+  "timestamp": "2024-01-01T00:00:00Z",
+  "operation": "validate",
+  "violations": [
+    {
+      "gid": "akao:rule::naming:snake_case:v1",
+      "file": "src/core/config/ConfigManager.cpp",
+      "line": 42,
+      "column": 8,
+      "message": "Variable name 'configData' violates snake_case convention",
+      "suggestion": "Rename to 'config_data'",
+      "severity": "error"
+    }
+  ],
+  "rules_applied": [
+    "akao:rule::naming:snake_case:v1",
+    "akao:rule::structure:one_class_per_folder:v1",
+    "akao:rule::testing:coverage_minimum:v2"
+  ]
+}
+```
+
+```json
+// .akao/audit.json
+{
+  "timestamp": "2024-01-01T00:00:00Z",
+  "project_compliance": {
+    "overall_score": 0.95,
+    "rule_compliance": {
+      "akao:rule::naming:snake_case:v1": {
+        "score": 0.98,
+        "violations": 2,
+        "total_checks": 100
+      },
+      "akao:rule::structure:one_class_per_folder:v1": {
+        "score": 1.0,
+        "violations": 0,
+        "total_checks": 45
+      },
+      "akao:rule::testing:coverage_minimum:v2": {
+        "score": 0.90,
+        "violations": 3,
+        "total_checks": 30
+      }
+    }
+  }
+}
+```
+
+### CLI Integration with GID Support
+
+**Enhanced CLI Commands:**
+
+```cpp
+namespace akao::cli {
+class ValidateCommand : public Command {
+public:
+    CommandResult execute(const CommandRequest& request) override {
+        auto project_path = request.parameters.at("path");
+        
+        // Support GID-specific validation
+        if (request.parameters.contains("gid")) {
+            auto gid = request.parameters.at("gid");
+            return validateSpecificRule(project_path, gid);
+        }
+        
+        // Support category-specific validation
+        if (request.parameters.contains("category")) {
+            auto category = request.parameters.at("category");
+            return validateRuleCategory(project_path, category);
+        }
+        
+        // Default: validate all rules
+        return validateAllRules(project_path);
+    }
+    
+private:
+    CommandResult validateSpecificRule(const std::string& path, const std::string& gid) {
+        auto rule = rule::Registry::getRuleByGID(gid);
+        if (!rule) {
+            return CommandResult{false, "", {}, {"Rule not found: " + gid}};
+        }
+        
+        auto violations = rule->validate(path);
+        return CommandResult{
+            violations.empty(),
+            formatViolations(violations, gid),
+            {{"gid", gid}, {"violations", std::to_string(violations.size())}},
+            {}
+        };
+    }
+};
+}
+```
+
+**CLI Usage Examples:**
+
+```bash
+# Validate specific rule by GID
+akao validate --gid="akao:rule::naming:snake_case:v1"
+
+# Validate all rules in a category
+akao validate --category="naming"
+
+# Audit specific rule compliance
+akao audit --gid="akao:rule::testing:coverage_minimum:v2"
+
+# List all rules with their GIDs
+akao rule list --format=gid
+
+# Show rule details by GID
+akao rule info --gid="akao:rule::structure:one_class_per_folder:v1"
+
+# Disable specific rule by GID (tracked in audit)
+akao rule disable --gid="akao:rule::performance:startup_time_limit:v1" --reason="Development mode"
+```
+
+### Rule Registry with GID Management
+
+```cpp
+namespace akao::rule {
+class Registry {
+public:
+    static std::shared_ptr<Rule> getRuleByGID(const std::string& gid) {
+        return rule_cache_[gid];
+    }
+    
+    static std::vector<std::shared_ptr<Rule>> getRulesByCategory(const std::string& category) {
+        std::vector<std::shared_ptr<Rule>> rules;
+        for (const auto& [gid, rule] : rule_cache_) {
+            if (rule->getCategory() == category) {
+                rules.push_back(rule);
+            }
+        }
+        return rules;
+    }
+    
+    static std::vector<std::string> getAllGIDs() {
+        std::vector<std::string> gids;
+        for (const auto& [gid, rule] : rule_cache_) {
+            gids.push_back(gid);
+        }
+        return gids;
+    }
+    
+    static bool registerRule(std::shared_ptr<Rule> rule) {
+        auto gid = rule->getGID();
+        
+        // Validate GID format
+        if (!isValidGID(gid)) {
+            return false;
+        }
+        
+        // Check for duplicates
+        if (rule_cache_.contains(gid)) {
+            return false;
+        }
+        
+        rule_cache_[gid] = rule;
+        return true;
+    }
+    
+private:
+    static std::map<std::string, std::shared_ptr<Rule>> rule_cache_;
+    
+    static bool isValidGID(const std::string& gid) {
+        // Validate format: akao:rule::<category>:<name>:v<version>
+        std::regex pattern("^akao:rule::[a-z_]+:[a-z_]+:v\\d+$");
+        return std::regex_match(gid, pattern);
+    }
+};
+
+class Rule {
+public:
+    virtual ~Rule() = default;
+    virtual std::string getGID() const = 0;
+    virtual std::string getCategory() const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getVersion() const = 0;
+    virtual std::vector<Violation> validate(const std::string& project_path) = 0;
+};
+}
+```
+
+### Multi-Format Rule Support
+
+**JSON Format:**
+```json
+{
+  "gid": "akao:rule::cpp:naming:snake_case:v1",
+  "metadata": {
+    "name": "Snake Case Variables",
+    "description": "All variable names must use snake_case convention",
+    "category": "cpp",
+    "severity": "error",
+    "version": "v1"
+  },
+  "validation": {
+    "pattern": "^[a-z][a-z0-9_]*$",
+    "applies_to": ["variables", "functions"],
+    "excludes": ["macros", "constants"]
+  }
+}
+```
+
+**YAML Format:**
+```yaml
+gid: "akao:rule::structure:one_class_per_folder:v1"
+metadata:
+  name: "One Class Per Folder"
+  description: "Each folder must contain exactly one class implementation"
+  category: "structure"
+  severity: "error"
+  version: "v1"
+validation:
+  max_classes_per_folder: 1
+  required_files: ["*.hpp", "*.cpp"]
+  exceptions: ["templates/", "tests/"]
+```
+
+**TOML Format:**
+```toml
+gid = "akao:rule::testing:coverage_minimum:v2"
+
+[metadata]
+name = "Minimum Test Coverage"
+description = "All source files must have minimum 80% test coverage"
+category = "testing"
+severity = "warning"
+version = "v2"
+
+[validation]
+threshold = 0.80
+applies_to = ["src/**/*.cpp"]
+excludes = ["src/main.cpp"]
+```
+
+### GID-Based Traceability Implementation
+
+```cpp
+namespace akao::trace {
+class Logger {
+public:
+    static void logRuleViolation(const std::string& gid, const Violation& violation) {
+        auto entry = TraceEntry{
+            .timestamp = getCurrentTimestamp(),
+            .type = "rule_violation",
+            .gid = gid,
+            .file = violation.file_path,
+            .line = violation.line_number,
+            .message = violation.message,
+            .severity = violation.severity
+        };
+        
+        appendToTrace(entry);
+        updateAuditMetrics(gid, false);
+    }
+    
+    static void logRuleCompliance(const std::string& gid, const std::string& file_path) {
+        auto entry = TraceEntry{
+            .timestamp = getCurrentTimestamp(),
+            .type = "rule_compliance",
+            .gid = gid,
+            .file = file_path,
+            .message = "Rule compliance verified",
+            .severity = "info"
+        };
+        
+        appendToTrace(entry);
+        updateAuditMetrics(gid, true);
+    }
+    
+private:
+    static void updateAuditMetrics(const std::string& gid, bool compliant) {
+        auto audit_data = loadAuditData();
+        if (!audit_data.rule_compliance.contains(gid)) {
+            audit_data.rule_compliance[gid] = ComplianceMetrics{};
+        }
+        
+        auto& metrics = audit_data.rule_compliance[gid];
+        metrics.total_checks++;
+        if (!compliant) {
+            metrics.violations++;
+        }
+        metrics.score = 1.0 - (static_cast<double>(metrics.violations) / metrics.total_checks);
+        
+        saveAuditData(audit_data);
+    }
+};
+
+struct ComplianceMetrics {
+    double score = 1.0;
+    int violations = 0;
+    int total_checks = 0;
+};
+}
+```
+
+---
+
 ## 🎯 Implementation Phases
 
 ### Phase 1: Core Framework Foundation
@@ -284,48 +673,65 @@ akao/
    - `src/core/plugin/` - Plugin loading and management foundation
 
 2. **Rule Engine Foundation**
-   - `src/rule/parser/` - JSON rule file parser with validation
-   - `src/rule/validator/` - Universal validation engine
-   - `src/rule/registry/` - Rule discovery and management
-   - `src/rule/reporter/` - Violation reporting with stack traces
+   - `src/rule/parser/` - Multi-format rule file parser (JSON/YAML/TOML) with GID validation
+   - `src/rule/validator/` - Universal validation engine with GID tracking
+   - `src/rule/registry/` - GID-based rule discovery and management
+   - `src/rule/reporter/` - Violation reporting with GID references and stack traces
 
 3. **CLI System Foundation**
-   - `src/cli/parser/` - Command parsing and argument validation
+   - `src/cli/parser/` - Command parsing with GID parameter support
    - `src/cli/controller/` - Unified command execution controller
-   - Basic command structure for all operations
+   - Basic command structure for all operations with GID integration
+
+4. **GID System Foundation**
+   - GID format validation: `akao:rule::<category>:<name>:v<version>`
+   - Rule file GID integration for JSON, YAML, and TOML formats
+   - Trace and audit system GID referencing
+   - CLI GID-based rule operations (validate, audit, info)
 
 **Success Criteria Phase 1:**
 - [ ] Core configuration system loads `.akao/config.json`
 - [ ] Universal validation engine can validate basic project structures
 - [ ] CLI can parse and execute basic commands
-- [ ] Trace system logs all operations with full audit trail
+- [ ] Trace system logs all operations with full audit trail and GID references
 - [ ] Plugin system can load and validate plugins
+- [ ] GID format validation works for all rule categories
+- [ ] Rule registry supports GID-based lookup and management
 
 ### Phase 2: Universal Validation & Principle Testing
 **Implement comprehensive rule system and principle validation**:
 
 1. **Enhanced Rule System**
-   - Complete JSON rule parser with DSL support
-   - Rule caching and optimization
-   - Comprehensive violation reporting with suggestions
-   - Rule dependency resolution
+   - Complete multi-format rule parser (JSON/YAML/TOML) with GID support
+   - Rule caching and optimization with GID-based indexing
+   - Comprehensive violation reporting with GID references and suggestions
+   - Rule dependency resolution using GID relationships
 
 2. **Principle Testing Framework**
-   - `tests/principles/principle_validation.cpp` - Core principle tests
+   - `tests/principles/principle_validation.cpp` - Core principle tests with GID validation
    - Universal validation that works on any project including Akao
-   - Complete integration with all philosophical principles
+   - Complete integration with all philosophical principles and GID traceability
 
 3. **Metrics Foundation**
-   - `src/metrics/collector/` - Metrics collection system
-   - `src/metrics/scorer/` - Compliance scoring algorithms
-   - `src/metrics/reporter/` - Metrics reporting and visualization
+   - `src/metrics/collector/` - Metrics collection system with GID-based tracking
+   - `src/metrics/scorer/` - Compliance scoring algorithms per GID
+   - `src/metrics/reporter/` - Metrics reporting and visualization with GID breakdown
+
+4. **GID System Enhancement**
+   - Complete GID-based CLI command support
+   - Audit and trace system GID integration
+   - Multi-format rule file GID validation
+   - GID-based rule versioning and management
 
 **Success Criteria Phase 2:**
-- [ ] All 19 core principles from PHILOSOPHY.md are testable and enforced
+- [ ] All 19 core principles from PHILOSOPHY.md are testable and enforced with GIDs
 - [ ] Universal validation works on Akao itself with zero violations
-- [ ] Compliance scoring provides measurable project health metrics
-- [ ] All rule violations include file path, line number, and suggestions
+- [ ] Compliance scoring provides measurable project health metrics per GID
+- [ ] All rule violations include GID, file path, line number, and suggestions
 - [ ] Rule caching improves validation performance by >90%
+- [ ] GID-based CLI operations (validate, audit, info, disable) fully functional
+- [ ] Multi-format rule files (JSON/YAML/TOML) support GID integration
+- [ ] Trace and audit files correctly reference all rules by GID
 
 ### Phase 3: Project Management & Templates
 **Enable project initialization and feature management**:
@@ -552,11 +958,22 @@ public:
         
         // Core Operations
         registerCommand("validate", &ValidateCommand::execute);
+        registerCommand("validate --gid", &ValidateCommand::executeByGID);
+        registerCommand("validate --category", &ValidateCommand::executeByCategory);
         registerCommand("test", &TestCommand::execute);
         registerCommand("build --dev", &BuildCommand::executeDevMode);
         registerCommand("build --prod", &BuildCommand::executeProdMode);
         registerCommand("docgen", &DocGenCommand::execute);
         registerCommand("audit", &AuditCommand::execute);
+        registerCommand("audit --gid", &AuditCommand::executeByGID);
+        
+        // Rule Management (GID-based)
+        registerCommand("rule list", &RuleCommand::list);
+        registerCommand("rule list --format=gid", &RuleCommand::listGIDs);
+        registerCommand("rule info --gid", &RuleCommand::infoByGID);
+        registerCommand("rule disable --gid", &RuleCommand::disableByGID);
+        registerCommand("rule enable --gid", &RuleCommand::enableByGID);
+        registerCommand("rule validate --gid", &RuleCommand::validateGIDFormat);
         
         // Automation & CI/CD
         registerCommand("pipeline generate", &PipelineCommand::generate);

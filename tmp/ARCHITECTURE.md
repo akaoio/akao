@@ -28,10 +28,10 @@ Akao is built as a modular C++ framework with clear architectural layers:
 ## 🧩 Core Components
 
 ### 1. Rule Engine (`src/rule/`)
-- **Parser**: JSON/DSL rule file parser
-- **Validator**: Rule execution and validation logic
-- **Registry**: Rule discovery and management
-- **Reporter**: Violation reporting and suggestions
+- **Parser**: Multi-format rule file parser (JSON/YAML/TOML) with GID validation
+- **Validator**: Rule execution and validation logic with GID tracking
+- **Registry**: GID-based rule discovery and management system
+- **Reporter**: Violation reporting with GID references and suggestions
 
 ### 2. Build Engine (`src/build/`)
 - **Target Manager**: Dev/prod build profiles
@@ -54,7 +54,7 @@ Akao is built as a modular C++ framework with clear architectural layers:
 ### 5. Core Framework (`src/core/`)
 - **Config Manager**: `.akao/` configuration handling
 - **File System**: Safe file operations with sandboxing
-- **Trace System**: Audit logging and error tracking
+- **Trace System**: GID-based audit logging and error tracking with rule compliance metrics
 - **Plugin API**: Extension point for custom rules
 
 ### 6. Project Manager (`src/project/`)
@@ -92,7 +92,8 @@ akao/
 │   ├── registry/             # External registries
 │   │   ├── official.json    # Official Akao registry
 │   │   └── custom.json      # Custom registries
-│   ├── trace.json           # Audit and error trace
+│   ├── trace.json           # GID-based audit and error trace with rule compliance
+│   ├── audit.json           # System audit and compliance metrics per GID
 │   └── cache/               # Build and validation cache
 ├── .github/                  # Auto-generated CI/CD workflows
 │   ├── workflows/           # GitHub Actions workflows
@@ -156,11 +157,11 @@ akao/
 
 ### Validation Flow
 ```
-1. Load rules from rules/
+1. Load rules from rules/ with GID validation
 2. Parse project structure
-3. Apply rules to each scope
-4. Generate violation reports
-5. Update trace.json with results
+3. Apply rules to each scope with GID tracking
+4. Generate violation reports with GID references
+5. Update trace.json and audit.json with GID-based results
 ```
 
 ### Build Flow
