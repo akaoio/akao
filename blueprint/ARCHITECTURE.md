@@ -10,7 +10,7 @@
 4. [Data Flow](#data-flow)
 5. [Testing Strategy](#testing-strategy)
 6. [Plugin Architecture](#plugin-architecture)
-7. [Security & Sandboxing](#security--sandboxing)
+7. [Security & Sandboxing](#security-sandboxing)
 8. [Performance Considerations](#performance-considerations)
 9. [Configuration](#configuration)
 10. [Design Principles](#design-principles)
@@ -85,7 +85,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 
 > **User Experience**: These components deliver the capabilities listed in [README.md](./README.md#core-capabilities) through the CLI commands documented in [README.md](./README.md#commands).
 
-> **Implementation Details**: Complete class structure and implementation phases for these components are specified in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical reference in [SUMMARY.md](./SUMMARY.md#directory-structure).
+> **Implementation Details**: Complete class structure and implementation phases for these components are specified in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical reference in [SUMMARY.md](./SUMMARY.md#directory-structure).
 
 ### 1. Rule Engine (`src/rule/`)
 - **Parser**: Multi-format rule file parser (JSON/YAML/TOML) with GID validation
@@ -98,7 +98,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 > 
 > **User Commands**: Accessible via `akao validate`, `akao rule`, and `akao audit` commands detailed in [README.md](./README.md#commands).
 > 
-> **Implementation**: Complete class structure in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#global-rule-identifier-gid-system).
+> **Implementation**: Complete class structure in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#global-rule-identifier-gid-system).
 
 ### 2. RuleSet Management (`src/rule/ruleset/`)
 - **Manager**: RuleSet lifecycle and inheritance management
@@ -133,7 +133,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 > 
 > **User Commands**: Accessible via `akao docgen` commands detailed in [README.md](./README.md#commands).
 > 
-> **Implementation**: Complete documentation system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
+> **Implementation**: Complete documentation system design in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
 
 ### 5. Graph Generation System (`src/graph/`)
 - **Generator**: Core graph generation engine for all graph types (rules, rulesets, project, features, validation, audit)
@@ -156,7 +156,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 
 > **Philosophy Realization**: Implements "CLI = Web = TUI" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
 > 
-> **User Experience**: Delivers interface parity detailed in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> **User Experience**: Delivers interface parity detailed in [README.md](./README.md#interface-parity-cli-web-tui-api).
 > 
 > **Implementation**: Complete interface system design in [PLAN.md](./PLAN.md#interface-parity-enforcement) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
@@ -170,7 +170,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 > 
 > **User Commands**: Accessible via `akao pipeline` and `akao workflow` commands detailed in [README.md](./README.md#commands).
 > 
-> **Implementation**: Complete automation system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+> **Implementation**: Complete automation system design in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### 8. Project Management (`src/project/`)
 - **Template Engine**: Project template system with variable substitution and multi-language support
@@ -182,7 +182,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 > 
 > **User Commands**: Accessible via `akao init` and `akao feature` commands detailed in [README.md](./README.md#commands).
 > 
-> **Implementation**: Complete project management system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+> **Implementation**: Complete project management system design in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### 9. Feature Management (`src/feature/`)
 - **Manager**: Feature lifecycle management and orchestration
@@ -195,7 +195,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 > 
 > **User Commands**: Accessible via `akao install`, `akao registry`, and `akao feature` commands detailed in [README.md](./README.md#commands).
 > 
-> **Implementation**: Complete feature management system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+> **Implementation**: Complete feature management system design in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### 10. Core Framework (`src/core/`)
 - **Config Manager**: Cross-platform `.akao/` configuration handling with platform detection
