@@ -169,6 +169,78 @@ Each plugin is declared in `plugins/*.json` with:
 
 ---
 
+## 🎯 Interface Parity (CLI = Web = TUI = API)
+
+Akao provides **identical functionality** across all user interfaces:
+
+### Command Line Interface (CLI)
+```bash
+akao validate --gid="akao:rule::cpp:naming:snake_case:v1"
+akao build --dev --watch
+akao graph --type=rules --format=svg
+```
+
+### Web User Interface
+- Browser-based interface at `http://localhost:8080`
+- All CLI commands available through web forms
+- Real-time validation and build status
+- Interactive graph visualization
+
+### Text User Interface (TUI) 
+```bash
+akao --tui  # Launch interactive terminal interface
+```
+- Full-screen terminal interface with menus and forms
+- Keyboard navigation for all operations
+- Live dashboard with metrics and status
+
+### REST API
+```bash
+POST /api/validate HTTP/1.1
+Content-Type: application/json
+{
+  "gid": "akao:rule::cpp:naming:snake_case:v1",
+  "project_path": "/path/to/project"
+}
+
+GET /api/graph?type=rules&format=svg
+GET /api/rulesets
+POST /api/build {"profile": "dev", "watch": true}
+```
+
+**Interface Parity Guarantee:**
+- All commands produce identical results across interfaces
+- Error messages and status codes are consistent
+- Response formats are standardized (JSON/XML/YAML)
+- Automated tests verify parity across all interfaces
+
+---
+
+## 🌍 Cross-Platform Support
+
+Akao runs on **any language, any OS, any runtime**:
+
+### Supported Platforms
+- **Desktop**: Linux (x86_64, ARM64), macOS (Intel, Apple Silicon), Windows
+- **Mobile**: Android (NDK), iOS (Framework)
+- **Web**: WebAssembly (WASM) for browser execution
+- **Embedded**: Minimal footprint for constrained environments
+- **Cloud**: Docker containers, serverless functions
+
+### Language Support
+- **Native**: C++ (primary implementation)
+- **Bindings**: JavaScript/Node.js, Rust, Python, Go
+- **Multi-language repositories**: Mixed-language monorepo validation
+- **Language isolation**: Clear boundaries between language scopes
+
+### Runtime Environments
+- **Native binaries**: Direct OS execution
+- **Containers**: Docker, Podman, OCI-compliant runtimes
+- **Serverless**: AWS Lambda, Google Cloud Functions, Azure Functions
+- **CI/CD**: GitHub Actions, GitLab CI, Jenkins, any platform
+
+---
+
 ## 🏁 Status
 
 This README is auto-generated and must always match actual structure and rule definitions.

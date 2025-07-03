@@ -6,57 +6,140 @@
 
 ## 🏗️ System Overview
 
-Akao is built as a modular C++ framework with clear architectural layers:
+Akao is built as a modular C++ framework with **strict layered architecture** supporting any language, any OS, any runtime:
 
 ```
-┌─────────────────────────────────────────┐
-│             CLI Interface               │
-├─────────────────────────────────────────┤
-│          Command Dispatcher             │
-├─────────────────────────────────────────┤
-│   Rule Engine  │  Build Engine  │  Doc  │
-│   Validator    │  Dev/Prod      │  Gen  │
-├─────────────────────────────────────────┤
-│         Core Framework Layer            │
-├─────────────────────────────────────────┤
-│    File System │ Config │ Trace/Audit   │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Interface Layer                          │
+│  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
+│  │     CLI     │   Web UI    │     TUI     │     API     │  │
+│  │   Adapter   │   Adapter   │   Adapter   │   Adapter   │  │
+│  └─────────────┴─────────────┴─────────────┴─────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│                  Language Binding Layer                     │
+│  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
+│  │    C++      │     JS      │    Rust     │   Python    │  │
+│  │   Bindings  │  Bindings   │  Bindings   │  Bindings   │  │
+│  └─────────────┴─────────────┴─────────────┴─────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│                   Platform Adapter Layer                    │
+│  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
+│  │   Linux     │   macOS     │  Windows    │  WebAssembly│  │
+│  │   Android   │     iOS     │  Embedded   │   Server    │  │
+│  └─────────────┴─────────────┴─────────────┴─────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│                    Core Business Logic                      │
+│ ┌─────────────┬─────────────┬─────────────┬─────────────┐   │
+│ │Rule Engine │Build System │Doc Generator│Graph System │   │
+│ │RuleSet Mgmt│Project Mgmt │Feature Mgmt │Metrics Sys  │   │
+│ │Automation  │   CLI Core  │             │             │   │
+│ └─────────────┴─────────────┴─────────────┴─────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│                   Foundation Services                       │
+│ ┌─────────────┬─────────────┬─────────────┬─────────────┐   │
+│ │File System │Config Mgmt  │Trace/Audit  │Plugin Sys   │   │
+│ │Cache Mgmt   │Error Handle │Logging      │Threading    │   │
+│ └─────────────┴─────────────┴─────────────┴─────────────┘   │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+**Architecture Principles:**
+- **Core logic is completely agnostic** to language, interface, and OS
+- **Language bindings** provide consistent APIs across C++, JS, Rust, Python, Go
+- **Platform adapters** handle OS-specific implementations with unified interface
+- **Interface layer** ensures CLI=Web=TUI=API parity through common execution layer
 
 ---
 
 ## 🧩 Core Components
 
+The Akao framework consists of **9 major subsystems** implemented with layered architecture for cross-platform and multi-language support:
+
 ### 1. Rule Engine (`src/rule/`)
 - **Parser**: Multi-format rule file parser (JSON/YAML/TOML) with GID validation
-- **Validator**: Rule execution and validation logic with GID tracking
-- **Registry**: GID-based rule discovery and management system
-- **RuleSet**: RuleSet management, inheritance, and resolution engine
-- **Reporter**: Violation reporting with GID references and suggestions
+- **Validator**: Universal validation engine with GID tracking and cross-platform support
+- **Registry**: GID-based rule discovery and management system (`akao:rule::<category>:<name>:v<version>`)
+- **RuleSet Manager**: RuleSet lifecycle, inheritance, and resolution engine
+- **Reporter**: Violation reporting with GID references and actionable suggestions
 
-### 2. Build Engine (`src/build/`)
-- **Target Manager**: Dev/prod build profiles
-- **Dependency Graph**: Build order resolution
-- **File Watcher**: Hot reload for dev builds
-- **Hash Validator**: Reproducible build verification
+### 2. RuleSet Management (`src/rule/ruleset/`)
+- **Manager**: RuleSet lifecycle and inheritance management
+- **Resolver**: RuleSet inheritance, includes, and excludes resolution
+- **Parser**: Multi-format RuleSet definition parser (YAML/JSON)
+- **Validator**: RuleSet validation and consistency checking
 
-### 3. Documentation Generator (`src/docgen/`)
-- **Template Engine**: Markdown generation from rules
-- **Code Parser**: Extract docs from source comments
-- **Rule Mapper**: Link principles to enforcement
-- **Auto Updater**: Keep docs in sync with code
+### 3. Build System (`src/build/`)
+- **Manager**: Cross-platform build target management (dev/prod profiles)
+- **Watcher**: File change monitoring for hot reload development
+- **Hasher**: Reproducible build verification and integrity checking
+- **Graph**: Build dependency graph resolution and optimization
 
-### 4. CLI System (`src/cli/`)
-- **Command Parser**: Argument parsing and validation
-- **Interactive Mode**: TUI interface
-- **Web Server**: Web UI backend
-- **Plugin Loader**: External tool integration
+### 4. Documentation Generator (`src/docgen/`)
+- **Engine**: Template-based Markdown generation with graph integration
+- **Parser**: Code comment parsing and extraction across languages
+- **Mapper**: Rule-to-documentation mapping with GID references
+- **Updater**: Automatic documentation update coordination
 
-### 5. Core Framework (`src/core/`)
-- **Config Manager**: `.akao/` configuration handling
-- **File System**: Safe file operations with sandboxing
-- **Trace System**: GID-based audit logging and error tracking with rule compliance metrics
-- **Plugin API**: Extension point for custom rules
+### 5. Graph Generation System (`src/graph/`)
+- **Generator**: Core graph generation engine for all graph types (rules, rulesets, project, features, validation, audit)
+- **Exporter**: Multi-format export (DOT, SVG, JSON, PNG) with consistent quality
+- **Analyzer**: Graph analysis and metrics calculation
+- **Renderer**: Graph visualization and layout algorithms
+
+### 6. CLI & Interface System (`src/cli/` & `src/interfaces/`)
+- **CLI Interface**: Command-line interface with GID support and cross-platform compatibility
+- **Web UI Interface**: Browser-based interface with identical functionality to CLI
+- **TUI Interface**: Text User Interface with full command parity
+- **API Interface**: REST API with comprehensive endpoint coverage
+- **Core Abstraction**: Common command execution layer ensuring interface parity
+
+### 7. Automation System (`src/automation/`)
+- **Pipeline Generator**: CI/CD pipeline generator with multi-platform support (GitHub Actions, GitLab CI, Jenkins)
+- **Template Engine**: Pipeline template engine with platform-specific optimizations
+- **Configurator**: Pipeline configuration via `.akao/pipeline.yaml` with cross-platform settings
+- **Executor**: Local automation execution and testing framework
+
+### 8. Project Management (`src/project/`)
+- **Template Engine**: Project template system with variable substitution and multi-language support
+- **Initializer**: Project initialization from templates with platform detection
+- **Manager**: Project lifecycle management across platforms and languages
+- **Validator**: Project structure and compliance validation
+
+### 9. Feature Management (`src/feature/`)
+- **Manager**: Feature lifecycle management and orchestration
+- **Registry**: External registry client with caching and security validation
+- **Resolver**: Dependency resolution with conflict handling
+- **Installer**: Secure feature installation with platform-specific sandboxing
+- **Sandbox**: Feature execution security isolation and resource limits
+
+### 10. Core Framework (`src/core/`)
+- **Config Manager**: Cross-platform `.akao/` configuration handling with platform detection
+- **File System**: Safe file operations with platform-specific path handling and sandboxing
+- **Trace System**: GID-based audit logging and error tracking with comprehensive metrics
+- **Plugin API**: Extension point for custom rules with platform-specific loading
+
+### 11. Metrics System (`src/metrics/`)
+- **Collector**: Metrics collection system with GID-based tracking
+- **Scorer**: Compliance scoring algorithms per GID and RuleSet
+- **Reporter**: Metrics reporting and visualization with GID breakdown
+- **Exporter**: Metrics export for external systems (Prometheus, Grafana)
+
+### 12. Language Adapters (`src/language/`)
+- **C++ Adapter**: Native C++ language support and rule binding
+- **JavaScript Adapter**: JavaScript/Node.js language adapter with V8 integration
+- **Rust Adapter**: Rust language adapter with cargo integration
+- **Python Adapter**: Python language adapter with pip integration
+- **Go Adapter**: Go language adapter with go modules integration
+- **Core Interface**: Common language adapter interface and utilities
+
+### 13. Platform Adapters (`src/platform/`)
+- **Linux**: Linux-specific implementations (x86_64, ARM64)
+- **macOS**: macOS-specific implementations (Intel, Apple Silicon)
+- **Windows**: Windows-specific implementations (MSVC, MinGW)
+- **Android**: Android NDK platform implementations
+- **iOS**: iOS platform implementations
+- **WebAssembly**: WebAssembly platform implementations
+- **Embedded**: Embedded systems platform implementations
 
 ### 6. Project Manager (`src/project/`)
 - **Template Engine**: Project initialization from templates
