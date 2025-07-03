@@ -64,11 +64,11 @@ Akao applies its own standards to itself, demonstrating that its validation syst
 * Every class = 1 folder, every folder = 1 rule scope.
 * All classes must be tested and documented.
 
-> **Complete Philosophy**: See full philosophical foundation in [PHILOSOPHY.md](./PHILOSOPHY.md) with detailed explanations of each principle.
+> **Complete Philosophy**: See full philosophical foundation in [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) with detailed explanations of each principle.
 
 > **Technical Enforcement**: How these principles are technically enforced is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#design-principles) and implementation specifications in [PLAN.md](./PLAN.md#implementation-requirements-class-structure).
 
-See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
+See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md#core-beliefs)
 
 ---
 
@@ -312,9 +312,9 @@ Akao runs on **any language, any OS, any runtime**:
 - ✅ All cross-references are verified and point to valid section anchors
 
 > **Cross-Document Consistency**: This document is synchronized with:
-> - [PHILOSOPHY.md](./PHILOSOPHY.md) for principle alignment  
-> - [ARCHITECTURE.md](./ARCHITECTURE.md) for technical accuracy
-> - [PLAN.md](./PLAN.md) for implementation details
-> - [SUMMARY.md](./SUMMARY.md) for technical reference
+> - [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) for principle alignment  
+> - [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) for technical accuracy
+> - [PLAN.md](./PLAN.md#executive-summary) for implementation details
+> - [SUMMARY.md](./SUMMARY.md#system-overview) for technical reference
 > 
 > **Validation**: All cross-references can be verified using `akao validate --ruleset=documentation` as specified in [PHILOSOPHY.md](./PHILOSOPHY.md#rules-as-doctrine).

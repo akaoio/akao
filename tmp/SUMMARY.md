@@ -554,16 +554,16 @@ dependencies:
 ## Reference Documents
 
 ### Primary Documentation (Cross-Referenced)
-- **[PHILOSOPHY.md](./PHILOSOPHY.md)**: Core beliefs and principles that drive all technical decisions
+- **[PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs)**: Core beliefs and principles that drive all technical decisions
   - *Referenced in*: All technical specifications implement philosophical doctrines
   - *Key Principles*: "Every rule is traceable", "CLI = Web = TUI", "One class per folder"
-- **[README.md](./README.md)**: User-facing overview with capabilities and usage examples  
+- **[README.md](./README.md#overview)**: User-facing overview with capabilities and usage examples  
   - *Referenced in*: CLI commands, interface descriptions, cross-platform support
   - *Validation*: All commands in this summary match [README.md Commands](./README.md#commands)
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and system design
+- **[ARCHITECTURE.md](./ARCHITECTURE.md#core-components)**: Detailed technical architecture and system design
   - *Referenced in*: Directory structure, component descriptions, layered architecture
   - *Consistency*: All 13 subsystems detailed in both documents
-- **[PLAN.md](./PLAN.md)**: Complete implementation specification and development roadmap
+- **[PLAN.md](./PLAN.md#executive-summary)**: Complete implementation specification and development roadmap
   - *Referenced in*: GID system, RuleSet architecture, implementation phases
   - *Traceability*: Every technical requirement maps to implementation steps
 

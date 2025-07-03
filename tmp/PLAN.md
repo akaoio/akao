@@ -46,9 +46,9 @@ This document is the **canonical implementation specification** for the Akao fra
 - Zero ambiguity, zero placeholder content, zero contradictions
 
 **Cross-Document Consistency Verified:**
-- CLI commands match [README.md](./README.md) exactly
-- All 8 components from [ARCHITECTURE.md](./ARCHITECTURE.md) implemented
-- All principles from [PHILOSOPHY.md](./PHILOSOPHY.md) technically enforced
+- CLI commands match [README.md](./README.md#overview) exactly
+- All 8 components from [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) implemented
+- All principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) technically enforced
 
 ---
 
@@ -370,7 +370,7 @@ The Akao framework follows a **strictly layered architecture** with clear separa
 
 ### Implementation Architecture
 
-The Akao framework consists of **9 major subsystems** that must be implemented as a cohesive unit (aligned with [ARCHITECTURE.md](./ARCHITECTURE.md)):
+The Akao framework consists of **9 major subsystems** that must be implemented as a cohesive unit (aligned with [ARCHITECTURE.md](./ARCHITECTURE.md#core-components)):
 
 1. **Core Framework** (`src/core/`) - Foundation services (config, filesystem, trace, plugin)
 2. **Rule Engine** (`src/rule/`) - Rule parsing, validation, GID management, and reporting  
@@ -1229,7 +1229,7 @@ auto compliance_graph = graph::GraphGenerator::generateGraph(
 
 ### Class Structure Organization
 
-**One Class Per Folder Rule** (per [PHILOSOPHY.md](./PHILOSOPHY.md)): Every folder in `src/` must contain exactly one class:
+**One Class Per Folder Rule** (per [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs)): Every folder in `src/` must contain exactly one class:
 
 ```cpp
 src/core/config/

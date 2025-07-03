@@ -15,7 +15,7 @@
 
 ## Core Beliefs
 
-> **Implementation Note**: Each principle below is technically enforced through the architecture detailed in [ARCHITECTURE.md](./ARCHITECTURE.md) and implemented according to the specifications in [PLAN.md](./PLAN.md). The user-facing manifestation of these principles is visible in [README.md](./README.md#core-capabilities) and technical details in [SUMMARY.md](./SUMMARY.md).
+> **Implementation Note**: Each principle below is technically enforced through the [core components architecture](./ARCHITECTURE.md#core-components) and implemented according to the [implementation specifications](./PLAN.md#implementation-requirements-class-structure). The user-facing manifestation of these principles is visible in [README.md](./README.md#core-capabilities) and technical details in [SUMMARY.md](./SUMMARY.md#system-overview).
 
 ### **Structure is enforced**
 Every file, class, and folder must follow rule-driven structure. This is not merely a suggestion or convention—it is the fundamental law that governs all code existence within Akao. Structure becomes the skeleton upon which all other principles rest. Without enforced structure, chaos emerges, maintainability dies, and the codebase becomes a digital wasteland. Akao treats structural violations as compilation errors, making disorder impossible rather than inconvenient.
@@ -23,7 +23,7 @@ Every file, class, and folder must follow rule-driven structure. This is not mer
 ### **Universal validation**
 Any project can be validated using `akao validate`, including Akao itself. Validation is not special or recursive—it's a standard operation that applies consistent rules to any codebase. The framework validates structure, enforces principles, and reports violations using the same systematic approach whether applied to Akao or any other project. This ensures validation logic is robust, well-tested, and universally applicable.
 
-> **Technical Implementation**: This principle is implemented through the Rule Engine system detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and the Universal Validation architecture in [PLAN.md](./PLAN.md#universal-validation-implementation). Users experience this through the CLI commands in [README.md](./README.md#commands) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+This principle is implemented through the [Rule Engine system](./ARCHITECTURE.md#core-components) and the [Universal Validation architecture](./PLAN.md#universal-validation-implementation). Users experience this through the [CLI commands](./README.md#commands) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### **No rules without tests**
 Each rule must have measurable test coverage. Rules without tests are merely suggestions disguised as law. Every principle declared must be backed by executable proof that demonstrates both compliance and violation scenarios. This creates a feedback loop where rules are continuously validated against reality, ensuring they remain practical and enforceable rather than theoretical and aspirational.
@@ -31,17 +31,17 @@ Each rule must have measurable test coverage. Rules without tests are merely sug
 ### **Every rule is traceable**
 Violations include Global Rule Identifier (GID), stack trace, file, line, and suggestion. When a rule is broken, the system must provide not just identification but education. Each violation becomes a teaching moment, complete with forensic evidence of exactly what went wrong and how to fix it. The GID system ensures that every rule has a globally unique identifier (format: `akao:rule::<category>:<name>:v<version>`) enabling precise tracking across audit logs, trace files, and compliance metrics. This transforms error messages from cryptic failures into guided learning experiences with full traceability.
 
-> **Technical Implementation**: The GID system is architecturally detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) under Rule Engine, with complete specifications in [PLAN.md](./PLAN.md#global-rule-identifier-gid-system). Users interact with GIDs through CLI commands documented in [README.md](./README.md#commands) and technical reference in [SUMMARY.md](./SUMMARY.md#global-rule-identifier-gid-system).
+The [GID system](./ARCHITECTURE.md#core-components) under Rule Engine provides complete specifications in [PLAN.md](./PLAN.md#global-rule-identifier-gid-system). Users interact with GIDs through [CLI commands](./README.md#commands) and technical reference in [SUMMARY.md](./SUMMARY.md#global-rule-identifier-gid-system).
 
 ### **Documentation is code**
 All documentation (README, RULES, PRINCIPLES) must be generated from actual rules and tests. Hand-written documentation lies by omission and becomes stale by neglect. Generated documentation cannot lie because it is extracted from the living, breathing codebase itself. This ensures that what is documented is what is implemented, and what is implemented is what is tested.
 
-> **Technical Implementation**: The documentation generation system is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) under Documentation Generator, with complete specifications in [PLAN.md](./PLAN.md#implementation-requirements-class-structure). Users trigger documentation generation via `akao docgen` commands in [README.md](./README.md#commands) and technical reference in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
+The [documentation generation system](./ARCHITECTURE.md#core-components) under Documentation Generator implements this principle, with complete specifications in [PLAN.md](./PLAN.md#implementation-requirements-class-structure). Users trigger documentation generation via [`akao docgen` commands](./README.md#commands) and technical reference in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
 
 ### **One class per folder**
 Every folder must contain exactly one class and its tests. This principle enforces cognitive simplicity and prevents the common antipattern of "god folders" that become dumping grounds for related but distinct concerns. Each folder becomes a bounded context with clear responsibility, making navigation intuitive and refactoring safe.
 
-> **Technical Implementation**: This principle is enforced through the directory structure validation detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and implementation specifications in [PLAN.md](./PLAN.md#implementation-requirements-class-structure). Users experience this through project structure validation in [README.md](./README.md#commands) and technical details in [SUMMARY.md](./SUMMARY.md#directory-structure).
+This principle is enforced through [directory structure validation](./ARCHITECTURE.md#core-components) and [implementation specifications](./PLAN.md#implementation-requirements-class-structure). Users experience this through [project structure validation](./README.md#commands) and technical details in [SUMMARY.md](./SUMMARY.md#directory-structure).
 
 ### **One language per scope**
 Multi-language repositories must isolate languages clearly. While polyglot systems are inevitable in modern development, they must be organized with surgical precision. Each language exists within its own realm, with clear boundaries and explicit interfaces. This prevents the chaos of mixed-language files and ensures that language-specific tooling can operate effectively.
@@ -51,7 +51,7 @@ Multi-language repositories must isolate languages clearly. While polyglot syste
 ### **CLI = Web = TUI**
 All tooling must behave identically across user interface modes. The interface is merely the skin; the underlying logic must be invariant. A command that works in CLI must provide identical functionality through web API and terminal UI. This ensures that users can switch interfaces without relearning workflows or encountering inconsistent behavior.
 
-> **Technical Implementation**: Interface parity is achieved through the layered architecture in [ARCHITECTURE.md](./ARCHITECTURE.md#system-overview) and Interface Consistency System detailed in [PLAN.md](./PLAN.md#interface-consistency-system-cli-web-tui). The user experience is documented in [README.md](./README.md#interface-parity-cli-web-tui-api) with technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+> **Technical Implementation**: Interface parity is achieved through the layered architecture in [ARCHITECTURE.md](./ARCHITECTURE.md#system-overview) and Interface Consistency System detailed in [PLAN.md](./PLAN.md#interface-consistency-system-cliwebtui). The user experience is documented in [README.md](./README.md#interface-parity-cli-web-tui-api) with technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### **Every action is measurable**
 Coverage, logs, hash, audit state are enforced per commit using Global Rule Identifiers (GIDs) for precise tracking. If an action cannot be measured, it effectively didn't happen. Every operation must leave traces that can be analyzed, audited, and verified through the GID system. Each rule compliance check, violation, and remediation is tracked by its unique GID, creating a complete paper trail of system behavior. This enables forensic analysis of failures, empirical optimization of performance, and detailed compliance reporting per rule category.
