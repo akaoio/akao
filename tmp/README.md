@@ -109,6 +109,25 @@ akao rule info --gid=<gid>    # Show detailed rule information by GID
 akao rule disable --gid=<gid> --reason="<reason>" # Disable rule (tracked)
 akao rule enable --gid=<gid>  # Re-enable previously disabled rule
 
+# RuleSet Management
+akao ruleset list             # List all available RuleSets
+akao ruleset info <name>      # Show RuleSet details and inheritance
+akao ruleset validate <name>  # Validate RuleSet definition and dependencies
+akao ruleset create <name>    # Create new RuleSet interactively
+
+# RuleSet-based Operations
+akao validate --ruleset=<name> # Validate using specific RuleSet
+akao audit --ruleset=<name>   # Audit compliance for specific RuleSet
+akao docgen --ruleset=<name>  # Generate docs for specific RuleSet rules
+
+# Graph Generation
+akao graph --type=rules --format=svg --output=rules.svg        # Rule dependency graph
+akao graph --type=rulesets --format=dot --output=rulesets.dot  # RuleSet relationships
+akao graph --type=project --format=json                        # Project structure (stdout)
+akao graph --type=features --format=png --output=features.png  # Feature dependencies
+akao graph --type=validation --format=svg                      # Validation flow graph
+akao graph --type=audit --format=dot --ruleset=security        # Audit compliance graph
+
 # Automation & CI/CD
 akao pipeline generate        # Generate CI/CD pipeline configuration
 akao pipeline validate       # Validate pipeline configuration

@@ -36,6 +36,14 @@ akao/
 │   │   ├── cpp.json         # C++ rules and build settings
 │   │   ├── js.json          # JavaScript rules and build settings
 │   │   └── rust.json        # Rust rules and build settings
+│   ├── rulesets/             # RuleSet definitions and inheritance
+│   │   ├── core.yaml        # Core framework RuleSet
+│   │   ├── cpp.yaml         # C++ language RuleSet
+│   │   ├── security.yaml    # Security-focused RuleSet
+│   │   ├── performance.yaml # Performance RuleSet
+│   │   └── custom/          # Project-specific RuleSets
+│   │       ├── api.yaml     # API development RuleSet
+│   │       └── database.yaml # Database integration RuleSet
 │   ├── features/             # Feature management
 │   │   ├── installed.json   # List of installed features
 │   │   ├── dependencies.json # Feature dependency graph
@@ -117,9 +125,22 @@ akao/
 │   │   ├── registry/        # Rule discovery and management
 │   │   │   ├── registry.cpp
 │   │   │   └── registry.hpp
+│   │   ├── ruleset/         # RuleSet management and inheritance
+│   │   │   ├── ruleset.cpp
+│   │   │   └── ruleset.hpp
 │   │   └── reporter/        # Violation reporting
 │   │       ├── reporter.cpp
 │   │       └── reporter.hpp
+│   ├── graph/               # Graph generation system
+│   │   ├── generator/       # Graph generation engine
+│   │   │   ├── generator.cpp
+│   │   │   └── generator.hpp
+│   │   ├── exporter/        # Multi-format graph export
+│   │   │   ├── exporter.cpp
+│   │   │   └── exporter.hpp
+│   │   └── analyzer/        # Graph analysis and metrics
+│   │       ├── analyzer.cpp
+│   │       └── analyzer.hpp
 │   ├── build/               # Build engine system
 │   │   ├── manager/         # Build target management
 │   │   │   ├── manager.cpp
@@ -661,6 +682,373 @@ struct ComplianceMetrics {
 
 ---
 
+## 📦 RuleSet System
+
+### RuleSet Architecture
+
+**RuleSets enable logical grouping of rules using GID collections** for organizational efficiency, inheritance hierarchies, and granular validation control. RuleSets are defined in `.akao/rulesets/` directory and support nested inheritance.
+
+**RuleSet Structure:**
+```
+.akao/rulesets/
+├── core.yaml               # Core framework RuleSet
+├── cpp.yaml               # C++ language RuleSet  
+├── security.yaml          # Security-focused RuleSet
+├── performance.yaml       # Performance RuleSet
+└── custom/                # Project-specific RuleSets
+    ├── api.yaml           # API development RuleSet
+    └── database.yaml      # Database integration RuleSet
+```
+
+### RuleSet Definition Format
+
+```yaml
+# .akao/rulesets/cpp.yaml
+name: "cpp"
+version: "v1"
+description: "C++ development standards and best practices"
+parent: "core"  # Inherits from core RuleSet
+
+rules:
+  - "akao:rule:cpp:naming:snake_case:v1"
+  - "akao:rule:cpp:structure:one_class_per_folder:v1" 
+  - "akao:rule:cpp:testing:coverage_threshold:v2"
+  - "akao:rule:cpp:documentation:header_comments:v1"
+
+includes:
+  - "security"  # Include all rules from security RuleSet
+  
+excludes:
+  - "akao:rule:core:build:incremental:v1"  # Override parent rule
+
+metadata:
+  author: "Akao Team"
+  tags: ["cpp", "language", "development"]
+  last_updated: "2024-01-15T10:30:00Z"
+```
+
+```json
+// .akao/rulesets/security.json (JSON format)
+{
+  "name": "security",
+  "version": "v1", 
+  "description": "Security and sandboxing enforcement",
+  "rules": [
+    "akao:rule:security:sandboxing:external_features:v1",
+    "akao:rule:security:validation:input_sanitization:v1",
+    "akao:rule:security:dependencies:vulnerability_scan:v1"
+  ],
+  "metadata": {
+    "author": "Security Team",
+    "tags": ["security", "compliance"],
+    "severity": "critical"
+  }
+}
+```
+
+### RuleSet Inheritance and Resolution
+
+```cpp
+namespace akao::ruleset {
+class RuleSetResolver {
+public:
+    static std::vector<std::string> resolveRuleSet(const std::string& name) {
+        auto ruleset = loadRuleSet(name);
+        std::vector<std::string> resolved_gids;
+        
+        // Resolve parent RuleSets first (depth-first)
+        if (ruleset.parent.has_value()) {
+            auto parent_gids = resolveRuleSet(ruleset.parent.value());
+            resolved_gids.insert(resolved_gids.end(), parent_gids.begin(), parent_gids.end());
+        }
+        
+        // Add included RuleSets
+        for (const auto& include : ruleset.includes) {
+            auto included_gids = resolveRuleSet(include);
+            resolved_gids.insert(resolved_gids.end(), included_gids.begin(), included_gids.end());
+        }
+        
+        // Add direct rules
+        resolved_gids.insert(resolved_gids.end(), ruleset.rules.begin(), ruleset.rules.end());
+        
+        // Remove excluded rules
+        for (const auto& exclude_gid : ruleset.excludes) {
+            resolved_gids.erase(
+                std::remove(resolved_gids.begin(), resolved_gids.end(), exclude_gid),
+                resolved_gids.end()
+            );
+        }
+        
+        // Remove duplicates while preserving order
+        return removeDuplicates(resolved_gids);
+    }
+    
+    static std::vector<std::string> listAvailableRuleSets() {
+        return filesystem::listFiles(".akao/rulesets/", {".yaml", ".yml", ".json"});
+    }
+    
+    static RuleSetInfo getRuleSetInfo(const std::string& name) {
+        auto ruleset = loadRuleSet(name);
+        auto resolved_gids = resolveRuleSet(name);
+        
+        return RuleSetInfo{
+            .name = ruleset.name,
+            .version = ruleset.version,
+            .description = ruleset.description,
+            .total_rules = resolved_gids.size(),
+            .direct_rules = ruleset.rules.size(),
+            .inherited_rules = resolved_gids.size() - ruleset.rules.size(),
+            .parent = ruleset.parent,
+            .includes = ruleset.includes,
+            .excludes = ruleset.excludes
+        };
+    }
+};
+}
+```
+
+### CLI Integration for RuleSets
+
+```bash
+# RuleSet Management
+akao ruleset list                    # List all available RuleSets
+akao ruleset info <name>             # Show RuleSet details and inheritance
+akao ruleset validate <name>         # Validate RuleSet definition and dependencies
+akao ruleset create <name>           # Create new RuleSet interactively
+
+# RuleSet-based Operations  
+akao validate --ruleset=cpp          # Validate using C++ RuleSet
+akao validate --ruleset=security     # Validate using security RuleSet
+akao audit --ruleset=performance     # Audit performance compliance
+akao docgen --ruleset=core           # Generate docs for core RuleSet rules
+```
+
+---
+
+## 📊 Graph Generation System
+
+### Graph Architecture
+
+**The graph system provides visual representation and analysis capabilities** for rule dependencies, RuleSet relationships, project structure, feature dependencies, and validation flows. All graphs are generated from live system state and support multiple output formats.
+
+**Graph Types:**
+- **Rule Dependency Graph**: Shows GID relationships and inheritance
+- **RuleSet Relationship Graph**: Displays RuleSet inheritance and includes/excludes
+- **Project Structure Graph**: Visualizes folder structure and class relationships  
+- **Feature Dependency Graph**: Maps feature dependencies and compatibility
+- **Validation Flow Graph**: Shows validation execution paths and rule evaluation order
+- **Audit Compliance Graph**: Displays compliance metrics and violation patterns
+
+### Graph Generation Implementation
+
+```cpp
+namespace akao::graph {
+class GraphGenerator {
+public:
+    enum class GraphType {
+        RULES,
+        RULESETS, 
+        PROJECT_STRUCTURE,
+        FEATURES,
+        VALIDATION_FLOW,
+        AUDIT_COMPLIANCE
+    };
+    
+    enum class OutputFormat {
+        DOT,        // Graphviz DOT format
+        SVG,        // Scalable Vector Graphics
+        JSON,       // Structured graph data
+        PNG         // Raster image (requires graphviz)
+    };
+    
+    static GraphData generateGraph(GraphType type, const GraphConfig& config = {}) {
+        switch (type) {
+            case GraphType::RULES:
+                return generateRuleDependencyGraph(config);
+            case GraphType::RULESETS:
+                return generateRuleSetGraph(config);
+            case GraphType::PROJECT_STRUCTURE:
+                return generateProjectStructureGraph(config);
+            case GraphType::FEATURES:
+                return generateFeatureDependencyGraph(config);
+            case GraphType::VALIDATION_FLOW:
+                return generateValidationFlowGraph(config);
+            case GraphType::AUDIT_COMPLIANCE:
+                return generateAuditComplianceGraph(config);
+        }
+    }
+    
+    static void exportGraph(const GraphData& graph, OutputFormat format, const std::string& output_path) {
+        switch (format) {
+            case OutputFormat::DOT:
+                exportToDot(graph, output_path);
+                break;
+            case OutputFormat::SVG:
+                exportToSvg(graph, output_path);
+                break;
+            case OutputFormat::JSON:
+                exportToJson(graph, output_path);
+                break;
+            case OutputFormat::PNG:
+                exportToPng(graph, output_path);
+                break;
+        }
+    }
+
+private:
+    static GraphData generateRuleDependencyGraph(const GraphConfig& config) {
+        GraphData graph;
+        graph.type = "rule_dependency";
+        
+        auto rules = rule::Registry::getAllRules();
+        for (const auto& rule : rules) {
+            auto gid = rule->getGID();
+            graph.nodes.emplace_back(Node{
+                .id = gid,
+                .label = rule->getName(),
+                .type = "rule",
+                .metadata = {
+                    {"category", rule->getCategory()},
+                    {"version", rule->getVersion()},
+                    {"severity", rule->getSeverity()}
+                }
+            });
+            
+            // Add dependency edges
+            for (const auto& dep_gid : rule->getDependencies()) {
+                graph.edges.emplace_back(Edge{
+                    .from = dep_gid,
+                    .to = gid,
+                    .type = "depends_on",
+                    .weight = 1.0
+                });
+            }
+        }
+        
+        return graph;
+    }
+    
+    static GraphData generateRuleSetGraph(const GraphConfig& config) {
+        GraphData graph;
+        graph.type = "ruleset_relationship";
+        
+        auto rulesets = ruleset::RuleSetResolver::listAvailableRuleSets();
+        for (const auto& name : rulesets) {
+            auto info = ruleset::RuleSetResolver::getRuleSetInfo(name);
+            graph.nodes.emplace_back(Node{
+                .id = name,
+                .label = info.description,
+                .type = "ruleset",
+                .metadata = {
+                    {"version", info.version},
+                    {"total_rules", std::to_string(info.total_rules)},
+                    {"direct_rules", std::to_string(info.direct_rules)}
+                }
+            });
+            
+            // Add inheritance edges
+            if (info.parent.has_value()) {
+                graph.edges.emplace_back(Edge{
+                    .from = info.parent.value(),
+                    .to = name,
+                    .type = "inherits",
+                    .weight = 1.0
+                });
+            }
+            
+            // Add include edges
+            for (const auto& include : info.includes) {
+                graph.edges.emplace_back(Edge{
+                    .from = include,
+                    .to = name,
+                    .type = "includes",
+                    .weight = 0.5
+                });
+            }
+        }
+        
+        return graph;
+    }
+};
+
+struct Node {
+    std::string id;
+    std::string label;
+    std::string type;
+    std::map<std::string, std::string> metadata;
+};
+
+struct Edge {
+    std::string from;
+    std::string to;
+    std::string type;
+    double weight;
+};
+
+struct GraphData {
+    std::string type;
+    std::vector<Node> nodes;
+    std::vector<Edge> edges;
+    std::map<std::string, std::string> metadata;
+};
+}
+```
+
+### CLI Integration for Graph Generation
+
+```bash
+# Graph Generation Commands
+akao graph --type=rules --format=svg --output=rules.svg        # Rule dependency graph
+akao graph --type=rulesets --format=dot --output=rulesets.dot  # RuleSet relationships
+akao graph --type=project --format=json                        # Project structure (stdout)
+akao graph --type=features --format=png --output=features.png  # Feature dependencies
+akao graph --type=validation --format=svg                      # Validation flow graph
+akao graph --type=audit --format=dot --ruleset=security        # Audit compliance graph
+
+# Graph Integration with Other Commands
+akao docgen --include-graphs                                   # Embed graphs in documentation
+akao audit --graph-output=compliance.svg                       # Generate compliance graph
+akao validate --graph-output=validation_flow.dot               # Show validation execution graph
+```
+
+### Graph Integration Points
+
+**Documentation Integration**: Generated graphs automatically embedded in `akao docgen` output:
+```markdown
+# Rules Overview
+![Rule Dependency Graph](graphs/rules.svg)
+
+# RuleSet Inheritance
+![RuleSet Graph](graphs/rulesets.svg)
+```
+
+**Web UI Integration**: Graph viewer mode with interactive navigation:
+```cpp
+namespace akao::web {
+class GraphController {
+public:
+    void serveGraphViewer(const HttpRequest& req, HttpResponse& res) {
+        auto type = req.getParam("type");
+        auto format = req.getParam("format", "json");
+        
+        auto graph = graph::GraphGenerator::generateGraph(parseGraphType(type));
+        res.setContentType("application/json");
+        res.setBody(graph::GraphGenerator::exportToJson(graph));
+    }
+};
+}
+```
+
+**Audit Integration**: Compliance graphs show rule violations and trends:
+```cpp
+auto compliance_graph = graph::GraphGenerator::generateGraph(
+    graph::GraphGenerator::GraphType::AUDIT_COMPLIANCE,
+    {{"ruleset", "security"}, {"timerange", "7d"}}
+);
+```
+
+---
+
 ## 🎯 Implementation Phases
 
 ### Phase 1: Core Framework Foundation
@@ -707,7 +1095,21 @@ struct ComplianceMetrics {
    - Comprehensive violation reporting with GID references and suggestions
    - Rule dependency resolution using GID relationships
 
-2. **Principle Testing Framework**
+2. **RuleSet System Implementation**
+   - `src/rule/ruleset/` - RuleSet management and inheritance engine
+   - Multi-format RuleSet definition support (YAML/JSON) in `.akao/rulesets/`
+   - RuleSet inheritance, includes, and excludes resolution
+   - CLI commands: `ruleset list`, `ruleset info`, `ruleset validate`, `ruleset create`
+   - RuleSet-based validation: `validate --ruleset=<name>`, `audit --ruleset=<name>`
+
+3. **Graph Generation System**
+   - `src/graph/generator/` - Core graph generation engine for all graph types
+   - `src/graph/exporter/` - Multi-format export (DOT, SVG, JSON, PNG)
+   - `src/graph/analyzer/` - Graph analysis and metrics calculation
+   - Graph types: rules, rulesets, project structure, features, validation flow, audit compliance
+   - CLI commands: `graph --type=<type> --format=<format> --output=<path>`
+
+4. **Principle Testing Framework**
    - `tests/principles/principle_validation.cpp` - Core principle tests with GID validation
    - Universal validation that works on any project including Akao
    - Complete integration with all philosophical principles and GID traceability
@@ -732,6 +1134,11 @@ struct ComplianceMetrics {
 - [ ] GID-based CLI operations (validate, audit, info, disable) fully functional
 - [ ] Multi-format rule files (JSON/YAML/TOML) support GID integration
 - [ ] Trace and audit files correctly reference all rules by GID
+- [ ] RuleSet system supports inheritance, includes, and excludes resolution
+- [ ] RuleSet-based validation and audit operations fully functional
+- [ ] All graph types (rules, rulesets, project, features, validation, audit) generate correctly
+- [ ] Graph export works for all formats (DOT, SVG, JSON, PNG)
+- [ ] Graph integration with docgen, audit, and Web UI operational
 
 ### Phase 3: Project Management & Templates
 **Enable project initialization and feature management**:
@@ -974,6 +1381,22 @@ public:
         registerCommand("rule disable --gid", &RuleCommand::disableByGID);
         registerCommand("rule enable --gid", &RuleCommand::enableByGID);
         registerCommand("rule validate --gid", &RuleCommand::validateGIDFormat);
+        
+        // RuleSet Management
+        registerCommand("ruleset list", &RuleSetCommand::list);
+        registerCommand("ruleset info", &RuleSetCommand::info);
+        registerCommand("ruleset validate", &RuleSetCommand::validate);
+        registerCommand("ruleset create", &RuleSetCommand::create);
+        
+        // RuleSet-based Operations
+        registerCommand("validate --ruleset", &ValidateCommand::executeByRuleSet);
+        registerCommand("audit --ruleset", &AuditCommand::executeByRuleSet);
+        registerCommand("docgen --ruleset", &DocGenCommand::executeByRuleSet);
+        
+        // Graph Generation
+        registerCommand("graph --type", &GraphCommand::generate);
+        registerCommand("graph --type --format", &GraphCommand::generateWithFormat);
+        registerCommand("graph --type --output", &GraphCommand::generateWithOutput);
         
         // Automation & CI/CD
         registerCommand("pipeline generate", &PipelineCommand::generate);

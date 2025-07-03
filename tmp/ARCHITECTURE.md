@@ -31,6 +31,7 @@ Akao is built as a modular C++ framework with clear architectural layers:
 - **Parser**: Multi-format rule file parser (JSON/YAML/TOML) with GID validation
 - **Validator**: Rule execution and validation logic with GID tracking
 - **Registry**: GID-based rule discovery and management system
+- **RuleSet**: RuleSet management, inheritance, and resolution engine
 - **Reporter**: Violation reporting with GID references and suggestions
 
 ### 2. Build Engine (`src/build/`)
@@ -69,11 +70,17 @@ Akao is built as a modular C++ framework with clear architectural layers:
 - **Version Manager**: Feature versioning and compatibility
 - **Conflict Resolver**: Handle feature conflicts and dependencies
 
-### 7. Automation System (`src/automation/`)
+### 8. Automation System (`src/automation/`)
 - **Pipeline Generator**: CI/CD pipeline configuration generator
 - **Workflow Manager**: GitHub Actions workflow management
 - **Template Engine**: Automated generation from templates
 - **Deployment Configurator**: Automated deployment setup
+
+### 9. Graph Generation System (`src/graph/`)
+- **Graph Generator**: Multi-type graph generation (rules, rulesets, project, features, validation, audit)
+- **Format Exporter**: Multi-format export (DOT, SVG, JSON, PNG)
+- **Graph Analyzer**: Graph analysis, metrics, and relationship discovery
+- **Integration Engine**: Graph integration with docgen, audit, and Web UI
 
 ---
 

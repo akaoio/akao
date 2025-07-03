@@ -63,6 +63,15 @@ Features from external sources run in controlled environments. Trust is not tran
 ### **Dependency resolution is explicit**
 All feature dependencies must be declared and resolved transparently. The system must be able to explain exactly why each dependency was included and how conflicts were resolved. This enables reproducible builds and prevents the emergence of phantom dependencies that work in development but fail in production.
 
+### **Every rule is part of at least one RuleSet**
+Individual rules must be organized into logical groupings through RuleSets. Orphaned rules create confusion and make it difficult to understand which rules apply to specific contexts or workflows. RuleSets provide organizational structure, inheritance hierarchies, and enable granular validation control. This ensures rules are discoverable, maintainable, and can be applied consistently across similar project contexts.
+
+### **Code must be graph-explorable**
+All system relationships must be visualizable through generated graphs. Complex systems become incomprehensible without visual representation of their structure and dependencies. Every aspect of the system—rule dependencies, RuleSet inheritance, project structure, feature relationships, validation flows, and compliance metrics—must be expressible as a graph that can be analyzed, navigated, and understood. This transforms abstract relationships into concrete, explorable visualizations.
+
+### **All logic must be explainable visually**
+Every operation, dependency, and relationship must be representable in visual form. Visual explanation is often clearer than textual explanation, particularly for complex systems with many interconnected components. When a validation fails, when a build breaks, or when a feature conflicts, the system must be able to generate graphs that show exactly what went wrong and why. This makes debugging faster, system comprehension deeper, and knowledge transfer more effective.
+
 ---
 
 ## 📐 Inspirations
