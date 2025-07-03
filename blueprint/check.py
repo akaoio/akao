@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 AKAO Documentation Link Validation Script
-Validates all markdown links in tmp/ directory only
+Validates all markdown links in blueprint/ directory only
 Generates detailed JSON report with validation status
 """
 
@@ -80,8 +80,8 @@ def validate_link(source_file, line_num, link_text, link_target):
         if file_part.startswith('./'):
             file_part = file_part[2:]
         
-        # Check if file exists in tmp/ directory
-        full_file_path = Path('tmp') / file_part
+        # Check if file exists in blueprint/ directory
+        full_file_path = Path('blueprint') / file_part
         if full_file_path.exists():
             # If there's an anchor, check if it exists
             if anchor_part:
@@ -93,13 +93,13 @@ def validate_link(source_file, line_num, link_text, link_target):
             else:
                 status = "valid"
         else:
-            # Check if it's a reference to a file that might exist outside tmp/ (like images)
+            # Check if it's a reference to a file that might exist outside blueprint/ (like images)
             # For now, we'll assume these are intentional references to files that should exist
             if file_part.endswith(('.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp')):
                 status = "valid"  # Assume image files are valid references
             else:
                 status = "invalid"
-                suggestion = f"File '{file_part}' does not exist in tmp/ directory."
+                suggestion = f"File '{file_part}' does not exist in blueprint/ directory."
     
     else:
         # Other types of links (absolute paths, etc.)
@@ -179,7 +179,7 @@ def extract_links_from_file(file_path):
 def main():
     print("🔍 AKAO Documentation Link Validator")
     print("===================================")
-    print(f"Scanning markdown files in: {os.getcwd()}/tmp")
+    print(f"Scanning markdown files in: {os.getcwd()}/blueprint")
     
     # Initialize counters
     total_links = 0
@@ -190,17 +190,17 @@ def main():
     
     all_link_results = []
     
-    # Check if tmp directory exists
-    tmp_dir = Path('tmp')
-    if not tmp_dir.exists():
-        print("❌ tmp/ directory not found!")
+    # Check if blueprint directory exists
+    blueprint_dir = Path('blueprint')
+    if not blueprint_dir.exists():
+        print("❌ blueprint/ directory not found!")
         sys.exit(1)
     
-    # Process each markdown file in tmp directory
-    md_files = list(tmp_dir.glob('*.md'))
+    # Process each markdown file in blueprint directory
+    md_files = list(blueprint_dir.glob('*.md'))
     
     if not md_files:
-        print("⚠️  No markdown files found in tmp/ directory")
+        print("⚠️  No markdown files found in blueprint/ directory")
         # Create empty report
         report = {
             "summary": {
@@ -211,13 +211,13 @@ def main():
                 "external_unreachable": 0,
                 "duplicated_links": 0,
                 "validation_timestamp": datetime.now().isoformat(),
-                "directory": f"{os.getcwd()}/tmp"
+                "directory": f"{os.getcwd()}/blueprint"
             },
             "links": []
         }
         
         # Save report
-        report_file = Path('tmp/link_report.json')
+        report_file = Path('blueprint/link_report.json')
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2)
         
@@ -263,13 +263,13 @@ def main():
             "external_unreachable": external_unreachable,
             "duplicated_links": 0,
             "validation_timestamp": datetime.now().isoformat(),
-            "directory": f"{os.getcwd()}/tmp"
+            "directory": f"{os.getcwd()}/blueprint"
         },
         "links": all_link_results
     }
     
     # Save report
-    report_file = Path('tmp/link_report.json')
+    report_file = Path('blueprint/link_report.json')
     with open(report_file, 'w', encoding='utf-8') as f:
         json.dump(report, f, indent=2)
     
