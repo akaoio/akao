@@ -30,7 +30,7 @@ This document serves as the main navigation hub for all AKAO project documentati
 ### Usage and Interface
 - [Commands](./README.md#commands) - CLI command reference
 - [Plugin Targets (Examples)](./README.md#plugin-targets-examples) - Plugin examples
-- [Interface Parity (CLI = Web = TUI = API)](./README.md#interface-parity-cli--web--tui--api) - Multi-interface support
+- [Interface Parity (CLI = Web = TUI = API)](./README.md#interface-parity-cli-web-tui-api) - Multi-interface support
   - [Command Line Interface (CLI)](./README.md#command-line-interface-cli) - CLI usage examples
   - [Web User Interface](./README.md#web-user-interface) - Browser-based interface
   - [Text User Interface (TUI)](./README.md#text-user-interface-tui) - Terminal interface
@@ -41,7 +41,7 @@ This document serves as the main navigation hub for all AKAO project documentati
   - [Runtime Environments](./README.md#runtime-environments) - Execution environments
 
 ### Project Information
-- [Licensing & Attribution](./README.md#licensing--attribution) - Legal information
+- [Licensing & Attribution](./README.md#licensing-attribution) - Legal information
 - [Status](./README.md#status) - Current development status
 
 ## 🏗️ ARCHITECTURE.md - System Architecture
@@ -58,7 +58,7 @@ This document serves as the main navigation hub for all AKAO project documentati
   - [Documentation Flow](./ARCHITECTURE.md#documentation-flow) - Documentation generation
   - [Project Initialization Flow](./ARCHITECTURE.md#project-initialization-flow) - Project setup
   - [Feature Management Flow](./ARCHITECTURE.md#feature-management-flow) - Feature handling
-  - [Automation/CI/CD Flow](./ARCHITECTURE.md#automationcicd-flow) - CI/CD pipeline
+  - [Automation/CI/CD Flow](./ARCHITECTURE.md#automation-ci-cd-flow) - CI/CD pipeline
 - [Testing Strategy](./ARCHITECTURE.md#testing-strategy) - Quality assurance approach
   - [Unit Tests](./ARCHITECTURE.md#unit-tests) - Component-level testing
   - [Integration Tests](./ARCHITECTURE.md#integration-tests) - System integration testing
@@ -66,7 +66,7 @@ This document serves as the main navigation hub for all AKAO project documentati
 
 ### Advanced Architecture Features
 - [Plugin Architecture](./ARCHITECTURE.md#plugin-architecture) - Extensibility framework
-- [Security & Sandboxing](./ARCHITECTURE.md#security--sandboxing) - Security implementation
+- [Security & Sandboxing](./ARCHITECTURE.md#security-sandboxing) - Security implementation
 - [Performance Considerations](./ARCHITECTURE.md#performance-considerations) - Optimization strategies
 - [Configuration](./ARCHITECTURE.md#configuration) - System configuration management
 - [Design Principles](./ARCHITECTURE.md#design-principles) - Architectural guidelines
@@ -81,7 +81,7 @@ This document serves as the main navigation hub for all AKAO project documentati
 - [Layered Architecture Design](./PLAN.md#layered-architecture-design) - System architecture layers
   - [Core Architecture Principles](./PLAN.md#core-architecture-principles) - Design principles
   - [Implementation Architecture](./PLAN.md#implementation-architecture) - Technical implementation
-  - [Cross-Platform CI/CD Matrix](./PLAN.md#cross-platform-cicd-matrix) - CI/CD support matrix
+  - [Cross-Platform CI/CD Matrix](./PLAN.md#cross-platform-ci-cd-matrix) - CI/CD support matrix
   - [Interface Parity Enforcement](./PLAN.md#interface-parity-enforcement) - Interface consistency
 - [Global Rule Identifier (GID) System](./PLAN.md#global-rule-identifier-gid-system) - Unique rule identification
   - [GID Format Specification](./PLAN.md#gid-format-specification) - GID format details
@@ -102,41 +102,41 @@ This document serves as the main navigation hub for all AKAO project documentati
   - [Graph Integration Points](./PLAN.md#graph-integration-points) - System integration
 
 ### Implementation Details
-- [Implementation Requirements & Class Structure](./PLAN.md#implementation-requirements--class-structure) - Technical requirements
+- [Implementation Requirements & Class Structure](./PLAN.md#implementation-requirements-class-structure) - Technical requirements
   - [Core Implementation Strategy](./PLAN.md#core-implementation-strategy) - Implementation approach
   - [Class Structure Organization](./PLAN.md#class-structure-organization) - Code organization
   - [Essential Classes for Implementation](./PLAN.md#essential-classes-for-implementation) - Core classes
   - [Universal Validation Implementation](./PLAN.md#universal-validation-implementation) - Validation system
 - [Implementation Phases](./PLAN.md#implementation-phases) - Development roadmap
   - [Phase 1: Core Framework Foundation](./PLAN.md#phase-1-core-framework-foundation) - Foundation phase
-  - [Phase 2: Universal Validation & Principle Testing](./PLAN.md#phase-2-universal-validation--principle-testing) - Validation phase
-  - [Phase 3: Project Management & Templates](./PLAN.md#phase-3-project-management--templates) - Project management
-  - [Phase 4: Build System & Documentation](./PLAN.md#phase-4-build-system--documentation) - Build system
+  - [Phase 2: Universal Validation & Principle Testing](./PLAN.md#phase-2-universal-validation-principle-testing) - Validation phase
+  - [Phase 3: Project Management & Templates](./PLAN.md#phase-3-project-management-templates) - Project management
+  - [Phase 4: Build System & Documentation](./PLAN.md#phase-4-build-system-documentation) - Build system
   - [Phase 5: External Feature Management](./PLAN.md#phase-5-external-feature-management) - Feature management
-  - [Phase 6: Automation System & CI/CD](./PLAN.md#phase-6-automation-system--cicd) - Automation
-  - [Phase 7: Interface Parity & Multi-Language Support](./PLAN.md#phase-7-interface-parity-&-multi-language-support) - Interface parity
-  - [Phase 8: Metrics & Compliance System](./PLAN.md#phase-8-metrics--compliance-system) - Metrics system
-  - [Phase 9: Advanced Features & Extensibility](./PLAN.md#phase-9-advanced-features--extensibility) - Advanced features
+  - [Phase 6: Automation System & CI/CD](./PLAN.md#phase-6-automation-system-ci-cd) - Automation
+  - [Phase 7: Interface Parity & Multi-Language Support](./PLAN.md#phase-7-interface-parity-multi-language-support) - Interface parity
+  - [Phase 8: Metrics & Compliance System](./PLAN.md#phase-8-metrics-compliance-system) - Metrics system
+  - [Phase 9: Advanced Features & Extensibility](./PLAN.md#phase-9-advanced-features-extensibility) - Advanced features
 - [Critical Implementation Details](./PLAN.md#critical-implementation-details) - Key technical considerations
   - [Universal Validation Implementation](./PLAN.md#universal-validation-implementation) - Validation details
   - [CLI Command Specification](./PLAN.md#cli-command-specification) - Command specifications
   - [Build System Architecture](./PLAN.md#build-system-architecture) - Build system design
   - [Documentation Generation System](./PLAN.md#documentation-generation-system) - Documentation system
   - [Feature Management System](./PLAN.md#feature-management-system) - Feature system
-  - [Automation & CI/CD System](./PLAN.md#automation--cicd-system) - Automation system
-  - [Interface Consistency System (CLI=Web=TUI)](./PLAN.md#interface-consistency-system-cliwebtui) - Interface parity
+  - [Automation & CI/CD System](./PLAN.md#automation-ci-cd-system) - Automation system
+  - [Interface Consistency System (CLI=Web=TUI)](./PLAN.md#interface-consistency-system-cli-web-tui) - Interface parity
 - [Component Integration Map](./PLAN.md#component-integration-map) - System integration overview
   - [Core System Dependencies](./PLAN.md#core-system-dependencies) - System dependencies
   - [Data Flow Architecture](./PLAN.md#data-flow-architecture) - Data flow design
-- [Success Criteria & Validation](./PLAN.md#success-criteria--validation) - Quality assurance metrics
+- [Success Criteria & Validation](./PLAN.md#success-criteria-validation) - Quality assurance metrics
   - [Performance Requirements](./PLAN.md#performance-requirements) - Performance metrics
   - [Quality Requirements](./PLAN.md#quality-requirements) - Quality standards
   - [Security Requirements](./PLAN.md#security-requirements) - Security standards
 - [Build Configuration](./PLAN.md#build-configuration) - Development environment setup
-  - [CMakeLists.txt Specification](./PLAN.md#cmakeliststxt-specification) - CMake configuration
+  - [CMakeLists.txt Specification](./PLAN.md#cmakelists-txt-specification) - CMake configuration
 - [Final Validation Checklist](./PLAN.md#final-validation-checklist) - Pre-release validation
   - [Cross-Document Consistency](./PLAN.md#cross-document-consistency) - Document consistency
-  - [Cross-Platform & Multi-Language Support](./PLAN.md#cross-platform-&-multi-language-support) - Platform support
+  - [Cross-Platform & Multi-Language Support](./PLAN.md#cross-platform-multi-language-support) - Platform support
   - [Layered Architecture Implementation](./PLAN.md#layered-architecture-implementation) - Architecture validation
   - [Global Rule Identifier (GID) System](./PLAN.md#global-rule-identifier-gid-system) - GID system validation
   - [RuleSet System Implementation](./PLAN.md#ruleset-system-implementation) - RuleSet validation
@@ -144,8 +144,8 @@ This document serves as the main navigation hub for all AKAO project documentati
   - [Interface Parity Enforcement](./PLAN.md#interface-parity-enforcement) - Interface validation
   - [Philosophical Principle Implementation](./PLAN.md#philosophical-principle-implementation) - Philosophy validation
   - [Technical Implementation Completeness](./PLAN.md#technical-implementation-completeness) - Technical validation
-  - [Automation & CI/CD Integration](./PLAN.md#automation--cicd-integration) - Automation validation
-  - [External Integration & Ecosystem](./PLAN.md#external-integration--ecosystem) - Ecosystem validation
+  - [Automation & CI/CD Integration](./PLAN.md#automation-ci-cd-integration) - Automation validation
+  - [External Integration & Ecosystem](./PLAN.md#external-integration-ecosystem) - Ecosystem validation
 
 ## 📊 SUMMARY.md - Technical Summary
 
@@ -162,7 +162,7 @@ This document serves as the main navigation hub for all AKAO project documentati
   - [Rule Management (GID-based)](./SUMMARY.md#rule-management-gid-based) - Rule commands
   - [RuleSet Management](./SUMMARY.md#ruleset-management) - RuleSet commands
   - [Graph Generation](./SUMMARY.md#graph-generation) - Graph commands
-  - [Automation & CI/CD](./SUMMARY.md#automation--cicd) - Automation commands
+  - [Automation & CI/CD](./SUMMARY.md#automation-ci-cd) - Automation commands
 - [Quick Start Guide](./SUMMARY.md#quick-start-guide) - Getting started quickly
   - [Installation](./SUMMARY.md#installation) - Installation instructions
   - [Basic Usage](./SUMMARY.md#basic-usage) - Basic usage examples
@@ -184,13 +184,13 @@ This document serves as the main navigation hub for all AKAO project documentati
 - [Platform and Language Support](./SUMMARY.md#platform-and-language-support) - Compatibility matrix
   - [Supported Operating Systems](./SUMMARY.md#supported-operating-systems) - OS support
   - [Language Adapters](./SUMMARY.md#language-adapters) - Language support
-  - [CI/CD Matrix](./SUMMARY.md#cicd-matrix) - CI/CD platform support
+  - [CI/CD Matrix](./SUMMARY.md#ci-cd-matrix) - CI/CD platform support
 
 ### Technical Specifications
 - [Implementation Requirements](./SUMMARY.md#implementation-requirements) - Development prerequisites
   - [Architectural Constraints](./SUMMARY.md#implementation-requirements) - Design constraints
   - [Code Organization Rules](./SUMMARY.md#code-organization-rules) - Organization requirements
-- [Security & Sandboxing Architecture](./SUMMARY.md#security--sandboxing-architecture) - Security framework
+- [Security & Sandboxing Architecture](./SUMMARY.md#security-sandboxing-architecture) - Security framework
   - [Feature Security Model](./SUMMARY.md#feature-security-model) - Security model
   - [Security Validation Rules](./SUMMARY.md#security-validation-rules) - Security rules
 - [System Dependencies](./SUMMARY.md#system-dependencies) - Required dependencies

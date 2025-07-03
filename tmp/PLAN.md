@@ -10,11 +10,11 @@
 4. [Global Rule Identifier (GID) System](#global-rule-identifier-gid-system)
 5. [RuleSet System](#ruleset-system)
 6. [Graph Generation System](#graph-generation-system)
-7. [Implementation Requirements & Class Structure](#implementation-requirements--class-structure)
+7. [Implementation Requirements & Class Structure](#implementation-requirements-class-structure)
 8. [Implementation Phases](#implementation-phases)
 9. [Critical Implementation Details](#critical-implementation-details)
 10. [Component Integration Map](#component-integration-map)
-11. [Success Criteria & Validation](#success-criteria--validation)
+11. [Success Criteria & Validation](#success-criteria-validation)
 12. [Build Configuration](#build-configuration)
 13. [Final Validation Checklist](#final-validation-checklist)
 
@@ -439,7 +439,7 @@ platforms:
 > 
 > **Architecture Implementation**: The GID system is implemented through the Rule Engine detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and integrated across all system components.
 > 
-> **User Interface**: Users interact with GIDs through CLI commands documented in [README.md](./README.md#commands) and cross-interface support in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> **User Interface**: Users interact with GIDs through CLI commands documented in [README.md](./README.md#commands) and cross-interface support in [README.md](./README.md#interface-parity-cli-web-tui-api).
 > 
 > **Technical Reference**: GID format and usage patterns are summarized in [SUMMARY.md](./SUMMARY.md#global-rule-identifier-gid-system).
 
@@ -836,7 +836,7 @@ struct ComplianceMetrics {
 > 
 > **Architecture Implementation**: RuleSet management is implemented through the RuleSet Management system detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) with inheritance and resolution capabilities.
 > 
-> **User Interface**: Users interact with RuleSets through CLI commands documented in [README.md](./README.md#commands) and cross-interface support in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> **User Interface**: Users interact with RuleSets through CLI commands documented in [README.md](./README.md#commands) and cross-interface support in [README.md](./README.md#interface-parity-cli-web-tui-api).
 > 
 > **Technical Reference**: RuleSet structure and operations are summarized in [SUMMARY.md](./SUMMARY.md#ruleset-system).
 
@@ -987,7 +987,7 @@ akao docgen --ruleset=core           # Generate docs for core RuleSet rules
 > 
 > **Architecture Implementation**: Graph generation is implemented through the Graph Generation System detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) with multi-format export capabilities.
 > 
-> **User Interface**: Users generate graphs through CLI commands documented in [README.md](./README.md#commands) and visual interfaces in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> **User Interface**: Users generate graphs through CLI commands documented in [README.md](./README.md#commands) and visual interfaces in [README.md](./README.md#interface-parity-cli-web-tui-api).
 > 
 > **Technical Reference**: Graph types and command patterns are summarized in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 

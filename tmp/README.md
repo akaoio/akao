@@ -11,8 +11,8 @@
 5. [Structure](#structure)
 6. [Commands](#commands)
 7. [Plugin Targets (Examples)](#plugin-targets-examples)
-8. [Licensing & Attribution](#licensing--attribution)
-9. [Interface Parity (CLI = Web = TUI = API)](#interface-parity-cli--web--tui--api)
+8. [Licensing & Attribution](#licensing-attribution)
+9. [Interface Parity (CLI = Web = TUI = API)](#interface-parity-cli-web-tui-api)
 10. [Cross-Platform Support](#cross-platform-support)
 11. [Status](#status)
 
@@ -66,7 +66,7 @@ Akao applies its own standards to itself, demonstrating that its validation syst
 
 > **Complete Philosophy**: See full philosophical foundation in [PHILOSOPHY.md](./PHILOSOPHY.md) with detailed explanations of each principle.
 
-> **Technical Enforcement**: How these principles are technically enforced is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#design-principles) and implementation specifications in [PLAN.md](./PLAN.md#implementation-requirements--class-structure).
+> **Technical Enforcement**: How these principles are technically enforced is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#design-principles) and implementation specifications in [PLAN.md](./PLAN.md#implementation-requirements-class-structure).
 
 See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 
@@ -298,14 +298,14 @@ Akao runs on **any language, any OS, any runtime**:
 
 > **Philosophy Foundation**: This README implements the "Documentation is code" and "Auto-update all documentation" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
 > 
-> **Architecture Validation**: All features described here are architecturally specified in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and technically implementable according to [PLAN.md](./PLAN.md#implementation-requirements--class-structure).
+> **Architecture Validation**: All features described here are architecturally specified in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and technically implementable according to [PLAN.md](./PLAN.md#implementation-requirements-class-structure).
 > 
 > **Cross-Reference Validation**: All commands, capabilities, and technical details are cross-referenced in [SUMMARY.md](./SUMMARY.md#reference-documents) for complete auditability.
 > 
 > **Generation Command**: This README is auto-generated and must always match actual structure and rule definitions. Use `akao docgen` to regenerate.
 
 **Cross-Document Consistency Checklist:**
-- ✅ All CLI commands match [PLAN.md](./PLAN.md#implementation-requirements--class-structure) specifications
+- ✅ All CLI commands match [PLAN.md](./PLAN.md#implementation-requirements-class-structure) specifications
 - ✅ All capabilities are architecturally supported by [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) 
 - ✅ All principles reference their philosophical foundation in [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs)
 - ✅ All technical details are summarized in [SUMMARY.md](./SUMMARY.md#system-overview)
