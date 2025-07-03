@@ -114,7 +114,7 @@ This document serves as the main navigation hub for all AKAO project documentati
   - [Phase 4: Build System & Documentation](./PLAN.md#phase-4-build-system--documentation) - Build system
   - [Phase 5: External Feature Management](./PLAN.md#phase-5-external-feature-management) - Feature management
   - [Phase 6: Automation System & CI/CD](./PLAN.md#phase-6-automation-system--cicd) - Automation
-  - [Phase 7: Interface Parity & Multi-Language Support](./PLAN.md#phase-7-interface-parity--multi-language-support) - Interface parity
+  - [Phase 7: Interface Parity & Multi-Language Support](./PLAN.md#phase-7-interface-parity-&-multi-language-support) - Interface parity
   - [Phase 8: Metrics & Compliance System](./PLAN.md#phase-8-metrics--compliance-system) - Metrics system
   - [Phase 9: Advanced Features & Extensibility](./PLAN.md#phase-9-advanced-features--extensibility) - Advanced features
 - [Critical Implementation Details](./PLAN.md#critical-implementation-details) - Key technical considerations
@@ -136,7 +136,7 @@ This document serves as the main navigation hub for all AKAO project documentati
   - [CMakeLists.txt Specification](./PLAN.md#cmakeliststxt-specification) - CMake configuration
 - [Final Validation Checklist](./PLAN.md#final-validation-checklist) - Pre-release validation
   - [Cross-Document Consistency](./PLAN.md#cross-document-consistency) - Document consistency
-  - [Cross-Platform & Multi-Language Support](./PLAN.md#cross-platform--multi-language-support) - Platform support
+  - [Cross-Platform & Multi-Language Support](./PLAN.md#cross-platform-&-multi-language-support) - Platform support
   - [Layered Architecture Implementation](./PLAN.md#layered-architecture-implementation) - Architecture validation
   - [Global Rule Identifier (GID) System](./PLAN.md#global-rule-identifier-gid-system) - GID system validation
   - [RuleSet System Implementation](./PLAN.md#ruleset-system-implementation) - RuleSet validation

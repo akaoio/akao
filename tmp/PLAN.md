@@ -49,7 +49,6 @@ This document is the **canonical implementation specification** for the Akao fra
 - CLI commands match [README.md](./README.md) exactly
 - All 8 components from [ARCHITECTURE.md](./ARCHITECTURE.md) implemented
 - All principles from [PHILOSOPHY.md](./PHILOSOPHY.md) technically enforced
-- All improvements from [DESIGN_DOCS_REFACTOR_SUMMARY.md](../DESIGN_DOCS_REFACTOR_SUMMARY.md) integrated
 
 ---
 
@@ -2631,7 +2630,6 @@ endif()
 - [ ] All CLI commands from README.md implemented with full interface parity (CLI=Web=TUI=API)
 - [ ] All 9+ components from ARCHITECTURE.md have corresponding implementation with layered architecture
 - [ ] All 19+ principles from PHILOSOPHY.md enforced through testable rules with GID traceability
-- [ ] All improvements from DESIGN_DOCS_REFACTOR_SUMMARY.md integrated and validated
 
 ### Cross-Platform & Multi-Language Support
 - [ ] **Linux support**: Full functionality on x86_64 and ARM64 architectures
