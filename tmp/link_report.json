@@ -1,0 +1,4070 @@
+{
+  "summary": {
+    "total_links": 507,
+    "valid_links": 502,
+    "invalid_links": 5,
+    "missing_anchors": 0,
+    "external_unreachable": 0,
+    "duplicated_links": 0,
+    "validation_timestamp": "2025-07-03T16:25:24.476773",
+    "directory": "/home/x/Projects/akao/tmp"
+  },
+  "links": [
+    {
+      "file": "tmp/PLAN.md",
+      "line": 7,
+      "text": "Executive Summary",
+      "link": "#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 8,
+      "text": "Complete Project Structure",
+      "link": "#complete-project-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 9,
+      "text": "Layered Architecture Design",
+      "link": "#layered-architecture-design",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 10,
+      "text": "Global Rule Identifier (GID) System",
+      "link": "#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 11,
+      "text": "RuleSet System",
+      "link": "#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 12,
+      "text": "Graph Generation System",
+      "link": "#graph-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 13,
+      "text": "Implementation Requirements & Class Structure",
+      "link": "#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 14,
+      "text": "Implementation Phases",
+      "link": "#implementation-phases",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 15,
+      "text": "Critical Implementation Details",
+      "link": "#critical-implementation-details",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 16,
+      "text": "Component Integration Map",
+      "link": "#component-integration-map",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 17,
+      "text": "Success Criteria & Validation",
+      "link": "#success-criteria-validation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 18,
+      "text": "Build Configuration",
+      "link": "#build-configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 19,
+      "text": "Final Validation Checklist",
+      "link": "#final-validation-checklist",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 27,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 29,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 29,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 31,
+      "text": "README.md",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 31,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 33,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 49,
+      "text": "README.md",
+      "link": "./README.md#overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 50,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 51,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 57,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 59,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 59,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 61,
+      "text": "README.md",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 61,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 63,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 373,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 438,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 440,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 442,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 442,
+      "text": "README.md",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 444,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 835,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 837,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 839,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 839,
+      "text": "README.md",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 841,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 986,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 988,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 990,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 990,
+      "text": "README.md",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 992,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 1183,
+      "text": "Rule Dependency Graph",
+      "link": "graphs/rules.svg",
+      "status": "invalid",
+      "suggestion": "Link format not supported. Use relative links (./file.md) for local files."
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 1186,
+      "text": "RuleSet Graph",
+      "link": "graphs/rulesets.svg",
+      "status": "invalid",
+      "suggestion": "Link format not supported. Use relative links (./file.md) for local files."
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 1232,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 1888,
+      "text": "this, project_path",
+      "link": "const std::string& changed_file",
+      "status": "invalid",
+      "suggestion": "File 'const std::string& changed_file' does not exist in tmp/ directory."
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 2038,
+      "text": "&",
+      "link": "const Feature& f",
+      "status": "invalid",
+      "suggestion": "File 'const Feature& f' does not exist in tmp/ directory."
+    },
+    {
+      "file": "tmp/PLAN.md",
+      "line": 2265,
+      "text": "this",
+      "link": "const HttpRequest& req",
+      "status": "invalid",
+      "suggestion": "File 'const HttpRequest& req' does not exist in tmp/ directory."
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 7,
+      "text": "System Overview",
+      "link": "#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 8,
+      "text": "Directory Structure",
+      "link": "#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 9,
+      "text": "CLI Command Taxonomy",
+      "link": "#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 10,
+      "text": "Quick Start Guide",
+      "link": "#quick-start-guide",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 11,
+      "text": "Global Rule Identifier (GID) System",
+      "link": "#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 12,
+      "text": "RuleSet System",
+      "link": "#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 13,
+      "text": "File Formats and Structure",
+      "link": "#file-formats-and-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 14,
+      "text": "Platform and Language Support",
+      "link": "#platform-and-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 15,
+      "text": "Implementation Requirements",
+      "link": "#implementation-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 16,
+      "text": "Security & Sandboxing Architecture",
+      "link": "#security-sandboxing-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 17,
+      "text": "System Dependencies",
+      "link": "#system-dependencies",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 18,
+      "text": "Performance Specifications",
+      "link": "#performance-specifications",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 19,
+      "text": "Key Technical Specifications",
+      "link": "#key-technical-specifications",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 20,
+      "text": "Reference Documents",
+      "link": "#reference-documents",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 30,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 30,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 30,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 37,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 37,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#complete-project-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 244,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 246,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 256,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 257,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 258,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 260,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 417,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 418,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 419,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 421,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 421,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#layered-architecture-design",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 423,
+      "text": "README.md",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 423,
+      "text": "README.md",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 557,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 560,
+      "text": "README.md",
+      "link": "./README.md#overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 562,
+      "text": "README.md Commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 563,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 566,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 571,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 573,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 573,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#complete-project-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 575,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 575,
+      "text": "README.md",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 596,
+      "text": "Core Beliefs",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 596,
+      "text": "Core Components",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 596,
+      "text": "GID System",
+      "link": "./PLAN.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 596,
+      "text": "Commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 596,
+      "text": "GID System",
+      "link": "./SUMMARY.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 597,
+      "text": "Rules as Doctrine",
+      "link": "./PHILOSOPHY.md#rules-as-doctrine",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 597,
+      "text": "Core Components",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 597,
+      "text": "RuleSet System",
+      "link": "./PLAN.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 597,
+      "text": "Commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 597,
+      "text": "RuleSet System",
+      "link": "./SUMMARY.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 598,
+      "text": "CLI = Web = TUI",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 598,
+      "text": "System Overview",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 598,
+      "text": "Interface Parity",
+      "link": "./PLAN.md#interface-parity-enforcement",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 598,
+      "text": "Interface Parity",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 598,
+      "text": "CLI Commands",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 599,
+      "text": "Universal validation",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 599,
+      "text": "System Overview",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 599,
+      "text": "Architecture Design",
+      "link": "./PLAN.md#layered-architecture-design",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 599,
+      "text": "Cross-Platform",
+      "link": "./README.md#cross-platform-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 599,
+      "text": "Platform Support",
+      "link": "./SUMMARY.md#platform-and-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 600,
+      "text": "Code must be graph-explorable",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 600,
+      "text": "Core Components",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 600,
+      "text": "Graph System",
+      "link": "./PLAN.md#graph-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 600,
+      "text": "Commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 600,
+      "text": "CLI Commands",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 601,
+      "text": "External features are sandboxed",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 601,
+      "text": "Security & Sandboxing",
+      "link": "./ARCHITECTURE.md#security-sandboxing",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 601,
+      "text": "Critical Implementation",
+      "link": "./PLAN.md#critical-implementation-details",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 601,
+      "text": "Use Cases",
+      "link": "./README.md#use-cases",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 601,
+      "text": "Security Architecture",
+      "link": "./SUMMARY.md#security-sandboxing-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 602,
+      "text": "Everything must build dev + prod",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 602,
+      "text": "Core Components",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 602,
+      "text": "Build Configuration",
+      "link": "./PLAN.md#build-configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 602,
+      "text": "Commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 602,
+      "text": "Quick Start",
+      "link": "./SUMMARY.md#quick-start-guide",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 603,
+      "text": "Documentation is code",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 603,
+      "text": "Core Components",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 603,
+      "text": "Implementation",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 603,
+      "text": "Core Capabilities",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 603,
+      "text": "File Formats",
+      "link": "./SUMMARY.md#file-formats-and-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 606,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 606,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 606,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/SUMMARY.md",
+      "line": 606,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 12,
+      "text": "Core Beliefs",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 13,
+      "text": "Inspirations",
+      "link": "./PHILOSOPHY.md#inspirations",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 14,
+      "text": "Rules as Doctrine",
+      "link": "./PHILOSOPHY.md#rules-as-doctrine",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 15,
+      "text": "Verification",
+      "link": "./PHILOSOPHY.md#verification",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 16,
+      "text": "Usage",
+      "link": "./PHILOSOPHY.md#usage",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 17,
+      "text": "Summary",
+      "link": "./PHILOSOPHY.md#summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 24,
+      "text": "Overview",
+      "link": "./README.md#overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 25,
+      "text": "Core Capabilities",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 26,
+      "text": "Philosophy Highlights",
+      "link": "./README.md#philosophy-highlights",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 27,
+      "text": "Use Cases",
+      "link": "./README.md#use-cases",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 28,
+      "text": "Structure",
+      "link": "./README.md#structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 31,
+      "text": "Commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 32,
+      "text": "Plugin Targets (Examples)",
+      "link": "./README.md#plugin-targets-examples",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 33,
+      "text": "Interface Parity (CLI = Web = TUI = API)",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 34,
+      "text": "Command Line Interface (CLI)",
+      "link": "./README.md#command-line-interface-cli",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 35,
+      "text": "Web User Interface",
+      "link": "./README.md#web-user-interface",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 36,
+      "text": "Text User Interface (TUI)",
+      "link": "./README.md#text-user-interface-tui",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 37,
+      "text": "REST API",
+      "link": "./README.md#rest-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 38,
+      "text": "Cross-Platform Support",
+      "link": "./README.md#cross-platform-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 39,
+      "text": "Supported Platforms",
+      "link": "./README.md#supported-platforms",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 40,
+      "text": "Language Support",
+      "link": "./README.md#language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 41,
+      "text": "Runtime Environments",
+      "link": "./README.md#runtime-environments",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 44,
+      "text": "Licensing & Attribution",
+      "link": "./README.md#licensing-attribution",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 45,
+      "text": "Status",
+      "link": "./README.md#status",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 52,
+      "text": "System Overview",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 53,
+      "text": "Core Components",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 54,
+      "text": "Directory Structure",
+      "link": "./ARCHITECTURE.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 55,
+      "text": "Data Flow",
+      "link": "./ARCHITECTURE.md#data-flow",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 56,
+      "text": "Validation Flow",
+      "link": "./ARCHITECTURE.md#validation-flow",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 57,
+      "text": "Build Flow",
+      "link": "./ARCHITECTURE.md#build-flow",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 58,
+      "text": "Documentation Flow",
+      "link": "./ARCHITECTURE.md#documentation-flow",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 59,
+      "text": "Project Initialization Flow",
+      "link": "./ARCHITECTURE.md#project-initialization-flow",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 60,
+      "text": "Feature Management Flow",
+      "link": "./ARCHITECTURE.md#feature-management-flow",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 61,
+      "text": "Automation/CI/CD Flow",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 62,
+      "text": "Testing Strategy",
+      "link": "./ARCHITECTURE.md#testing-strategy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 63,
+      "text": "Unit Tests",
+      "link": "./ARCHITECTURE.md#unit-tests",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 64,
+      "text": "Integration Tests",
+      "link": "./ARCHITECTURE.md#integration-tests",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 65,
+      "text": "Principle Tests",
+      "link": "./ARCHITECTURE.md#principle-tests",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 68,
+      "text": "Plugin Architecture",
+      "link": "./ARCHITECTURE.md#plugin-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 69,
+      "text": "Security & Sandboxing",
+      "link": "./ARCHITECTURE.md#security-sandboxing",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 70,
+      "text": "Performance Considerations",
+      "link": "./ARCHITECTURE.md#performance-considerations",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 71,
+      "text": "Configuration",
+      "link": "./ARCHITECTURE.md#configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 72,
+      "text": "Design Principles",
+      "link": "./ARCHITECTURE.md#design-principles",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 79,
+      "text": "Executive Summary",
+      "link": "./PLAN.md#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 80,
+      "text": "Complete Project Structure",
+      "link": "./PLAN.md#complete-project-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 81,
+      "text": "Layered Architecture Design",
+      "link": "./PLAN.md#layered-architecture-design",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 82,
+      "text": "Core Architecture Principles",
+      "link": "./PLAN.md#core-architecture-principles",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 83,
+      "text": "Implementation Architecture",
+      "link": "./PLAN.md#implementation-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 84,
+      "text": "Cross-Platform CI/CD Matrix",
+      "link": "./PLAN.md#cross-platform-cicd-matrix",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 85,
+      "text": "Interface Parity Enforcement",
+      "link": "./PLAN.md#interface-parity-enforcement",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 86,
+      "text": "Global Rule Identifier (GID) System",
+      "link": "./PLAN.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 87,
+      "text": "GID Format Specification",
+      "link": "./PLAN.md#gid-format-specification",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 88,
+      "text": "GID Integration Architecture",
+      "link": "./PLAN.md#gid-integration-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 89,
+      "text": "CLI Integration with GID Support",
+      "link": "./PLAN.md#cli-integration-with-gid-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 90,
+      "text": "Rule Registry with GID Management",
+      "link": "./PLAN.md#rule-registry-with-gid-management",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 91,
+      "text": "Multi-Format Rule Support",
+      "link": "./PLAN.md#multi-format-rule-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 92,
+      "text": "GID-Based Traceability Implementation",
+      "link": "./PLAN.md#gid-based-traceability-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 93,
+      "text": "RuleSet System",
+      "link": "./PLAN.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 94,
+      "text": "RuleSet Architecture",
+      "link": "./PLAN.md#ruleset-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 95,
+      "text": "RuleSet Definition Format",
+      "link": "./PLAN.md#ruleset-definition-format",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 96,
+      "text": "RuleSet Inheritance and Resolution",
+      "link": "./PLAN.md#ruleset-inheritance-and-resolution",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 97,
+      "text": "CLI Integration for RuleSets",
+      "link": "./PLAN.md#cli-integration-for-rulesets",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 98,
+      "text": "Graph Generation System",
+      "link": "./PLAN.md#graph-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 99,
+      "text": "Graph Architecture",
+      "link": "./PLAN.md#graph-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 100,
+      "text": "Graph Generation Implementation",
+      "link": "./PLAN.md#graph-generation-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 101,
+      "text": "CLI Integration for Graph Generation",
+      "link": "./PLAN.md#cli-integration-for-graph-generation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 102,
+      "text": "Graph Integration Points",
+      "link": "./PLAN.md#graph-integration-points",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 105,
+      "text": "Implementation Requirements & Class Structure",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 106,
+      "text": "Core Implementation Strategy",
+      "link": "./PLAN.md#core-implementation-strategy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 107,
+      "text": "Class Structure Organization",
+      "link": "./PLAN.md#class-structure-organization",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 108,
+      "text": "Essential Classes for Implementation",
+      "link": "./PLAN.md#essential-classes-for-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 109,
+      "text": "Universal Validation Implementation",
+      "link": "./PLAN.md#universal-validation-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 110,
+      "text": "Implementation Phases",
+      "link": "./PLAN.md#implementation-phases",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 111,
+      "text": "Phase 1: Core Framework Foundation",
+      "link": "./PLAN.md#phase-1-core-framework-foundation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 112,
+      "text": "Phase 2: Universal Validation & Principle Testing",
+      "link": "./PLAN.md#phase-2-universal-validation-principle-testing",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 113,
+      "text": "Phase 3: Project Management & Templates",
+      "link": "./PLAN.md#phase-3-project-management-templates",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 114,
+      "text": "Phase 4: Build System & Documentation",
+      "link": "./PLAN.md#phase-4-build-system-documentation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 115,
+      "text": "Phase 5: External Feature Management",
+      "link": "./PLAN.md#phase-5-external-feature-management",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 116,
+      "text": "Phase 6: Automation System & CI/CD",
+      "link": "./PLAN.md#phase-6-automation-system-cicd",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 117,
+      "text": "Phase 7: Interface Parity & Multi-Language Support",
+      "link": "./PLAN.md#phase-7-interface-parity-multi-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 118,
+      "text": "Phase 8: Metrics & Compliance System",
+      "link": "./PLAN.md#phase-8-metrics-compliance-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 119,
+      "text": "Phase 9: Advanced Features & Extensibility",
+      "link": "./PLAN.md#phase-9-advanced-features-extensibility",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 120,
+      "text": "Critical Implementation Details",
+      "link": "./PLAN.md#critical-implementation-details",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 121,
+      "text": "Universal Validation Implementation",
+      "link": "./PLAN.md#universal-validation-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 122,
+      "text": "CLI Command Specification",
+      "link": "./PLAN.md#cli-command-specification",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 123,
+      "text": "Build System Architecture",
+      "link": "./PLAN.md#build-system-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 124,
+      "text": "Documentation Generation System",
+      "link": "./PLAN.md#documentation-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 125,
+      "text": "Feature Management System",
+      "link": "./PLAN.md#feature-management-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 126,
+      "text": "Automation & CI/CD System",
+      "link": "./PLAN.md#automation-cicd-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 127,
+      "text": "Interface Consistency System (CLI=Web=TUI)",
+      "link": "./PLAN.md#interface-consistency-system-cliwebtui",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 128,
+      "text": "Component Integration Map",
+      "link": "./PLAN.md#component-integration-map",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 129,
+      "text": "Core System Dependencies",
+      "link": "./PLAN.md#core-system-dependencies",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 130,
+      "text": "Data Flow Architecture",
+      "link": "./PLAN.md#data-flow-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 131,
+      "text": "Success Criteria & Validation",
+      "link": "./PLAN.md#success-criteria-validation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 132,
+      "text": "Performance Requirements",
+      "link": "./PLAN.md#performance-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 133,
+      "text": "Quality Requirements",
+      "link": "./PLAN.md#quality-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 134,
+      "text": "Security Requirements",
+      "link": "./PLAN.md#security-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 135,
+      "text": "Build Configuration",
+      "link": "./PLAN.md#build-configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 136,
+      "text": "CMakeLists.txt Specification",
+      "link": "./PLAN.md#build-configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 137,
+      "text": "Final Validation Checklist",
+      "link": "./PLAN.md#final-validation-checklist",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 138,
+      "text": "Cross-Document Consistency",
+      "link": "./PLAN.md#cross-document-consistency",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 139,
+      "text": "Cross-Platform & Multi-Language Support",
+      "link": "./PLAN.md#layered-architecture-design",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 140,
+      "text": "Layered Architecture Implementation",
+      "link": "./PLAN.md#layered-architecture-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 141,
+      "text": "Global Rule Identifier (GID) System",
+      "link": "./PLAN.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 142,
+      "text": "RuleSet System Implementation",
+      "link": "./PLAN.md#ruleset-system-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 143,
+      "text": "Graph Generation System",
+      "link": "./PLAN.md#graph-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 144,
+      "text": "Interface Parity Enforcement",
+      "link": "./PLAN.md#interface-parity-enforcement",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 145,
+      "text": "Philosophical Principle Implementation",
+      "link": "./PLAN.md#philosophical-principle-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 146,
+      "text": "Technical Implementation Completeness",
+      "link": "./PLAN.md#technical-implementation-completeness",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 147,
+      "text": "Automation & CI/CD Integration",
+      "link": "./PLAN.md#automation-cicd-integration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 148,
+      "text": "External Integration & Ecosystem",
+      "link": "./PLAN.md#critical-implementation-details",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 155,
+      "text": "System Overview",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 156,
+      "text": "Directory Structure",
+      "link": "./SUMMARY.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 157,
+      "text": "Core Implementation (`src/`)",
+      "link": "./SUMMARY.md#core-implementation-src",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 158,
+      "text": "Project Runtime (`.akao/`)",
+      "link": "./SUMMARY.md#project-runtime-akao",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 159,
+      "text": "CLI Command Taxonomy",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 160,
+      "text": "Project Management",
+      "link": "./SUMMARY.md#project-management",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 161,
+      "text": "Core Operations",
+      "link": "./SUMMARY.md#core-operations",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 162,
+      "text": "Rule Management (GID-based)",
+      "link": "./SUMMARY.md#rule-management-gid-based",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 163,
+      "text": "RuleSet Management",
+      "link": "./SUMMARY.md#ruleset-management",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 164,
+      "text": "Graph Generation",
+      "link": "./SUMMARY.md#graph-generation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 165,
+      "text": "Automation & CI/CD",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 166,
+      "text": "Quick Start Guide",
+      "link": "./SUMMARY.md#quick-start-guide",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 167,
+      "text": "Installation",
+      "link": "./SUMMARY.md#installation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 168,
+      "text": "Basic Usage",
+      "link": "./SUMMARY.md#basic-usage",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 169,
+      "text": "Project Structure Verification",
+      "link": "./SUMMARY.md#project-structure-verification",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 172,
+      "text": "Global Rule Identifier (GID) System",
+      "link": "./SUMMARY.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 173,
+      "text": "Format Specification",
+      "link": "./SUMMARY.md#format-specification",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 174,
+      "text": "Integration Points",
+      "link": "./SUMMARY.md#integration-points",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 175,
+      "text": "GID-based CLI Usage",
+      "link": "./SUMMARY.md#gid-based-cli-usage",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 176,
+      "text": "RuleSet System",
+      "link": "./SUMMARY.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 177,
+      "text": "Structure and Location",
+      "link": "./SUMMARY.md#structure-and-location",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 178,
+      "text": "Example RuleSet Definition",
+      "link": "./SUMMARY.md#example-ruleset-definition",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 179,
+      "text": "RuleSet Operations",
+      "link": "./SUMMARY.md#ruleset-operations",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 180,
+      "text": "File Formats and Structure",
+      "link": "./SUMMARY.md#file-formats-and-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 181,
+      "text": "Rule Files (Multi-format support)",
+      "link": "./SUMMARY.md#rule-files-multi-format-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 182,
+      "text": "Audit Output Files",
+      "link": "./SUMMARY.md#audit-output-files",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 183,
+      "text": "Configuration Files",
+      "link": "./SUMMARY.md#configuration-files",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 184,
+      "text": "Platform and Language Support",
+      "link": "./SUMMARY.md#platform-and-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 185,
+      "text": "Supported Operating Systems",
+      "link": "./SUMMARY.md#supported-operating-systems",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 186,
+      "text": "Language Adapters",
+      "link": "./SUMMARY.md#language-adapters",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 187,
+      "text": "CI/CD Matrix",
+      "link": "./SUMMARY.md#platform-and-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 190,
+      "text": "Implementation Requirements",
+      "link": "./SUMMARY.md#implementation-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 191,
+      "text": "Architectural Constraints",
+      "link": "./SUMMARY.md#implementation-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 192,
+      "text": "Code Organization Rules",
+      "link": "./SUMMARY.md#code-organization-rules",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 193,
+      "text": "Security & Sandboxing Architecture",
+      "link": "./SUMMARY.md#security-sandboxing-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 194,
+      "text": "Feature Security Model",
+      "link": "./SUMMARY.md#feature-security-model",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 195,
+      "text": "Security Validation Rules",
+      "link": "./SUMMARY.md#security-validation-rules",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 196,
+      "text": "System Dependencies",
+      "link": "./SUMMARY.md#system-dependencies",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 197,
+      "text": "Build Requirements",
+      "link": "./SUMMARY.md#build-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 198,
+      "text": "Runtime Dependencies",
+      "link": "./SUMMARY.md#runtime-dependencies",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 199,
+      "text": "Development Dependencies",
+      "link": "./SUMMARY.md#development-dependencies",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 200,
+      "text": "Platform-Specific Dependencies",
+      "link": "./SUMMARY.md#platform-specific-dependencies",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 201,
+      "text": "Performance Specifications",
+      "link": "./SUMMARY.md#performance-specifications",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 202,
+      "text": "Resource Requirements",
+      "link": "./SUMMARY.md#resource-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 203,
+      "text": "Performance Benchmarks",
+      "link": "./SUMMARY.md#performance-benchmarks",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 204,
+      "text": "Scalability Limits",
+      "link": "./SUMMARY.md#scalability-limits",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 205,
+      "text": "Key Technical Specifications",
+      "link": "./SUMMARY.md#key-technical-specifications",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 206,
+      "text": "Build System Details",
+      "link": "./SUMMARY.md#build-system-details",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 207,
+      "text": "Rule Engine Specifications",
+      "link": "./SUMMARY.md#rule-engine-specifications",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 208,
+      "text": "Graph Generation Capabilities",
+      "link": "./SUMMARY.md#graph-generation-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 209,
+      "text": "Interface Parity Technical Details",
+      "link": "./SUMMARY.md#interface-parity-technical-details",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 210,
+      "text": "Reference Documents",
+      "link": "./SUMMARY.md#reference-documents",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 216,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 217,
+      "text": "README.md",
+      "link": "./README.md#overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 218,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 219,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/MENU.md",
+      "line": 220,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 7,
+      "text": "Core Beliefs",
+      "link": "#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 8,
+      "text": "Inspirations",
+      "link": "#inspirations",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 9,
+      "text": "Rules as Doctrine",
+      "link": "#rules-as-doctrine",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 10,
+      "text": "Verification",
+      "link": "#verification",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 11,
+      "text": "Usage",
+      "link": "#usage",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 12,
+      "text": "Summary",
+      "link": "#summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 18,
+      "text": "core components architecture",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 18,
+      "text": "implementation specifications",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 18,
+      "text": "README.md",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 18,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 26,
+      "text": "Rule Engine system",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 26,
+      "text": "Universal Validation architecture",
+      "link": "./PLAN.md#universal-validation-implementation",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 26,
+      "text": "CLI commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 26,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 34,
+      "text": "GID system",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 34,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 34,
+      "text": "CLI commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 34,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 39,
+      "text": "documentation generation system",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 39,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 39,
+      "text": "`akao docgen` commands",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 39,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#file-formats-and-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 44,
+      "text": "directory structure validation",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 44,
+      "text": "implementation specifications",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 44,
+      "text": "project structure validation",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 44,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 49,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 49,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#layered-architecture-design",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 49,
+      "text": "README.md",
+      "link": "./README.md#cross-platform-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 49,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#platform-and-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 54,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 54,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#interface-consistency-system-cliwebtui",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 54,
+      "text": "README.md",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 54,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 63,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 63,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 63,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 63,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 68,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 68,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 68,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 68,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#file-formats-and-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 73,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 73,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#build-configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 73,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 73,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#quick-start-guide",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 78,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 78,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 78,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 78,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#platform-and-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 83,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 83,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 83,
+      "text": "README.md",
+      "link": "./README.md#structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 83,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 88,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 88,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 88,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 88,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#implementation-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 93,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 93,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 93,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 93,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 113,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 113,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 113,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 113,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 118,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#security-sandboxing",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 118,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#critical-implementation-details",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 118,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 118,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#security-sandboxing-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 123,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 123,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 123,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 123,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#platform-and-language-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 128,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 128,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 128,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 128,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 133,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 133,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#graph-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 133,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 133,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 138,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 138,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#graph-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 138,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/PHILOSOPHY.md",
+      "line": 138,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 7,
+      "text": "Overview",
+      "link": "#overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 8,
+      "text": "Core Capabilities",
+      "link": "#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 9,
+      "text": "Philosophy Highlights",
+      "link": "#philosophy-highlights",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 10,
+      "text": "Use Cases",
+      "link": "#use-cases",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 11,
+      "text": "Structure",
+      "link": "#structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 12,
+      "text": "Commands",
+      "link": "#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 13,
+      "text": "Plugin Targets (Examples)",
+      "link": "#plugin-targets-examples",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 14,
+      "text": "Licensing & Attribution",
+      "link": "#licensing-attribution",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 15,
+      "text": "Interface Parity (CLI = Web = TUI = API)",
+      "link": "#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 16,
+      "text": "Cross-Platform Support",
+      "link": "#cross-platform-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 17,
+      "text": "Status",
+      "link": "#status",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 27,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 29,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 29,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 31,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 48,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 49,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 50,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 51,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 53,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 53,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 67,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 69,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#design-principles",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 69,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 71,
+      "text": "`PHILOSOPHY.md`",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 77,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 79,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 79,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 81,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#implementation-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 93,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 95,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 95,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 97,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#complete-project-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 99,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 121,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 123,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 125,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 125,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 127,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 264,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 266,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 266,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#interface-parity-enforcement",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 268,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 299,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 301,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 301,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 303,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#reference-documents",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 308,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 309,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 310,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 311,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 315,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 316,
+      "text": "ARCHITECTURE.md",
+      "link": "./ARCHITECTURE.md#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 317,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#executive-summary",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 318,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/README.md",
+      "line": 320,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#rules-as-doctrine",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 7,
+      "text": "System Overview",
+      "link": "#system-overview",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 8,
+      "text": "Core Components",
+      "link": "#core-components",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 9,
+      "text": "Directory Structure",
+      "link": "#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 10,
+      "text": "Data Flow",
+      "link": "#data-flow",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 11,
+      "text": "Testing Strategy",
+      "link": "#testing-strategy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 12,
+      "text": "Plugin Architecture",
+      "link": "#plugin-architecture",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 13,
+      "text": "Security & Sandboxing",
+      "link": "#security-sandboxing",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 14,
+      "text": "Performance Considerations",
+      "link": "#performance-considerations",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 15,
+      "text": "Configuration",
+      "link": "#configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 16,
+      "text": "Design Principles",
+      "link": "#design-principles",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 24,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 26,
+      "text": "README.md",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 26,
+      "text": "README.md",
+      "link": "./README.md#cross-platform-support",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 28,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#layered-architecture-design",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 28,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#implementation-requirements",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 72,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 73,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 74,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 76,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#core-architecture-principles",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 76,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 84,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 86,
+      "text": "README.md",
+      "link": "./README.md#core-capabilities",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 86,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 88,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 88,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#directory-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 97,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 99,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 101,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 101,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#global-rule-identifier-gid-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 109,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 111,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 113,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 113,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#ruleset-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 120,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 122,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 124,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#build-configuration",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 124,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#quick-start-guide",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 132,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 134,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 136,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 136,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#file-formats-and-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 144,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 146,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 148,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#graph-generation-system",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 148,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 157,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 159,
+      "text": "README.md",
+      "link": "./README.md#interface-parity-cli-web-tui-api",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 161,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#interface-parity-enforcement",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 161,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 169,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 171,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 173,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 173,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 181,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 183,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 185,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 185,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 194,
+      "text": "PHILOSOPHY.md",
+      "link": "./PHILOSOPHY.md#core-beliefs",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 196,
+      "text": "README.md",
+      "link": "./README.md#commands",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 198,
+      "text": "PLAN.md",
+      "link": "./PLAN.md#implementation-requirements-class-structure",
+      "status": "valid",
+      "suggestion": ""
+    },
+    {
+      "file": "tmp/ARCHITECTURE.md",
+      "line": 198,
+      "text": "SUMMARY.md",
+      "link": "./SUMMARY.md#cli-command-taxonomy",
+      "status": "valid",
+      "suggestion": ""
+    }
+  ]
+}
