@@ -6,7 +6,7 @@
     "missing_anchors": 0,
     "external_unreachable": 0,
     "duplicated_links": 0,
-    "validation_timestamp": "2025-07-03T10:12:21.558626",
+    "validation_timestamp": "2025-07-03T10:28:19.109279",
     "directory": "/home/runner/work/akao/akao/blueprint"
   },
   "links": [
@@ -3629,7 +3629,7 @@
     {
       "file": "blueprint/MENU.md",
       "line": 216,
-      "text": "PHILOSOPHY.md",
+      "text": "core beliefs",
       "link": "./PHILOSOPHY.md#core-beliefs",
       "status": "valid",
       "suggestion": ""
@@ -3637,7 +3637,7 @@
     {
       "file": "blueprint/MENU.md",
       "line": 217,
-      "text": "README.md",
+      "text": "project overview",
       "link": "./README.md#overview",
       "status": "valid",
       "suggestion": ""
@@ -3645,7 +3645,7 @@
     {
       "file": "blueprint/MENU.md",
       "line": 218,
-      "text": "ARCHITECTURE.md",
+      "text": "system components",
       "link": "./ARCHITECTURE.md#core-components",
       "status": "valid",
       "suggestion": ""
@@ -3653,7 +3653,7 @@
     {
       "file": "blueprint/MENU.md",
       "line": 219,
-      "text": "PLAN.md",
+      "text": "implementation plan",
       "link": "./PLAN.md#executive-summary",
       "status": "valid",
       "suggestion": ""
@@ -3661,7 +3661,7 @@
     {
       "file": "blueprint/MENU.md",
       "line": 220,
-      "text": "SUMMARY.md",
+      "text": "technical summary",
       "link": "./SUMMARY.md#system-overview",
       "status": "valid",
       "suggestion": ""

@@ -213,11 +213,11 @@ This document serves as the main navigation hub for all AKAO project documentati
 
 ## 🚀 Quick Navigation
 
-- **Understanding the Vision?** Start with [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) for core principles
-- **New to AKAO?** Continue with [README.md](./README.md#overview) for project overview
-- **Technical Architecture?** Study [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) for system design
-- **Planning Implementation?** Review [PLAN.md](./PLAN.md#executive-summary) for detailed roadmap
-- **Quick Reference?** Use [SUMMARY.md](./SUMMARY.md#system-overview) for technical specs
+- **Understanding the Vision?** Start with [core beliefs](./PHILOSOPHY.md#core-beliefs) for fundamental principles
+- **New to AKAO?** Continue with [project overview](./README.md#overview) for framework introduction
+- **Technical Architecture?** Study [system components](./ARCHITECTURE.md#core-components) for architectural design
+- **Planning Implementation?** Review [implementation plan](./PLAN.md#executive-summary) for detailed roadmap
+- **Quick Reference?** Use [technical summary](./SUMMARY.md#system-overview) for specification reference
 
 ## 📚 Documentation Flow
 
