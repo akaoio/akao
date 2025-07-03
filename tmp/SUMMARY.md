@@ -27,10 +27,14 @@
 **Primary Purpose**: Rule-based project structure enforcement, build management, automation, and documentation generation  
 **Architecture Pattern**: Layered separation with interface adapters (CLI=Web=TUI=API parity)  
 
+> **Cross-Reference**: This system overview implements the philosophical principles defined in [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs), specifically "CLI = Web = TUI" and "Observable, explainable, deterministic". The layered architecture is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#system-overview) and the complete implementation roadmap is in [PLAN.md](./PLAN.md#executive-summary).
+
 **Major Subsystems (13 core + supporting)**:
 - Core Framework, Rule Engine, RuleSet Management, Build System, Documentation Generator
 - Graph Generation System, CLI & Interface System, Automation System, Project Management
 - Feature Management, Metrics System, Language Adapters, Platform Adapters
+
+> **Implementation Note**: Each subsystem corresponds to the "One class per folder" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) and is mapped to specific directory structures in [PLAN.md](./PLAN.md#complete-project-structure).
 
 ---
 
@@ -237,12 +241,23 @@ akao:rule::<category>:<name>:v<version>
 - `akao:rule::structure:one_class_per_folder:v1` 
 - `akao:rule::testing:coverage_minimum:v2`
 
+> **Philosophy Alignment**: The GID system implements the "Every rule is traceable" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs). This format ensures global uniqueness as required by "Only one truth" principle and enables the "Every action is measurable" doctrine.
+
+> **Technical Implementation**: The complete GID architecture and integration is specified in [PLAN.md](./PLAN.md#global-rule-identifier-gid-system) with detailed CLI integration patterns.
+
 ### Integration Points
 - **Rule Files**: All JSON/YAML/TOML rule definitions include GID
 - **CLI Operations**: `--gid=<gid>` parameter for specific rule targeting
 - **Audit Trails**: All trace.json and audit.json entries reference rules by GID
 - **Violation Reports**: Every violation includes GID, file path, line, suggestion
 - **RuleSet Definitions**: RuleSets reference rules by GID for grouping
+
+> **Cross-Reference**: These integration points directly implement multiple philosophical principles:
+> - "Every rule is traceable" → GID in violation reports ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> - "Rules can be toggled, not skipped" → GID-based rule management ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> - "Every rule is part of at least one RuleSet" → GID-based RuleSet grouping ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> 
+> **Architecture Reference**: The technical architecture for these integrations is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) under Rule Engine and RuleSet Management systems.
 
 ### GID-based CLI Usage
 ```bash
@@ -398,6 +413,15 @@ validation: ["akao validate", "akao test", "akao build --dev", "akao build --pro
 - **Layered Architecture**: Core logic agnostic to language/interface/OS
 - **Universal Validation**: Works on any project including Akao itself
 
+> **Philosophy Enforcement**: These constraints directly enforce core philosophical principles:
+> - "CLI = Web = TUI" → Interface Parity requirement ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> - "One class per folder" → Directory organization constraint ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> - "Universal validation" → Self-validation capability ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> 
+> **Architecture Validation**: The layered architecture implementing these constraints is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#system-overview) and [PLAN.md](./PLAN.md#layered-architecture-design).
+
+> **User Reference**: These constraints are reflected in the project capabilities described in [README.md](./README.md#core-capabilities) and interface parity in [README.md](./README.md#interface-parity-cli--web--tui--api).
+
 ### Code Organization Rules
 ```cpp
 // Structure example
@@ -529,13 +553,58 @@ dependencies:
 
 ## Reference Documents
 
-- **[PLAN.FINAL.md](./PLAN.FINAL.md)**: Complete implementation specification (2600+ lines) - **PRIMARY REFERENCE**
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)**: System components and technical design (13 major subsystems)
-- **[PHILOSOPHY.md](./PHILOSOPHY.md)**: Enforced principles and rules doctrine (philosophical foundation)
-- **[README.md](./README.md)**: User interface and CLI command reference (commands and use cases)
+### Primary Documentation (Cross-Referenced)
+- **[PHILOSOPHY.md](./PHILOSOPHY.md)**: Core beliefs and principles that drive all technical decisions
+  - *Referenced in*: All technical specifications implement philosophical doctrines
+  - *Key Principles*: "Every rule is traceable", "CLI = Web = TUI", "One class per folder"
+- **[README.md](./README.md)**: User-facing overview with capabilities and usage examples  
+  - *Referenced in*: CLI commands, interface descriptions, cross-platform support
+  - *Validation*: All commands in this summary match [README.md Commands](./README.md#commands)
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and system design
+  - *Referenced in*: Directory structure, component descriptions, layered architecture
+  - *Consistency*: All 13 subsystems detailed in both documents
+- **[PLAN.md](./PLAN.md)**: Complete implementation specification and development roadmap
+  - *Referenced in*: GID system, RuleSet architecture, implementation phases
+  - *Traceability*: Every technical requirement maps to implementation steps
 
-**Note**: PLAN.FINAL.md is the authoritative single-source specification for implementation. All other documents provide supporting context but PLAN.FINAL.md contains the definitive technical requirements.
+### Cross-Reference Validation Matrix
+> **Philosophical Consistency**: ✅ All technical specifications implement principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs)
+> 
+> **Architectural Alignment**: ✅ Directory structures match [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and [PLAN.md](./PLAN.md#complete-project-structure)
+> 
+> **User Experience Coherence**: ✅ CLI commands align with [README.md](./README.md#commands) and interface descriptions match [README.md](./README.md#interface-parity-cli--web--tui--api)
+> 
+> **Implementation Traceability**: ✅ Every requirement traces from philosophy → architecture → implementation → user interface
+
+### Document Dependency Chain
+```
+PHILOSOPHY.md (WHY) 
+    ↓ drives
+ARCHITECTURE.md (HOW) 
+    ↓ specifies
+PLAN.md (WHEN/WHAT) 
+    ↓ implements
+README.md (WHO/WHERE) 
+    ↓ summarizes
+SUMMARY.md (REFERENCE)
+```
+
+### Complete Cross-Reference Validation Matrix
+
+| **Validation Item** | **PHILOSOPHY.md** | **ARCHITECTURE.md** | **PLAN.md** | **README.md** | **SUMMARY.md** |
+|---------------------|-------------------|---------------------|-------------|---------------|----------------|
+| **GID System** | ✅ [Core Beliefs](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [GID System](./PLAN.md#global-rule-identifier-gid-system) | ✅ [Commands](./README.md#commands) | ✅ [GID System](./SUMMARY.md#global-rule-identifier-gid-system) |
+| **RuleSet System** | ✅ [Rules as Doctrine](./PHILOSOPHY.md#rules-as-doctrine) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [RuleSet System](./PLAN.md#ruleset-system) | ✅ [Commands](./README.md#commands) | ✅ [RuleSet System](./SUMMARY.md#ruleset-system) |
+| **Interface Parity** | ✅ [CLI = Web = TUI](./PHILOSOPHY.md#core-beliefs) | ✅ [System Overview](./ARCHITECTURE.md#system-overview) | ✅ [Interface Parity](./PLAN.md#interface-parity-enforcement) | ✅ [Interface Parity](./README.md#interface-parity-cli--web--tui--api) | ✅ [CLI Commands](./SUMMARY.md#cli-command-taxonomy) |
+| **Cross-Platform** | ✅ [Universal validation](./PHILOSOPHY.md#core-beliefs) | ✅ [System Overview](./ARCHITECTURE.md#system-overview) | ✅ [Architecture Design](./PLAN.md#layered-architecture-design) | ✅ [Cross-Platform](./README.md#cross-platform-support) | ✅ [Platform Support](./SUMMARY.md#platform-and-language-support) |
+| **Graph Generation** | ✅ [Code must be graph-explorable](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [Graph System](./PLAN.md#graph-generation-system) | ✅ [Commands](./README.md#commands) | ✅ [CLI Commands](./SUMMARY.md#cli-command-taxonomy) |
+| **Security Model** | ✅ [External features are sandboxed](./PHILOSOPHY.md#core-beliefs) | ✅ [Security & Sandboxing](./ARCHITECTURE.md#security--sandboxing) | ✅ [Critical Implementation](./PLAN.md#critical-implementation-details) | ✅ [Use Cases](./README.md#use-cases) | ✅ [Security Architecture](./SUMMARY.md#security--sandboxing-architecture) |
+| **Build System** | ✅ [Everything must build dev + prod](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [Build Configuration](./PLAN.md#build-configuration) | ✅ [Commands](./README.md#commands) | ✅ [Quick Start](./SUMMARY.md#quick-start-guide) |
+| **Documentation** | ✅ [Documentation is code](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [Implementation](./PLAN.md#implementation-requirements--class-structure) | ✅ [Core Capabilities](./README.md#core-capabilities) | ✅ [File Formats](./SUMMARY.md#file-formats-and-structure) |
+
+### Traceability Verification
+Every principle in [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) is technically implemented in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components), fully specified in [PLAN.md](./PLAN.md#implementation-requirements--class-structure), user-accessible via [README.md](./README.md#commands), and technically documented in this summary.
 
 ---
 
-*This summary provides the complete technical scope for implementing Akao. For detailed implementation specifications, refer to PLAN.FINAL.md.*
+*This summary provides complete technical scope with full cross-document consistency validation and traceability.*

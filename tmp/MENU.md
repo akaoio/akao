@@ -188,7 +188,7 @@ This document serves as the main navigation hub for all AKAO project documentati
 
 ### Technical Specifications
 - [Implementation Requirements](./SUMMARY.md#implementation-requirements) - Development prerequisites
-  - [Architectural Constraints](./SUMMARY.md#architectural-constraints) - Design constraints
+  - [Architectural Constraints](./SUMMARY.md#implementation-requirements) - Design constraints
   - [Code Organization Rules](./SUMMARY.md#code-organization-rules) - Organization requirements
 - [Security & Sandboxing Architecture](./SUMMARY.md#security--sandboxing-architecture) - Security framework
   - [Feature Security Model](./SUMMARY.md#feature-security-model) - Security model
