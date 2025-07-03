@@ -2,29 +2,29 @@
 
 ## Session Objective
 
-Generate the complete Akao framework implementation in C++ (C++17+) - a rule-based system for project structure enforcement, build management, automation, and documentation generation with cross-platform support. This single coding session must produce a fully functional framework that validates, builds, documents, and manages any software project while enforcing all philosophical principles through code.
+Generate the complete Akao framework implementation in C++ (C++17+) - a rule-based system for project structure enforcement, build management, automation, and documentation generation with cross-platform support and multi-language capability. This single coding session must produce a fully functional framework that validates, builds, documents, and manages any software project while enforcing all philosophical principles through code with Global Rule Identifier (GID) traceability.
 
 ## System Overview
 
-Akao is a layered C++ framework implementing universal validation, rule-driven enforcement, and automation across any language, OS, or runtime. The system provides identical functionality through CLI, Web UI, TUI, and API interfaces while maintaining complete audit trails through a Global Rule Identifier (GID) system. All 13 major subsystems work together to enforce 19+ philosophical principles through testable rules and measurable compliance.
+Akao is a comprehensive C++ framework implementing universal validation, rule-driven enforcement, and automation across any language, OS, or runtime. The system provides identical functionality through CLI, Web UI, TUI, and API interfaces while maintaining complete audit trails through a Global Rule Identifier (GID) system. All 13 major subsystems work together to enforce 22+ philosophical principles through testable rules and measurable compliance.
 
 **Core Technology Stack:**
-- **Language**: C++ (C++17 or later) with layered architecture
+- **Language**: C++ (C++17 or later) with strict layered architecture
 - **Cross-Platform**: Linux, macOS, Windows, Android, iOS, WebAssembly, embedded systems
 - **Multi-Language Support**: C++, JavaScript, Rust, Python, Go language adapters
-- **Interface Parity**: CLI = Web UI = TUI = API with identical functionality
-- **Architecture Pattern**: Strict layered separation with interface adapters
+- **Interface Parity**: CLI = Web UI = TUI = API with verified identical functionality
+- **Architecture Pattern**: Layered separation with interface adapters ensuring platform/language agnosticism
 
-## List of Components to Be Generated
+## Component Breakdown
 
 ### 1. Core Framework (`src/core/`)
-**Responsibility**: Foundation services for configuration, file system operations, audit logging, and plugin management.
+**Responsibility**: Foundation services for configuration, file system operations, audit logging, and plugin management across all platforms.
 **Purpose**: Provide cross-platform foundation services that work identically across all supported platforms.
 **Connections**: Used by all other components; provides configuration management, safe file operations, comprehensive audit trails, and plugin loading capabilities.
 
 **Required Classes:**
 - `src/core/config/ConfigManager.{hpp,cpp}` - `.akao/config.json` management with platform detection
-- `src/core/filesystem/FileSystem.{hpp,cpp}` - Safe file operations with path validation and sandboxing
+- `src/core/filesystem/FileSystem.{hpp,cpp}` - Safe file operations with path validation and cross-platform sandboxing
 - `src/core/trace/TraceLogger.{hpp,cpp}` - GID-based audit logging and error tracking
 - `src/core/plugin/PluginManager.{hpp,cpp}` - Plugin loading and management with security validation
 
@@ -51,185 +51,229 @@ Akao is a layered C++ framework implementing universal validation, rule-driven e
 - `src/rule/ruleset/RuleSetValidator.{hpp,cpp}` - RuleSet validation and consistency checking
 
 ### 4. Build System (`src/build/`)
-**Responsibility**: Cross-platform build management with dev/prod profiles, hot reload, and reproducible builds.
-**Purpose**: Provide fast development iteration and reliable production builds with integrity verification.
-**Connections**: Integrates with rule engine for build validation; used by CLI and automation system.
+**Responsibility**: Cross-platform build management with dev/prod profiles and hot reload capability.
+**Purpose**: Provide development and production builds with file monitoring and integrity verification.
+**Connections**: Integrates with validation system, used by CLI and automation, generates artifacts for deployment.
 
 **Required Classes:**
-- `src/build/manager/BuildManager.{hpp,cpp}` - Build target management with platform profiles
-- `src/build/watcher/FileWatcher.{hpp,cpp}` - File change monitoring for hot reload
-- `src/build/hasher/BuildHasher.{hpp,cpp}` - Reproducible build verification and integrity checking
-- `src/build/graph/DependencyGraph.{hpp,cpp}` - Build dependency resolution and optimization
+- `src/build/manager/BuildManager.{hpp,cpp}` - Build target management (dev/prod profiles)
+- `src/build/watcher/FileWatcher.{hpp,cpp}` - File change monitoring for hot reload development
+- `src/build/hasher/BuildHasher.{hpp,cpp}` - Reproducible build verification and integrity
+- `src/build/graph/DependencyGraph.{hpp,cpp}` - Build dependency graph resolution
 
 ### 5. Documentation Generator (`src/docgen/`)
-**Responsibility**: Template-based documentation generation with automatic updates and graph integration.
-**Purpose**: Generate all documentation from code and rules to ensure accuracy and prevent staleness.
-**Connections**: Integrates with rule engine, graph system; used by CLI and automation for doc generation.
+**Responsibility**: Template-based documentation generation with auto-update coordination.
+**Purpose**: Generate RULES.md, PRINCIPLES.md, FEATURES.md, and API documentation from code and rules.
+**Connections**: Reads from rule engine, integrates with graph system, triggered by CLI commands.
 
 **Required Classes:**
-- `src/docgen/engine/DocumentationEngine.{hpp,cpp}` - Template-based generation with graph integration
-- `src/docgen/parser/CodeParser.{hpp,cpp}` - Code comment parsing across languages
-- `src/docgen/mapper/RuleMapper.{hpp,cpp}` - Rule-to-documentation mapping with GID references
-- `src/docgen/updater/DocumentationUpdater.{hpp,cpp}` - Automatic update coordination
+- `src/docgen/engine/DocumentationEngine.{hpp,cpp}` - Template-based Markdown generation engine
+- `src/docgen/parser/CodeParser.{hpp,cpp}` - Code comment parsing and extraction
+- `src/docgen/mapper/RuleMapper.{hpp,cpp}` - Rule-to-documentation mapping system
+- `src/docgen/updater/AutoUpdater.{hpp,cpp}` - Automatic documentation update coordination
 
 ### 6. Graph Generation System (`src/graph/`)
-**Responsibility**: Multi-type graph generation, analysis, and export for system visualization.
-**Purpose**: Make all system relationships visually explorable and understandable.
-**Connections**: Used by documentation generator, CLI, Web UI for visualization and analysis.
+**Responsibility**: Visual representation and analysis of system relationships and dependencies.
+**Purpose**: Generate graphs for rules, rulesets, project structure, features, validation flows, and audit compliance.
+**Connections**: Integrates with all systems for data extraction, used by CLI, Web UI, and documentation generator.
 
 **Required Classes:**
-- `src/graph/generator/GraphGenerator.{hpp,cpp}` - Core generation for all graph types
+- `src/graph/generator/GraphGenerator.{hpp,cpp}` - Core graph generation engine for all graph types
 - `src/graph/exporter/GraphExporter.{hpp,cpp}` - Multi-format export (DOT, SVG, JSON, PNG)
 - `src/graph/analyzer/GraphAnalyzer.{hpp,cpp}` - Graph analysis and metrics calculation
-- `src/graph/renderer/GraphRenderer.{hpp,cpp}` - Visualization and layout algorithms
+- `src/graph/renderer/GraphRenderer.{hpp,cpp}` - Graph visualization and layout algorithms
 
-### 7. CLI & Interface System (`src/cli/` & `src/interfaces/`)
-**Responsibility**: Unified command execution with interface parity across CLI, Web UI, TUI, and API.
-**Purpose**: Provide identical functionality through all user interface modes with consistent error handling.
-**Connections**: Primary user interface; orchestrates all other components through unified command execution.
+### 7. CLI & Interface System (`src/interfaces/`)
+**Responsibility**: Unified interface system ensuring CLI = Web = TUI = API parity.
+**Purpose**: Provide identical functionality across all user interfaces with common execution layer.
+**Connections**: Front-end for all system operations, delegates to appropriate subsystems.
 
 **Required Classes:**
-- `src/cli/parser/ArgumentParser.{hpp,cpp}` - Command parsing with GID parameter support
-- `src/cli/controller/InterfaceController.{hpp,cpp}` - Unified command execution for all interfaces
 - `src/interfaces/cli/CLIInterface.{hpp,cpp}` - Command-line interface implementation
-- `src/interfaces/web/WebInterface.{hpp,cpp}` - Browser-based interface with REST API
-- `src/interfaces/tui/TUIInterface.{hpp,cpp}` - Text User Interface with full functionality
-- `src/interfaces/api/APIInterface.{hpp,cpp}` - REST API with comprehensive endpoints
+- `src/interfaces/web/WebInterface.{hpp,cpp}` - Web UI with REST API backend
+- `src/interfaces/tui/TUIInterface.{hpp,cpp}` - Text User Interface implementation
+- `src/interfaces/api/APIInterface.{hpp,cpp}` - REST API for external integration
+- `src/interfaces/core/InterfaceController.{hpp,cpp}` - Common command execution abstraction layer
 
 ### 8. Automation System (`src/automation/`)
-**Responsibility**: CI/CD pipeline generation with multi-platform support and template management.
-**Purpose**: Generate automated workflows for GitHub Actions, GitLab CI, Jenkins with platform-specific optimizations.
-**Connections**: Integrates with build system and rule engine; used by CLI for automation setup.
+**Responsibility**: CI/CD pipeline generation and management across platforms.
+**Purpose**: Generate GitHub Actions, GitLab CI, Jenkins workflows with cross-platform support.
+**Connections**: Reads project configuration, generates pipeline files, integrates with build system.
 
 **Required Classes:**
-- `src/automation/pipeline/PipelineGenerator.{hpp,cpp}` - CI/CD pipeline generation
-- `src/automation/template/TemplateEngine.{hpp,cpp}` - Platform-specific template engine
+- `src/automation/pipeline/PipelineGenerator.{hpp,cpp}` - CI/CD pipeline generator with multi-platform support
+- `src/automation/template/TemplateEngine.{hpp,cpp}` - Pipeline template engine
 - `src/automation/configurator/PipelineConfigurator.{hpp,cpp}` - Configuration via `.akao/pipeline.yaml`
-- `src/automation/executor/AutomationExecutor.{hpp,cpp}` - Local automation execution
+- `src/automation/executor/LocalExecutor.{hpp,cpp}` - Local automation execution and testing
 
 ### 9. Project Management (`src/project/`)
-**Responsibility**: Project initialization, template management, and lifecycle operations.
-**Purpose**: Create valid projects from templates with platform detection and rule compliance.
-**Connections**: Uses rule engine for validation; integrates with feature management and templates.
+**Responsibility**: Project template management, initialization, and lifecycle operations.
+**Purpose**: Create and manage projects from validated templates with feature integration.
+**Connections**: Uses template system, integrates with feature management, validates with rule engine.
 
 **Required Classes:**
-- `src/project/template/TemplateEngine.{hpp,cpp}` - Template system with variable substitution
+- `src/project/template/TemplateEngine.{hpp,cpp}` - Project template engine with variable substitution
 - `src/project/initializer/ProjectInitializer.{hpp,cpp}` - Project initialization from templates
 - `src/project/manager/ProjectManager.{hpp,cpp}` - Project lifecycle management
 - `src/project/validator/ProjectValidator.{hpp,cpp}` - Project structure and compliance validation
 
 ### 10. Feature Management (`src/feature/`)
-**Responsibility**: Feature lifecycle, external registry integration, and secure sandboxed execution.
-**Purpose**: Manage local and external features with dependency resolution and security isolation.
-**Connections**: Integrates with security system; used by project management and CLI for feature operations.
+**Responsibility**: Feature lifecycle management with external registry support and security sandboxing.
+**Purpose**: Install, manage, and secure external features with dependency resolution.
+**Connections**: Integrates with security system, uses dependency resolver, manages external registries.
 
 **Required Classes:**
-- `src/feature/manager/FeatureManager.{hpp,cpp}` - Feature lifecycle and orchestration
-- `src/feature/registry/RegistryClient.{hpp,cpp}` - External registry integration with caching
+- `src/feature/manager/FeatureManager.{hpp,cpp}` - Feature lifecycle management and orchestration
+- `src/feature/registry/RegistryClient.{hpp,cpp}` - External registry client with caching
 - `src/feature/resolver/DependencyResolver.{hpp,cpp}` - Dependency resolution with conflict handling
-- `src/feature/installer/FeatureInstaller.{hpp,cpp}` - Secure installation with validation
-- `src/feature/sandbox/FeatureSandbox.{hpp,cpp}` - Security isolation and resource limits
+- `src/feature/installer/FeatureInstaller.{hpp,cpp}` - Secure feature installation with validation
+- `src/feature/sandbox/SecuritySandbox.{hpp,cpp}` - Feature execution sandboxing and isolation
 
 ### 11. Metrics System (`src/metrics/`)
 **Responsibility**: Metrics collection, compliance scoring, and reporting with GID-based tracking.
-**Purpose**: Provide measurable project health and compliance metrics for analysis and improvement.
-**Connections**: Integrates with rule engine and audit system; used by CLI and Web UI for reporting.
+**Purpose**: Provide measurable compliance metrics and project health indicators.
+**Connections**: Collects data from all systems, generates reports, integrates with audit system.
 
 **Required Classes:**
-- `src/metrics/collector/MetricsCollector.{hpp,cpp}` - Metrics collection with GID tracking
-- `src/metrics/scorer/ComplianceScorer.{hpp,cpp}` - Scoring algorithms per GID and RuleSet
-- `src/metrics/reporter/MetricsReporter.{hpp,cpp}` - Reporting and visualization with GID breakdown
-- `src/metrics/exporter/MetricsExporter.{hpp,cpp}` - External system export (Prometheus, Grafana)
+- `src/metrics/collector/MetricsCollector.{hpp,cpp}` - Metrics collection system with GID-based tracking
+- `src/metrics/scorer/ComplianceScorer.{hpp,cpp}` - Compliance scoring algorithms per GID
+- `src/metrics/reporter/MetricsReporter.{hpp,cpp}` - Metrics reporting and visualization
+- `src/metrics/exporter/MetricsExporter.{hpp,cpp}` - Metrics export for external systems
 
 ### 12. Language Adapters (`src/language/`)
-**Responsibility**: Language-specific adapters for multi-language repository support.
-**Purpose**: Handle language-specific rules and build processes while maintaining language isolation.
-**Connections**: Used by rule engine and build system for language-specific operations.
+**Responsibility**: Language-specific rule binding and multi-language repository support.
+**Purpose**: Enable validation and management of polyglot repositories with language isolation.
+**Connections**: Integrates with rule engine, provides language-specific validation logic.
 
 **Required Classes:**
-- `src/language/cpp/CppAdapter.{hpp,cpp}` - C++ language support and rule binding
-- `src/language/js/JavaScriptAdapter.{hpp,cpp}` - JavaScript/Node.js adapter
-- `src/language/rust/RustAdapter.{hpp,cpp}` - Rust language adapter with cargo integration
+- `src/language/cpp/CppAdapter.{hpp,cpp}` - C++ language adapter and rule binding
+- `src/language/js/JavaScriptAdapter.{hpp,cpp}` - JavaScript adapter with Node.js integration
+- `src/language/rust/RustAdapter.{hpp,cpp}` - Rust adapter with Cargo integration
 - `src/language/python/PythonAdapter.{hpp,cpp}` - Python adapter with pip integration
 - `src/language/go/GoAdapter.{hpp,cpp}` - Go adapter with modules integration
-- `src/language/core/LanguageInterface.{hpp,cpp}` - Common adapter interface
+- `src/language/core/LanguageAdapter.{hpp,cpp}` - Common language adapter interface
 
 ### 13. Platform Adapters (`src/platform/`)
-**Responsibility**: Platform-specific implementations for cross-platform support.
-**Purpose**: Handle OS-specific operations while maintaining unified interface.
-**Connections**: Used by core framework and all other components for platform-specific functionality.
+**Responsibility**: Platform-specific implementations maintaining unified interface.
+**Purpose**: Handle OS-specific operations while maintaining cross-platform compatibility.
+**Connections**: Used by all systems requiring platform-specific functionality.
 
 **Required Classes:**
-- `src/platform/linux/LinuxAdapter.{hpp,cpp}` - Linux-specific implementations
-- `src/platform/macos/MacOSAdapter.{hpp,cpp}` - macOS-specific implementations
-- `src/platform/windows/WindowsAdapter.{hpp,cpp}` - Windows-specific implementations
-- `src/platform/android/AndroidAdapter.{hpp,cpp}` - Android NDK implementations
-- `src/platform/ios/IOSAdapter.{hpp,cpp}` - iOS platform implementations
-- `src/platform/wasm/WasmAdapter.{hpp,cpp}` - WebAssembly implementations
-- `src/platform/embedded/EmbeddedAdapter.{hpp,cpp}` - Embedded systems implementations
-
+- `src/platform/linux/LinuxPlatform.{hpp,cpp}` - Linux-specific implementations
+- `src/platform/macos/MacOSPlatform.{hpp,cpp}` - macOS-specific implementations
+- `src/platform/windows/WindowsPlatform.{hpp,cpp}` - Windows-specific implementations
+- `src/platform/android/AndroidPlatform.{hpp,cpp}` - Android NDK implementations
+- `src/platform/ios/IOSPlatform.{hpp,cpp}` - iOS platform implementations
+- `src/platform/wasm/WebAssemblyPlatform.{hpp,cpp}` - WebAssembly implementations
+- `src/platform/embedded/EmbeddedPlatform.{hpp,cpp}` - Embedded systems implementations
 ## Technical Constraints
 
-### Architecture Requirements
-- **Must implement layered architecture** with strict separation: Interface Layer → Language Binding Layer → Platform Adapter Layer → Core Business Logic
-- **Core business logic must be completely agnostic** to language, interface, and operating system
-- **All interfaces (CLI/Web/TUI/API) must provide identical functionality** with automated parity testing
-- **All components must follow one-class-per-folder principle** with corresponding header files in `include/` directory
+### Architectural Constraints
 
-### Global Rule Identifier (GID) System Implementation
-- **All rules must have GID format**: `akao:rule::<category>:<n>:v<version>`
-- **All rule files (JSON/YAML/TOML) must include GID** in their structure
-- **All violations must include GID, file path, line number, and suggestions**
-- **All audit and trace files must reference rules by GID**
-- **CLI must support GID-based operations**: `--gid=<gid>` parameter for all rule commands
+**Layered Architecture Requirements:**
+- Core business logic must be completely agnostic to language, interface, and OS
+- Language binding layer provides consistent APIs across C++, JS, Rust, Python, Go
+- Platform adapter layer handles OS-specific implementations with unified interface
+- Interface layer ensures CLI=Web=TUI=API parity through common execution layer
+- Foundation services (config, filesystem, trace, plugin) work across all platforms
+
+**Cross-Platform Support Matrix:**
+- **Desktop**: Linux (x86_64, ARM64), macOS (x86_64, ARM64), Windows (x86_64)
+- **Mobile**: Android (NDK), iOS (SDK)
+- **Web**: WebAssembly for browser execution
+- **Embedded**: Minimal footprint for constrained environments
+- **Cloud**: Docker containers, serverless functions
+
+**Multi-Language Repository Validation:**
+- C++, JavaScript, Rust, Python, Go language adapters
+- Language boundary enforcement and isolation mechanisms
+- Multi-language monorepo validation and rule application
+- Language-specific rule profiles and configuration management
+
+### Global Rule Identifier (GID) System
+
+**GID Format Requirements:**
+- Format: `akao:rule::<category>:<n>:v<version>`
+- Examples: `akao:rule::cpp:naming:snake_case:v1`, `akao:rule::structure:one_class_per_folder:v1`
+- Global uniqueness across all registries and rule sets
+- Version management preserves GID stability across rule updates
+
+**GID Integration Requirements:**
+- All rule files (JSON/YAML/TOML) must include GID in structure
+- CLI operations support `--gid=<gid>` parameter for specific rule targeting
+- Audit trails reference all rules by GID in trace.json and audit.json
+- Violation reports include GID, file path, line number, and actionable suggestions
+- RuleSet definitions reference rules by GID for organizational grouping
 
 ### RuleSet System Requirements
-- **RuleSet definitions in `.akao/rulesets/`** with YAML/JSON format support
-- **RuleSet inheritance with parent, includes, excludes resolution**
-- **CLI commands**: `ruleset list/info/validate/create` functionality
-- **RuleSet-based operations**: `validate --ruleset=<n>` and `audit --ruleset=<n>`
 
-### Cross-Platform Support Requirements
-- **Must build and run on**: Linux (x86_64, ARM64), macOS (Intel, Apple Silicon), Windows
-- **Must support mobile platforms**: Android (NDK), iOS (Framework)
-- **Must support web**: WebAssembly for browser execution
-- **Must support embedded**: Minimal footprint for constrained environments
-- **Must support containers**: Docker builds for multiple base images
+**RuleSet Structure:**
+- Location: `.akao/rulesets/` directory with YAML or JSON format
+- Inheritance: Parent RuleSets, includes, excludes resolution
+- Built-in RuleSets: core.yaml, cpp.yaml, security.yaml, performance.yaml
+- CLI integration: `ruleset list/info/validate/create` commands
 
-### Multi-Language Repository Support
-- **Language adapters for**: C++, JavaScript, Rust, Python, Go
-- **Language isolation enforcement** with clear boundaries
-- **Multi-language validation** with language-specific rules
-- **Language-specific build integration** while maintaining unified interface
+**RuleSet Operations:**
+- RuleSet-based validation: `validate --ruleset=<name>`
+- RuleSet-based auditing: `audit --ruleset=<name>`
+- RuleSet inheritance resolution with conflict handling
 
-### Build System Requirements
-- **CMake-based build system** with cross-platform configuration
-- **Dev and prod build profiles** with hot reload for development
-- **Reproducible builds** with hash verification and integrity checking
-- **Static linking preferred** for core, dynamic loading for language adapters
+### Interface Parity Requirements
 
-### Testing Requirements
-- **Comprehensive test suite** with >95% code coverage
-- **Unit tests per class** in `tests/unit/`
-- **Integration tests** in `tests/integration/`
-- **Principle tests** in `tests/principles/` that validate all 19+ philosophical principles
-- **Interface parity tests** in `tests/parity/` that verify CLI=Web=TUI=API consistency
+**CLI = Web = TUI = API Enforcement:**
+- All commands must produce identical results across interfaces
+- Error messages and status codes consistent across interfaces
+- Response formats standardized (JSON/XML/YAML)
+- Automated testing validates full parity across all interfaces
 
-## Design Principles
+**Command Mapping Requirements:**
+- 1:1 mapping between CLI commands and API endpoints
+- Web UI provides browser interface with identical functionality
+- TUI provides full-screen terminal interface with complete feature set
+- API provides comprehensive REST endpoints for external integration
 
-### Core Philosophical Principles (Must Be Enforced Through Code)
+### Graph Generation Requirements
 
-1. **Structure is enforced** - Every file, class, and folder must follow rule-driven structure
-2. **Universal validation** - Any project can be validated using `akao validate`, including Akao itself
-3. **No rules without tests** - Each rule must have measurable test coverage
-4. **Every rule is traceable** - Violations include GID, stack trace, file, line, and suggestion
-5. **Documentation is code** - All documentation generated from actual rules and tests
-6. **One class per folder** - Every folder contains exactly one class and its tests
-7. **One language per scope** - Multi-language repositories must isolate languages clearly
-8. **CLI = Web = TUI = API** - All interfaces provide identical functionality
-9. **Every action is measurable** - Complete audit trail and metrics collection
-10. **Rules can be toggled, not skipped** - Disabled rules are tracked and audited
-11. **Auto-update all documentation** - Documentation regenerates on code/rule changes
+**Graph Types:**
+- Rule dependency graphs showing GID relationships
+- RuleSet relationship graphs with inheritance visualization
+- Project structure graphs for architecture visualization
+- Feature dependency graphs with conflict detection
+- Validation flow graphs for debugging and optimization
+- Audit compliance graphs for metrics and trends
+
+**Export Formats:**
+- DOT format for Graphviz compatibility
+- SVG format for web and documentation embedding
+- JSON format for programmatic access
+- PNG format for presentations and reports
+
+### Philosophy Enforcement Requirements
+
+**All 22+ Philosophical Principles Must Be Technically Enforced:**
+
+1. **Structure is enforced** - Rule engine validates project structure with GID tracking
+2. **Universal validation** - Validation works on any project including Akao across all platforms
+3. **No rules without tests** - Every rule has corresponding test case with GID validation
+4. **Every rule is traceable** - Violations include GID, file path, line number, and suggestions
+5. **Documentation is code** - All docs generated from rules and tests with GID references
+6. **One class per folder** - Project structure enforces this principle with validation
+7. **One language per scope** - Multi-language support with clear boundary enforcement
+8. **CLI = Web = TUI = API** - Identical functionality verified through automated testing
+9. **Every action is measurable** - Complete audit trail and metrics with GID breakdown
+10. **Rules can be toggled, not skipped** - Disabled rules tracked, audited, and reported by GID
+11. **Auto-update documentation** - Docs regenerate on code/rule changes with graph integration
+12. **Everything builds dev + prod** - Development and production builds for all platforms
+13. **No external implicit behavior** - All dependencies explicitly declared and managed
+14. **Only one truth** - Single source of truth maintained across all components
+15. **Observable, explainable, deterministic** - Full transparency in all operations with traceability
+16. **Features are composable** - Features work together without conflicts across languages
+17. **Templates are validated** - All templates pass the same rules on all platforms
+18. **External features are sandboxed** - Security isolation with platform-specific enforcement
+19. **Dependency resolution is explicit** - Clear dependency management with conflict resolution
+20. **Every rule is part of at least one RuleSet** - Organizational grouping with inheritance
+21. **Code must be graph-explorable** - Visual representation of all relationships
+22. **All logic must be explainable visually** - Graph generation for debugging and comprehension
 12. **Everything must build dev + prod** - Both development and production builds required
 13. **No external implicit behavior** - All dependencies must be declared explicitly
 14. **Only one truth** - Single source of truth maintained across all components
@@ -283,177 +327,221 @@ akao/
 │   │   ├── akao              # Production binary
 │   │   └── hashes/           # File integrity hashes
 │   ├── meta.json             # Build metadata and dependencies
-│   └── hash.json             # Reproducible build verification
-├── .github/                  # Auto-generated CI/CD workflows
-│   ├── workflows/            # GitHub Actions workflows
-│   │   ├── ci.yml            # Continuous integration
-│   │   ├── cd.yml            # Continuous deployment
-│   │   └── validate.yml      # Universal validation workflow
-│   └── templates/            # Workflow templates
-├── docs/                     # Auto-generated documentation
-│   ├── README.md             # Generated project documentation
-│   ├── RULES.md              # Generated rule documentation
-│   ├── PRINCIPLES.md         # Generated principle documentation
-│   ├── FEATURES.md           # Generated feature documentation
-│   └── api/                  # Generated API documentation
-│       ├── core.md           # Core framework API
-│       ├── cli.md            # CLI interface API
-│       ├── automation.md     # Automation system API
-│       ├── project.md        # Project management API
-│       └── feature.md        # Feature management API
-├── rules/                    # Rule definitions and enforcement
-│   ├── core.json             # Core framework rules
-│   ├── structure.json        # Project structure rules
-│   ├── naming.json           # Naming convention rules
-│   ├── testing.json          # Testing requirement rules
-│   ├── documentation.json    # Documentation rules
-│   ├── security.json         # Security and sandboxing rules
-│   └── performance.json      # Performance requirement rules
-├── templates/                # Project and feature templates
-│   ├── projects/             # Project initialization templates
-│   │   ├── cpp/              # C++ project template
-│   │   ├── web/              # Web application template
-│   │   └── library/          # Library project template
-│   ├── features/             # Feature templates
-│   │   ├── api/              # API feature template
-│   │   ├── database/         # Database feature template
-│   │   └── auth/             # Authentication feature template
-│   └── docs/                 # Documentation templates
-│       ├── RULES.md.template # Rule documentation template
-│       └── README.md.template# Project README template
-├── src/                      # Source code (1 class per folder)
-│   ├── core/                 # Foundation services
-│   │   ├── config/           # Configuration management
-│   │   ├── filesystem/       # Cross-platform file operations
-│   │   ├── trace/            # Audit logging and trace system
-│   │   └── plugin/           # Plugin loading and management
-│   ├── rule/                 # Rule processing engine
-│   │   ├── parser/           # Multi-format rule parser
-│   │   ├── validator/        # Universal validation engine
-│   │   ├── registry/         # GID-based rule discovery
-│   │   ├── reporter/         # Violation reporting
-│   │   └── ruleset/          # RuleSet management
-│   │       ├── manager/      # RuleSet lifecycle management
-│   │       ├── resolver/     # Inheritance resolution
-│   │       ├── parser/       # RuleSet definition parser
-│   │       └── validator/    # RuleSet validation
-│   ├── build/                # Build system implementation
-│   │   ├── manager/          # Build target management
-│   │   ├── watcher/          # File change monitoring
-│   │   ├── hasher/           # Build integrity verification
-│   │   └── graph/            # Dependency graph resolution
-│   ├── docgen/               # Documentation generator
-│   │   ├── engine/           # Template-based generation
-│   │   ├── parser/           # Code comment parsing
-│   │   ├── mapper/           # Rule-to-documentation mapping
-│   │   └── updater/          # Automatic update coordination
-│   ├── graph/                # Graph generation system
-│   │   ├── generator/        # Core graph generation
-│   │   ├── exporter/         # Multi-format export
-│   │   ├── analyzer/         # Graph analysis
-│   │   └── renderer/         # Visualization algorithms
-│   ├── cli/                  # Command-line interface
-│   │   ├── parser/           # Argument parsing
-│   │   └── controller/       # Command execution
-│   ├── interfaces/           # Interface implementations
-│   │   ├── cli/              # CLI interface
-│   │   ├── web/              # Web UI interface
-│   │   ├── tui/              # Terminal UI interface
-│   │   └── api/              # REST API interface
-│   ├── automation/           # CI/CD pipeline generation
-│   │   ├── pipeline/         # Pipeline generator
-│   │   ├── template/         # Template engine
-│   │   ├── configurator/     # Pipeline configuration
-│   │   └── executor/         # Local automation execution
-│   ├── project/              # Project management
-│   │   ├── template/         # Template engine
-│   │   ├── initializer/      # Project initialization
-│   │   ├── manager/          # Project lifecycle
-│   │   └── validator/        # Project validation
-│   ├── feature/              # Feature management
-│   │   ├── manager/          # Feature lifecycle
-│   │   ├── registry/         # External registry client
-│   │   ├── resolver/         # Dependency resolution
-│   │   ├── installer/        # Secure installation
-│   │   └── sandbox/          # Security isolation
-│   ├── metrics/              # Metrics and compliance
-│   │   ├── collector/        # Metrics collection
-│   │   ├── scorer/           # Compliance scoring
-│   │   ├── reporter/         # Metrics reporting
-│   │   └── exporter/         # External export
-│   ├── language/             # Language adapters
-│   │   ├── cpp/              # C++ adapter
-│   │   ├── js/               # JavaScript adapter
-│   │   ├── rust/             # Rust adapter
-│   │   ├── python/           # Python adapter
-│   │   ├── go/               # Go adapter
-│   │   └── core/             # Common interface
-│   ├── platform/             # Platform adapters
-│   │   ├── linux/            # Linux implementations
-│   │   ├── macos/            # macOS implementations
-│   │   ├── windows/          # Windows implementations
-│   │   ├── android/          # Android NDK
-│   │   ├── ios/              # iOS implementations
-│   │   ├── wasm/             # WebAssembly
-│   │   └── embedded/         # Embedded systems
-│   └── main.cpp              # Main application entry point
-├── include/                  # C++ headers (mirrors src structure)
-│   ├── akao/                 # Main namespace headers
-│   │   ├── core/             # Core framework headers
-│   │   ├── rule/             # Rule engine headers
-│   │   ├── build/            # Build system headers
-│   │   ├── docgen/           # Documentation headers
-│   │   ├── graph/            # Graph system headers
-│   │   ├── cli/              # CLI headers
-│   │   ├── interfaces/       # Interface headers
-│   │   ├── automation/       # Automation headers
-│   │   ├── project/          # Project management headers
-│   │   ├── feature/          # Feature management headers
-│   │   ├── metrics/          # Metrics headers
-│   │   ├── language/         # Language adapter headers
-│   │   └── platform/         # Platform adapter headers
-│   └── akao.hpp              # Main include header
-├── tests/                    # Test suite
-│   ├── unit/                 # Unit tests per class
-│   │   ├── core/             # Core framework tests
-│   │   ├── rule/             # Rule engine tests
-│   │   ├── build/            # Build system tests
-│   │   ├── docgen/           # Documentation tests
-│   │   ├── graph/            # Graph system tests
-│   │   ├── cli/              # CLI tests
-│   │   ├── interfaces/       # Interface tests
-│   │   ├── automation/       # Automation tests
-│   │   ├── project/          # Project management tests
-│   │   ├── feature/          # Feature management tests
-│   │   ├── metrics/          # Metrics tests
-│   │   ├── language/         # Language adapter tests
-│   │   └── platform/         # Platform adapter tests
-│   ├── integration/          # Integration tests
-│   │   ├── end_to_end/       # Complete workflow tests
-│   │   ├── cross_platform/   # Platform compatibility tests
-│   │   ├── multi_language/   # Language support tests
-│   │   └── interface_parity/ # Interface consistency tests
-│   ├── principles/           # Principle validation tests
-│   │   ├── structure_enforcement.cpp     # Test structure enforcement
-│   │   ├── universal_validation.cpp      # Test universal validation
-│   │   ├── rule_traceability.cpp         # Test GID traceability
-│   │   ├── documentation_generation.cpp  # Test doc generation
-│   │   ├── interface_parity.cpp          # Test CLI=Web=TUI=API
-│   │   └── principle_validation.cpp      # Master principle test
-│   └── parity/               # Interface parity tests
-│       ├── cli_web_parity.cpp           # CLI vs Web UI tests
-│       ├── tui_api_parity.cpp           # TUI vs API tests
-│       └── full_parity_test.cpp         # Complete parity validation
-├── features/                 # Project-specific features
-│   ├── manifest.json         # Feature manifest
-│   └── examples/             # Example features
-├── plugins/                  # Platform and language plugins
-│   ├── wasm/                 # WebAssembly plugin
-│   ├── js/                   # JavaScript plugin
-│   ├── rust/                 # Rust plugin
-│   ├── python/               # Python plugin
-│   ├── go/                   # Go plugin
-│   ├── android/              # Android plugin
+## Expected Output
+
+### Complete Directory Structure (555+ Files)
+
+```
+akao/
+├── .akao/                      # Framework runtime configuration
+│   ├── config.json            # Main configuration file
+│   ├── pipeline.yaml          # CI/CD pipeline configuration
+│   ├── profiles/               # Language-specific rule profiles
+│   │   ├── cpp.json           # C++ rules and build settings
+│   │   ├── js.json            # JavaScript rules and build settings
+│   │   ├── rust.json          # Rust rules and build settings
+│   │   ├── python.json        # Python rules and build settings
+│   │   └── go.json            # Go rules and build settings
+│   ├── rulesets/               # RuleSet definitions and inheritance
+│   │   ├── core.yaml          # Core framework RuleSet
+│   │   ├── cpp.yaml           # C++ language RuleSet
+│   │   ├── security.yaml      # Security-focused RuleSet
+│   │   ├── performance.yaml   # Performance RuleSet
+│   │   └── custom/            # Project-specific RuleSets
+│   │       ├── api.yaml       # API development RuleSet
+│   │       └── database.yaml  # Database integration RuleSet
+│   ├── features/               # Feature management
+│   │   ├── installed.json     # List of installed features
+│   │   ├── dependencies.json  # Feature dependency graph
+│   │   └── cache/             # Feature download cache
+│   ├── registry/               # External registries
+│   │   ├── official.json      # Official Akao registry
+│   │   └── custom.json        # Custom registries
+│   ├── trace.json             # Audit log and violation trace
+│   ├── audit.json             # System audit and compliance metrics
+│   └── cache/                 # Build and validation cache
+│       ├── rules.cache        # Compiled rule cache
+│       └── deps.cache         # Dependency resolution cache
+├── .build/                     # Build outputs and artifacts
+│   ├── dev/                   # Development builds (hot reload)
+│   │   ├── akao               # Development binary
+│   │   └── objects/           # Object files
+│   ├── prod/                  # Production builds (optimized)
+│   │   ├── akao               # Production binary
+│   │   └── hashes/            # File integrity hashes
+│   ├── meta.json              # Build metadata and dependencies
+│   └── hash.json              # Reproducible build verification
+├── .github/                    # Auto-generated CI/CD workflows
+│   ├── workflows/             # GitHub Actions workflows
+│   │   ├── ci.yml             # Continuous integration
+│   │   ├── cd.yml             # Continuous deployment
+│   │   └── validate.yml       # Universal validation workflow
+│   └── templates/             # Workflow templates
+├── docs/                       # Auto-generated documentation
+│   ├── README.md              # Generated project documentation
+│   ├── RULES.md               # Generated rule documentation
+│   ├── PRINCIPLES.md          # Generated principle documentation
+│   ├── FEATURES.md            # Generated feature documentation
+│   └── api/                   # Generated API documentation
+│       ├── core.md            # Core framework API
+│       ├── cli.md             # CLI interface API
+│       ├── automation.md      # Automation system API
+│       ├── project.md         # Project management API
+│       └── feature.md         # Feature management API
+├── rules/                      # Rule definitions and enforcement
+│   ├── core.json              # Core framework rules
+│   ├── structure.json         # Project structure rules
+│   ├── naming.json            # Naming convention rules
+│   ├── testing.json           # Testing requirement rules
+│   ├── documentation.json     # Documentation rules
+│   ├── security.json          # Security and sandboxing rules
+│   └── performance.json       # Performance requirement rules
+├── templates/                  # Project and feature templates
+│   ├── projects/              # Project initialization templates
+│   │   ├── cpp/               # C++ project template
+│   │   ├── web/               # Web project template
+│   │   └── library/           # Library project template
+│   └── features/              # Feature templates
+│       ├── api/               # API feature template
+│       ├── database/          # Database feature template
+│       └── auth/              # Authentication feature template
+├── src/                        # Source code (1 class per folder)
+│   ├── main.cpp               # Application entry point
+│   ├── core/                  # Core framework components
+│   ├── rule/                  # Rule engine system
+│   ├── build/                 # Build engine system
+│   ├── docgen/                # Documentation generation system
+│   ├── graph/                 # Graph generation system
+│   ├── interfaces/            # Interface system (CLI/Web/TUI/API)
+│   ├── automation/            # Automation and CI/CD system
+│   ├── project/               # Project management system
+│   ├── feature/               # Feature management system
+│   ├── metrics/               # Metrics and compliance system
+│   ├── language/              # Language adapters
+│   └── platform/              # Platform adapters
+├── include/                    # Header files (mirrors src structure)
+│   ├── akao/                  # Main namespace headers
+│   └── akao.hpp               # Main framework header
+├── tests/                      # Comprehensive test suite
+│   ├── unit/                  # Unit tests (per component)
+│   ├── integration/           # Integration tests
+│   └── principles/            # Principle validation tests
+├── features/                   # Built-in project features
+│   ├── api/                   # REST API feature
+│   ├── database/              # Database integration feature
+│   └── auth/                  # Authentication feature
+├── plugins/                    # Optional extensions
+│   ├── wasm/                  # WebAssembly build target
+│   ├── js/                    # JavaScript bindings
+│   └── android/               # Android NDK target
+├── CMakeLists.txt             # CMake build configuration
+├── .gitignore                 # Git ignore patterns
+└── LICENSE                    # MIT license file
+```
+
+### CLI Command Implementation
+
+All commands must be implemented with full GID and RuleSet support:
+
+```bash
+# Project Management
+akao init [--template=<type>]                    # Initialize project
+akao feature add/remove/list/info <name>         # Feature management
+akao registry add/list <url>                     # Registry management
+akao install/update/uninstall <feature>          # External features
+
+# Core Operations
+akao validate [--gid=<gid>] [--category=<cat>] [--ruleset=<name>]  # Validation
+akao test                                         # Testing
+akao build --dev/--prod                          # Building
+akao docgen [--ruleset=<name>]                   # Documentation
+akao audit [--gid=<gid>] [--ruleset=<name>]      # Auditing
+
+# Rule Management (GID-based)
+akao rule list [--format=gid]                    # Rule listing
+akao rule info --gid=<gid>                       # Rule details
+akao rule disable/enable --gid=<gid>             # Rule state management
+
+# RuleSet Management
+akao ruleset list/info/validate/create <name>    # RuleSet operations
+
+# Graph Generation
+akao graph --type=<type> --format=<format> [--output=<path>] [--ruleset=<name>]
+
+# Automation & CI/CD
+akao pipeline generate/validate                  # Pipeline management
+akao workflow create/update                      # Workflow management
+akao deploy configure                            # Deployment configuration
+```
+
+### Cross-Platform Build Configuration
+
+Complete CMakeLists.txt supporting all target platforms:
+
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(akao VERSION 1.0.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Platform detection and configuration
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(AKAO_PLATFORM "linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(AKAO_PLATFORM "macos")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(AKAO_PLATFORM "windows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    set(AKAO_PLATFORM "android")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(AKAO_PLATFORM "ios")
+elseif(EMSCRIPTEN)
+    set(AKAO_PLATFORM "wasm")
+else()
+    set(AKAO_PLATFORM "embedded")
+endif()
+
+# Cross-platform configuration options
+option(AKAO_BUILD_TESTS "Build comprehensive test suite" ON)
+option(AKAO_BUILD_PLUGINS "Build language and platform plugins" ON)
+option(AKAO_BUILD_WEB_UI "Build Web UI interface" ON)
+option(AKAO_BUILD_TUI "Build Text User Interface" ON)
+option(AKAO_STATIC_LINKING "Use static linking for dependencies" ON)
+
+# All core libraries and executables with cross-platform support
+# [Complete CMake configuration for all platforms and features]
+```
+
+### Interface Parity Implementation
+
+All interfaces must provide identical functionality through common execution layer:
+
+```cpp
+namespace akao::interfaces {
+class InterfaceController {
+public:
+    CommandResult executeCommand(const CommandRequest& request);
+private:
+    CommandRegistry command_registry_;
+};
+
+struct CommandRequest {
+    std::string command_name;
+    std::map<std::string, std::string> parameters;
+    std::string interface_type;  // "cli", "web", "tui", "api"
+};
+
+struct CommandResult {
+    bool success;
+    std::string output;
+    std::map<std::string, std::string> metadata;
+    std::vector<std::string> errors;
+};
+}
+```
+
+This prompt specification enables complete one-shot implementation of the Akao framework with full cross-platform support, multi-language capability, comprehensive testing, and strict philosophical principle enforcement through measurable, traceable rules with Global Rule Identifier (GID) integration.
 │   └── ios/                  # iOS plugin
 ├── CMakeLists.txt            # Cross-platform build configuration
 ├── .gitignore                # Git ignore patterns
