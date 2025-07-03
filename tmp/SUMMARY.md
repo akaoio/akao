@@ -2,23 +2,26 @@
 
 > **Developer Quick Reference**: Complete technical specification for implementing the Akao framework
 
-## 📋 Table of Contents
+## Table of Contents
 
-1. [System Overview](#-system-overview)
-2. [Directory Structure](#️-directory-structure)
-3. [CLI Command Taxonomy](#️-cli-command-taxonomy)
-4. [Global Rule Identifier (GID) System](#-global-rule-identifier-gid-system)
-5. [RuleSet System](#-ruleset-system)
-6. [File Formats and Structure](#-file-formats-and-structure)
-7. [Platform and Language Support](#-platform-and-language-support)
-8. [Implementation Requirements](#️-implementation-requirements)
-9. [Security & Sandboxing Architecture](#-security--sandboxing-architecture)
-10. [Key Technical Specifications](#-key-technical-specifications)
-11. [Reference Documents](#-reference-documents)
+1. [System Overview](#system-overview)
+2. [Directory Structure](#directory-structure)
+3. [CLI Command Taxonomy](#cli-command-taxonomy)
+4. [Quick Start Guide](#quick-start-guide)
+5. [Global Rule Identifier (GID) System](#global-rule-identifier-gid-system)
+6. [RuleSet System](#ruleset-system)
+7. [File Formats and Structure](#file-formats-and-structure)
+8. [Platform and Language Support](#platform-and-language-support)
+9. [Implementation Requirements](#implementation-requirements)
+10. [Security & Sandboxing Architecture](#security--sandboxing-architecture)
+11. [System Dependencies](#system-dependencies)
+12. [Performance Specifications](#performance-specifications)
+13. [Key Technical Specifications](#key-technical-specifications)
+14. [Reference Documents](#reference-documents)
 
 ---
 
-## 📋 System Overview
+## System Overview
 
 **Core Technology**: C++ (C++17+) with layered architecture for cross-platform, multi-language support  
 **Primary Purpose**: Rule-based project structure enforcement, build management, automation, and documentation generation  
@@ -31,7 +34,7 @@
 
 ---
 
-## 🗂️ Directory Structure
+## Directory Structure
 
 ### Core Implementation (`src/`)
 ```
@@ -137,7 +140,7 @@ src/
 
 ---
 
-## 🖥️ CLI Command Taxonomy
+## CLI Command Taxonomy
 
 ### Project Management
 - `akao init [--template=<type>]` - Initialize project with templates
@@ -173,7 +176,7 @@ src/
 
 ---
 
-## ⚡ Quick Start Guide
+## Quick Start Guide
 
 ### Installation
 ```bash
@@ -222,7 +225,7 @@ akao graph --type=project --format=svg --output=project.svg
 
 ---
 
-## 🔍 Global Rule Identifier (GID) System
+## Global Rule Identifier (GID) System
 
 ### Format Specification
 ```
@@ -251,7 +254,7 @@ akao audit --gid="akao:rule::cpp:naming:snake_case:v1"
 
 ---
 
-## 📦 RuleSet System
+## RuleSet System
 
 ### Structure and Location
 - **Location**: `.akao/rulesets/` directory
@@ -287,7 +290,7 @@ akao audit --ruleset=cpp             # Audit compliance for C++ RuleSet
 
 ---
 
-## 📄 File Formats and Structure
+## File Formats and Structure
 
 ### Rule Files (Multi-format support)
 ```json
@@ -364,7 +367,7 @@ akao audit --ruleset=cpp             # Audit compliance for C++ RuleSet
 
 ---
 
-## 🌐 Platform and Language Support
+## Platform and Language Support
 
 ### Supported Operating Systems
 - **Desktop**: Linux (x86_64, ARM64), macOS (x86_64, ARM64), Windows (x86_64)
@@ -386,7 +389,7 @@ validation: ["akao validate", "akao test", "akao build --dev", "akao build --pro
 
 ---
 
-## ⚙️ Implementation Requirements
+## Implementation Requirements
 
 ### Architectural Constraints
 - **One Class Per Folder**: Every `src/` folder contains exactly one class (`.cpp` + `.hpp`)
@@ -408,7 +411,7 @@ tests/unit/core/config/
 
 ---
 
-## 🔐 Security & Sandboxing Architecture
+## Security & Sandboxing Architecture
 
 ### Feature Security Model
 - **External Feature Sandboxing**: Features from external sources run in controlled environments
@@ -425,7 +428,7 @@ tests/unit/core/config/
 
 ---
 
-## 🛠️ System Dependencies
+## System Dependencies
 
 ### Build Requirements
 - **CMake**: Version 3.15 or higher
@@ -469,7 +472,7 @@ dependencies:
 
 ---
 
-## 🚀 Performance Specifications
+## Performance Specifications
 
 ### Resource Requirements
 - **Memory Usage**: 50-200MB base footprint depending on project size
@@ -491,7 +494,7 @@ dependencies:
 
 ---
 
-## 🎯 Key Technical Specifications
+## Key Technical Specifications
 
 ### Build System Details
 - **Development Mode**: Hot reload, fast compilation, debugging symbols, incremental builds
@@ -524,7 +527,7 @@ dependencies:
 
 ---
 
-## 📚 Reference Documents
+## Reference Documents
 
 - **[PLAN.FINAL.md](./PLAN.FINAL.md)**: Complete implementation specification (2600+ lines) - **PRIMARY REFERENCE**
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)**: System components and technical design (13 major subsystems)

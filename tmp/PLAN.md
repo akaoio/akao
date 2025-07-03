@@ -2,9 +2,25 @@
 
 > **Single-source specification for implementing the complete Akao framework in C++ with full automation, security, and consistency enforcement**
 
+## Table of Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Complete Project Structure](#complete-project-structure)
+3. [Layered Architecture Design](#layered-architecture-design)
+4. [Global Rule Identifier (GID) System](#global-rule-identifier-gid-system)
+5. [RuleSet System](#ruleset-system)
+6. [Graph Generation System](#graph-generation-system)
+7. [Implementation Requirements & Class Structure](#implementation-requirements--class-structure)
+8. [Implementation Phases](#implementation-phases)
+9. [Critical Implementation Details](#critical-implementation-details)
+10. [Component Integration Map](#component-integration-map)
+11. [Success Criteria & Validation](#success-criteria--validation)
+12. [Build Configuration](#build-configuration)
+13. [Final Validation Checklist](#final-validation-checklist)
+
 ---
 
-## 📋 Executive Summary
+## Executive Summary
 
 This document is the **canonical implementation specification** for the Akao framework - a rule-based C++ system for project structure enforcement, build management, automation, and documentation generation. This plan is designed for **single-session code generation** where GitHub Copilot can generate the complete working system without additional clarification.
 
@@ -29,7 +45,7 @@ This document is the **canonical implementation specification** for the Akao fra
 
 ---
 
-## 📁 Complete Project Structure
+## Complete Project Structure
 
 ```
 akao/
@@ -297,7 +313,7 @@ akao/
 
 ---
 
-## 🏗️ Layered Architecture Design
+## Layered Architecture Design
 
 ### Core Architecture Principles
 
@@ -402,7 +418,7 @@ platforms:
 
 ---
 
-## 🔍 Global Rule Identifier (GID) System
+## Global Rule Identifier (GID) System
 
 ### GID Format Specification
 
@@ -791,7 +807,7 @@ struct ComplianceMetrics {
 
 ---
 
-## 📦 RuleSet System
+## RuleSet System
 
 ### RuleSet Architecture
 
@@ -934,7 +950,7 @@ akao docgen --ruleset=core           # Generate docs for core RuleSet rules
 
 ---
 
-## 📊 Graph Generation System
+## Graph Generation System
 
 ### Graph Architecture
 
@@ -1160,7 +1176,7 @@ auto compliance_graph = graph::GraphGenerator::generateGraph(
 
 ---
 
-## 🧪 Implementation Requirements & Class Structure
+## Implementation Requirements & Class Structure
 
 ### Core Implementation Strategy
 
@@ -1338,7 +1354,7 @@ public:
 
 ---
 
-## 🎯 Implementation Phases
+## Implementation Phases
 
 ### Phase 1: Core Framework Foundation
 **Establish core infrastructure and universal validation**:
@@ -1678,7 +1694,7 @@ public:
 
 ---
 
-## 🔧 Critical Implementation Details
+## Critical Implementation Details
 
 ### Universal Validation Implementation
 
@@ -2291,7 +2307,7 @@ private:
 
 ---
 
-## 🏗️ Component Integration Map
+## Component Integration Map
 
 ### Core System Dependencies
 
@@ -2321,7 +2337,7 @@ User Input → Interface Layer → Controller → Core Logic → Trace System
 
 ---
 
-## 📊 Success Criteria & Validation
+## Success Criteria & Validation
 
 ### Performance Requirements
 - **Startup Time**: <100ms cold start for CLI operations
@@ -2343,7 +2359,7 @@ User Input → Interface Layer → Controller → Core Logic → Trace System
 
 ---
 
-## 🔧 Build Configuration
+## Build Configuration
 
 ### CMakeLists.txt Specification
 
@@ -2569,15 +2585,15 @@ endif()
 
 ---
 
-## 🎯 Final Validation Checklist
+## Final Validation Checklist
 
-### Cross-Document Consistency ✅
+### Cross-Document Consistency
 - [ ] All CLI commands from README.md implemented with full interface parity (CLI=Web=TUI=API)
 - [ ] All 9+ components from ARCHITECTURE.md have corresponding implementation with layered architecture
 - [ ] All 19+ principles from PHILOSOPHY.md enforced through testable rules with GID traceability
 - [ ] All improvements from DESIGN_DOCS_REFACTOR_SUMMARY.md integrated and validated
 
-### Cross-Platform & Multi-Language Support ✅
+### Cross-Platform & Multi-Language Support
 - [ ] **Linux support**: Full functionality on x86_64 and ARM64 architectures
 - [ ] **macOS support**: Full functionality on Intel and Apple Silicon Macs
 - [ ] **Windows support**: Full functionality with MSVC and MinGW compilers
@@ -2589,14 +2605,14 @@ endif()
 - [ ] **Container support**: Docker builds for Alpine Linux and Ubuntu
 - [ ] **CI/CD matrix**: All platforms tested in automated pipelines
 
-### Layered Architecture Implementation ✅
+### Layered Architecture Implementation
 - [ ] **Core business logic**: Completely agnostic to language, interface, and OS
 - [ ] **Language binding layer**: Adapters for all supported languages with consistent APIs
 - [ ] **Platform adapter layer**: Platform-specific implementations with unified interface
 - [ ] **Interface layer**: CLI, Web UI, TUI, and API with verified identical functionality
 - [ ] **Foundation services**: Config, filesystem, trace, plugin systems work across all platforms
 
-### Global Rule Identifier (GID) System ✅
+### Global Rule Identifier (GID) System
 - [ ] **GID format validation**: `akao:rule::<category>:<name>:v<version>` format enforced
 - [ ] **GID resolvability**: All GIDs resolve to valid rule definitions and metadata
 - [ ] **GID hashability**: Consistent hash generation for caching and deduplication
@@ -2606,14 +2622,14 @@ endif()
 - [ ] **CLI GID operations**: validate, audit, info, disable commands work with GIDs
 - [ ] **Bidirectional traceability**: GID to source/tests/docs and reverse mapping
 
-### RuleSet System Implementation ✅
+### RuleSet System Implementation
 - [ ] **RuleSet definitions**: YAML/JSON definitions in `.akao/rulesets/` with inheritance
 - [ ] **RuleSet inheritance**: Parent RuleSets, includes, and excludes resolution
 - [ ] **RuleSet CLI integration**: `ruleset list/info/validate/create` commands functional
 - [ ] **RuleSet validation**: `validate --ruleset=<name>` and `audit --ruleset=<name>` operational
 - [ ] **RuleSet metadata**: Complete metadata tracking and reporting per RuleSet
 
-### Graph Generation System ✅
+### Graph Generation System
 - [ ] **Rule dependency graphs**: Visual representation of rule relationships and dependencies
 - [ ] **RuleSet relationship graphs**: Inheritance and inclusion visualization
 - [ ] **Project structure graphs**: Complete project architecture visualization
@@ -2623,7 +2639,7 @@ endif()
 - [ ] **Multi-format export**: DOT, SVG, JSON, PNG export with consistent quality
 - [ ] **Integration points**: Graph integration with docgen, audit, and Web UI systems
 
-### Interface Parity Enforcement ✅
+### Interface Parity Enforcement
 - [ ] **Command execution abstraction**: Shared command execution layer for all interfaces
 - [ ] **CLI interface**: Complete command-line interface with all functionality
 - [ ] **Web UI interface**: Browser-based interface with identical functionality to CLI
@@ -2633,7 +2649,7 @@ endif()
 - [ ] **Error handling consistency**: Consistent error messages and codes across interfaces
 - [ ] **Response format standardization**: Uniform response formats and data structures
 
-### Philosophical Principle Implementation ✅
+### Philosophical Principle Implementation
 - [ ] **Structure is enforced**: Rule engine validates project structure with GID tracking
 - [ ] **Universal validation**: Validation works on any project including Akao across all platforms
 - [ ] **No rules without tests**: Every rule has corresponding test case with GID validation
@@ -2654,7 +2670,7 @@ endif()
 - [ ] **External features are sandboxed**: Security isolation with platform-specific enforcement
 - [ ] **Dependency resolution is explicit**: Clear dependency management with conflict resolution
 
-### Technical Implementation Completeness ✅
+### Technical Implementation Completeness
 - [ ] **Source organization**: All source files follow one-class-per-folder principle
 - [ ] **Cross-platform CMake**: Complete CMake configuration for all target platforms
 - [ ] **Test coverage**: Comprehensive test suite with >95% coverage across all platforms
@@ -2666,7 +2682,7 @@ endif()
 - [ ] **Error propagation**: Consistent error handling and propagation across all layers
 - [ ] **Resource management**: Proper resource cleanup and management for all platforms
 
-### Automation & CI/CD Integration ✅
+### Automation & CI/CD Integration
 - [ ] **Pipeline generation**: Auto-generated CI/CD workflows for GitHub Actions, GitLab CI, Jenkins
 - [ ] **Cross-platform builds**: Automated builds on all target platforms
 - [ ] **Pipeline configuration**: `.akao/pipeline.yaml` configuration with platform customization
@@ -2674,7 +2690,7 @@ endif()
 - [ ] **Quality gates**: Automated validation, testing, and compliance checking
 - [ ] **Deployment automation**: Automated packaging and deployment for all platforms
 
-### External Integration & Ecosystem ✅
+### External Integration & Ecosystem
 - [ ] **Registry integration**: External feature registry with secure download and caching
 - [ ] **IDE integration**: Language server integration for VS Code, IntelliJ, Vim
 - [ ] **Tool ecosystem**: Integration with linters, formatters, analyzers

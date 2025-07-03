@@ -2,9 +2,23 @@
 
 > **A unified, rule-based framework written in C++ for structuring, building, testing, and documenting any software project.**
 
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Core Capabilities](#core-capabilities)
+3. [Philosophy Highlights](#philosophy-highlights)
+4. [Use Cases](#use-cases)
+5. [Structure](#structure)
+6. [Commands](#commands)
+7. [Plugin Targets (Examples)](#plugin-targets-examples)
+8. [Licensing & Attribution](#licensing--attribution)
+9. [Interface Parity (CLI = Web = TUI = API)](#interface-parity-cli--web--tui--api)
+10. [Cross-Platform Support](#cross-platform-support)
+11. [Status](#status)
+
 ---
 
-## 🚀 Overview
+## Overview
 
 Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in JSON, YAML, or TOML, to validate structure, enforce best practices, automate builds, and generate documentation. Each rule has a Global Rule Identifier (GID) in the format `akao:rule::<category>:<name>:v<version>` for precise tracking and management. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
 
@@ -12,7 +26,7 @@ Akao applies its own standards to itself, demonstrating that its validation syst
 
 ---
 
-## 🧱 Core Capabilities
+## Core Capabilities
 
 ✅ Universal validation system  
 ✅ Rule-driven validation system  
@@ -26,7 +40,7 @@ Akao applies its own standards to itself, demonstrating that its validation syst
 
 ---
 
-## 🧠 Philosophy Highlights
+## Philosophy Highlights
 
 * Rules are the law. They govern everything.
 * All behavior is deterministic and reproducible.
@@ -40,7 +54,7 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 
 ---
 
-## 🧩 Use Cases
+## Use Cases
 
 * C++ projects with strict structure and validation
 * Mixed-language repositories with rules per language
@@ -50,7 +64,7 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 
 ---
 
-## 📂 Structure
+## Structure
 
 ```bash
 /                   # Root project
@@ -70,7 +84,7 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md)
 
 ---
 
-## 🧪 Commands
+## Commands
 
 ```bash
 # Project Management
@@ -138,7 +152,7 @@ akao deploy configure        # Configure deployment settings
 
 ---
 
-## 🔌 Plugin Targets (Examples)
+## Plugin Targets (Examples)
 
 * wasm / web-assembly builds
 * js bindings (for Node.js)
@@ -154,7 +168,7 @@ Each plugin is declared in `plugins/*.json` with:
 
 ---
 
-## 📜 Licensing & Attribution
+## Licensing & Attribution
 
 * Akao core is MIT-licensed
 * The name "Akao" is trademarked by Son Nguyen
@@ -162,14 +176,7 @@ Each plugin is declared in `plugins/*.json` with:
 
 ---
 
-## 🧠 See Also
-
-* [`ARCHITECTURE.md`](./ARCHITECTURE.md) – system layers and technical design
-* [`PHILOSOPHY.md`](./PHILOSOPHY.md) – full principle set and philosophical doctrine
-
----
-
-## 🎯 Interface Parity (CLI = Web = TUI = API)
+## Interface Parity (CLI = Web = TUI = API)
 
 Akao provides **identical functionality** across all user interfaces:
 
@@ -216,7 +223,7 @@ POST /api/build {"profile": "dev", "watch": true}
 
 ---
 
-## 🌍 Cross-Platform Support
+## Cross-Platform Support
 
 Akao runs on **any language, any OS, any runtime**:
 
@@ -241,7 +248,7 @@ Akao runs on **any language, any OS, any runtime**:
 
 ---
 
-## 🏁 Status
+## Status
 
 This README is auto-generated and must always match actual structure and rule definitions.
 Use `akao docgen` to regenerate.

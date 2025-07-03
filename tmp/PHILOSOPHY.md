@@ -2,9 +2,18 @@
 
 > Akao is not only a framework. It is a set of codified doctrines — enforced by rule, measured by trace, validated by code.
 
+## Table of Contents
+
+1. [Core Beliefs](#core-beliefs)
+2. [Inspirations](#inspirations)
+3. [Rules as Doctrine](#rules-as-doctrine)
+4. [Verification](#verification)
+5. [Usage](#usage)
+6. [Summary](#summary)
+
 ---
 
-## 🔍 Core Beliefs
+## Core Beliefs
 
 ### **Structure is enforced**
 Every file, class, and folder must follow rule-driven structure. This is not merely a suggestion or convention—it is the fundamental law that governs all code existence within Akao. Structure becomes the skeleton upon which all other principles rest. Without enforced structure, chaos emerges, maintainability dies, and the codebase becomes a digital wasteland. Akao treats structural violations as compilation errors, making disorder impossible rather than inconvenient.
@@ -74,7 +83,7 @@ Every operation, dependency, and relationship must be representable in visual fo
 
 ---
 
-## 📐 Inspirations
+## Inspirations
 
 While Akao is original in vision, its principles are strengthened by prior systems:
 
@@ -89,7 +98,7 @@ But unlike them, Akao combines enforcement, testing, auditing, and documentation
 
 ---
 
-## 🧠 Rules as Doctrine
+## Rules as Doctrine
 
 All principles must:
 
@@ -103,7 +112,7 @@ All principles must:
 
 ---
 
-## ✅ Verification
+## Verification
 
 Every principle here is:
 
@@ -116,7 +125,7 @@ Akao refuses to function in contradiction to its principles.
 
 ---
 
-## 🧩 Usage
+## Usage
 
 Whether a solo developer or an enterprise team:
 
@@ -128,7 +137,7 @@ Akao is strict not for ego, but for **precision, traceability, and reproducibili
 
 ---
 
-## 🧬 Summary
+## Summary
 
 * Rules = principles = code.
 * Tests = measurement = enforcement.

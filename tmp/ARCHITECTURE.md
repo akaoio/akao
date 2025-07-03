@@ -2,9 +2,22 @@
 
 > **Technical architecture and system design for the Akao framework**
 
+## Table of Contents
+
+1. [System Overview](#system-overview)
+2. [Core Components](#core-components)
+3. [Directory Structure](#directory-structure)
+4. [Data Flow](#data-flow)
+5. [Testing Strategy](#testing-strategy)
+6. [Plugin Architecture](#plugin-architecture)
+7. [Security & Sandboxing](#security--sandboxing)
+8. [Performance Considerations](#performance-considerations)
+9. [Configuration](#configuration)
+10. [Design Principles](#design-principles)
+
 ---
 
-## 🏗️ System Overview
+## System Overview
 
 Akao is built as a modular C++ framework with **strict layered architecture** supporting any language, any OS, any runtime:
 
@@ -51,7 +64,7 @@ Akao is built as a modular C++ framework with **strict layered architecture** su
 
 ---
 
-## 🧩 Core Components
+## Core Components
 
 The Akao framework consists of **9 major subsystems** implemented with layered architecture for cross-platform and multi-language support:
 
@@ -167,7 +180,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 
 ---
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 akao/
@@ -243,7 +256,7 @@ akao/
 
 ---
 
-## 🔄 Data Flow
+## Data Flow
 
 ### Validation Flow
 ```
@@ -301,7 +314,7 @@ akao/
 
 ---
 
-## 🧪 Testing Strategy
+## Testing Strategy
 
 ### Unit Tests
 - Each class in `src/` has corresponding test in `tests/unit/`
@@ -320,7 +333,7 @@ akao/
 
 ---
 
-## 🔌 Plugin Architecture
+## Plugin Architecture
 
 Plugins extend Akao functionality through:
 
@@ -347,7 +360,7 @@ Plugin registration:
 
 ---
 
-## �️ Security & Sandboxing
+## Security & Sandboxing
 
 - All file operations go through controlled API
 - Build processes run in isolated environments
@@ -356,7 +369,7 @@ Plugin registration:
 
 ---
 
-## 📊 Performance Considerations
+## Performance Considerations
 
 - Rule validation uses cached results when possible
 - Build dependency graph optimized for parallel execution
@@ -365,7 +378,7 @@ Plugin registration:
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 Main configuration in `.akao/config.json`:
 ```json
@@ -428,7 +441,7 @@ Language profiles in `.akao/profiles/`:
 
 ---
 
-## � Design Principles
+## Design Principles
 
 1. **Modularity**: Each component can be tested and replaced independently
 2. **Extensibility**: Plugin system allows custom functionality
