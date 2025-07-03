@@ -274,17 +274,6 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 20. **Every rule is part of at least one RuleSet** - Organizational grouping with inheritance
 21. **Code must be graph-explorable** - Visual representation of all relationships
 22. **All logic must be explainable visually** - Graph generation for debugging and comprehension
-12. **Everything must build dev + prod** - Both development and production builds required
-13. **No external implicit behavior** - All dependencies must be declared explicitly
-14. **Only one truth** - Single source of truth maintained across all components
-15. **Observable, explainable, deterministic** - Full transparency in all operations
-16. **Features are composable** - Features work together without conflicts
-17. **Templates are validated** - All templates pass the same rules as generated projects
-18. **External features are sandboxed** - Features from external sources run in controlled environments
-19. **Dependency resolution is explicit** - All dependencies declared and resolved transparently
-20. **Every rule is part of at least one RuleSet** - Rules organized into logical groupings
-21. **Code must be graph-explorable** - All relationships visualizable through generated graphs
-22. **All logic must be explainable visually** - Every operation representable in visual form
 
 ### Implementation Enforcement
 - **Each principle must be implemented as a testable rule** with corresponding GID
@@ -292,41 +281,7 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 - **Each principle must be validated** by the universal validation system
 - **Principle violations must cause build failures** and be tracked in audit logs
 
-## Expected Output
 
-### Complete Directory Structure
-```
-akao/
-├── .akao/                    # Framework runtime configuration
-│   ├── config.json          # Main configuration file
-│   ├── pipeline.yaml        # CI/CD pipeline configuration
-│   ├── profiles/             # Language-specific profiles
-│   │   ├── cpp.json          # C++ rules and build settings
-│   │   ├── js.json           # JavaScript rules
-│   │   └── rust.json         # Rust rules
-│   ├── rulesets/             # RuleSet definitions
-│   │   ├── core.yaml         # Core framework RuleSet
-│   │   ├── cpp.yaml          # C++ language RuleSet
-│   │   ├── security.yaml     # Security-focused RuleSet
-│   │   └── custom/           # Project-specific RuleSets
-│   ├── features/             # Installed features metadata
-│   │   ├── installed.json    # List of installed features
-│   │   ├── dependencies.json # Feature dependency graph
-│   │   └── cache/            # Feature download cache
-│   ├── registry/             # External registries
-│   │   ├── official.json     # Official Akao registry
-│   │   └── custom.json       # Custom registries
-│   ├── trace.json            # GID-based audit and error trace
-│   ├── audit.json            # System audit and compliance metrics
-│   └── cache/                # Build and validation cache
-├── .build/                   # Build outputs
-│   ├── dev/                  # Development builds (hot reload)
-│   │   ├── akao              # Development binary
-│   │   └── plugins/          # Development plugins
-│   ├── prod/                 # Production builds (optimized)
-│   │   ├── akao              # Production binary
-│   │   └── hashes/           # File integrity hashes
-│   ├── meta.json             # Build metadata and dependencies
 ## Expected Output
 
 ### Complete Directory Structure (555+ Files)
@@ -437,41 +392,6 @@ akao/
 ├── CMakeLists.txt             # CMake build configuration
 ├── .gitignore                 # Git ignore patterns
 └── LICENSE                    # MIT license file
-```
-
-### CLI Command Implementation
-
-All commands must be implemented with full GID and RuleSet support:
-
-```bash
-# Project Management
-akao init [--template=<type>]                    # Initialize project
-akao feature add/remove/list/info <name>         # Feature management
-akao registry add/list <url>                     # Registry management
-akao install/update/uninstall <feature>          # External features
-
-# Core Operations
-akao validate [--gid=<gid>] [--category=<cat>] [--ruleset=<name>]  # Validation
-akao test                                         # Testing
-akao build --dev/--prod                          # Building
-akao docgen [--ruleset=<name>]                   # Documentation
-akao audit [--gid=<gid>] [--ruleset=<name>]      # Auditing
-
-# Rule Management (GID-based)
-akao rule list [--format=gid]                    # Rule listing
-akao rule info --gid=<gid>                       # Rule details
-akao rule disable/enable --gid=<gid>             # Rule state management
-
-# RuleSet Management
-akao ruleset list/info/validate/create <name>    # RuleSet operations
-
-# Graph Generation
-akao graph --type=<type> --format=<format> [--output=<path>] [--ruleset=<name>]
-
-# Automation & CI/CD
-akao pipeline generate/validate                  # Pipeline management
-akao workflow create/update                      # Workflow management
-akao deploy configure                            # Deployment configuration
 ```
 
 ### Cross-Platform Build Configuration
