@@ -13,7 +13,7 @@
 7. [File Formats and Structure](#file-formats-and-structure)
 8. [Platform and Language Support](#platform-and-language-support)
 9. [Implementation Requirements](#implementation-requirements)
-10. [Security & Sandboxing Architecture](#security--sandboxing-architecture)
+10. [Security & Sandboxing Architecture](#security-sandboxing-architecture)
 11. [System Dependencies](#system-dependencies)
 12. [Performance Specifications](#performance-specifications)
 13. [Key Technical Specifications](#key-technical-specifications)
@@ -420,7 +420,7 @@ validation: ["akao validate", "akao test", "akao build --dev", "akao build --pro
 > 
 > **Architecture Validation**: The layered architecture implementing these constraints is detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#system-overview) and [PLAN.md](./PLAN.md#layered-architecture-design).
 
-> **User Reference**: These constraints are reflected in the project capabilities described in [README.md](./README.md#core-capabilities) and interface parity in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> **User Reference**: These constraints are reflected in the project capabilities described in [README.md](./README.md#core-capabilities) and interface parity in [README.md](./README.md#interface-parity-cli-web-tui-api).
 
 ### Code Organization Rules
 ```cpp
@@ -554,16 +554,16 @@ dependencies:
 ## Reference Documents
 
 ### Primary Documentation (Cross-Referenced)
-- **[PHILOSOPHY.md](./PHILOSOPHY.md)**: Core beliefs and principles that drive all technical decisions
+- **[PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs)**: Core beliefs and principles that drive all technical decisions
   - *Referenced in*: All technical specifications implement philosophical doctrines
   - *Key Principles*: "Every rule is traceable", "CLI = Web = TUI", "One class per folder"
-- **[README.md](./README.md)**: User-facing overview with capabilities and usage examples  
+- **[README.md](./README.md#overview)**: User-facing overview with capabilities and usage examples  
   - *Referenced in*: CLI commands, interface descriptions, cross-platform support
   - *Validation*: All commands in this summary match [README.md Commands](./README.md#commands)
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and system design
+- **[ARCHITECTURE.md](./ARCHITECTURE.md#core-components)**: Detailed technical architecture and system design
   - *Referenced in*: Directory structure, component descriptions, layered architecture
   - *Consistency*: All 13 subsystems detailed in both documents
-- **[PLAN.md](./PLAN.md)**: Complete implementation specification and development roadmap
+- **[PLAN.md](./PLAN.md#executive-summary)**: Complete implementation specification and development roadmap
   - *Referenced in*: GID system, RuleSet architecture, implementation phases
   - *Traceability*: Every technical requirement maps to implementation steps
 
@@ -572,7 +572,7 @@ dependencies:
 > 
 > **Architectural Alignment**: ✅ Directory structures match [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and [PLAN.md](./PLAN.md#complete-project-structure)
 > 
-> **User Experience Coherence**: ✅ CLI commands align with [README.md](./README.md#commands) and interface descriptions match [README.md](./README.md#interface-parity-cli--web--tui--api)
+> **User Experience Coherence**: ✅ CLI commands align with [README.md](./README.md#commands) and interface descriptions match [README.md](./README.md#interface-parity-cli-web-tui-api)
 > 
 > **Implementation Traceability**: ✅ Every requirement traces from philosophy → architecture → implementation → user interface
 
@@ -595,15 +595,15 @@ SUMMARY.md (REFERENCE)
 |---------------------|-------------------|---------------------|-------------|---------------|----------------|
 | **GID System** | ✅ [Core Beliefs](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [GID System](./PLAN.md#global-rule-identifier-gid-system) | ✅ [Commands](./README.md#commands) | ✅ [GID System](./SUMMARY.md#global-rule-identifier-gid-system) |
 | **RuleSet System** | ✅ [Rules as Doctrine](./PHILOSOPHY.md#rules-as-doctrine) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [RuleSet System](./PLAN.md#ruleset-system) | ✅ [Commands](./README.md#commands) | ✅ [RuleSet System](./SUMMARY.md#ruleset-system) |
-| **Interface Parity** | ✅ [CLI = Web = TUI](./PHILOSOPHY.md#core-beliefs) | ✅ [System Overview](./ARCHITECTURE.md#system-overview) | ✅ [Interface Parity](./PLAN.md#interface-parity-enforcement) | ✅ [Interface Parity](./README.md#interface-parity-cli--web--tui--api) | ✅ [CLI Commands](./SUMMARY.md#cli-command-taxonomy) |
+| **Interface Parity** | ✅ [CLI = Web = TUI](./PHILOSOPHY.md#core-beliefs) | ✅ [System Overview](./ARCHITECTURE.md#system-overview) | ✅ [Interface Parity](./PLAN.md#interface-parity-enforcement) | ✅ [Interface Parity](./README.md#interface-parity-cli-web-tui-api) | ✅ [CLI Commands](./SUMMARY.md#cli-command-taxonomy) |
 | **Cross-Platform** | ✅ [Universal validation](./PHILOSOPHY.md#core-beliefs) | ✅ [System Overview](./ARCHITECTURE.md#system-overview) | ✅ [Architecture Design](./PLAN.md#layered-architecture-design) | ✅ [Cross-Platform](./README.md#cross-platform-support) | ✅ [Platform Support](./SUMMARY.md#platform-and-language-support) |
 | **Graph Generation** | ✅ [Code must be graph-explorable](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [Graph System](./PLAN.md#graph-generation-system) | ✅ [Commands](./README.md#commands) | ✅ [CLI Commands](./SUMMARY.md#cli-command-taxonomy) |
-| **Security Model** | ✅ [External features are sandboxed](./PHILOSOPHY.md#core-beliefs) | ✅ [Security & Sandboxing](./ARCHITECTURE.md#security--sandboxing) | ✅ [Critical Implementation](./PLAN.md#critical-implementation-details) | ✅ [Use Cases](./README.md#use-cases) | ✅ [Security Architecture](./SUMMARY.md#security--sandboxing-architecture) |
+| **Security Model** | ✅ [External features are sandboxed](./PHILOSOPHY.md#core-beliefs) | ✅ [Security & Sandboxing](./ARCHITECTURE.md#security-sandboxing) | ✅ [Critical Implementation](./PLAN.md#critical-implementation-details) | ✅ [Use Cases](./README.md#use-cases) | ✅ [Security Architecture](./SUMMARY.md#security-sandboxing-architecture) |
 | **Build System** | ✅ [Everything must build dev + prod](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [Build Configuration](./PLAN.md#build-configuration) | ✅ [Commands](./README.md#commands) | ✅ [Quick Start](./SUMMARY.md#quick-start-guide) |
-| **Documentation** | ✅ [Documentation is code](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [Implementation](./PLAN.md#implementation-requirements--class-structure) | ✅ [Core Capabilities](./README.md#core-capabilities) | ✅ [File Formats](./SUMMARY.md#file-formats-and-structure) |
+| **Documentation** | ✅ [Documentation is code](./PHILOSOPHY.md#core-beliefs) | ✅ [Core Components](./ARCHITECTURE.md#core-components) | ✅ [Implementation](./PLAN.md#implementation-requirements-class-structure) | ✅ [Core Capabilities](./README.md#core-capabilities) | ✅ [File Formats](./SUMMARY.md#file-formats-and-structure) |
 
 ### Traceability Verification
-Every principle in [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) is technically implemented in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components), fully specified in [PLAN.md](./PLAN.md#implementation-requirements--class-structure), user-accessible via [README.md](./README.md#commands), and technically documented in this summary.
+Every principle in [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) is technically implemented in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components), fully specified in [PLAN.md](./PLAN.md#implementation-requirements-class-structure), user-accessible via [README.md](./README.md#commands), and technically documented in this summary.
 
 ---
 
