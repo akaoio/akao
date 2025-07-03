@@ -24,6 +24,14 @@
 
 This document is the **canonical implementation specification** for the Akao framework - a rule-based C++ system for project structure enforcement, build management, automation, and documentation generation. This plan is designed for **single-session code generation** where GitHub Copilot can generate the complete working system without additional clarification.
 
+> **Philosophy Foundation**: This implementation enforces all principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs), particularly "Structure is enforced", "Universal validation", and "CLI = Web = TUI".
+
+> **Architecture Realization**: This plan implements the layered architecture described in [ARCHITECTURE.md](./ARCHITECTURE.md#system-overview) with all 13 core components detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components).
+
+> **User Experience**: The resulting system provides the capabilities described in [README.md](./README.md#core-capabilities) through the CLI interface documented in [README.md](./README.md#commands).
+
+> **Technical Reference**: Key specifications are summarized in [SUMMARY.md](./SUMMARY.md#system-overview) for quick reference during development.
+
 **Implementation Requirements:**
 - Pure C++ core implementation (C++17 or later) with layered architecture
 - **Cross-platform support**: Linux, macOS, Windows, Android, iOS, WebAssembly, embedded systems
@@ -46,6 +54,14 @@ This document is the **canonical implementation specification** for the Akao fra
 ---
 
 ## Complete Project Structure
+
+> **Philosophy Foundation**: This directory structure enforces the "One class per folder" and "Only one truth" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **Architecture Alignment**: This structure implements the layered architecture described in [ARCHITECTURE.md](./ARCHITECTURE.md#system-overview) with all components organized according to [ARCHITECTURE.md](./ARCHITECTURE.md#core-components).
+> 
+> **User Experience**: This structure supports the capabilities described in [README.md](./README.md#core-capabilities) and enables the CLI commands in [README.md](./README.md#commands).
+> 
+> **Technical Reference**: Quick navigation to this structure is provided in [SUMMARY.md](./SUMMARY.md#directory-structure).
 
 ```
 akao/
@@ -419,6 +435,14 @@ platforms:
 ---
 
 ## Global Rule Identifier (GID) System
+
+> **Philosophy Foundation**: This GID system implements the "Every rule is traceable" and "Rules can be toggled, not skipped" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **Architecture Implementation**: The GID system is implemented through the Rule Engine detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and integrated across all system components.
+> 
+> **User Interface**: Users interact with GIDs through CLI commands documented in [README.md](./README.md#commands) and cross-interface support in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> 
+> **Technical Reference**: GID format and usage patterns are summarized in [SUMMARY.md](./SUMMARY.md#global-rule-identifier-gid-system).
 
 ### GID Format Specification
 
@@ -809,6 +833,14 @@ struct ComplianceMetrics {
 
 ## RuleSet System
 
+> **Philosophy Foundation**: This RuleSet system implements the "Every rule is part of at least one RuleSet" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **Architecture Implementation**: RuleSet management is implemented through the RuleSet Management system detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) with inheritance and resolution capabilities.
+> 
+> **User Interface**: Users interact with RuleSets through CLI commands documented in [README.md](./README.md#commands) and cross-interface support in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> 
+> **Technical Reference**: RuleSet structure and operations are summarized in [SUMMARY.md](./SUMMARY.md#ruleset-system).
+
 ### RuleSet Architecture
 
 **RuleSets enable logical grouping of rules using GID collections** for organizational efficiency, inheritance hierarchies, and granular validation control. RuleSets are defined in `.akao/rulesets/` directory and support nested inheritance.
@@ -951,6 +983,14 @@ akao docgen --ruleset=core           # Generate docs for core RuleSet rules
 ---
 
 ## Graph Generation System
+
+> **Philosophy Foundation**: This graph system implements the "Code must be graph-explorable" and "All logic must be explainable visually" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **Architecture Implementation**: Graph generation is implemented through the Graph Generation System detailed in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) with multi-format export capabilities.
+> 
+> **User Interface**: Users generate graphs through CLI commands documented in [README.md](./README.md#commands) and visual interfaces in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> 
+> **Technical Reference**: Graph types and command patterns are summarized in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### Graph Architecture
 

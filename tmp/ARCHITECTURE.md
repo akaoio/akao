@@ -21,6 +21,12 @@
 
 Akao is built as a modular C++ framework with **strict layered architecture** supporting any language, any OS, any runtime:
 
+> **Philosophy Alignment**: This architecture implements the "Observable, explainable, deterministic" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) and the "CLI = Web = TUI" interface parity requirement.
+
+> **User Impact**: These architectural decisions enable the capabilities described in [README.md](./README.md#core-capabilities) and cross-platform support detailed in [README.md](./README.md#cross-platform-support).
+
+> **Implementation Reference**: Complete implementation specifications are in [PLAN.md](./PLAN.md#layered-architecture-design) with technical details in [SUMMARY.md](./SUMMARY.md#implementation-requirements).
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Interface Layer                          │
@@ -62,11 +68,24 @@ Akao is built as a modular C++ framework with **strict layered architecture** su
 - **Platform adapters** handle OS-specific implementations with unified interface
 - **Interface layer** ensures CLI=Web=TUI=API parity through common execution layer
 
+> **Philosophy Implementation**: These principles directly implement multiple philosophical doctrines:
+> - "One language per scope" → Language binding separation ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> - "CLI = Web = TUI" → Interface layer parity ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+> - "Observable, explainable, deterministic" → Agnostic core logic ([PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs))
+
+> **Technical Specification**: Detailed implementation of these principles is in [PLAN.md](./PLAN.md#core-architecture-principles) with command mapping in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+
 ---
 
 ## Core Components
 
 The Akao framework consists of **9 major subsystems** implemented with layered architecture for cross-platform and multi-language support:
+
+> **Philosophy Foundation**: Each subsystem implements the "One class per folder" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) and contributes to the "Every action is measurable" requirement.
+
+> **User Experience**: These components deliver the capabilities listed in [README.md](./README.md#core-capabilities) through the CLI commands documented in [README.md](./README.md#commands).
+
+> **Implementation Details**: Complete class structure and implementation phases for these components are specified in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical reference in [SUMMARY.md](./SUMMARY.md#directory-structure).
 
 ### 1. Rule Engine (`src/rule/`)
 - **Parser**: Multi-format rule file parser (JSON/YAML/TOML) with GID validation
@@ -75,17 +94,34 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 - **RuleSet Manager**: RuleSet lifecycle, inheritance, and resolution engine
 - **Reporter**: Violation reporting with GID references and actionable suggestions
 
+> **Philosophy Realization**: Implements "Every rule is traceable" and "Universal validation" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao validate`, `akao rule`, and `akao audit` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete class structure in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#global-rule-identifier-gid-system).
+
 ### 2. RuleSet Management (`src/rule/ruleset/`)
 - **Manager**: RuleSet lifecycle and inheritance management
 - **Resolver**: RuleSet inheritance, includes, and excludes resolution
 - **Parser**: Multi-format RuleSet definition parser (YAML/JSON)
 - **Validator**: RuleSet validation and consistency checking
 
+> **Philosophy Realization**: Implements "Every rule is part of at least one RuleSet" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao ruleset` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete RuleSet system design in [PLAN.md](./PLAN.md#ruleset-system) and technical specifications in [SUMMARY.md](./SUMMARY.md#ruleset-system).
 ### 3. Build System (`src/build/`)
 - **Manager**: Cross-platform build target management (dev/prod profiles)
 - **Watcher**: File change monitoring for hot reload development
 - **Hasher**: Reproducible build verification and integrity checking
 - **Graph**: Build dependency graph resolution and optimization
+
+> **Philosophy Realization**: Implements "Everything must build dev + prod" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao build` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete build system design in [PLAN.md](./PLAN.md#build-configuration) and technical specifications in [SUMMARY.md](./SUMMARY.md#quick-start-guide).
 
 ### 4. Documentation Generator (`src/docgen/`)
 - **Engine**: Template-based Markdown generation with graph integration
@@ -93,11 +129,23 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 - **Mapper**: Rule-to-documentation mapping with GID references
 - **Updater**: Automatic documentation update coordination
 
+> **Philosophy Realization**: Implements "Documentation is code" and "Auto-update all documentation" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao docgen` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete documentation system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
+
 ### 5. Graph Generation System (`src/graph/`)
 - **Generator**: Core graph generation engine for all graph types (rules, rulesets, project, features, validation, audit)
 - **Exporter**: Multi-format export (DOT, SVG, JSON, PNG) with consistent quality
 - **Analyzer**: Graph analysis and metrics calculation
 - **Renderer**: Graph visualization and layout algorithms
+
+> **Philosophy Realization**: Implements "Code must be graph-explorable" and "All logic must be explainable visually" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao graph` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete graph system design in [PLAN.md](./PLAN.md#graph-generation-system) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### 6. CLI & Interface System (`src/cli/` & `src/interfaces/`)
 - **CLI Interface**: Command-line interface with GID support and cross-platform compatibility
@@ -106,11 +154,23 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 - **API Interface**: REST API with comprehensive endpoint coverage
 - **Core Abstraction**: Common command execution layer ensuring interface parity
 
+> **Philosophy Realization**: Implements "CLI = Web = TUI" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Experience**: Delivers interface parity detailed in [README.md](./README.md#interface-parity-cli--web--tui--api).
+> 
+> **Implementation**: Complete interface system design in [PLAN.md](./PLAN.md#interface-parity-enforcement) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+
 ### 7. Automation System (`src/automation/`)
 - **Pipeline Generator**: CI/CD pipeline generator with multi-platform support (GitHub Actions, GitLab CI, Jenkins)
 - **Template Engine**: Pipeline template engine with platform-specific optimizations
 - **Configurator**: Pipeline configuration via `.akao/pipeline.yaml` with cross-platform settings
 - **Executor**: Local automation execution and testing framework
+
+> **Philosophy Realization**: Implements "Auto-update all documentation" and "Every action is measurable" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao pipeline` and `akao workflow` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete automation system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### 8. Project Management (`src/project/`)
 - **Template Engine**: Project template system with variable substitution and multi-language support
@@ -118,12 +178,24 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 - **Manager**: Project lifecycle management across platforms and languages
 - **Validator**: Project structure and compliance validation
 
+> **Philosophy Realization**: Implements "Templates are validated" and "Structure is enforced" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao init` and `akao feature` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete project management system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
+
 ### 9. Feature Management (`src/feature/`)
 - **Manager**: Feature lifecycle management and orchestration
 - **Registry**: External registry client with caching and security validation
 - **Resolver**: Dependency resolution with conflict handling
 - **Installer**: Secure feature installation with platform-specific sandboxing
 - **Sandbox**: Feature execution security isolation and resource limits
+
+> **Philosophy Realization**: Implements "External features are sandboxed", "Features are composable", and "Dependency resolution is explicit" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
+> 
+> **User Commands**: Accessible via `akao install`, `akao registry`, and `akao feature` commands detailed in [README.md](./README.md#commands).
+> 
+> **Implementation**: Complete feature management system design in [PLAN.md](./PLAN.md#implementation-requirements--class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#cli-command-taxonomy).
 
 ### 10. Core Framework (`src/core/`)
 - **Config Manager**: Cross-platform `.akao/` configuration handling with platform detection
