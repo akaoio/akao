@@ -1,18 +1,18 @@
 ---
 metadata:
-  id: akao:rule::test:simple:v1
-  name: Simple Test Rule
+  id: akao:rule::test:minimal:v1
+  name: Minimal Test Rule
   version: 1.0.0
   category: test
   created_at: '2025-07-05T00:00:00.000000Z'
   updated_at: '2025-07-05T00:00:00.000000Z'
   author: akao-framework
-description: Simple test rule
+description: Minimal test rule for debugging
 philosophies:
-- akao:philosophy::test:simple:v1
+- akao:philosophy::test:minimal:v1
 rule_definition:
   scope: test
-  target: simple
+  target: minimal
   conditions:
   - Test condition
 implementation:
