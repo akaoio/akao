@@ -3,11 +3,11 @@
 # Implements: akao:philosophy::automation/updates:v1
 
 metadata:
-  gid: "akao:rule::automation/updates:v1"
+  id: "akao:rule::automation:updates:v1"
   name: "Auto-update all documentation enforcement"
   version: "1.0.0"
   category: "automation"
-  philosophy_gid: "akao:philosophy::automation/updates:v1"
+  philosophy: "automation/updates"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

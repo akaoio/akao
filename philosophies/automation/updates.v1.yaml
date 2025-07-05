@@ -3,7 +3,7 @@
 # Whenever rules change, documentation must change automatically
 
 metadata:
-  gid: "akao:philosophy::automation/updates:v1"
+  id: "akao:philosophy::automation:updates:v1"
   name: "Auto-update all documentation"
   version: "1.0.0"
   category: "automation"
