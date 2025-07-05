@@ -33,6 +33,33 @@ RuleLoader::RuleLoader(const std::string& rules_directory)
     if (!std::filesystem::exists(rules_directory_)) {
         throwLoadError(rules_directory_, "Rules directory does not exist");
     }
+    
+    // Initialize default configuration
+    config_.ignored_files = {"index.yaml", "README.yaml", ".template.yaml"};
+    config_.ignored_patterns = {"**/test/**", "**/tmp/**", "**/.backup/**"};
+    config_.verbose_logging = false;
+    config_.log_skipped_files = true;
+}
+
+// Configuration management
+void RuleLoader::setConfig(const LoaderConfig& config) {
+    config_ = config;
+}
+
+const RuleLoader::LoaderConfig& RuleLoader::getConfig() const {
+    return config_;
+}
+
+void RuleLoader::setVerboseLogging(bool enabled) {
+    config_.verbose_logging = enabled;
+}
+
+void RuleLoader::addIgnoredFile(const std::string& filename) {
+    config_.ignored_files.push_back(filename);
+}
+
+void RuleLoader::addIgnoredPattern(const std::string& pattern) {
+    config_.ignored_patterns.push_back(pattern);
 }
 
 // Main loading methods
@@ -237,22 +264,71 @@ std::vector<std::string> RuleLoader::discoverRuleFiles() const {
     return rule_files;
 }
 
-bool RuleLoader::isValidRuleFile(const std::string& file_path) const {
+// Enhanced validation with detailed reasons and logging
+RuleLoader::ValidationResult RuleLoader::validateRuleFile(const std::string& file_path, std::string& reason) const {
+    // Check if file exists and is regular file
     if (!std::filesystem::exists(file_path) || !std::filesystem::is_regular_file(file_path)) {
-        return false;
+        reason = "File does not exist or is not a regular file";
+        return ValidationResult::INVALID_PATH;
     }
     
+    // Check file extension
     if (file_path.length() < 5 || file_path.substr(file_path.length() - 5) != ".yaml") {
-        return false;
+        reason = "File does not have .yaml extension";
+        return ValidationResult::INVALID_EXTENSION;
     }
     
-    // Exclude index files
+    // Check ignored files
     std::string filename = std::filesystem::path(file_path).filename().string();
-    if (filename == "index.yaml") {
-        return false;
+    for (const auto& ignored_file : config_.ignored_files) {
+        if (filename == ignored_file) {
+            reason = "File is in ignored files list: " + ignored_file;
+            return ValidationResult::IGNORED_FILE;
+        }
     }
     
-    return true;
+    // Check ignored patterns (simple pattern matching)
+    std::string normalized_path = std::filesystem::relative(file_path, rules_directory_).string();
+    for (const auto& pattern : config_.ignored_patterns) {
+        // Simple pattern matching - check if path contains pattern elements
+        if (pattern.find("**/") == 0) {
+            std::string pattern_suffix = pattern.substr(3);
+            if (normalized_path.find(pattern_suffix) != std::string::npos) {
+                reason = "File matches ignored pattern: " + pattern;
+                return ValidationResult::IGNORED_PATTERN;
+            }
+        }
+    }
+    
+    reason = "File is valid";
+    return ValidationResult::VALID;
+}
+
+void RuleLoader::logSkippedFile(const std::string& file_path, const std::string& reason) const {
+    if (config_.log_skipped_files) {
+        if (config_.verbose_logging) {
+            std::cout << "[RuleLoader] Skipping file: " << file_path << " - " << reason << std::endl;
+        } else {
+            // Only log non-routine skips in non-verbose mode
+            if (reason.find("index.yaml") == std::string::npos && 
+                reason.find("README.yaml") == std::string::npos) {
+                std::cout << "[RuleLoader] Skipping: " << std::filesystem::path(file_path).filename().string() 
+                         << " (" << reason << ")" << std::endl;
+            }
+        }
+    }
+}
+
+bool RuleLoader::isValidRuleFile(const std::string& file_path) const {
+    std::string reason;
+    ValidationResult result = validateRuleFile(file_path, reason);
+    
+    // Log skipped files if they're not valid
+    if (result != ValidationResult::VALID) {
+        logSkippedFile(file_path, reason);
+    }
+    
+    return result == ValidationResult::VALID;
 }
 
 // YAML parsing helpers
