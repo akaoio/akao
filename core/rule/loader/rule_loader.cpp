@@ -2,6 +2,8 @@
 #include <sstream>
 #include <algorithm>
 #include <regex>
+#include <iostream>
+#include <fstream>
 
 namespace akao::core::rule::loader {
 
@@ -31,6 +33,33 @@ RuleLoader::RuleLoader(const std::string& rules_directory)
     if (!std::filesystem::exists(rules_directory_)) {
         throwLoadError(rules_directory_, "Rules directory does not exist");
     }
+    
+    // Initialize default configuration
+    config_.ignored_files = {"index.yaml", "README.yaml", ".template.yaml"};
+    config_.ignored_patterns = {"**/test/**", "**/tmp/**", "**/.backup/**"};
+    config_.verbose_logging = false;
+    config_.log_skipped_files = true;
+}
+
+// Configuration management
+void RuleLoader::setConfig(const LoaderConfig& config) {
+    config_ = config;
+}
+
+const RuleLoader::LoaderConfig& RuleLoader::getConfig() const {
+    return config_;
+}
+
+void RuleLoader::setVerboseLogging(bool enabled) {
+    config_.verbose_logging = enabled;
+}
+
+void RuleLoader::addIgnoredFile(const std::string& filename) {
+    config_.ignored_files.push_back(filename);
+}
+
+void RuleLoader::addIgnoredPattern(const std::string& pattern) {
+    config_.ignored_patterns.push_back(pattern);
 }
 
 // Main loading methods
@@ -67,10 +96,30 @@ bool RuleLoader::loadAllRules() {
 bool RuleLoader::loadRule(const std::string& rule_file_path) {
     try {
         if (!isValidRuleFile(rule_file_path)) {
-            throwLoadError(rule_file_path, "Not a valid rule file");
+            // Skip invalid files (like index.yaml) instead of throwing error
+            return true; // Return true to continue processing other files
         }
         
-        auto yaml_root = yaml_parser_.parseFile(rule_file_path);
+        // BUGFIX: Preprocess YAML to remove document markers that cause parsing issues
+        std::ifstream file(rule_file_path);
+        if (!file.is_open()) {
+            throwLoadError(rule_file_path, "Cannot open rule file");
+        }
+        
+        std::string yaml_content;
+        std::string line;
+        bool skip_first_doc_marker = true;
+        while (std::getline(file, line)) {
+            // Skip the first document marker but keep others
+            if (line == "---" && skip_first_doc_marker) {
+                skip_first_doc_marker = false;
+                continue;
+            }
+            yaml_content += line + "\n";
+        }
+        file.close();
+        
+        auto yaml_root = yaml_parser_.parse(yaml_content);
         if (!yaml_root) {
             throwLoadError(rule_file_path, "Failed to parse YAML");
         }
@@ -215,50 +264,153 @@ std::vector<std::string> RuleLoader::discoverRuleFiles() const {
     return rule_files;
 }
 
+// Enhanced validation with detailed reasons and logging
+RuleLoader::ValidationResult RuleLoader::validateRuleFile(const std::string& file_path, std::string& reason) const {
+    // Check if file exists and is regular file
+    if (!std::filesystem::exists(file_path) || !std::filesystem::is_regular_file(file_path)) {
+        reason = "File does not exist or is not a regular file";
+        return ValidationResult::INVALID_PATH;
+    }
+    
+    // Check file extension
+    if (file_path.length() < 5 || file_path.substr(file_path.length() - 5) != ".yaml") {
+        reason = "File does not have .yaml extension";
+        return ValidationResult::INVALID_EXTENSION;
+    }
+    
+    // Check ignored files
+    std::string filename = std::filesystem::path(file_path).filename().string();
+    for (const auto& ignored_file : config_.ignored_files) {
+        if (filename == ignored_file) {
+            reason = "File is in ignored files list: " + ignored_file;
+            return ValidationResult::IGNORED_FILE;
+        }
+    }
+    
+    // Check ignored patterns (simple pattern matching)
+    std::string normalized_path = std::filesystem::relative(file_path, rules_directory_).string();
+    for (const auto& pattern : config_.ignored_patterns) {
+        // Simple pattern matching - check if path contains pattern elements
+        if (pattern.find("**/") == 0) {
+            std::string pattern_suffix = pattern.substr(3);
+            if (normalized_path.find(pattern_suffix) != std::string::npos) {
+                reason = "File matches ignored pattern: " + pattern;
+                return ValidationResult::IGNORED_PATTERN;
+            }
+        }
+    }
+    
+    reason = "File is valid";
+    return ValidationResult::VALID;
+}
+
+void RuleLoader::logSkippedFile(const std::string& file_path, const std::string& reason) const {
+    if (config_.log_skipped_files) {
+        if (config_.verbose_logging) {
+            std::cout << "[RuleLoader] Skipping file: " << file_path << " - " << reason << std::endl;
+        } else {
+            // Only log non-routine skips in non-verbose mode
+            if (reason.find("index.yaml") == std::string::npos && 
+                reason.find("README.yaml") == std::string::npos) {
+                std::cout << "[RuleLoader] Skipping: " << std::filesystem::path(file_path).filename().string() 
+                         << " (" << reason << ")" << std::endl;
+            }
+        }
+    }
+}
+
 bool RuleLoader::isValidRuleFile(const std::string& file_path) const {
-    return std::filesystem::exists(file_path) && 
-           std::filesystem::is_regular_file(file_path) &&
-           (file_path.length() >= 5 && file_path.substr(file_path.length() - 5) == ".yaml");
+    std::string reason;
+    ValidationResult result = validateRuleFile(file_path, reason);
+    
+    // Log skipped files if they're not valid
+    if (result != ValidationResult::VALID) {
+        logSkippedFile(file_path, reason);
+    }
+    
+    return result == ValidationResult::VALID;
 }
 
 // YAML parsing helpers
 std::shared_ptr<Rule> RuleLoader::parseRuleFromYaml(std::shared_ptr<engine::parser::YamlNode> yaml_root, 
                                                    const std::string& source_file) {
+    if (!yaml_root) {
+        return nullptr;
+    }
+    
+    // BUGFIX: Handle case where YAML parser returns a sequence instead of mapping due to document marker
+    std::shared_ptr<engine::parser::YamlNode> actual_root = yaml_root;
+    if (yaml_root->isSequence() && yaml_root->size() > 0) {
+        actual_root = yaml_root->operator[](0);
+        if (actual_root && actual_root->isString()) {
+            // Parser returned a sequence with string elements, which is wrong
+            // This indicates a severe parsing error that we can't fix
+            return nullptr;
+        }
+    }
+    
     auto rule = std::make_shared<Rule>();
     rule->file_path = source_file;
     
     // Parse metadata
-    if (auto metadata = yaml_root->operator[]("metadata")) {
+    if (auto metadata = actual_root->operator[]("metadata")) {
         parseMetadata(*rule, metadata);
     }
     
+    // BUGFIX: Handle flattened structure where YAML parser incorrectly flattens nested mappings
+    // If metadata parsing failed, try to get fields directly from root
+    if (rule->id.empty()) {
+        if (auto id = actual_root->operator[]("id")) {
+            rule->id = id->asString();
+        }
+        if (auto name = actual_root->operator[]("name")) {
+            rule->name = name->asString();
+        }
+        if (auto category = actual_root->operator[]("category")) {
+            rule->category = category->asString();
+        }
+        if (auto version = actual_root->operator[]("version")) {
+            rule->version = version->asString();
+        }
+    }
+    
     // Parse description
-    if (auto desc = yaml_root->operator[]("description")) {
+    if (auto desc = actual_root->operator[]("description")) {
         rule->description = desc->asString();
     }
     
     // Parse philosophies
-    if (auto philosophies = yaml_root->operator[]("philosophies")) {
+    if (auto philosophies = actual_root->operator[]("philosophies")) {
         parsePhilosophies(*rule, philosophies);
     }
     
     // Parse rule definition
-    if (auto rule_def = yaml_root->operator[]("rule_definition")) {
+    if (auto rule_def = actual_root->operator[]("rule_definition")) {
         parseRuleDefinition(*rule, rule_def);
     }
     
+    // BUGFIX: Handle flattened rule_definition structure
+    if (rule->scope.empty() || rule->target.empty()) {
+        if (auto scope = actual_root->operator[]("scope")) {
+            rule->scope = scope->asString();
+        }
+        if (auto target = actual_root->operator[]("target")) {
+            rule->target = target->asString();
+        }
+    }
+    
     // Parse implementation
-    if (auto impl = yaml_root->operator[]("implementation")) {
+    if (auto impl = actual_root->operator[]("implementation")) {
         parseImplementation(*rule, impl);
     }
     
     // Parse validation
-    if (auto validation = yaml_root->operator[]("validation")) {
+    if (auto validation = actual_root->operator[]("validation")) {
         parseValidation(*rule, validation);
     }
     
     // Parse audit
-    if (auto audit = yaml_root->operator[]("audit")) {
+    if (auto audit = actual_root->operator[]("audit")) {
         parseAudit(*rule, audit);
     }
     
@@ -266,6 +418,10 @@ std::shared_ptr<Rule> RuleLoader::parseRuleFromYaml(std::shared_ptr<engine::pars
 }
 
 void RuleLoader::parseMetadata(Rule& rule, std::shared_ptr<engine::parser::YamlNode> metadata_node) {
+    if (!metadata_node) {
+        return;
+    }
+    
     if (auto id = metadata_node->operator[]("id")) {
         rule.id = id->asString();
     }

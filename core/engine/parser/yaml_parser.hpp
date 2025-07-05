@@ -106,6 +106,13 @@ private:
     bool isSequenceItem(const std::string& line) const;
     std::string extractSequenceValue(const std::string& line) const;
     
+    // Mapping parsing helpers (for improved separation of concerns)
+    bool shouldSkipLine(const std::string& line) const;
+    bool handleDedentLine(const std::string& line, int base_indent);
+    std::shared_ptr<YamlNode> parseNestedValue(int line_indent);
+    enum class ValueType { SEQUENCE, MAPPING, STRING_VALUE };
+    ValueType determineValueType(const std::string& next_line) const;
+    
     // Type detection
     bool isInteger(const std::string& str) const;
     bool isBoolean(const std::string& str) const;

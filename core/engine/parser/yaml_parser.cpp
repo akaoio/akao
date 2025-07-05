@@ -65,7 +65,81 @@ std::shared_ptr<YamlNode> YamlParser::parseDocument() {
         skipToNextLine();
     }
     
+    // BUGFIX: Skip comments and empty lines after document marker before determining content type
+    size_t saved_pos = pos_;
+    while (!isAtEnd()) {
+        std::string line = readLine();
+        if (isEmptyLine(line) || isCommentLine(line)) {
+            continue; // skip this line
+        } else {
+            // This is content - check if it's a sequence or mapping
+            if (isSequenceItem(line)) {
+                // Reset position and parse as sequence
+                pos_ = saved_pos;
+                return parseSequence(0);
+            } else {
+                // Reset position and parse as mapping
+                pos_ = saved_pos;
+                return parseMapping(0);
+            }
+        }
+    }
+    
+    // If we get here, the document is empty, return empty mapping
     return parseMapping(0);
+}
+
+// Mapping parsing helper methods (for improved separation of concerns)
+bool YamlParser::shouldSkipLine(const std::string& line) const {
+    return isEmptyLine(line) || isCommentLine(line);
+}
+
+bool YamlParser::handleDedentLine(const std::string& line, int base_indent) {
+    int line_indent = measureIndent(line);
+    if (line_indent < base_indent) {
+        // Dedent - return to previous level
+        // Move position back to start of this line
+        pos_ -= line.length() + 1;
+        return true; // Signal to break from parsing loop
+    }
+    return false; // Continue parsing
+}
+
+std::shared_ptr<YamlNode> YamlParser::parseNestedValue(int line_indent) {
+    // This method handles the same logic as the original nested parsing
+    // but extracted for better separation of concerns
+    skipWhitespace();
+    if (!isAtEnd()) {
+        std::string next_line = readLine();
+        pos_ -= next_line.length() + 1; // Put it back
+        
+        int next_indent = measureIndent(next_line);
+        if (next_indent > line_indent) {
+            // Nested structure
+            if (isSequenceItem(next_line)) {
+                return parseSequence(next_indent);
+            } else {
+                return parseMapping(next_indent);
+            }
+        } else {
+            return YamlNode::createString("");
+        }
+    } else {
+        return YamlNode::createString("");
+    }
+}
+
+YamlParser::ValueType YamlParser::determineValueType(const std::string& next_line) const {
+    if (isSequenceItem(next_line)) {
+        return ValueType::SEQUENCE;
+    }
+    
+    // Check if line contains a key-value pair (has colon)
+    if (next_line.find(':') != std::string::npos) {
+        return ValueType::MAPPING;
+    }
+    
+    return ValueType::STRING_VALUE;
 }
 
 std::shared_ptr<YamlNode> YamlParser::parseMapping(int base_indent) {
@@ -76,24 +150,18 @@ std::shared_ptr<YamlNode> YamlParser::parseMapping(int base_indent) {
         if (isAtEnd()) break;
         
         std::string line = readLine();
-        if (isEmptyLine(line) || isCommentLine(line)) {
+        
+        // Skip empty lines and comments - extracted to helper for clarity
+        if (shouldSkipLine(line)) {
             continue;
         }
         
-        int line_indent = measureIndent(line);
-        if (line_indent < base_indent) {
-            // Dedent - return to previous level
-            // Move position back to start of this line
-            pos_ -= line.length() + 1;
+        // Handle dedent (return to previous nesting level) - extracted to helper
+        if (handleDedentLine(line, base_indent)) {
             break;
         }
         
-        if (isSequenceItem(line)) {
-            // This is actually a sequence, not a mapping
-            pos_ -= line.length() + 1;
-            return parseSequence(base_indent);
-        }
-        
+        // Parse key-value pair
         auto [key, value_str] = parseKeyValue(line);
         if (key.empty()) {
             continue; // Skip invalid lines
@@ -102,12 +170,13 @@ std::shared_ptr<YamlNode> YamlParser::parseMapping(int base_indent) {
         std::shared_ptr<YamlNode> value_node;
         
         if (value_str.empty()) {
-            // Multi-line value or nested structure
+            // Multi-line value or nested structure - use original logic for now
             skipWhitespace();
             if (!isAtEnd()) {
                 std::string next_line = readLine();
                 pos_ -= next_line.length() + 1; // Put it back
                 
+                int line_indent = measureIndent(line);
                 int next_indent = measureIndent(next_line);
                 if (next_indent > line_indent) {
                     // Nested structure

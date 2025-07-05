@@ -72,14 +72,31 @@ struct Rule {
  * - akao:philosophy::rule:governance:v1 (loads and validates rules)
  */
 class RuleLoader {
+public:
+    // Configuration for rule loading
+    struct LoaderConfig {
+        std::vector<std::string> ignored_files = {"index.yaml", "README.yaml", ".template.yaml"};
+        std::vector<std::string> ignored_patterns = {"**/test/**", "**/tmp/**", "**/.backup/**"};
+        bool verbose_logging = false;
+        bool log_skipped_files = true;
+    };
+
 private:
     engine::parser::YamlParser yaml_parser_;
     std::string rules_directory_;
     std::vector<std::shared_ptr<Rule>> loaded_rules_;
+    LoaderConfig config_;
 
 public:
     // Constructor
     explicit RuleLoader(const std::string& rules_directory = "rules");
+
+    // Configuration management
+    void setConfig(const LoaderConfig& config);
+    const LoaderConfig& getConfig() const;
+    void setVerboseLogging(bool enabled);
+    void addIgnoredFile(const std::string& filename);
+    void addIgnoredPattern(const std::string& pattern);
 
     // Main loading methods
     bool loadAllRules();
@@ -101,9 +118,14 @@ public:
     std::vector<std::string> getCategories() const;
     std::vector<std::string> getPhilosophies() const;
 
-    // Rule discovery
+    // Rule discovery and validation
     std::vector<std::string> discoverRuleFiles() const;
     bool isValidRuleFile(const std::string& file_path) const;
+    
+    // Enhanced validation with detailed reasons
+    enum class ValidationResult { VALID, INVALID_EXTENSION, INVALID_PATH, IGNORED_FILE, IGNORED_PATTERN };
+    ValidationResult validateRuleFile(const std::string& file_path, std::string& reason) const;
+    void logSkippedFile(const std::string& file_path, const std::string& reason) const;
 
     // Error handling
     struct LoadError {
