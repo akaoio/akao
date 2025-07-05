@@ -1,0 +1,50 @@
+---
+# Akao Rule: Visualization Compliance Charts
+# Implementation rule for visualization compliance_charts compliance
+
+metadata:
+  id: akao:rule::visualization:compliance_charts:v1
+  name: Visualization Compliance Charts Rule
+  version: 1.0.0
+  category: visualization
+  created_at: '2025-07-05T17:02:04.767450Z'
+  updated_at: '2025-07-05T17:02:04.767458Z'
+  author: akao-framework
+description: Implementation rule for visualization compliance_charts compliance
+philosophies:
+- akao:philosophy::visualization:graph_explainability:v1
+rule_definition:
+  scope: visualization
+  target: compliance_charts
+  conditions:
+  - Core condition for visualization compliance_charts
+  exceptions: []
+  datalog_rules:
+  - compliance_charts_violation(File) :- visualization_file(File), not compliance_charts_compliant(File).
+  - compliance_charts_compliant(File) :- visualization_file(File), meets_compliance_charts_criteria(File).
+  logic_queries:
+    check_compliance: ?- compliance_charts_compliant(File).
+    find_violations: ?- compliance_charts_violation(File).
+    count_violations: aggregate_all(count, compliance_charts_violation(_), Count).
+implementation:
+  check_method: validate_visualization_compliance_charts
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_compliance_charts_compliance
+    description: Test compliance_charts compliance
+    expected: PASS
+  - name: test_compliance_charts_violation
+    description: Test compliance_charts violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - compliance_charts_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

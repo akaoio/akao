@@ -1,0 +1,52 @@
+---
+# Akao Philosophy: Automated updates
+# All updates and maintenance must be automated
+
+metadata:
+  id: akao:philosophy::automation:updates:v1
+  name: Automated updates
+  version: 1.0.0
+  category: automation
+  created_at: '2025-07-05T17:02:04.656501Z'
+  updated_at: '2025-07-05T17:02:04.656550Z'
+  author: akao-framework
+description: All updates and maintenance must be automated
+formal_logic:
+  domain: automation
+  predicate: updates_automation
+  axioms:
+  - id: axiom_updates_01
+    statement: '∀x: automation_element(x) → must_comply_updates(x)'
+    datalog: updates_compliant(X) :- automation_element(X), satisfies_updates_conditions(X).
+  invariants:
+  - id: invariant_updates_01
+    statement: '∀x: updates_compliant(x) → ¬updates_violation(x)'
+    datalog: no_updates_violation(X) :- updates_compliant(X).
+  logic_engine: datalog
+validation:
+  conditions:
+  - name: check_updates_compliance
+    description: Validates Automated updates compliance
+    logic: elements.every(e => e.complies_with_updates_rules())
+    datalog_query: updates_compliant(X) :- automation_element(X), satisfies_updates_rules(X).
+    prolog_check: validate_updates :- forall(automation_element(X), updates_compliant(X)).
+implementation:
+  enforcement_points:
+  - Core enforcement point for Automated updates
+  technical_requirements:
+  - Core technical requirement for Automated updates
+  user_interface:
+  - akao validate --updates
+measurement:
+  metrics:
+  - name: updates_compliance_rate
+    description: Percentage of elements following Automated updates rules
+    formula: compliant_elements / total_elements * 100
+dependencies:
+  requires: []
+  recommends: []
+audit:
+  compliance_checks:
+  - Core compliance check for Automated updates
+  violation_severity: MEDIUM
+  auto_fix_available: false

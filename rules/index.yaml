@@ -1,0 +1,211 @@
+---
+# Akao Rules Registry
+# Auto-generated index of all rule files with their IDs
+
+rule_registry:
+  version: 1.0.0
+  generated_at: '2025-07-05T17:02:04.777555Z'
+  total_rules: 32
+rules:
+- id: akao:rule::automation:pipeline_automation:v1
+  file: automation/pipeline_automation/v1.yaml
+  name: Automation Pipeline Automation Rule
+  category: automation
+  philosophies:
+  - akao:philosophy::automation:updates:v1
+- id: akao:rule::automation:dependency_updates:v1
+  file: automation/dependency_updates/v1.yaml
+  name: Automation Dependency Updates Rule
+  category: automation
+  philosophies:
+  - akao:philosophy::automation:updates:v1
+- id: akao:rule::build:environment_switching:v1
+  file: build/environment_switching/v1.yaml
+  name: Build Environment Switching Rule
+  category: build
+  philosophies:
+  - akao:philosophy::build:duality:v1
+- id: akao:rule::build:configuration_modes:v1
+  file: build/configuration_modes/v1.yaml
+  name: Build Configuration Modes Rule
+  category: build
+  philosophies:
+  - akao:philosophy::build:duality:v1
+- id: akao:rule::documentation:auto_generation:v1
+  file: documentation/auto_generation/v1.yaml
+  name: Documentation Auto Generation Rule
+  category: documentation
+  philosophies:
+  - akao:philosophy::documentation:generation:v1
+  - akao:philosophy::testing:coverage:v1
+- id: akao:rule::documentation:test_sync:v1
+  file: documentation/test_sync/v1.yaml
+  name: Documentation Test Sync Rule
+  category: documentation
+  philosophies:
+  - akao:philosophy::documentation:generation:v1
+  - akao:philosophy::testing:coverage:v1
+- id: akao:rule::interface:command_parity:v1
+  file: interface/command_parity/v1.yaml
+  name: Interface Command Parity Rule
+  category: interface
+  philosophies:
+  - akao:philosophy::interface:consistency:v1
+  - akao:philosophy::structure:enforcement:v1
+- id: akao:rule::interface:output_format:v1
+  file: interface/output_format/v1.yaml
+  name: Interface Output Format Rule
+  category: interface
+  philosophies:
+  - akao:philosophy::interface:consistency:v1
+- id: akao:rule::interface:parameter_consistency:v1
+  file: interface/parameter_consistency/v1.yaml
+  name: Interface Parameter Consistency Rule
+  category: interface
+  philosophies:
+  - akao:philosophy::interface:consistency:v1
+- id: akao:rule::language:scope_separation:v1
+  file: language/scope_separation/v1.yaml
+  name: Language Scope Separation Rule
+  category: language
+  philosophies:
+  - akao:philosophy::language:isolation:v1
+  - akao:philosophy::structure:isolation:v1
+- id: akao:rule::language:single_primary_lang:v1
+  file: language/single_primary_lang/v1.yaml
+  name: Language Single Primary Lang Rule
+  category: language
+  philosophies:
+  - akao:philosophy::language:isolation:v1
+- id: akao:rule::measurement:metrics_collection:v1
+  file: measurement/metrics_collection/v1.yaml
+  name: Measurement Metrics Collection Rule
+  category: measurement
+  philosophies:
+  - akao:philosophy::measurement:observability:v1
+- id: akao:rule::measurement:performance_monitoring:v1
+  file: measurement/performance_monitoring/v1.yaml
+  name: Measurement Performance Monitoring Rule
+  category: measurement
+  philosophies:
+  - akao:philosophy::measurement:observability:v1
+- id: akao:rule::measurement:violation_tracking:v1
+  file: measurement/violation_tracking/v1.yaml
+  name: Measurement Violation Tracking Rule
+  category: measurement
+  philosophies:
+  - akao:philosophy::measurement:traceability:v1
+  - akao:philosophy::rule:governance:v1
+- id: akao:rule::measurement:error_reporting:v1
+  file: measurement/error_reporting/v1.yaml
+  name: Measurement Error Reporting Rule
+  category: measurement
+  philosophies:
+  - akao:philosophy::measurement:traceability:v1
+- id: akao:rule::rule:meta_validation:v1
+  file: rule/meta_validation/v1.yaml
+  name: Rule Meta Validation Rule
+  category: rule
+  philosophies:
+  - akao:philosophy::rule:governance:v1
+  - akao:philosophy::validation:universal:v1
+- id: akao:rule::rule:rule_compliance:v1
+  file: rule/rule_compliance/v1.yaml
+  name: Rule Rule Compliance Rule
+  category: rule
+  philosophies:
+  - akao:philosophy::rule:governance:v1
+- id: akao:rule::security:behavior_definition:v1
+  file: security/behavior_definition/v1.yaml
+  name: Security Behavior Definition Rule
+  category: security
+  philosophies:
+  - akao:philosophy::security:explicit_behavior:v1
+  - akao:philosophy::validation:universal:v1
+- id: akao:rule::security:security_validation:v1
+  file: security/security_validation/v1.yaml
+  name: Security Security Validation Rule
+  category: security
+  philosophies:
+  - akao:philosophy::security:explicit_behavior:v1
+- id: akao:rule::structure:layout_enforcement:v1
+  file: structure/layout_enforcement/v1.yaml
+  name: Structure Layout Enforcement Rule
+  category: structure
+  philosophies:
+  - akao:philosophy::structure:enforcement:v1
+- id: akao:rule::structure:folder_validation:v1
+  file: structure/folder_validation/v1.yaml
+  name: Structure Folder Validation Rule
+  category: structure
+  philosophies:
+  - akao:philosophy::structure:enforcement:v1
+- id: akao:rule::structure:class_separation:v1
+  file: structure/class_separation/v1.yaml
+  name: Structure Class Separation Rule
+  category: structure
+  philosophies:
+  - akao:philosophy::structure:isolation:v1
+- id: akao:rule::structure:file_organization:v1
+  file: structure/file_organization/v1.yaml
+  name: Structure File Organization Rule
+  category: structure
+  philosophies:
+  - akao:philosophy::structure:isolation:v1
+- id: akao:rule::testing:coverage_enforcement:v1
+  file: testing/coverage_enforcement/v1.yaml
+  name: Testing Coverage Enforcement Rule
+  category: testing
+  philosophies:
+  - akao:philosophy::testing:coverage:v1
+  - akao:philosophy::measurement:traceability:v1
+- id: akao:rule::testing:test_validation:v1
+  file: testing/test_validation/v1.yaml
+  name: Testing Test Validation Rule
+  category: testing
+  philosophies:
+  - akao:philosophy::testing:coverage:v1
+- id: akao:rule::testing:compliance_testing:v1
+  file: testing/compliance_testing/v1.yaml
+  name: Testing Compliance Testing Rule
+  category: testing
+  philosophies:
+  - akao:philosophy::testing:coverage:v1
+- id: akao:rule::validation:cross_project:v1
+  file: validation/cross_project/v1.yaml
+  name: Validation Cross Project Rule
+  category: validation
+  philosophies:
+  - akao:philosophy::validation:universal:v1
+  - akao:philosophy::rule:governance:v1
+- id: akao:rule::validation:self_validation:v1
+  file: validation/self_validation/v1.yaml
+  name: Validation Self Validation Rule
+  category: validation
+  philosophies:
+  - akao:philosophy::validation:universal:v1
+- id: akao:rule::validation:rule_verification:v1
+  file: validation/rule_verification/v1.yaml
+  name: Validation Rule Verification Rule
+  category: validation
+  philosophies:
+  - akao:philosophy::validation:universal:v1
+- id: akao:rule::visualization:dependency_graphs:v1
+  file: visualization/dependency_graphs/v1.yaml
+  name: Visualization Dependency Graphs Rule
+  category: visualization
+  philosophies:
+  - akao:philosophy::visualization:graph_explainability:v1
+  - akao:philosophy::measurement:observability:v1
+- id: akao:rule::visualization:rule_relationships:v1
+  file: visualization/rule_relationships/v1.yaml
+  name: Visualization Rule Relationships Rule
+  category: visualization
+  philosophies:
+  - akao:philosophy::visualization:graph_explainability:v1
+- id: akao:rule::visualization:compliance_charts:v1
+  file: visualization/compliance_charts/v1.yaml
+  name: Visualization Compliance Charts Rule
+  category: visualization
+  philosophies:
+  - akao:philosophy::visualization:graph_explainability:v1

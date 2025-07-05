@@ -1,0 +1,50 @@
+---
+# Akao Rule: Rule Rule Compliance
+# Implementation rule for rule rule_compliance compliance
+
+metadata:
+  id: akao:rule::rule:rule_compliance:v1
+  name: Rule Rule Compliance Rule
+  version: 1.0.0
+  category: rule
+  created_at: '2025-07-05T17:02:04.732603Z'
+  updated_at: '2025-07-05T17:02:04.732608Z'
+  author: akao-framework
+description: Implementation rule for rule rule_compliance compliance
+philosophies:
+- akao:philosophy::rule:governance:v1
+rule_definition:
+  scope: rule
+  target: rule_compliance
+  conditions:
+  - Core condition for rule rule_compliance
+  exceptions: []
+  datalog_rules:
+  - rule_compliance_violation(File) :- rule_file(File), not rule_compliance_compliant(File).
+  - rule_compliance_compliant(File) :- rule_file(File), meets_rule_compliance_criteria(File).
+  logic_queries:
+    check_compliance: ?- rule_compliance_compliant(File).
+    find_violations: ?- rule_compliance_violation(File).
+    count_violations: aggregate_all(count, rule_compliance_violation(_), Count).
+implementation:
+  check_method: validate_rule_rule_compliance
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_rule_compliance_compliance
+    description: Test rule_compliance compliance
+    expected: PASS
+  - name: test_rule_compliance_violation
+    description: Test rule_compliance violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - rule_compliance_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

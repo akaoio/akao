@@ -1,0 +1,52 @@
+---
+# Akao Philosophy: CLI equals Web equals TUI
+# All tooling must behave identically across user interface modes
+
+metadata:
+  id: akao:philosophy::interface:consistency:v1
+  name: CLI equals Web equals TUI
+  version: 1.0.0
+  category: interface
+  created_at: '2025-07-05T17:02:04.665933Z'
+  updated_at: '2025-07-05T17:02:04.665945Z'
+  author: akao-framework
+description: All tooling must behave identically across user interface modes
+formal_logic:
+  domain: interface
+  predicate: consistency_interface
+  axioms:
+  - id: axiom_consistency_01
+    statement: '∀x: interface_element(x) → must_comply_consistency(x)'
+    datalog: consistency_compliant(X) :- interface_element(X), satisfies_consistency_conditions(X).
+  invariants:
+  - id: invariant_consistency_01
+    statement: '∀x: consistency_compliant(x) → ¬consistency_violation(x)'
+    datalog: no_consistency_violation(X) :- consistency_compliant(X).
+  logic_engine: datalog
+validation:
+  conditions:
+  - name: check_consistency_compliance
+    description: Validates CLI equals Web equals TUI compliance
+    logic: elements.every(e => e.complies_with_consistency_rules())
+    datalog_query: consistency_compliant(X) :- interface_element(X), satisfies_consistency_rules(X).
+    prolog_check: validate_consistency :- forall(interface_element(X), consistency_compliant(X)).
+implementation:
+  enforcement_points:
+  - Core enforcement point for CLI equals Web equals TUI
+  technical_requirements:
+  - Core technical requirement for CLI equals Web equals TUI
+  user_interface:
+  - akao validate --consistency
+measurement:
+  metrics:
+  - name: consistency_compliance_rate
+    description: Percentage of elements following CLI equals Web equals TUI rules
+    formula: compliant_elements / total_elements * 100
+dependencies:
+  requires: []
+  recommends: []
+audit:
+  compliance_checks:
+  - Core compliance check for CLI equals Web equals TUI
+  violation_severity: MEDIUM
+  auto_fix_available: false

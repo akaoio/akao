@@ -1,0 +1,50 @@
+---
+# Akao Rule: Validation Rule Verification
+# Implementation rule for validation rule_verification compliance
+
+metadata:
+  id: akao:rule::validation:rule_verification:v1
+  name: Validation Rule Verification Rule
+  version: 1.0.0
+  category: validation
+  created_at: '2025-07-05T17:02:04.760354Z'
+  updated_at: '2025-07-05T17:02:04.760362Z'
+  author: akao-framework
+description: Implementation rule for validation rule_verification compliance
+philosophies:
+- akao:philosophy::validation:universal:v1
+rule_definition:
+  scope: validation
+  target: rule_verification
+  conditions:
+  - Core condition for validation rule_verification
+  exceptions: []
+  datalog_rules:
+  - rule_verification_violation(File) :- validation_file(File), not rule_verification_compliant(File).
+  - rule_verification_compliant(File) :- validation_file(File), meets_rule_verification_criteria(File).
+  logic_queries:
+    check_compliance: ?- rule_verification_compliant(File).
+    find_violations: ?- rule_verification_violation(File).
+    count_violations: aggregate_all(count, rule_verification_violation(_), Count).
+implementation:
+  check_method: validate_validation_rule_verification
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_rule_verification_compliance
+    description: Test rule_verification compliance
+    expected: PASS
+  - name: test_rule_verification_violation
+    description: Test rule_verification violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - rule_verification_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

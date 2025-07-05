@@ -1,0 +1,50 @@
+---
+# Akao Rule: Structure Folder Validation
+# Implementation rule for structure folder_validation compliance
+
+metadata:
+  id: akao:rule::structure:folder_validation:v1
+  name: Structure Folder Validation Rule
+  version: 1.0.0
+  category: structure
+  created_at: '2025-07-05T17:02:04.741912Z'
+  updated_at: '2025-07-05T17:02:04.741917Z'
+  author: akao-framework
+description: Implementation rule for structure folder_validation compliance
+philosophies:
+- akao:philosophy::structure:enforcement:v1
+rule_definition:
+  scope: structure
+  target: folder_validation
+  conditions:
+  - Core condition for structure folder_validation
+  exceptions: []
+  datalog_rules:
+  - folder_validation_violation(File) :- structure_file(File), not folder_validation_compliant(File).
+  - folder_validation_compliant(File) :- structure_file(File), meets_folder_validation_criteria(File).
+  logic_queries:
+    check_compliance: ?- folder_validation_compliant(File).
+    find_violations: ?- folder_validation_violation(File).
+    count_violations: aggregate_all(count, folder_validation_violation(_), Count).
+implementation:
+  check_method: validate_structure_folder_validation
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_folder_validation_compliance
+    description: Test folder_validation compliance
+    expected: PASS
+  - name: test_folder_validation_violation
+    description: Test folder_validation violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - folder_validation_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

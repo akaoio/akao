@@ -1,0 +1,50 @@
+---
+# Akao Rule: Build Environment Switching
+# Implementation rule for build environment_switching compliance
+
+metadata:
+  id: akao:rule::build:environment_switching:v1
+  name: Build Environment Switching Rule
+  version: 1.0.0
+  category: build
+  created_at: '2025-07-05T17:02:04.700346Z'
+  updated_at: '2025-07-05T17:02:04.700351Z'
+  author: akao-framework
+description: Implementation rule for build environment_switching compliance
+philosophies:
+- akao:philosophy::build:duality:v1
+rule_definition:
+  scope: build
+  target: environment_switching
+  conditions:
+  - Core condition for build environment_switching
+  exceptions: []
+  datalog_rules:
+  - environment_switching_violation(File) :- build_file(File), not environment_switching_compliant(File).
+  - environment_switching_compliant(File) :- build_file(File), meets_environment_switching_criteria(File).
+  logic_queries:
+    check_compliance: ?- environment_switching_compliant(File).
+    find_violations: ?- environment_switching_violation(File).
+    count_violations: aggregate_all(count, environment_switching_violation(_), Count).
+implementation:
+  check_method: validate_build_environment_switching
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_environment_switching_compliance
+    description: Test environment_switching compliance
+    expected: PASS
+  - name: test_environment_switching_violation
+    description: Test environment_switching violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - environment_switching_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

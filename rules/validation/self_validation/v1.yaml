@@ -1,0 +1,50 @@
+---
+# Akao Rule: Validation Self Validation
+# Implementation rule for validation self_validation compliance
+
+metadata:
+  id: akao:rule::validation:self_validation:v1
+  name: Validation Self Validation Rule
+  version: 1.0.0
+  category: validation
+  created_at: '2025-07-05T17:02:04.758048Z'
+  updated_at: '2025-07-05T17:02:04.758056Z'
+  author: akao-framework
+description: Implementation rule for validation self_validation compliance
+philosophies:
+- akao:philosophy::validation:universal:v1
+rule_definition:
+  scope: validation
+  target: self_validation
+  conditions:
+  - Core condition for validation self_validation
+  exceptions: []
+  datalog_rules:
+  - self_validation_violation(File) :- validation_file(File), not self_validation_compliant(File).
+  - self_validation_compliant(File) :- validation_file(File), meets_self_validation_criteria(File).
+  logic_queries:
+    check_compliance: ?- self_validation_compliant(File).
+    find_violations: ?- self_validation_violation(File).
+    count_violations: aggregate_all(count, self_validation_violation(_), Count).
+implementation:
+  check_method: validate_validation_self_validation
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_self_validation_compliance
+    description: Test self_validation compliance
+    expected: PASS
+  - name: test_self_validation_violation
+    description: Test self_validation violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - self_validation_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

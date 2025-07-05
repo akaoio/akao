@@ -1,0 +1,51 @@
+---
+# Akao Rule: Security Behavior Definition
+# Implementation rule for security behavior_definition compliance
+
+metadata:
+  id: akao:rule::security:behavior_definition:v1
+  name: Security Behavior Definition Rule
+  version: 1.0.0
+  category: security
+  created_at: '2025-07-05T17:02:04.734851Z'
+  updated_at: '2025-07-05T17:02:04.734856Z'
+  author: akao-framework
+description: Implementation rule for security behavior_definition compliance
+philosophies:
+- akao:philosophy::security:explicit_behavior:v1
+- akao:philosophy::validation:universal:v1
+rule_definition:
+  scope: security
+  target: behavior_definition
+  conditions:
+  - Core condition for security behavior_definition
+  exceptions: []
+  datalog_rules:
+  - behavior_definition_violation(File) :- security_file(File), not behavior_definition_compliant(File).
+  - behavior_definition_compliant(File) :- security_file(File), meets_behavior_definition_criteria(File).
+  logic_queries:
+    check_compliance: ?- behavior_definition_compliant(File).
+    find_violations: ?- behavior_definition_violation(File).
+    count_violations: aggregate_all(count, behavior_definition_violation(_), Count).
+implementation:
+  check_method: validate_security_behavior_definition
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_behavior_definition_compliance
+    description: Test behavior_definition compliance
+    expected: PASS
+  - name: test_behavior_definition_violation
+    description: Test behavior_definition violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - behavior_definition_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

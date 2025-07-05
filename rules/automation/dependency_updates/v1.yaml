@@ -1,0 +1,50 @@
+---
+# Akao Rule: Automation Dependency Updates
+# Implementation rule for automation dependency_updates compliance
+
+metadata:
+  id: akao:rule::automation:dependency_updates:v1
+  name: Automation Dependency Updates Rule
+  version: 1.0.0
+  category: automation
+  created_at: '2025-07-05T17:02:04.697985Z'
+  updated_at: '2025-07-05T17:02:04.697991Z'
+  author: akao-framework
+description: Implementation rule for automation dependency_updates compliance
+philosophies:
+- akao:philosophy::automation:updates:v1
+rule_definition:
+  scope: automation
+  target: dependency_updates
+  conditions:
+  - Core condition for automation dependency_updates
+  exceptions: []
+  datalog_rules:
+  - dependency_updates_violation(File) :- automation_file(File), not dependency_updates_compliant(File).
+  - dependency_updates_compliant(File) :- automation_file(File), meets_dependency_updates_criteria(File).
+  logic_queries:
+    check_compliance: ?- dependency_updates_compliant(File).
+    find_violations: ?- dependency_updates_violation(File).
+    count_violations: aggregate_all(count, dependency_updates_violation(_), Count).
+implementation:
+  check_method: validate_automation_dependency_updates
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_dependency_updates_compliance
+    description: Test dependency_updates compliance
+    expected: PASS
+  - name: test_dependency_updates_violation
+    description: Test dependency_updates violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - dependency_updates_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

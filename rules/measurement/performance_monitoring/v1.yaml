@@ -1,0 +1,50 @@
+---
+# Akao Rule: Measurement Performance Monitoring
+# Implementation rule for measurement performance_monitoring compliance
+
+metadata:
+  id: akao:rule::measurement:performance_monitoring:v1
+  name: Measurement Performance Monitoring Rule
+  version: 1.0.0
+  category: measurement
+  created_at: '2025-07-05T17:02:04.723385Z'
+  updated_at: '2025-07-05T17:02:04.723389Z'
+  author: akao-framework
+description: Implementation rule for measurement performance_monitoring compliance
+philosophies:
+- akao:philosophy::measurement:observability:v1
+rule_definition:
+  scope: measurement
+  target: performance_monitoring
+  conditions:
+  - Core condition for measurement performance_monitoring
+  exceptions: []
+  datalog_rules:
+  - performance_monitoring_violation(File) :- measurement_file(File), not performance_monitoring_compliant(File).
+  - performance_monitoring_compliant(File) :- measurement_file(File), meets_performance_monitoring_criteria(File).
+  logic_queries:
+    check_compliance: ?- performance_monitoring_compliant(File).
+    find_violations: ?- performance_monitoring_violation(File).
+    count_violations: aggregate_all(count, performance_monitoring_violation(_), Count).
+implementation:
+  check_method: validate_measurement_performance_monitoring
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_performance_monitoring_compliance
+    description: Test performance_monitoring compliance
+    expected: PASS
+  - name: test_performance_monitoring_violation
+    description: Test performance_monitoring violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - performance_monitoring_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

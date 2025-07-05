@@ -1,0 +1,51 @@
+---
+# Akao Rule: Interface Command Parity
+# Implementation rule for interface command_parity compliance
+
+metadata:
+  id: akao:rule::interface:command_parity:v1
+  name: Interface Command Parity Rule
+  version: 1.0.0
+  category: interface
+  created_at: '2025-07-05T17:02:04.709585Z'
+  updated_at: '2025-07-05T17:02:04.709590Z'
+  author: akao-framework
+description: Implementation rule for interface command_parity compliance
+philosophies:
+- akao:philosophy::interface:consistency:v1
+- akao:philosophy::structure:enforcement:v1
+rule_definition:
+  scope: interface
+  target: command_parity
+  conditions:
+  - Core condition for interface command_parity
+  exceptions: []
+  datalog_rules:
+  - command_parity_violation(File) :- interface_file(File), not command_parity_compliant(File).
+  - command_parity_compliant(File) :- interface_file(File), meets_command_parity_criteria(File).
+  logic_queries:
+    check_compliance: ?- command_parity_compliant(File).
+    find_violations: ?- command_parity_violation(File).
+    count_violations: aggregate_all(count, command_parity_violation(_), Count).
+implementation:
+  check_method: validate_interface_command_parity
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_command_parity_compliance
+    description: Test command_parity compliance
+    expected: PASS
+  - name: test_command_parity_violation
+    description: Test command_parity violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - command_parity_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

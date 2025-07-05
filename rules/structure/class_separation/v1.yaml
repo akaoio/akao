@@ -1,0 +1,50 @@
+---
+# Akao Rule: Structure Class Separation
+# Implementation rule for structure class_separation compliance
+
+metadata:
+  id: akao:rule::structure:class_separation:v1
+  name: Structure Class Separation Rule
+  version: 1.0.0
+  category: structure
+  created_at: '2025-07-05T17:02:04.744179Z'
+  updated_at: '2025-07-05T17:02:04.744184Z'
+  author: akao-framework
+description: Implementation rule for structure class_separation compliance
+philosophies:
+- akao:philosophy::structure:isolation:v1
+rule_definition:
+  scope: structure
+  target: class_separation
+  conditions:
+  - Core condition for structure class_separation
+  exceptions: []
+  datalog_rules:
+  - class_separation_violation(File) :- structure_file(File), not class_separation_compliant(File).
+  - class_separation_compliant(File) :- structure_file(File), meets_class_separation_criteria(File).
+  logic_queries:
+    check_compliance: ?- class_separation_compliant(File).
+    find_violations: ?- class_separation_violation(File).
+    count_violations: aggregate_all(count, class_separation_violation(_), Count).
+implementation:
+  check_method: validate_structure_class_separation
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_class_separation_compliance
+    description: Test class_separation compliance
+    expected: PASS
+  - name: test_class_separation_violation
+    description: Test class_separation violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - class_separation_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null

@@ -1,0 +1,50 @@
+---
+# Akao Rule: Measurement Error Reporting
+# Implementation rule for measurement error_reporting compliance
+
+metadata:
+  id: akao:rule::measurement:error_reporting:v1
+  name: Measurement Error Reporting Rule
+  version: 1.0.0
+  category: measurement
+  created_at: '2025-07-05T17:02:04.728065Z'
+  updated_at: '2025-07-05T17:02:04.728070Z'
+  author: akao-framework
+description: Implementation rule for measurement error_reporting compliance
+philosophies:
+- akao:philosophy::measurement:traceability:v1
+rule_definition:
+  scope: measurement
+  target: error_reporting
+  conditions:
+  - Core condition for measurement error_reporting
+  exceptions: []
+  datalog_rules:
+  - error_reporting_violation(File) :- measurement_file(File), not error_reporting_compliant(File).
+  - error_reporting_compliant(File) :- measurement_file(File), meets_error_reporting_criteria(File).
+  logic_queries:
+    check_compliance: ?- error_reporting_compliant(File).
+    find_violations: ?- error_reporting_violation(File).
+    count_violations: aggregate_all(count, error_reporting_violation(_), Count).
+implementation:
+  check_method: validate_measurement_error_reporting
+  auto_fix: false
+  severity: MEDIUM
+validation:
+  test_cases:
+  - name: test_error_reporting_compliance
+    description: Test error_reporting compliance
+    expected: PASS
+  - name: test_error_reporting_violation
+    description: Test error_reporting violation detection
+    expected: FAIL
+measurement:
+  metrics:
+  - error_reporting_compliance_rate
+  thresholds:
+    minimum_compliance: 95
+    warning_threshold: 90
+audit:
+  last_validated: null
+  validation_status: PENDING
+  compliance_rate: null
