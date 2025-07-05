@@ -1,0 +1,21 @@
+---
+metadata:
+  id: akao:rule::test:simple:v1
+  name: Simple Test Rule
+  version: 1.0.0
+  category: test
+  created_at: '2025-07-05T00:00:00.000000Z'
+  updated_at: '2025-07-05T00:00:00.000000Z'
+  author: akao-framework
+description: Simple test rule
+philosophies:
+- akao:philosophy::test:simple:v1
+rule_definition:
+  scope: test
+  target: simple
+  conditions:
+  - Test condition
+implementation:
+  check_method: validate_test
+  auto_fix: false
+  severity: LOW
