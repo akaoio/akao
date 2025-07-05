@@ -20,7 +20,7 @@
 
 ## Overview
 
-Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in JSON, YAML, or TOML, to validate structure, enforce best practices, automate builds, and generate documentation. Each rule has a Global Rule Identifier (GID) in the format `akao:rule::<category>:<name>:v<version>` for precise tracking and management. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
+Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It uses declarative rules, written in YAML, or TOML, to validate structure, enforce best practices, automate builds, and generate documentation. Each rule has a Global Rule Identifier (GID) in the format `akao:rule::<category>:<name>:v<version>` for precise tracking and management. Akao is written in **C++**, but is capable of managing polyglot repos (e.g., JS, Python, Rust) as long as each language follows structure and rule profiles.
 
 Akao applies its own standards to itself, demonstrating that its validation system works universally across any project.
 
@@ -105,7 +105,7 @@ See full: [`PHILOSOPHY.md`](./PHILOSOPHY.md#core-beliefs)
 │   └── registry/   # External feature registries
 ├── .build/         # Dev & prod builds
 ├── docs/           # Auto-generated documentation
-├── rules/          # JSON or DSL rule files
+├── rules/          # YAML or DSL rule files
 ├── src/            # C++ classes (1 class per folder)
 ├── include/        # C++ headers (mirrors src)
 ├── tests/          # Principle & rule tests
@@ -152,7 +152,7 @@ akao validate --category=<cat> # Validate all rules in a category
 akao test                     # Run unit & principle tests
 akao build --dev              # Start build in hot-reload mode
 akao build --prod             # Production build with hashes
-akao docgen                   # Generate RULES.md, README.md, etc
+akao doc                   # Generate RULES.md, README.md, etc
 akao audit                    # Print audit of rules, coverage, status
 akao audit --gid=<gid>        # Audit specific rule compliance
 
@@ -172,12 +172,12 @@ akao ruleset create <name>    # Create new RuleSet interactively
 # RuleSet-based Operations
 akao validate --ruleset=<name> # Validate using specific RuleSet
 akao audit --ruleset=<name>   # Audit compliance for specific RuleSet
-akao docgen --ruleset=<name>  # Generate docs for specific RuleSet rules
+akao doc --ruleset=<name>  # Generate docs for specific RuleSet rules
 
 # Graph Generation
 akao graph --type=rules --format=svg --output=rules.svg        # Rule dependency graph
 akao graph --type=rulesets --format=dot --output=rulesets.dot  # RuleSet relationships
-akao graph --type=project --format=json                        # Project structure (stdout)
+akao graph --type=project --format=yaml                        # Project structure (stdout)
 akao graph --type=features --format=png --output=features.png  # Feature dependencies
 akao graph --type=validation --format=svg                      # Validation flow graph
 akao graph --type=audit --format=dot --ruleset=security        # Audit compliance graph
@@ -199,7 +199,7 @@ akao deploy configure        # Configure deployment settings
 * android (via NDK)
 * custom doc extractors or linters
 
-Each plugin is declared in `plugins/*.json` with:
+Each plugin is declared in `plugins/*.yaml` with:
 
 * inputs, outputs
 * language scope
@@ -244,7 +244,7 @@ akao --tui  # Launch interactive terminal interface
 ### REST API
 ```bash
 POST /api/validate HTTP/1.1
-Content-Type: application/json
+Content-Type: application/yaml
 {
   "gid": "akao:rule::cpp:naming:snake_case:v1",
   "project_path": "/path/to/project"
@@ -258,7 +258,7 @@ POST /api/build {"profile": "dev", "watch": true}
 **Interface Parity Guarantee:**
 - All commands produce identical results across interfaces
 - Error messages and status codes are consistent
-- Response formats are standardized (JSON/XML/YAML)
+- Response formats are standardized (YAML/XML/YAML)
 - Automated tests verify parity across all interfaces
 
 > **Philosophy Reference**: This guarantee implements the "CLI = Web = TUI" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) - "All tooling must behave identically across user interface modes."
@@ -302,7 +302,7 @@ Akao runs on **any language, any OS, any runtime**:
 > 
 > **Cross-Reference Validation**: All commands, capabilities, and technical details are cross-referenced in [SUMMARY.md](./SUMMARY.md#reference-documents) for complete auditability.
 > 
-> **Generation Command**: This README is auto-generated and must always match actual structure and rule definitions. Use `akao docgen` to regenerate.
+> **Generation Command**: This README is auto-generated and must always match actual structure and rule definitions. Use `akao doc` to regenerate.
 
 **Cross-Document Consistency Checklist:**
 - ✅ All CLI commands match [PLAN.md](./PLAN.md#implementation-requirements-class-structure) specifications

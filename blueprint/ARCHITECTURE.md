@@ -88,7 +88,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 > **Implementation Details**: Complete class structure and implementation phases for these components are specified in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical reference in [SUMMARY.md](./SUMMARY.md#directory-structure).
 
 ### 1. Rule Engine (`src/rule/`)
-- **Parser**: Multi-format rule file parser (JSON/YAML/TOML) with GID validation
+- **Parser**: Multi-format rule file parser (YAML/TOML) with GID validation
 - **Validator**: Universal validation engine with GID tracking and cross-platform support
 - **Registry**: GID-based rule discovery and management system (`akao:rule::<category>:<name>:v<version>`)
 - **RuleSet Manager**: RuleSet lifecycle, inheritance, and resolution engine
@@ -103,7 +103,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 ### 2. RuleSet Management (`src/rule/ruleset/`)
 - **Manager**: RuleSet lifecycle and inheritance management
 - **Resolver**: RuleSet inheritance, includes, and excludes resolution
-- **Parser**: Multi-format RuleSet definition parser (YAML/JSON)
+- **Parser**: Multi-format RuleSet definition parser (YAML)
 - **Validator**: RuleSet validation and consistency checking
 
 > **Philosophy Realization**: Implements "Every rule is part of at least one RuleSet" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
@@ -123,7 +123,7 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 > 
 > **Implementation**: Complete build system design in [PLAN.md](./PLAN.md#build-configuration) and technical specifications in [SUMMARY.md](./SUMMARY.md#quick-start-guide).
 
-### 4. Documentation Generator (`src/docgen/`)
+### 4. Documentation Generator (`src/doc/`)
 - **Engine**: Template-based Markdown generation with graph integration
 - **Parser**: Code comment parsing and extraction across languages
 - **Mapper**: Rule-to-documentation mapping with GID references
@@ -131,13 +131,13 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 
 > **Philosophy Realization**: Implements "Documentation is code" and "Auto-update all documentation" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).
 > 
-> **User Commands**: Accessible via `akao docgen` commands detailed in [README.md](./README.md#commands).
+> **User Commands**: Accessible via `akao doc` commands detailed in [README.md](./README.md#commands).
 > 
 > **Implementation**: Complete documentation system design in [PLAN.md](./PLAN.md#implementation-requirements-class-structure) and technical specifications in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
 
 ### 5. Graph Generation System (`src/graph/`)
 - **Generator**: Core graph generation engine for all graph types (rules, rulesets, project, features, validation, audit)
-- **Exporter**: Multi-format export (DOT, SVG, JSON, PNG) with consistent quality
+- **Exporter**: Multi-format export (DOT, SVG, YAML, PNG) with consistent quality
 - **Analyzer**: Graph analysis and metrics calculation
 - **Renderer**: Graph visualization and layout algorithms
 
@@ -246,9 +246,9 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 
 ### 9. Graph Generation System (`src/graph/`)
 - **Graph Generator**: Multi-type graph generation (rules, rulesets, project, features, validation, audit)
-- **Format Exporter**: Multi-format export (DOT, SVG, JSON, PNG)
+- **Format Exporter**: Multi-format export (DOT, SVG, YAML, PNG)
 - **Graph Analyzer**: Graph analysis, metrics, and relationship discovery
-- **Integration Engine**: Graph integration with docgen, audit, and Web UI
+- **Integration Engine**: Graph integration with doc, audit, and Web UI
 
 ---
 
@@ -257,18 +257,18 @@ The Akao framework consists of **9 major subsystems** implemented with layered a
 ```
 akao/
 ├── .akao/                    # Framework configuration
-│   ├── config.json          # Main configuration
+│   ├── config.yaml          # Main configuration
 │   ├── pipeline.yaml        # CI/CD pipeline configuration
 │   ├── profiles/             # Language-specific profiles
 │   ├── features/             # Installed features metadata
-│   │   ├── installed.json   # List of installed features
-│   │   ├── dependencies.json # Feature dependency graph
+│   │   ├── installed.yaml   # List of installed features
+│   │   ├── dependencies.yaml # Feature dependency graph
 │   │   └── cache/           # Feature download cache
 │   ├── registry/             # External registries
-│   │   ├── official.json    # Official Akao registry
-│   │   └── custom.json      # Custom registries
-│   ├── trace.json           # GID-based audit and error trace with rule compliance
-│   ├── audit.json           # System audit and compliance metrics per GID
+│   │   ├── official.yaml    # Official Akao registry
+│   │   └── custom.yaml      # Custom registries
+│   ├── trace.yaml           # GID-based audit and error trace with rule compliance
+│   ├── audit.yaml           # System audit and compliance metrics per GID
 │   └── cache/               # Build and validation cache
 ├── .github/                  # Auto-generated CI/CD workflows
 │   ├── workflows/           # GitHub Actions workflows
@@ -281,7 +281,7 @@ akao/
 ├── .build/                   # Build outputs
 │   ├── dev/                 # Development builds
 │   ├── prod/                # Production builds
-│   └── meta.json            # Build metadata and hashes
+│   └── meta.yaml            # Build metadata and hashes
 ├── docs/                     # Auto-generated documentation
 │   ├── README.md            # Generated project overview
 │   ├── RULES.md             # Generated rule documentation
@@ -309,7 +309,7 @@ akao/
 ├── src/                      # Source code (1 class per folder)
 │   ├── rule/                # Rule engine implementation
 │   ├── build/               # Build system implementation
-│   ├── docgen/              # Documentation generator
+│   ├── doc/              # Documentation generator
 │   ├── cli/                 # Command-line interface
 │   ├── core/                # Core framework
 │   ├── automation/          # CI/CD pipeline generation
@@ -336,7 +336,7 @@ akao/
 2. Parse project structure
 3. Apply rules to each scope with GID tracking
 4. Generate violation reports with GID references
-5. Update trace.json and audit.json with GID-based results
+5. Update trace.yaml and audit.yaml with GID-based results
 ```
 
 ### Build Flow
@@ -420,7 +420,7 @@ public:
 ```
 
 Plugin registration:
-```json
+```yaml
 {
   "name": "wasm-builder",
   "version": "1.0.0",
@@ -452,8 +452,8 @@ Plugin registration:
 
 ## Configuration
 
-Main configuration in `.akao/config.json`:
-```json
+Main configuration in `.akao/config.yaml`:
+```yaml
 {
   "version": "1.0.0",
   "project": {
@@ -478,8 +478,8 @@ Main configuration in `.akao/config.json`:
 }
 ```
 
-Feature configuration in `.akao/features/installed.json`:
-```json
+Feature configuration in `.akao/features/installed.yaml`:
+```yaml
 {
   "version": "1.0.0",
   "features": [
@@ -507,9 +507,9 @@ Feature configuration in `.akao/features/installed.json`:
 ```
 
 Language profiles in `.akao/profiles/`:
-- `cpp.json` - C++ specific rules and build settings
-- `js.json` - JavaScript specific rules and build settings
-- `rust.json` - Rust specific rules and build settings
+- `cpp.yaml` - C++ specific rules and build settings
+- `js.yaml` - JavaScript specific rules and build settings
+- `rust.yaml` - Rust specific rules and build settings
 
 ---
 

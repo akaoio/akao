@@ -23,7 +23,7 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 **Connections**: Used by all other components; provides configuration management, safe file operations, comprehensive audit trails, and plugin loading capabilities.
 
 **Required Classes:**
-- `src/core/config/ConfigManager.{hpp,cpp}` - `.akao/config.json` management with platform detection
+- `src/core/config/ConfigManager.{hpp,cpp}` - `.akao/config.yaml` management with platform detection
 - `src/core/filesystem/FileSystem.{hpp,cpp}` - Safe file operations with path validation and cross-platform sandboxing
 - `src/core/trace/TraceLogger.{hpp,cpp}` - GID-based audit logging and error tracking
 - `src/core/plugin/PluginManager.{hpp,cpp}` - Plugin loading and management with security validation
@@ -34,7 +34,7 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 **Connections**: Core of validation system; used by CLI, build system, documentation generator, and all interfaces.
 
 **Required Classes:**
-- `src/rule/parser/RuleParser.{hpp,cpp}` - Multi-format parser (JSON/YAML/TOML) with GID validation
+- `src/rule/parser/RuleParser.{hpp,cpp}` - Multi-format parser (YAML/TOML) with GID validation
 - `src/rule/validator/UniversalValidator.{hpp,cpp}` - Universal validation engine with GID tracking
 - `src/rule/registry/RuleRegistry.{hpp,cpp}` - GID-based rule discovery and management
 - `src/rule/reporter/ViolationReporter.{hpp,cpp}` - Violation reporting with GID references and suggestions
@@ -61,16 +61,16 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 - `src/build/hasher/BuildHasher.{hpp,cpp}` - Reproducible build verification and integrity
 - `src/build/graph/DependencyGraph.{hpp,cpp}` - Build dependency graph resolution
 
-### 5. Documentation Generator (`src/docgen/`)
+### 5. Documentation Generator (`src/doc/`)
 **Responsibility**: Template-based documentation generation with auto-update coordination.
 **Purpose**: Generate RULES.md, PRINCIPLES.md, FEATURES.md, and API documentation from code and rules.
 **Connections**: Reads from rule engine, integrates with graph system, triggered by CLI commands.
 
 **Required Classes:**
-- `src/docgen/engine/DocumentationEngine.{hpp,cpp}` - Template-based Markdown generation engine
-- `src/docgen/parser/CodeParser.{hpp,cpp}` - Code comment parsing and extraction
-- `src/docgen/mapper/RuleMapper.{hpp,cpp}` - Rule-to-documentation mapping system
-- `src/docgen/updater/AutoUpdater.{hpp,cpp}` - Automatic documentation update coordination
+- `src/doc/engine/DocumentationEngine.{hpp,cpp}` - Template-based Markdown generation engine
+- `src/doc/parser/CodeParser.{hpp,cpp}` - Code comment parsing and extraction
+- `src/doc/mapper/RuleMapper.{hpp,cpp}` - Rule-to-documentation mapping system
+- `src/doc/updater/AutoUpdater.{hpp,cpp}` - Automatic documentation update coordination
 
 ### 6. Graph Generation System (`src/graph/`)
 **Responsibility**: Visual representation and analysis of system relationships and dependencies.
@@ -79,7 +79,7 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 
 **Required Classes:**
 - `src/graph/generator/GraphGenerator.{hpp,cpp}` - Core graph generation engine for all graph types
-- `src/graph/exporter/GraphExporter.{hpp,cpp}` - Multi-format export (DOT, SVG, JSON, PNG)
+- `src/graph/exporter/GraphExporter.{hpp,cpp}` - Multi-format export (DOT, SVG, YAML, PNG)
 - `src/graph/analyzer/GraphAnalyzer.{hpp,cpp}` - Graph analysis and metrics calculation
 - `src/graph/renderer/GraphRenderer.{hpp,cpp}` - Graph visualization and layout algorithms
 
@@ -199,16 +199,16 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 - Version management preserves GID stability across rule updates
 
 **GID Integration Requirements:**
-- All rule files (JSON/YAML/TOML) must include GID in structure
+- All rule files (YAML/TOML) must include GID in structure
 - CLI operations support `--gid=<gid>` parameter for specific rule targeting
-- Audit trails reference all rules by GID in trace.json and audit.json
+- Audit trails reference all rules by GID in trace.yaml and audit.yaml
 - Violation reports include GID, file path, line number, and actionable suggestions
 - RuleSet definitions reference rules by GID for organizational grouping
 
 ### RuleSet System Requirements
 
 **RuleSet Structure:**
-- Location: `.akao/rulesets/` directory with YAML or JSON format
+- Location: `.akao/rulesets/` directory with YAML or YAML format
 - Inheritance: Parent RuleSets, includes, excludes resolution
 - Built-in RuleSets: core.yaml, cpp.yaml, security.yaml, performance.yaml
 - CLI integration: `ruleset list/info/validate/create` commands
@@ -223,7 +223,7 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 **CLI = Web = TUI = API Enforcement:**
 - All commands must produce identical results across interfaces
 - Error messages and status codes consistent across interfaces
-- Response formats standardized (JSON/XML/YAML)
+- Response formats standardized (YAML/XML/YAML)
 - Automated testing validates full parity across all interfaces
 
 **Command Mapping Requirements:**
@@ -245,7 +245,7 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 **Export Formats:**
 - DOT format for Graphviz compatibility
 - SVG format for web and documentation embedding
-- JSON format for programmatic access
+- YAML format for programmatic access
 - PNG format for presentations and reports
 
 ### Philosophy Enforcement Requirements
@@ -289,14 +289,14 @@ Akao is a comprehensive C++ framework implementing universal validation, rule-dr
 ```
 akao/
 ├── .akao/                      # Framework runtime configuration
-│   ├── config.json            # Main configuration file
+│   ├── config.yaml            # Main configuration file
 │   ├── pipeline.yaml          # CI/CD pipeline configuration
 │   ├── profiles/               # Language-specific rule profiles
-│   │   ├── cpp.json           # C++ rules and build settings
-│   │   ├── js.json            # JavaScript rules and build settings
-│   │   ├── rust.json          # Rust rules and build settings
-│   │   ├── python.json        # Python rules and build settings
-│   │   └── go.json            # Go rules and build settings
+│   │   ├── cpp.yaml           # C++ rules and build settings
+│   │   ├── js.yaml            # JavaScript rules and build settings
+│   │   ├── rust.yaml          # Rust rules and build settings
+│   │   ├── python.yaml        # Python rules and build settings
+│   │   └── go.yaml            # Go rules and build settings
 │   ├── rulesets/               # RuleSet definitions and inheritance
 │   │   ├── core.yaml          # Core framework RuleSet
 │   │   ├── cpp.yaml           # C++ language RuleSet
@@ -306,14 +306,14 @@ akao/
 │   │       ├── api.yaml       # API development RuleSet
 │   │       └── database.yaml  # Database integration RuleSet
 │   ├── features/               # Feature management
-│   │   ├── installed.json     # List of installed features
-│   │   ├── dependencies.json  # Feature dependency graph
+│   │   ├── installed.yaml     # List of installed features
+│   │   ├── dependencies.yaml  # Feature dependency graph
 │   │   └── cache/             # Feature download cache
 │   ├── registry/               # External registries
-│   │   ├── official.json      # Official Akao registry
-│   │   └── custom.json        # Custom registries
-│   ├── trace.json             # Audit log and violation trace
-│   ├── audit.json             # System audit and compliance metrics
+│   │   ├── official.yaml      # Official Akao registry
+│   │   └── custom.yaml        # Custom registries
+│   ├── trace.yaml             # Audit log and violation trace
+│   ├── audit.yaml             # System audit and compliance metrics
 │   └── cache/                 # Build and validation cache
 │       ├── rules.cache        # Compiled rule cache
 │       └── deps.cache         # Dependency resolution cache
@@ -324,8 +324,8 @@ akao/
 │   ├── prod/                  # Production builds (optimized)
 │   │   ├── akao               # Production binary
 │   │   └── hashes/            # File integrity hashes
-│   ├── meta.json              # Build metadata and dependencies
-│   └── hash.json              # Reproducible build verification
+│   ├── meta.yaml              # Build metadata and dependencies
+│   └── hash.yaml              # Reproducible build verification
 ├── .github/                    # Auto-generated CI/CD workflows
 │   ├── workflows/             # GitHub Actions workflows
 │   │   ├── ci.yml             # Continuous integration
@@ -344,13 +344,13 @@ akao/
 │       ├── project.md         # Project management API
 │       └── feature.md         # Feature management API
 ├── rules/                      # Rule definitions and enforcement
-│   ├── core.json              # Core framework rules
-│   ├── structure.json         # Project structure rules
-│   ├── naming.json            # Naming convention rules
-│   ├── testing.json           # Testing requirement rules
-│   ├── documentation.json     # Documentation rules
-│   ├── security.json          # Security and sandboxing rules
-│   └── performance.json       # Performance requirement rules
+│   ├── core.yaml              # Core framework rules
+│   ├── structure.yaml         # Project structure rules
+│   ├── naming.yaml            # Naming convention rules
+│   ├── testing.yaml           # Testing requirement rules
+│   ├── documentation.yaml     # Documentation rules
+│   ├── security.yaml          # Security and sandboxing rules
+│   └── performance.yaml       # Performance requirement rules
 ├── templates/                  # Project and feature templates
 │   ├── projects/              # Project initialization templates
 │   │   ├── cpp/               # C++ project template
@@ -365,7 +365,7 @@ akao/
 │   ├── core/                  # Core framework components
 │   ├── rule/                  # Rule engine system
 │   ├── build/                 # Build engine system
-│   ├── docgen/                # Documentation generation system
+│   ├── doc/                # Documentation generation system
 │   ├── graph/                 # Graph generation system
 │   ├── interfaces/            # Interface system (CLI/Web/TUI/API)
 │   ├── automation/            # Automation and CI/CD system
@@ -483,7 +483,7 @@ akao install/update/uninstall <feature>     # External feature operations
 akao validate [--gid=<gid>] [--category=<cat>] [--ruleset=<n>]  # Structure/rule enforcement
 akao test                                    # Unit and principle tests
 akao build --dev/--prod                     # Hot reload or production builds
-akao docgen [--ruleset=<n>]                 # Generate documentation
+akao doc [--ruleset=<n>]                 # Generate documentation
 akao audit [--gid=<gid>] [--ruleset=<n>]    # Compliance audit and coverage
 ```
 
@@ -504,7 +504,7 @@ akao validate/audit --ruleset=<name>           # RuleSet-based operations
 ```bash
 akao graph --type=<type> --format=<format> [--output=<path>] [--ruleset=<n>]
 # Types: rules, rulesets, project, features, validation, audit
-# Formats: dot, svg, json, png
+# Formats: dot, svg, yaml, png
 ```
 
 #### Automation & CI/CD Commands
@@ -528,7 +528,7 @@ Must include complete CMake configuration supporting:
 - Cross-compilation support
 
 #### Configuration Files
-- `.akao/config.json` - Main framework configuration with platform detection
+- `.akao/config.yaml` - Main framework configuration with platform detection
 - `.akao/pipeline.yaml` - CI/CD pipeline configuration with platform matrix
 - All rule files in `rules/` directory with complete GID integration
 - All RuleSet definitions in `.akao/rulesets/` with inheritance support

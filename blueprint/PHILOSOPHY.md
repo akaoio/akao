@@ -36,7 +36,7 @@ The [GID system](./ARCHITECTURE.md#core-components) under Rule Engine provides c
 ### **Documentation is code**
 All documentation (README, RULES, PRINCIPLES) must be generated from actual rules and tests. Hand-written documentation lies by omission and becomes stale by neglect. Generated documentation cannot lie because it is extracted from the living, breathing codebase itself. This ensures that what is documented is what is implemented, and what is implemented is what is tested.
 
-The [documentation generation system](./ARCHITECTURE.md#core-components) under Documentation Generator implements this principle, with complete specifications in [PLAN.md](./PLAN.md#implementation-requirements-class-structure). Users trigger documentation generation via [`akao docgen` commands](./README.md#commands) and technical reference in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
+The [documentation generation system](./ARCHITECTURE.md#core-components) under Documentation Generator implements this principle, with complete specifications in [PLAN.md](./PLAN.md#implementation-requirements-class-structure). Users trigger documentation generation via [`akao doc` commands](./README.md#commands) and technical reference in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
 
 ### **One class per folder**
 Every folder must contain exactly one class and its tests. This principle enforces cognitive simplicity and prevents the common antipattern of "god folders" that become dumping grounds for related but distinct concerns. Each folder becomes a bounded context with clear responsibility, making navigation intuitive and refactoring safe.
@@ -65,7 +65,7 @@ All disabled rules are tracked by their Global Rule Identifier (GID) with reason
 ### **Auto-update all documentation**
 Whenever rules change, documentation must change automatically. Manual documentation updates are promises that will be broken. When code evolves, documentation must evolve in lockstep, without human intervention. This ensures that documentation reflects current reality rather than historical intentions.
 
-> **Technical Implementation**: Automated documentation updates are handled by the Documentation Generator in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and detailed in [PLAN.md](./PLAN.md#implementation-requirements-class-structure). Users trigger updates via `akao docgen` commands in [README.md](./README.md#commands) with technical reference in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
+> **Technical Implementation**: Automated documentation updates are handled by the Documentation Generator in [ARCHITECTURE.md](./ARCHITECTURE.md#core-components) and detailed in [PLAN.md](./PLAN.md#implementation-requirements-class-structure). Users trigger updates via `akao doc` commands in [README.md](./README.md#commands) with technical reference in [SUMMARY.md](./SUMMARY.md#file-formats-and-structure).
 
 ### **Everything must build dev + prod**
 Development (live reload) and production (deterministic) builds are mandatory. Every codebase must support both rapid iteration and reliable deployment. Development builds prioritize speed and debugging capability, while production builds prioritize optimization and reproducibility. Both must succeed for the system to be considered complete.
@@ -158,7 +158,7 @@ But unlike them, Akao combines enforcement, testing, auditing, and documentation
 
 All principles must:
 
-1. Be implemented as a JSON rule.
+1. Be implemented as a YAML rule.
 2. Be backed by test file.
 3. Be referenced in the CLI.
 4. Be used to generate documentation.
@@ -175,7 +175,7 @@ Every principle here is:
 * Part of `PRINCIPLES.md` (generated)
 * Validated by a test in `tests/`
 * Mapped to a rule in `rules/`
-* Linked to violations in `.akao/trace.json`
+* Linked to violations in `.akao/trace.yaml`
 
 Akao refuses to function in contradiction to its principles.
 

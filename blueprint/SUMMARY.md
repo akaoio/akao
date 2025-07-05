@@ -49,7 +49,7 @@ src/
 │   ├── trace/              # Audit logging and trace system
 │   └── plugin/             # Plugin loading and management
 ├── rule/                   # Rule processing engine
-│   ├── parser/             # Multi-format rule parser (JSON/YAML/TOML)
+│   ├── parser/             # Multi-format rule parser (YAML/TOML)
 │   ├── validator/          # Universal validation with GID tracking
 │   ├── registry/           # GID-based rule discovery
 │   ├── reporter/           # Violation reporting with GID references
@@ -63,14 +63,14 @@ src/
 │   ├── watcher/            # File change monitoring
 │   ├── hasher/             # Build verification and integrity
 │   └── graph/              # Build dependency resolution
-├── docgen/                 # Documentation generation
+├── doc/                 # Documentation generation
 │   ├── engine/             # Template-based generation
 │   ├── parser/             # Code comment extraction
 │   ├── mapper/             # Rule-to-doc mapping
 │   └── updater/            # Auto-update coordination
 ├── graph/                  # Graph generation system
 │   ├── generator/          # Core graph generation
-│   ├── exporter/           # Multi-format export (DOT/SVG/JSON/PNG)
+│   ├── exporter/           # Multi-format export (DOT/SVG/YAML/PNG)
 │   ├── analyzer/           # Graph analysis and metrics
 │   └── renderer/           # Visualization and layout
 ├── cli/                    # Command processing
@@ -125,12 +125,12 @@ src/
 ### Project Runtime (`.akao/`)
 ```
 .akao/
-├── config.json            # Main configuration
+├── config.yaml            # Main configuration
 ├── pipeline.yaml          # CI/CD pipeline configuration
 ├── profiles/               # Language-specific rule profiles
-│   ├── cpp.json           # C++ rules and build settings
-│   ├── js.json            # JavaScript rules
-│   └── rust.json          # Rust rules
+│   ├── cpp.yaml           # C++ rules and build settings
+│   ├── js.yaml            # JavaScript rules
+│   └── rust.yaml          # Rust rules
 ├── rulesets/               # RuleSet definitions and inheritance
 │   ├── core.yaml          # Core framework RuleSet
 │   ├── cpp.yaml           # C++ language RuleSet
@@ -138,8 +138,8 @@ src/
 │   └── custom/            # Project-specific RuleSets
 ├── features/               # Installed features and dependencies
 ├── registry/               # External feature registries
-├── trace.json             # Operation audit trail with GID references
-└── audit.json             # Compliance metrics and violation tracking
+├── trace.yaml             # Operation audit trail with GID references
+└── audit.yaml             # Compliance metrics and violation tracking
 ```
 
 ---
@@ -156,7 +156,7 @@ src/
 - `akao validate [--gid=<gid>] [--category=<cat>] [--ruleset=<name>]` - Structure/rule enforcement
 - `akao test` - Unit and principle tests
 - `akao build --dev/--prod` - Hot reload or production builds
-- `akao docgen [--ruleset=<name>]` - Generate documentation
+- `akao doc [--ruleset=<name>]` - Generate documentation
 - `akao audit [--gid=<gid>] [--ruleset=<name>]` - Compliance audit and coverage
 
 ### Rule Management (GID-based)
@@ -171,7 +171,7 @@ src/
 ### Graph Generation
 - `akao graph --type=<type> --format=<format> [--output=<path>] [--ruleset=<name>]`
   - **Types**: rules, rulesets, project, features, validation, audit
-  - **Formats**: dot, svg, json, png
+  - **Formats**: dot, svg, yaml, png
 
 ### Automation & CI/CD
 - `akao pipeline generate/validate` - Pipeline configuration
@@ -209,7 +209,7 @@ akao validate
 akao build --dev
 
 # Generate documentation
-akao docgen
+akao doc
 
 # Run tests
 akao test
@@ -246,9 +246,9 @@ akao:rule::<category>:<name>:v<version>
 > **Technical Implementation**: The complete GID architecture and integration is specified in [PLAN.md](./PLAN.md#global-rule-identifier-gid-system) with detailed CLI integration patterns.
 
 ### Integration Points
-- **Rule Files**: All JSON/YAML/TOML rule definitions include GID
+- **Rule Files**: All YAML/TOML rule definitions include GID
 - **CLI Operations**: `--gid=<gid>` parameter for specific rule targeting
-- **Audit Trails**: All trace.json and audit.json entries reference rules by GID
+- **Audit Trails**: All trace.yaml and audit.yaml entries reference rules by GID
 - **Violation Reports**: Every violation includes GID, file path, line, suggestion
 - **RuleSet Definitions**: RuleSets reference rules by GID for grouping
 
@@ -273,7 +273,7 @@ akao audit --gid="akao:rule::cpp:naming:snake_case:v1"
 
 ### Structure and Location
 - **Location**: `.akao/rulesets/` directory
-- **Formats**: YAML or JSON
+- **Formats**: YAML or YAML
 - **Inheritance**: Parent RuleSets, includes, excludes resolution
 - **Built-in RuleSets**: core.yaml, cpp.yaml, security.yaml, performance.yaml
 
@@ -308,8 +308,8 @@ akao audit --ruleset=cpp             # Audit compliance for C++ RuleSet
 ## File Formats and Structure
 
 ### Rule Files (Multi-format support)
-```json
-// rules/naming.json
+```yaml
+// rules/naming.yaml
 {
   "rules": [
     {
@@ -329,8 +329,8 @@ akao audit --ruleset=cpp             # Audit compliance for C++ RuleSet
 ```
 
 ### Audit Output Files
-```json
-// .akao/trace.json - Operation audit trail
+```yaml
+// .akao/trace.yaml - Operation audit trail
 {
   "timestamp": "2024-01-01T00:00:00Z",
   "operation": "validate",
@@ -345,7 +345,7 @@ akao audit --ruleset=cpp             # Audit compliance for C++ RuleSet
   ]
 }
 
-// .akao/audit.json - Compliance metrics
+// .akao/audit.yaml - Compliance metrics
 {
   "project_compliance": {
     "overall_score": 0.95,
@@ -361,8 +361,8 @@ akao audit --ruleset=cpp             # Audit compliance for C++ RuleSet
 ```
 
 ### Configuration Files
-```json
-// .akao/config.json
+```yaml
+// .akao/config.yaml
 {
   "project": {
     "name": "example-project",
@@ -470,7 +470,7 @@ tests/unit/core/config/
 - **Testing Framework**: Catch2 or Google Test for unit testing
 - **Documentation**: Doxygen for API documentation generation
 - **Graph Generation**: Graphviz for DOT format support
-- **JSON/YAML**: rapidjson, yaml-cpp for configuration parsing
+- **YAML**: rapidYAML, yaml-cpp for configuration parsing
 
 ### Platform-Specific Dependencies
 ```yaml
@@ -528,7 +528,7 @@ dependencies:
 - **Integrity Verification**: SHA-256 hashes for all build artifacts
 
 ### Rule Engine Specifications
-- **Multi-Format Support**: JSON, YAML, TOML rule definitions
+- **Multi-Format Support**: YAML, TOML rule definitions
 - **GID System**: Globally unique identifiers for all rules (`akao:rule::<category>:<name>:v<version>`)
 - **Inheritance Model**: RuleSet inheritance with includes/excludes resolution
 - **Validation Speed**: Parallel validation with configurable thread pools
@@ -544,7 +544,7 @@ dependencies:
 
 ### Interface Parity Technical Details
 - **Command Mapping**: 1:1 mapping between CLI commands and API endpoints
-- **Response Format**: Consistent JSON/XML/YAML response formats
+- **Response Format**: Consistent YAML/XML/YAML response formats
 - **Error Handling**: Identical error codes and messages across interfaces
 - **Authentication**: Unified authentication system for Web UI and API
 - **Real-time Updates**: WebSocket support for live status updates

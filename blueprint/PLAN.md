@@ -65,12 +65,12 @@ This document is the **canonical implementation specification** for the Akao fra
 ```
 akao/
 ├── .akao/                    # Framework runtime configuration
-│   ├── config.json          # Main configuration file
+│   ├── config.yaml          # Main configuration file
 │   ├── pipeline.yaml        # CI/CD pipeline configuration
 │   ├── profiles/             # Language-specific rule profiles
-│   │   ├── cpp.json         # C++ rules and build settings
-│   │   ├── js.json          # JavaScript rules and build settings
-│   │   └── rust.json        # Rust rules and build settings
+│   │   ├── cpp.yaml         # C++ rules and build settings
+│   │   ├── js.yaml          # JavaScript rules and build settings
+│   │   └── rust.yaml        # Rust rules and build settings
 │   ├── rulesets/             # RuleSet definitions and inheritance
 │   │   ├── core.yaml        # Core framework RuleSet
 │   │   ├── cpp.yaml         # C++ language RuleSet
@@ -80,15 +80,15 @@ akao/
 │   │       ├── api.yaml     # API development RuleSet
 │   │       └── database.yaml # Database integration RuleSet
 │   ├── features/             # Feature management
-│   │   ├── installed.json   # List of installed features
-│   │   ├── dependencies.json # Feature dependency graph
+│   │   ├── installed.yaml   # List of installed features
+│   │   ├── dependencies.yaml # Feature dependency graph
 │   │   └── cache/           # Feature download cache
 │   ├── registry/             # External registries
-│   │   ├── official.json    # Official Akao registry
-│   │   └── custom.json      # Custom registries
-│   ├── trace.json           # Audit log and violation trace
-│   ├── audit.json           # System audit and compliance metrics
-│   ├── coverage.json        # Test coverage report
+│   │   ├── official.yaml    # Official Akao registry
+│   │   └── custom.yaml      # Custom registries
+│   ├── trace.yaml           # Audit log and violation trace
+│   ├── audit.yaml           # System audit and compliance metrics
+│   ├── coverage.yaml        # Test coverage report
 │   └── cache/               # Build and validation cache
 │       ├── rules.cache      # Compiled rule cache
 │       └── deps.cache       # Dependency resolution cache
@@ -99,8 +99,8 @@ akao/
 │   ├── prod/                # Production builds (optimized)
 │   │   ├── akao             # Production binary
 │   │   └── hashes/          # File integrity hashes
-│   ├── meta.json            # Build metadata and dependencies
-│   └── hash.json            # Reproducible build verification
+│   ├── meta.yaml            # Build metadata and dependencies
+│   └── hash.yaml            # Reproducible build verification
 ├── .github/                  # Auto-generated CI/CD workflows
 │   ├── workflows/           # GitHub Actions workflows
 │   │   ├── ci.yml           # Continuous integration
@@ -119,13 +119,13 @@ akao/
 │       ├── project.md       # Project management API
 │       └── feature.md       # Feature management API
 ├── rules/                    # Rule definitions and enforcement
-│   ├── core.json            # Core framework rules
-│   ├── structure.json       # Project structure rules
-│   ├── naming.json          # Naming convention rules
-│   ├── testing.json         # Testing requirement rules
-│   ├── documentation.json   # Documentation rules
-│   ├── security.json        # Security and sandboxing rules
-│   └── performance.json     # Performance requirement rules
+│   ├── core.yaml            # Core framework rules
+│   ├── structure.yaml       # Project structure rules
+│   ├── naming.yaml          # Naming convention rules
+│   ├── testing.yaml         # Testing requirement rules
+│   ├── documentation.yaml   # Documentation rules
+│   ├── security.yaml        # Security and sandboxing rules
+│   └── performance.yaml     # Performance requirement rules
 ├── templates/               # Project and feature templates
 │   ├── projects/            # Project initialization templates
 │   │   ├── cpp/             # C++ project template
@@ -189,7 +189,7 @@ akao/
 │   │   └── graph/           # Dependency graph resolution
 │   │       ├── graph.cpp
 │   │       └── graph.hpp
-│   ├── docgen/              # Documentation generation system
+│   ├── doc/              # Documentation generation system
 │   │   ├── engine/          # Template-based generation engine
 │   │   │   ├── engine.cpp
 │   │   │   └── engine.hpp
@@ -266,7 +266,7 @@ akao/
 │   │   ├── core/            # Core component headers
 │   │   ├── rule/            # Rule engine headers
 │   │   ├── build/           # Build engine headers
-│   │   ├── docgen/          # Documentation headers
+│   │   ├── doc/          # Documentation headers
 │   │   ├── cli/             # CLI system headers
 │   │   ├── project/         # Project management headers
 │   │   ├── feature/         # Feature management headers
@@ -278,7 +278,7 @@ akao/
 │   │   ├── core/            # Core component tests
 │   │   ├── rule/            # Rule engine tests
 │   │   ├── build/           # Build engine tests
-│   │   ├── docgen/          # Documentation tests
+│   │   ├── doc/          # Documentation tests
 │   │   ├── cli/             # CLI system tests
 │   │   ├── project/         # Project management tests
 │   │   ├── feature/         # Feature management tests
@@ -288,7 +288,7 @@ akao/
 │   │   ├── full_workflow.cpp    # Complete workflow tests
 │   │   ├── cli_integration.cpp  # CLI integration tests
 │   │   ├── build_integration.cpp # Build system integration
-│   │   ├── docgen_flow.cpp      # End-to-end documentation
+│   │   ├── doc_flow.cpp      # End-to-end documentation
 │   │   ├── project_init.cpp     # Project initialization flow
 │   │   ├── feature_mgmt.cpp     # Feature management flow
 │   │   └── automation_flow.cpp  # CI/CD automation flow
@@ -303,23 +303,23 @@ akao/
 │       └── invalid_projects/ # Invalid structures for testing
 ├── features/                 # Built-in project features
 │   ├── api/                 # REST API feature
-│   │   ├── feature.json     # Feature manifest
+│   │   ├── feature.yaml     # Feature manifest
 │   │   └── templates/       # Feature templates
 │   ├── database/            # Database integration feature
-│   │   ├── feature.json
+│   │   ├── feature.yaml
 │   │   └── templates/
 │   └── auth/                # Authentication feature
-│       ├── feature.json
+│       ├── feature.yaml
 │       └── templates/
 ├── plugins/                  # Optional extensions
 │   ├── wasm/                # WebAssembly build target
-│   │   ├── plugin.json      # Plugin manifest
+│   │   ├── plugin.yaml      # Plugin manifest
 │   │   └── src/             # Plugin source code
 │   ├── js/                  # JavaScript bindings
-│   │   ├── plugin.json
+│   │   ├── plugin.yaml
 │   │   └── src/
 │   └── android/             # Android NDK target
-│       ├── plugin.json
+│       ├── plugin.yaml
 │       └── src/
 ├── CMakeLists.txt           # CMake build configuration
 ├── .gitignore               # Git ignore patterns
@@ -376,7 +376,7 @@ The Akao framework consists of **9 major subsystems** that must be implemented a
 2. **Rule Engine** (`src/rule/`) - Rule parsing, validation, GID management, and reporting  
 3. **RuleSet Management** (`src/rule/ruleset/`) - RuleSet inheritance, resolution, and validation
 4. **Build System** (`src/build/`) - Dev/prod builds with dependency management
-5. **Documentation Generator** (`src/docgen/`) - Auto-generated documentation with graph integration
+5. **Documentation Generator** (`src/doc/`) - Auto-generated documentation with graph integration
 6. **Graph Generation System** (`src/graph/`) - Structural relationship graphs and visualization
 7. **CLI Interface** (`src/cli/`) - Command-line, TUI, and web interfaces with full parity
 8. **Automation System** (`src/automation/`) - CI/CD pipeline generation and management
@@ -473,10 +473,10 @@ akao:rule::core:universal_validation:v1
 ### GID Integration Architecture
 
 **Rule File Integration:**
-All rule definition files (JSON, YAML, TOML) must include GID in their structure:
+All rule definition files (YAML, TOML) must include GID in their structure:
 
-```json
-// rules/naming.json
+```yaml
+// rules/naming.yaml
 {
   "rules": [
     {
@@ -528,8 +528,8 @@ excludes = ["src/main.cpp"]
 **Audit and Trace Integration:**
 All audit and trace files reference rules by GID:
 
-```json
-// .akao/trace.json
+```yaml
+// .akao/trace.yaml
 {
   "timestamp": "2024-01-01T00:00:00Z",
   "operation": "validate",
@@ -552,8 +552,8 @@ All audit and trace files reference rules by GID:
 }
 ```
 
-```json
-// .akao/audit.json
+```yaml
+// .akao/audit.yaml
 {
   "timestamp": "2024-01-01T00:00:00Z",
   "project_compliance": {
@@ -716,8 +716,8 @@ public:
 
 ### Multi-Format Rule Support
 
-**JSON Format:**
-```json
+**YAML Format:**
+```yaml
 {
   "gid": "akao:rule::cpp:naming:snake_case:v1",
   "metadata": {
@@ -883,8 +883,8 @@ metadata:
   last_updated: "2024-01-15T10:30:00Z"
 ```
 
-```json
-// .akao/rulesets/security.json (JSON format)
+```yaml
+// .akao/rulesets/security.yaml (YAML format)
 {
   "name": "security",
   "version": "v1", 
@@ -940,7 +940,7 @@ public:
     }
     
     static std::vector<std::string> listAvailableRuleSets() {
-        return filesystem::listFiles(".akao/rulesets/", {".yaml", ".yml", ".json"});
+        return filesystem::listFiles(".akao/rulesets/", {".yaml", ".yml", ".yaml"});
     }
     
     static RuleSetInfo getRuleSetInfo(const std::string& name) {
@@ -976,7 +976,7 @@ akao ruleset create <name>           # Create new RuleSet interactively
 akao validate --ruleset=cpp          # Validate using C++ RuleSet
 akao validate --ruleset=security     # Validate using security RuleSet
 akao audit --ruleset=performance     # Audit performance compliance
-akao docgen --ruleset=core           # Generate docs for core RuleSet rules
+akao doc --ruleset=core           # Generate docs for core RuleSet rules
 ```
 
 ---
@@ -1021,7 +1021,7 @@ public:
     enum class OutputFormat {
         DOT,        // Graphviz DOT format
         SVG,        // Scalable Vector Graphics
-        JSON,       // Structured graph data
+        YAML,       // Structured graph data
         PNG         // Raster image (requires graphviz)
     };
     
@@ -1050,8 +1050,8 @@ public:
             case OutputFormat::SVG:
                 exportToSvg(graph, output_path);
                 break;
-            case OutputFormat::JSON:
-                exportToJson(graph, output_path);
+            case OutputFormat::YAML:
+                exportToYAML(graph, output_path);
                 break;
             case OutputFormat::PNG:
                 exportToPng(graph, output_path);
@@ -1164,20 +1164,20 @@ struct GraphData {
 # Graph Generation Commands
 akao graph --type=rules --format=svg --output=rules.svg        # Rule dependency graph
 akao graph --type=rulesets --format=dot --output=rulesets.dot  # RuleSet relationships
-akao graph --type=project --format=json                        # Project structure (stdout)
+akao graph --type=project --format=yaml                        # Project structure (stdout)
 akao graph --type=features --format=png --output=features.png  # Feature dependencies
 akao graph --type=validation --format=svg                      # Validation flow graph
 akao graph --type=audit --format=dot --ruleset=security        # Audit compliance graph
 
 # Graph Integration with Other Commands
-akao docgen --include-graphs                                   # Embed graphs in documentation
+akao doc --include-graphs                                   # Embed graphs in documentation
 akao audit --graph-output=compliance.svg                       # Generate compliance graph
 akao validate --graph-output=validation_flow.dot               # Show validation execution graph
 ```
 
 ### Graph Integration Points
 
-**Documentation Integration**: Generated graphs automatically embedded in `akao docgen` output:
+**Documentation Integration**: Generated graphs automatically embedded in `akao doc` output:
 ```markdown
 # Rules Overview
 ![Rule Dependency Graph](graphs/rules.svg)
@@ -1193,11 +1193,11 @@ class GraphController {
 public:
     void serveGraphViewer(const HttpRequest& req, HttpResponse& res) {
         auto type = req.getParam("type");
-        auto format = req.getParam("format", "json");
+        auto format = req.getParam("format", "yaml");
         
         auto graph = graph::GraphGenerator::generateGraph(parseGraphType(type));
-        res.setContentType("application/json");
-        res.setBody(graph::GraphGenerator::exportToJson(graph));
+        res.setContentType("application/yaml");
+        res.setBody(graph::GraphGenerator::exportToYAML(graph));
     }
 };
 }
@@ -1253,13 +1253,13 @@ tests/unit/rule/parser/
 ### Essential Classes for Implementation
 
 #### Core Framework Classes:
-1. **`src/core/config/`** - Configuration management with `.akao/config.json` support
+1. **`src/core/config/`** - Configuration management with `.akao/config.yaml` support
 2. **`src/core/filesystem/`** - Cross-platform file operations with path validation  
 3. **`src/core/trace/`** - Comprehensive audit logging and trace system
 4. **`src/core/plugin/`** - Plugin loading and management foundation
 
 #### Rule Engine Classes:
-1. **`src/rule/parser/`** - Multi-format rule file parser (JSON/YAML/TOML) with GID validation
+1. **`src/rule/parser/`** - Multi-format rule file parser (YAML/TOML) with GID validation
 2. **`src/rule/validator/`** - Universal validation engine with GID tracking
 3. **`src/rule/registry/`** - GID-based rule discovery and management system
 4. **`src/rule/reporter/`** - Violation reporting with GID references and suggestions
@@ -1277,14 +1277,14 @@ tests/unit/rule/parser/
 4. **`src/build/graph/`** - Build dependency graph resolution
 
 #### Documentation Generator Classes:
-1. **`src/docgen/engine/`** - Template-based Markdown generation engine
-2. **`src/docgen/parser/`** - Code comment parsing and extraction
-3. **`src/docgen/mapper/`** - Rule-to-documentation mapping system
-4. **`src/docgen/updater/`** - Automatic documentation update coordination
+1. **`src/doc/engine/`** - Template-based Markdown generation engine
+2. **`src/doc/parser/`** - Code comment parsing and extraction
+3. **`src/doc/mapper/`** - Rule-to-documentation mapping system
+4. **`src/doc/updater/`** - Automatic documentation update coordination
 
 #### Graph Generation Classes:
 1. **`src/graph/generator/`** - Core graph generation engine for all graph types
-2. **`src/graph/exporter/`** - Multi-format export (DOT, SVG, JSON, PNG)
+2. **`src/graph/exporter/`** - Multi-format export (DOT, SVG, YAML, PNG)
 3. **`src/graph/analyzer/`** - Graph analysis and metrics calculation
 4. **`src/graph/renderer/`** - Graph visualization and layout algorithms
 
@@ -1399,13 +1399,13 @@ public:
 **Establish core infrastructure and universal validation**:
 
 1. **Core Framework Components**
-   - `src/core/config/` - Configuration management with `.akao/config.json` support
+   - `src/core/config/` - Configuration management with `.akao/config.yaml` support
    - `src/core/filesystem/` - Safe file operations with path validation
    - `src/core/trace/` - Comprehensive audit logging and trace system
    - `src/core/plugin/` - Plugin loading and management foundation
 
 2. **Rule Engine Foundation**
-   - `src/rule/parser/` - Multi-format rule file parser (JSON/YAML/TOML) with GID validation
+   - `src/rule/parser/` - Multi-format rule file parser (YAML/TOML) with GID validation
    - `src/rule/validator/` - Universal validation engine with GID tracking
    - `src/rule/registry/` - GID-based rule discovery and management
    - `src/rule/reporter/` - Violation reporting with GID references and stack traces
@@ -1417,12 +1417,12 @@ public:
 
 4. **GID System Foundation**
    - GID format validation: `akao:rule::<category>:<name>:v<version>`
-   - Rule file GID integration for JSON, YAML, and TOML formats
+   - Rule file GID integration for YAML, and TOML formats
    - Trace and audit system GID referencing
    - CLI GID-based rule operations (validate, audit, info)
 
 **Success Criteria Phase 1:**
-- [ ] Core configuration system loads `.akao/config.json`
+- [ ] Core configuration system loads `.akao/config.yaml`
 - [ ] Universal validation engine can validate basic project structures
 - [ ] CLI can parse and execute basic commands
 - [ ] Trace system logs all operations with full audit trail and GID references
@@ -1434,21 +1434,21 @@ public:
 **Implement comprehensive rule system and principle validation**:
 
 1. **Enhanced Rule System**
-   - Complete multi-format rule parser (JSON/YAML/TOML) with GID support
+   - Complete multi-format rule parser (YAML/TOML) with GID support
    - Rule caching and optimization with GID-based indexing
    - Comprehensive violation reporting with GID references and suggestions
    - Rule dependency resolution using GID relationships
 
 2. **RuleSet System Implementation**
    - `src/rule/ruleset/` - RuleSet management and inheritance engine
-   - Multi-format RuleSet definition support (YAML/JSON) in `.akao/rulesets/`
+   - Multi-format RuleSet definition support (YAML) in `.akao/rulesets/`
    - RuleSet inheritance, includes, and excludes resolution
    - CLI commands: `ruleset list`, `ruleset info`, `ruleset validate`, `ruleset create`
    - RuleSet-based validation: `validate --ruleset=<name>`, `audit --ruleset=<name>`
 
 3. **Graph Generation System**
    - `src/graph/generator/` - Core graph generation engine for all graph types
-   - `src/graph/exporter/` - Multi-format export (DOT, SVG, JSON, PNG)
+   - `src/graph/exporter/` - Multi-format export (DOT, SVG, YAML, PNG)
    - `src/graph/analyzer/` - Graph analysis and metrics calculation
    - Graph types: rules, rulesets, project structure, features, validation flow, audit compliance
    - CLI commands: `graph --type=<type> --format=<format> --output=<path>`
@@ -1476,13 +1476,13 @@ public:
 - [ ] All rule violations include GID, file path, line number, and suggestions
 - [ ] Rule caching improves validation performance by >90%
 - [ ] GID-based CLI operations (validate, audit, info, disable) fully functional
-- [ ] Multi-format rule files (JSON/YAML/TOML) support GID integration
+- [ ] Multi-format rule files (YAML/TOML) support GID integration
 - [ ] Trace and audit files correctly reference all rules by GID
 - [ ] RuleSet system supports inheritance, includes, and excludes resolution
 - [ ] RuleSet-based validation and audit operations fully functional
 - [ ] All graph types (rules, rulesets, project, features, validation, audit) generate correctly
-- [ ] Graph export works for all formats (DOT, SVG, JSON, PNG)
-- [ ] Graph integration with docgen, audit, and Web UI operational
+- [ ] Graph export works for all formats (DOT, SVG, YAML, PNG)
+- [ ] Graph integration with doc, audit, and Web UI operational
 
 ### Phase 3: Project Management & Templates
 **Enable project initialization and feature management**:
@@ -1515,15 +1515,15 @@ public:
    - `src/build/graph/` - Dependency graph resolution
 
 2. **Documentation Generation**
-   - `src/docgen/engine/` - Template-based documentation generation
-   - `src/docgen/parser/` - Code parsing for automatic documentation
-   - `src/docgen/mapper/` - Rule-to-documentation mapping
-   - `src/docgen/updater/` - Auto-update coordination
+   - `src/doc/engine/` - Template-based documentation generation
+   - `src/doc/parser/` - Code parsing for automatic documentation
+   - `src/doc/mapper/` - Rule-to-documentation mapping
+   - `src/doc/updater/` - Auto-update coordination
 
 **Success Criteria Phase 4:**
 - [ ] `akao build --dev` enables hot reload development
 - [ ] `akao build --prod` produces reproducible artifacts with hash verification
-- [ ] `akao docgen` generates RULES.md, PRINCIPLES.md, FEATURES.md
+- [ ] `akao doc` generates RULES.md, PRINCIPLES.md, FEATURES.md
 - [ ] Documentation auto-updates when rules or code change
 - [ ] Build caching reduces rebuild times by >80%
 
@@ -1817,7 +1817,7 @@ public:
         registerCommand("test", &TestCommand::execute);
         registerCommand("build --dev", &BuildCommand::executeDevMode);
         registerCommand("build --prod", &BuildCommand::executeProdMode);
-        registerCommand("docgen", &DocGenCommand::execute);
+        registerCommand("doc", &DocCommand::execute);
         registerCommand("audit", &AuditCommand::execute);
         registerCommand("audit --gid", &AuditCommand::executeByGID);
         
@@ -1838,7 +1838,7 @@ public:
         // RuleSet-based Operations
         registerCommand("validate --ruleset", &ValidateCommand::executeByRuleSet);
         registerCommand("audit --ruleset", &AuditCommand::executeByRuleSet);
-        registerCommand("docgen --ruleset", &DocGenCommand::executeByRuleSet);
+        registerCommand("doc --ruleset", &DocCommand::executeByRuleSet);
         
         // Graph Generation
         registerCommand("graph --type", &GraphCommand::generate);
@@ -1931,7 +1931,7 @@ struct BuildResult {
 **Template-Based Generation with Auto-Update**:
 
 ```cpp
-namespace akao::docgen {
+namespace akao::doc {
 class DocumentationEngine {
 public:
     void generateAllDocumentation(const std::string& project_path) {
@@ -2265,7 +2265,7 @@ public:
             [this](const HttpRequest& req) -> HttpResponse {
                 auto request = CommandRequest{
                     .command_name = req.path_params.at("command"),
-                    .parameters = req.json_body,
+                    .parameters = req.YAML_body,
                     .interface_type = "web"
                 };
                 
@@ -2273,8 +2273,8 @@ public:
                 
                 return HttpResponse{
                     .status_code = result.success ? 200 : 400,
-                    .headers = {{"Content-Type", "application/json"}},
-                    .body = serializeToJSON(result)
+                    .headers = {{"Content-Type", "application/yaml"}},
+                    .body = serializeToYAML(result)
                 };
             });
         
@@ -2368,10 +2368,10 @@ Automation ────┘
 
 ```
 User Input → Interface Layer → Controller → Core Logic → Trace System
-    ↓              ↓               ↓           ↓            ↓
-   CLI          Parser         Validator    Rules       Audit Log
-   Web         Router         Builder      Config      Coverage
-   TUI         Interactive    DocGen       Features    Metrics
+   ↓         ↓                 ↓            ↓            ↓
+   CLI       Parser            Validator    Rules        Audit Log
+   Web       Router            Builder      Config       Coverage
+   TUI       Interactive       Doc          Features     Metrics
 ```
 
 ---
@@ -2460,7 +2460,7 @@ if(AKAO_STATIC_LINKING)
     set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
 endif()
 
-find_package(nlohmann_json REQUIRED)
+find_package(nlohmann_YAML REQUIRED)
 find_package(fmt REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
@@ -2486,7 +2486,7 @@ file(GLOB_RECURSE AKAO_CORE_SOURCES
     "src/core/*.cpp"
     "src/rule/*.cpp" 
     "src/build/*.cpp"
-    "src/docgen/*.cpp"
+    "src/doc/*.cpp"
     "src/graph/*.cpp"
     "src/metrics/*.cpp"
     "src/feature/*.cpp"
@@ -2508,7 +2508,7 @@ add_library(akao_core STATIC
 )
 
 target_link_libraries(akao_core 
-    nlohmann_json::nlohmann_json 
+    nlohmann_YAML::nlohmann_YAML 
     fmt::fmt 
     yaml-cpp
     ${PLATFORM_LIBS}
@@ -2656,12 +2656,12 @@ endif()
 - [ ] **GID hashability**: Consistent hash generation for caching and deduplication
 - [ ] **GID global uniqueness**: No conflicts across registries and rule sets
 - [ ] **GID stability**: Version management preserves GID stability across rule updates
-- [ ] **Multi-format support**: JSON, YAML, TOML rule files with GID integration
+- [ ] **Multi-format support**: YAML, TOML rule files with GID integration
 - [ ] **CLI GID operations**: validate, audit, info, disable commands work with GIDs
 - [ ] **Bidirectional traceability**: GID to source/tests/docs and reverse mapping
 
 ### RuleSet System Implementation
-- [ ] **RuleSet definitions**: YAML/JSON definitions in `.akao/rulesets/` with inheritance
+- [ ] **RuleSet definitions**: YAML definitions in `.akao/rulesets/` with inheritance
 - [ ] **RuleSet inheritance**: Parent RuleSets, includes, and excludes resolution
 - [ ] **RuleSet CLI integration**: `ruleset list/info/validate/create` commands functional
 - [ ] **RuleSet validation**: `validate --ruleset=<name>` and `audit --ruleset=<name>` operational
@@ -2674,8 +2674,8 @@ endif()
 - [ ] **Feature dependency graphs**: Feature relationships and impact analysis
 - [ ] **Validation flow graphs**: Validation process visualization and debugging
 - [ ] **Audit compliance graphs**: Compliance status and trend visualization
-- [ ] **Multi-format export**: DOT, SVG, JSON, PNG export with consistent quality
-- [ ] **Integration points**: Graph integration with docgen, audit, and Web UI systems
+- [ ] **Multi-format export**: DOT, SVG, YAML, PNG export with consistent quality
+- [ ] **Integration points**: Graph integration with doc, audit, and Web UI systems
 
 ### Interface Parity Enforcement
 - [ ] **Command execution abstraction**: Shared command execution layer for all interfaces

@@ -1,0 +1,312 @@
+---
+# Akao Philosophy Registry
+# Auto-generated index of all philosophy files with their GIDs
+
+philosophy_registry:
+  version: "1.0.0"
+  generated_at: "2025-07-05T00:00:00Z"
+  total_philosophies: 20
+
+philosophies:
+  - gid: "akao:philosophy::structure:enforcement:v1"
+    file: "structure/enforcement.v1.yaml"
+    name: "Structure is enforced"
+    category: "structure"
+    description: "Every file, class, and folder must follow rule-driven structure"
+    
+  - gid: "akao:philosophy::validation:universal:v1"
+    file: "validation/universal.v1.yaml"
+    name: "Universal validation"
+    category: "validation"
+    description: "Any project can be validated using akao validate, including Akao itself"
+    
+  - gid: "akao:philosophy::testing:coverage:v1"
+    file: "testing/coverage.v1.yaml"
+    name: "No rules without tests"
+    category: "testing"
+    description: "Each rule must have measurable test coverage with compliance and violation scenarios"
+    
+  - gid: "akao:philosophy::measurement:traceability:v1"
+    file: "measurement/traceability.v1.yaml"
+    name: "Every rule is traceable"
+    category: "measurement"
+    description: "Violations include Global Rule Identifier, stack trace, file, line, and suggestion"
+    
+  - gid: "akao:philosophy::documentation:generation:v1"
+    file: "documentation/generation.v1.yaml"
+    name: "Documentation is code"
+    category: "documentation"
+    description: "All documentation must be generated from actual rules and tests"
+    
+  - gid: "akao:philosophy::structure:isolation:v1"
+    file: "structure/isolation.v1.yaml"
+    name: "One class per folder"
+    category: "structure"
+    description: "Every folder must contain exactly one class and its tests"
+    
+  - gid: "akao:philosophy::language:isolation:v1"
+    file: "language/isolation.v1.yaml"
+    name: "One language per scope"
+    category: "language"
+    description: "Multi-language repositories must isolate languages clearly with explicit boundaries"
+    
+  - gid: "akao:philosophy::interface:consistency:v1"
+    file: "interface/consistency.v1.yaml"
+    name: "CLI equals Web equals TUI"
+    category: "interface"
+    description: "All tooling must behave identically across user interface modes"
+    
+  - gid: "akao:philosophy::measurement:observability:v1"
+    file: "measurement/observability.v1.yaml"
+    name: "Every action is measurable"
+    category: "measurement"
+    description: "Coverage, logs, hash, audit state enforced per commit using GIDs for precise tracking"
+    
+  - gid: "akao:philosophy::rule:governance:v1"
+    file: "rule/governance.v1.yaml"
+    name: "Rules can be toggled, not skipped"
+    category: "rule"
+    description: "All disabled rules tracked by GID with reason and audit trail"
+    
+  - gid: "akao:philosophy::automation:updates:v1"
+    file: "automation/updates.v1.yaml"
+    name: "Auto-update all documentation"
+    category: "automation"
+    description: "Whenever rules change, documentation must change automatically without human intervention"
+    
+  - gid: "akao:philosophy::build:duality:v1"
+    file: "build/duality.v1.yaml"
+    name: "Everything must build dev plus prod"
+    category: "build"
+    description: "Development (live reload) and production (deterministic) builds are mandatory"
+
+  # New philosophies added from PHILOSOPHY.md comparison
+  - gid: "akao:philosophy::security:explicit_behavior:v1"
+    file: "security/explicit_behavior.v1.yaml"
+    name: "No external implicit behavior"
+    category: "security"
+    description: "Every dependency, path, and output must be declared explicitly"
+    
+  - gid: "akao:philosophy::configuration:single_truth:v1"
+    file: "configuration/single_truth.v1.yaml"
+    name: "Only one truth"
+    category: "configuration"
+    description: "All configuration must converge to a single source of truth"
+    
+  - gid: "akao:philosophy::feature:composability:v1"
+    file: "feature/composability.v1.yaml"
+    name: "Features are composable"
+    category: "feature"
+    description: "Features must work together without conflicts or hidden dependencies"
+    
+  - gid: "akao:philosophy::template:validation:v1"
+    file: "template/validation.v1.yaml"
+    name: "Templates are validated"
+    category: "template"
+    description: "All project templates must pass the same rules as generated projects"
+    
+  - gid: "akao:philosophy::security:sandboxing:v1"
+    file: "security/sandboxing.v1.yaml"
+    name: "External features are sandboxed"
+    category: "security"
+    description: "Features from external sources run in controlled environments"
+    
+  - gid: "akao:philosophy::dependency:explicit_resolution:v1"
+    file: "dependency/explicit_resolution.v1.yaml"
+    name: "Dependency resolution is explicit"
+    category: "dependency"
+    description: "All feature dependencies must be declared and resolved transparently"
+    
+  - gid: "akao:philosophy::rule:ruleset_organization:v1"
+    file: "rule/ruleset_organization.v1.yaml"
+    name: "Every rule is part of at least one RuleSet"
+    category: "rule"
+    description: "Individual rules must be organized into logical groupings through RuleSets"
+    
+  - gid: "akao:philosophy::visualization:graph_explainability:v1"
+    file: "visualization/graph_explainability.v1.yaml"
+    name: "Code must be graph-explorable and visually explainable"
+    category: "visualization"
+    description: "All system relationships must be visualizable and every logic must be explainable visually"
+
+categories:
+  structure:
+    count: 2
+    philosophies:
+      - "akao:philosophy::structure:enforcement:v1"
+      - "akao:philosophy::structure:isolation:v1"
+      
+  measurement:
+    count: 2
+    philosophies:
+      - "akao:philosophy::measurement:traceability:v1"
+      - "akao:philosophy::measurement:observability:v1"
+      
+  validation:
+    count: 1
+    philosophies:
+      - "akao:philosophy::validation:universal:v1"
+      
+  testing:
+    count: 1
+    philosophies:
+      - "akao:philosophy::testing:coverage:v1"
+      
+  documentation:
+    count: 1
+    philosophies:
+      - "akao:philosophy::documentation:generation:v1"
+      
+  language:
+    count: 1
+    philosophies:
+      - "akao:philosophy::language:isolation:v1"
+      
+  interface:
+    count: 1
+    philosophies:
+      - "akao:philosophy::interface:consistency:v1"
+      
+  rule:
+    count: 2
+    philosophies:
+      - "akao:philosophy::rule:governance:v1"
+      - "akao:philosophy::rule:ruleset_organization:v1"
+      
+  automation:
+    count: 1
+    philosophies:
+      - "akao:philosophy::automation:updates:v1"
+      
+  build:
+    count: 1
+    philosophies:
+      - "akao:philosophy::build:duality:v1"
+      
+  # New categories
+  security:
+    count: 2
+    philosophies:
+      - "akao:philosophy::security:explicit_behavior:v1"
+      - "akao:philosophy::security:sandboxing:v1"
+      
+  configuration:
+    count: 1
+    philosophies:
+      - "akao:philosophy::configuration:single_truth:v1"
+      
+  feature:
+    count: 1
+    philosophies:
+      - "akao:philosophy::feature:composability:v1"
+      
+  template:
+    count: 1
+    philosophies:
+      - "akao:philosophy::template:validation:v1"
+      
+  dependency:
+    count: 1
+    philosophies:
+      - "akao:philosophy::dependency:explicit_resolution:v1"
+      
+  visualization:
+    count: 1
+    philosophies:
+      - "akao:philosophy::visualization:graph_explainability:v1"
+
+dependency_graph:
+  "akao:philosophy::structure:enforcement:v1":
+    requires: []
+    recommends:
+      - "akao:philosophy::validation:universal:v1"
+      - "akao:philosophy::testing:coverage:v1"
+      
+  "akao:philosophy::validation:universal:v1":
+    requires:
+      - "akao:philosophy::testing:coverage:v1"
+    recommends:
+      - "akao:philosophy::structure:enforcement:v1"
+      - "akao:philosophy::measurement:traceability:v1"
+      
+  "akao:philosophy::testing:coverage:v1":
+    requires: []
+    recommends:
+      - "akao:philosophy::measurement:traceability:v1"
+      - "akao:philosophy::validation:universal:v1"
+      
+  "akao:philosophy::measurement:traceability:v1":
+    requires:
+      - "akao:philosophy::testing:coverage:v1"
+    recommends:
+      - "akao:philosophy::validation:universal:v1"
+      - "akao:philosophy::documentation:generation:v1"
+      
+  "akao:philosophy::documentation:generation:v1":
+    requires:
+      - "akao:philosophy::testing:coverage:v1"
+      - "akao:philosophy::measurement:traceability:v1"
+    recommends:
+      - "akao:philosophy::automation:updates:v1"
+      
+  "akao:philosophy::structure:isolation:v1":
+    requires:
+      - "akao:philosophy::testing:coverage:v1"
+    recommends:
+      - "akao:philosophy::structure:enforcement:v1"
+      
+  "akao:philosophy::language:isolation:v1":
+    requires:
+      - "akao:philosophy::structure:isolation:v1"
+    recommends:
+      - "akao:philosophy::interface:consistency:v1"
+      
+  "akao:philosophy::interface:consistency:v1":
+    requires:
+      - "akao:philosophy::measurement:traceability:v1"
+    recommends:
+      - "akao:philosophy::automation:testing:v1"
+      
+  "akao:philosophy::measurement:observability:v1":
+    requires:
+      - "akao:philosophy::measurement:traceability:v1"
+    recommends:
+      - "akao:philosophy::automation:reporting:v1"
+      
+  "akao:philosophy::rule:governance:v1":
+    requires:
+      - "akao:philosophy::measurement:traceability:v1"
+      - "akao:philosophy::measurement:observability:v1"
+    recommends:
+      - "akao:philosophy::automation:governance:v1"
+      
+  "akao:philosophy::automation:updates:v1":
+    requires:
+      - "akao:philosophy::documentation:generation:v1"
+      - "akao:philosophy::measurement:observability:v1"
+    recommends:
+      - "akao:philosophy::measurement:traceability:v1"
+      
+  "akao:philosophy::build:duality:v1":
+    requires:
+      - "akao:philosophy::measurement:observability:v1"
+    recommends:
+      - "akao:philosophy::automation:testing:v1"
+
+validation_rules:
+  gid_format_compliance:
+    pattern: "^akao:philosophy::[a-z]+:[a-z_]+:v[0-9]+$"
+    description: "All GIDs must follow the standard format"
+    
+  file_naming_compliance:
+    pattern: "^akao\\.philosophy\\.[a-z]+\\.[a-z_]+\\.v[0-9]+\\.yaml$"
+    description: "All files must follow the standard naming convention"
+    
+  category_consistency:
+    description: "Category in GID must match category in metadata"
+    
+  dependency_validity:
+    description: "All dependencies must reference valid existing philosophies"
+    
+  circular_dependency_prevention:
+    description: "No circular dependencies allowed in philosophy requirements"
