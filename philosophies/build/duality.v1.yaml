@@ -3,7 +3,7 @@
 # Development and production builds are mandatory
 
 metadata:
-  gid: "akao:philosophy::build/duality:v1"
+  id: "akao:philosophy::build:duality:v1"
   name: "Everything must build dev plus prod"
   version: "1.0.0"
   category: "build"

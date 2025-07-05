@@ -3,7 +3,7 @@
 # Every file, class, and folder must follow rule-driven structure
 
 metadata:
-  gid: "akao:philosophy::structure/enforcement:v1"
+  id: "akao:philosophy::structure:enforcement:v1"
   name: "Structure is enforced"
   version: "1.0.0"
   category: "structure"

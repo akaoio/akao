@@ -3,7 +3,7 @@
 # All disabled rules tracked by GID with reason and audit trail
 
 metadata:
-  gid: "akao:philosophy::rule/governance:v1"
+  id: "akao:philosophy::rule:governance:v1"
   name: "Rules can be toggled, not skipped"
   version: "1.0.0"
   category: "rule"

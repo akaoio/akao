@@ -3,7 +3,7 @@
 # Any project can be validated using akao validate, including Akao itself
 
 metadata:
-  gid: "akao:philosophy::validation/universal:v1"
+  id: "akao:philosophy::validation:universal:v1"
   name: "Universal validation"
   version: "1.0.0"
   category: "validation"

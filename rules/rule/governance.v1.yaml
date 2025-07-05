@@ -1,13 +1,13 @@
 ---
 # Rule: Rules can be toggled, not skipped enforcement
-# Implements: akao:philosophy::rule/governance:v1
+# Philosophy: akao:philosophy::rule:governance:v1
 
 metadata:
-  gid: "akao:rule::rule/governance:v1"
+  id: "akao:rule::rule:governance:v1"
   name: "Rules can be toggled, not skipped enforcement"
   version: "1.0.0"
   category: "rule"
-  philosophy_gid: "akao:philosophy::rule/governance:v1"
+  philosophy: "akao:philosophy::rule:governance"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

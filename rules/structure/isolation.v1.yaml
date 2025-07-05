@@ -1,13 +1,13 @@
 ---
 # Rule: One class per folder enforcement
-# Implements: akao:philosophy::structure/isolation:v1
+# Philosophy: akao:philosophy::structure:isolation:v1
 
 metadata:
-  gid: "akao:rule::structure/isolation:v1"
+  id: "akao:rule::structure:isolation:v1"
   name: "One class per folder enforcement"
   version: "1.0.0"
   category: "structure"
-  philosophy_gid: "akao:philosophy::structure/isolation:v1"
+  philosophy: "akao:philosophy::structure:isolation"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

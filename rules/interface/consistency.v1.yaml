@@ -1,13 +1,13 @@
 ---
 # Rule: CLI equals Web equals TUI enforcement
-# Implements: akao:philosophy::interface/consistency:v1
+# Philosophy: akao:philosophy::interface:consistency:v1
 
 metadata:
-  gid: "akao:rule::interface/consistency:v1"
+  id: "akao:rule::interface:consistency:v1"
   name: "CLI equals Web equals TUI enforcement"
   version: "1.0.0"
   category: "interface"
-  philosophy_gid: "akao:philosophy::interface/consistency:v1"
+  philosophy: "akao:philosophy::interface:consistency"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

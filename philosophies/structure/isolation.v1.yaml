@@ -3,7 +3,7 @@
 # Every folder must contain exactly one class and its tests
 
 metadata:
-  gid: "akao:philosophy::structure/isolation:v1"
+  id: "akao:philosophy::structure:isolation:v1"
   name: "One class per folder"
   version: "1.0.0"
   category: "structure"

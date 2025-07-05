@@ -3,7 +3,7 @@
 # Multi-language repositories must isolate languages clearly
 
 metadata:
-  gid: "akao:philosophy::language/isolation:v1"
+  id: "akao:philosophy::language:isolation:v1"
   name: "One language per scope"
   version: "1.0.0"
   category: "language"

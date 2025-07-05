@@ -3,7 +3,7 @@
 # All tooling must behave identically across user interface modes
 
 metadata:
-  gid: "akao:philosophy::interface/consistency:v1"
+  id: "akao:philosophy::interface:consistency:v1"
   name: "CLI equals Web equals TUI"
   version: "1.0.0"
   category: "interface"

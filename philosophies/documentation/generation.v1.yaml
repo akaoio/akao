@@ -3,7 +3,7 @@
 # All documentation must be generated from actual rules and tests
 
 metadata:
-  gid: "akao:philosophy::documentation/generation:v1"
+  id: "akao:philosophy::documentation:generation:v1"
   name: "Documentation is code"
   version: "1.0.0"
   category: "documentation"

@@ -1,13 +1,13 @@
 ---
 # Rule: Documentation is code enforcement
-# Implements: akao:philosophy::documentation/generation:v1
+# Philosophy: akao:philosophy::documentation:generation:v1
 
 metadata:
-  gid: "akao:rule::documentation/generation:v1"
+  id: "akao:rule::documentation:generation:v1"
   name: "Documentation is code enforcement"
   version: "1.0.0"
   category: "documentation"
-  philosophy_gid: "akao:philosophy::documentation/generation:v1"
+  philosophy: "akao:philosophy::documentation:generation"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

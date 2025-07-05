@@ -1,0 +1,56 @@
+---
+# Akao Philosophy: Everything must build dev plus prod
+# Development and production builds are mandatory
+
+metadata:
+  id: "akao:philosophy::build/duality:v1"
+  name: "Everything must build dev plus prod"
+  version: "1.0.0"
+  category: "build"
+  created_at: "2025-01-05T00:00:00Z"
+  updated_at: "2025-01-05T00:00:00Z"
+  author: "akao-framework"
+  
+description: |
+  Development and production builds are mandatory
+
+formal_logic:
+  domain: "build"
+  predicate: "duality_build"
+  axioms:
+    - "Core axiom for Everything must build dev plus prod"
+  invariants:
+    - "Core invariant for Everything must build dev plus prod"
+  
+validation:
+  conditions:
+    - name: "check_duality_compliance"
+      description: "Validates Everything must build dev plus prod compliance"
+      logic: "elements.every(e => e.complies_with_duality_rules())"
+
+implementation:
+  enforcement_points:
+    - "Core enforcement point"
+    
+  technical_requirements:
+    - "Core technical requirement"
+    
+  user_interface:
+    - "akao validate --duality"
+
+measurement:
+  metrics:
+    - name: "duality_compliance_rate"
+      description: "Percentage of elements following Everything must build dev plus prod rules"
+      formula: "compliant_elements / total_elements * 100"
+
+dependencies:
+  requires: []
+  recommends: []
+
+audit:
+  compliance_checks:
+    - "Core compliance check for Everything must build dev plus prod"
+    
+  violation_severity: "MEDIUM"
+  auto_fix_available: false

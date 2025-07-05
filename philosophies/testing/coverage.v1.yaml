@@ -3,7 +3,7 @@
 # Each rule must have measurable test coverage
 
 metadata:
-  gid: "akao:philosophy::testing/coverage:v1"
+  id: "akao:philosophy::testing:coverage:v1"
   name: "No rules without tests"
   version: "1.0.0"
   category: "testing"

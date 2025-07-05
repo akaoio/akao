@@ -1,13 +1,13 @@
 ---
 # Rule: No rules without tests enforcement
-# Implements: akao:philosophy::testing/coverage:v1
+# Philosophy: akao:philosophy::testing:coverage:v1
 
 metadata:
-  gid: "akao:rule::testing/coverage:v1"
+  id: "akao:rule::testing:coverage:v1"
   name: "No rules without tests enforcement"
   version: "1.0.0"
   category: "testing"
-  philosophy_gid: "akao:philosophy::testing/coverage:v1"
+  philosophy: "akao:philosophy::testing:coverage:v1"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

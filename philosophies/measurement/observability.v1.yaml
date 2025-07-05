@@ -3,7 +3,7 @@
 # Coverage, logs, hash, audit state enforced per commit using GIDs
 
 metadata:
-  gid: "akao:philosophy::measurement/observability:v1"
+  id: "akao:philosophy::measurement:observability:v1"
   name: "Every action is measurable"
   version: "1.0.0"
   category: "measurement"

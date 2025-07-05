@@ -1,0 +1,36 @@
+---
+# Rule: Structure is enforced enforcement
+# Implements: akao:philosophy::structure/enforcement:v1
+
+metadata:
+  id: "akao:rule::structure/enforcement:v1"
+  name: "Structure is enforced enforcement"
+  version: "1.0.0"
+  category: "structure"
+  philosophy: "structure/enforcement"
+  created_at: "2025-01-05T00:00:00Z"
+
+description: |
+  Enforces the Structure is enforced philosophy.
+
+validation_logic:
+  conditions:
+    - name: "check_structure_enforcement_compliance"
+      implementation: "validate_structure_enforcement_compliance()"
+
+test_cases:
+  - name: "structure_enforcement_compliance_pass"
+    type: "compliance"
+    expected: "validation_success"
+    
+  - name: "structure_enforcement_violation_fail"
+    type: "violation"
+    expected: "validation_failure_with_gid"
+
+dependencies:
+  requires: []
+  recommends: []
+
+audit:
+  violation_severity: "MEDIUM"
+  auto_fix_available: false

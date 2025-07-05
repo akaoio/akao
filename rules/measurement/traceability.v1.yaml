@@ -1,13 +1,13 @@
 ---
 # Rule: Every rule is traceable enforcement
-# Implements: akao:philosophy::measurement/traceability:v1
+# Philosophy: akao:philosophy::measurement:traceability:v1
 
 metadata:
-  gid: "akao:rule::measurement/traceability:v1"
+  id: "akao:rule::measurement:traceability:v1"
   name: "Every rule is traceable enforcement"
   version: "1.0.0"
   category: "measurement"
-  philosophy_gid: "akao:philosophy::measurement/traceability:v1"
+  philosophy: "akao:philosophy::measurement:traceability"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

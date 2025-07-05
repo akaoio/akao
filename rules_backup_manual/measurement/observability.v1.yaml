@@ -1,0 +1,36 @@
+---
+# Rule: Every action is measurable enforcement
+# Implements: akao:philosophy::measurement/observability:v1
+
+metadata:
+  id: "akao:rule::measurement/observability:v1"
+  name: "Every action is measurable enforcement"
+  version: "1.0.0"
+  category: "measurement"
+  philosophy: "measurement/observability"
+  created_at: "2025-01-05T00:00:00Z"
+
+description: |
+  Enforces the Every action is measurable philosophy.
+
+validation_logic:
+  conditions:
+    - name: "check_measurement_observability_compliance"
+      implementation: "validate_measurement_observability_compliance()"
+
+test_cases:
+  - name: "measurement_observability_compliance_pass"
+    type: "compliance"
+    expected: "validation_success"
+    
+  - name: "measurement_observability_violation_fail"
+    type: "violation"
+    expected: "validation_failure_with_gid"
+
+dependencies:
+  requires: []
+  recommends: []
+
+audit:
+  violation_severity: "MEDIUM"
+  auto_fix_available: false

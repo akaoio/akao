@@ -1,13 +1,13 @@
 ---
 # Rule: Universal validation enforcement
-# Implements: akao:philosophy::validation/universal:v1
+# Philosophy: akao:philosophy::validation:universal:v1
 
 metadata:
-  gid: "akao:rule::validation/universal:v1"
+  id: "akao:rule::validation:universal:v1"
   name: "Universal validation enforcement"
   version: "1.0.0"
   category: "validation"
-  philosophy_gid: "akao:philosophy::validation/universal:v1"
+  philosophy: "akao:philosophy::validation:universal"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

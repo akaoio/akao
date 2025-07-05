@@ -3,7 +3,7 @@
 # Violations include Global Rule Identifier, stack trace, file, line, and suggestion
 
 metadata:
-  gid: "akao:philosophy::measurement/traceability:v1"
+  id: "akao:philosophy::measurement:traceability:v1"
   name: "Every rule is traceable"
   version: "1.0.0"
   category: "measurement"

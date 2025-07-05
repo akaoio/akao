@@ -1,13 +1,13 @@
 ---
 # Rule: One language per scope enforcement
-# Implements: akao:philosophy::language/isolation:v1
+# Philosophy: akao:philosophy::language:isolation:v1
 
 metadata:
-  gid: "akao:rule::language/isolation:v1"
+  id: "akao:rule::language:isolation:v1"
   name: "One language per scope enforcement"
   version: "1.0.0"
   category: "language"
-  philosophy_gid: "akao:philosophy::language/isolation:v1"
+  philosophy: "akao:philosophy::language:isolation"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

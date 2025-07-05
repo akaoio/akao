@@ -1,0 +1,36 @@
+---
+# Rule: Auto-update all documentation enforcement
+# Implements: akao:philosophy::automation/updates:v1
+
+metadata:
+  id: "akao:rule::automation:updates:v1"
+  name: "Auto-update all documentation enforcement"
+  version: "1.0.0"
+  category: "automation"
+  philosophy: "automation/updates"
+  created_at: "2025-01-05T00:00:00Z"
+
+description: |
+  Enforces the Auto-update all documentation philosophy.
+
+validation_logic:
+  conditions:
+    - name: "check_automation_updates_compliance"
+      implementation: "validate_automation_updates_compliance()"
+
+test_cases:
+  - name: "automation_updates_compliance_pass"
+    type: "compliance"
+    expected: "validation_success"
+    
+  - name: "automation_updates_violation_fail"
+    type: "violation"
+    expected: "validation_failure_with_gid"
+
+dependencies:
+  requires: []
+  recommends: []
+
+audit:
+  violation_severity: "MEDIUM"
+  auto_fix_available: false

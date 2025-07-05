@@ -1,13 +1,13 @@
 ---
 # Rule: Structure is enforced enforcement
-# Implements: akao:philosophy::structure/enforcement:v1
+# Philosophy: akao:philosophy::structure:enforcement:v1
 
 metadata:
-  gid: "akao:rule::structure/enforcement:v1"
+  id: "akao:rule::structure:enforcement:v1"
   name: "Structure is enforced enforcement"
   version: "1.0.0"
   category: "structure"
-  philosophy_gid: "akao:philosophy::structure/enforcement:v1"
+  philosophy: "akao:philosophy::structure:enforcement"
   created_at: "2025-01-05T00:00:00Z"
 
 description: |

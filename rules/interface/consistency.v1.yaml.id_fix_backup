@@ -1,0 +1,36 @@
+---
+# Rule: CLI equals Web equals TUI enforcement
+# Implements: akao:philosophy::interface/consistency:v1
+
+metadata:
+  id: "akao:rule::interface/consistency:v1"
+  name: "CLI equals Web equals TUI enforcement"
+  version: "1.0.0"
+  category: "interface"
+  philosophy: "interface/consistency"
+  created_at: "2025-01-05T00:00:00Z"
+
+description: |
+  Enforces the CLI equals Web equals TUI philosophy.
+
+validation_logic:
+  conditions:
+    - name: "check_interface_consistency_compliance"
+      implementation: "validate_interface_consistency_compliance()"
+
+test_cases:
+  - name: "interface_consistency_compliance_pass"
+    type: "compliance"
+    expected: "validation_success"
+    
+  - name: "interface_consistency_violation_fail"
+    type: "violation"
+    expected: "validation_failure_with_gid"
+
+dependencies:
+  requires: []
+  recommends: []
+
+audit:
+  violation_severity: "MEDIUM"
+  auto_fix_available: false
