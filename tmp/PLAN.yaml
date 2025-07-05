@@ -1,0 +1,554 @@
+id: akao:doc::plan:plan:v1
+version: 1
+language: en
+title: Akao Framework Final Implementation Plan
+description: Technical documentation for Akao Framework Final Implementation Plan
+content:
+  akao-framework-final-implementation-plan:
+    id: akao:doc::plan:akao-framework-final-implementation-plan:v1
+    title: Akao Framework Final Implementation Plan
+    content: '> **Single-source specification for implementing the complete Akao framework in C++ with full automation, security,
+      and consistency enforcement**
+
+
+      ## Table of Contents
+
+
+      1. [Executive Summary](#executive-summary)
+
+      2. [Complete Project Structure](#complete-project-structure)
+
+      3. [Layered Architecture Design](#layered-architecture-design)
+
+      4. [Global Rule Identifier (GID) System](#global-rule-identifier-gid-system)
+
+      5. [RuleSet System](#ruleset-system)
+
+      6. [Graph Generation System](#graph-generation-sys...'
+    subsections:
+      table-of-contents:
+        id: akao:doc::plan:table-of-contents:v1
+        title: Table of Contents
+        content: '1. [Executive Summary](#executive-summary)
+
+          2. [Complete Project Structure](#complete-project-structure)
+
+          3. [Layered Architecture Design](#layered-architecture-design)
+
+          4. [Global Rule Identifier (GID) System](#global-rule-identifier-gid-system)
+
+          5. [RuleSet System](#ruleset-system)
+
+          6. [Graph Generatio...'
+      executive-summary:
+        id: akao:doc::plan:executive-summary:v1
+        title: Executive Summary
+        content: This document is the **canonical implementation specification** for the Akao framework - a rule-based C++
+          system for project structure enforcement, build management, automation, and documentation generation. This plan
+          is designed for **single-session code generation** where GitHub Copilot can genera...
+      complete-project-structure:
+        id: akao:doc::plan:complete-project-structure:v1
+        title: Complete Project Structure
+        content: "> **Philosophy Foundation**: This directory structure enforces the \"One class per folder\" and \"Only one\
+          \ truth\" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\n> \n> **Architecture Alignment**: This\
+          \ structure implements the layered architecture described in [ARCHITECTURE.md](./ARCHITECT..."
+      layered-architecture-design:
+        id: akao:doc::plan:layered-architecture-design:v1
+        title: Layered Architecture Design
+        content: '### Core Architecture Principles
+
+
+          The Akao framework follows a **strictly layered architecture** with clear separation of concerns:
+
+
+          ```
+
+          ┌─────────────────────────────────────────────────────────────┐
+
+          │                    Interface Layer                          │
+
+          │  ┌─────────────┬─────────────┬───...'
+      global-rule-identifier-gid-system:
+        id: akao:doc::plan:global-rule-identifier-gid-system:v1
+        title: Global Rule Identifier (GID) System
+        content: "> **Philosophy Foundation**: This GID system implements the \"Every rule is traceable\" and \"Rules can\
+          \ be toggled, not skipped\" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\n> \n> **Architecture\
+          \ Implementation**: The GID system is implemented through the Rule Engine detailed in [ARCHIT..."
+  rulesstructureyaml:
+    id: akao:doc::plan:rulesstructureyaml:v1
+    title: rules/structure.yaml
+    content: "rules:\n  - gid: \"akao:rule::structure:one_class_per_folder:v1\"\n    name: \"One Class Per Folder\"\n    description:\
+      \ \"Each folder must contain exactly one class implementation\"\n    category: \"structure\"\n    severity: \"error\"\
+      \n    enforcement:\n      max_classes_per_folder: 1\n      required_files: [\"*.hpp\", \"*.cpp\"]\n    exceptions:\n\
+      \      - \"templates/\"\n      - \"tests/\"\n```\n\n```toml"
+    subsections: {}
+  rulestestingtoml:
+    id: akao:doc::plan:rulestestingtoml:v1
+    title: rules/testing.toml
+    content: "[[rules]]\ngid = \"akao:rule::testing:coverage_minimum:v2\"\nname = \"Minimum Test Coverage\"\ndescription =\
+      \ \"All source files must have minimum 80% test coverage\"\ncategory = \"testing\"\nseverity = \"warning\"\nthreshold\
+      \ = 0.80\napplies_to = [\"src/**/*.cpp\"]\nexcludes = [\"src/main.cpp\"]\n```\n\n**Audit and Trace Integration:**\n\
+      All audit and trace files reference rules by GID:\n\n```json\n// .akao/trace.json\n{\n  \"timestamp\": \"2024-01-01T00:00:00Z\"\
+      ,\n  \"operation\": \"validate\",\n  \"violations\": [\n    {\n      \"gid\": \"aka..."
+    subsections:
+      cli-integration-with-gid-support:
+        id: akao:doc::plan:cli-integration-with-gid-support:v1
+        title: CLI Integration with GID Support
+        content: "**Enhanced CLI Commands:**\n\n```cpp\nnamespace akao::cli {\nclass ValidateCommand : public Command {\n\
+          public:\n    CommandResult execute(const CommandRequest& request) override {\n        auto project_path = request.parameters.at(\"\
+          path\");\n        \n        // Support GID-specific validation\n        if (req..."
+  validate-specific-rule-by-gid:
+    id: akao:doc::plan:validate-specific-rule-by-gid:v1
+    title: Validate specific rule by GID
+    content: akao validate --gid="akao:rule::naming:snake_case:v1"
+    subsections: {}
+  validate-all-rules-in-a-category:
+    id: akao:doc::plan:validate-all-rules-in-a-category:v1
+    title: Validate all rules in a category
+    content: akao validate --category="naming"
+    subsections: {}
+  audit-specific-rule-compliance:
+    id: akao:doc::plan:audit-specific-rule-compliance:v1
+    title: Audit specific rule compliance
+    content: akao audit --gid="akao:rule::testing:coverage_minimum:v2"
+    subsections: {}
+  list-all-rules-with-their-gids:
+    id: akao:doc::plan:list-all-rules-with-their-gids:v1
+    title: List all rules with their GIDs
+    content: akao rule list --format=gid
+    subsections: {}
+  show-rule-details-by-gid:
+    id: akao:doc::plan:show-rule-details-by-gid:v1
+    title: Show rule details by GID
+    content: akao rule info --gid="akao:rule::structure:one_class_per_folder:v1"
+    subsections: {}
+  disable-specific-rule-by-gid-tracked-in-audit:
+    id: akao:doc::plan:disable-specific-rule-by-gid-tracked-in-audit:v1
+    title: Disable specific rule by GID (tracked in audit)
+    content: "akao rule disable --gid=\"akao:rule::performance:startup_time_limit:v1\" --reason=\"Development mode\"\n```\n\
+      \n### Rule Registry with GID Management\n\n```cpp\nnamespace akao::rule {\nclass Registry {\npublic:\n    static std::shared_ptr<Rule>\
+      \ getRuleByGID(const std::string& gid) {\n        return rule_cache_[gid];\n    }\n    \n    static std::vector<std::shared_ptr<Rule>>\
+      \ getRulesByCategory(const std::string& category) {\n        std::vector<std::shared_ptr<Rule>> rules;\n        for\
+      \ (const auto& [gid, rule] : r..."
+    subsections:
+      rule-registry-with-gid-management:
+        id: akao:doc::plan:rule-registry-with-gid-management:v1
+        title: Rule Registry with GID Management
+        content: "```cpp\nnamespace akao::rule {\nclass Registry {\npublic:\n    static std::shared_ptr<Rule> getRuleByGID(const\
+          \ std::string& gid) {\n        return rule_cache_[gid];\n    }\n    \n    static std::vector<std::shared_ptr<Rule>>\
+          \ getRulesByCategory(const std::string& category) {\n        std::vector<std::shared_p..."
+      multi-format-rule-support:
+        id: akao:doc::plan:multi-format-rule-support:v1
+        title: Multi-Format Rule Support
+        content: "**JSON Format:**\n```json\n{\n  \"gid\": \"akao:rule::cpp:naming:snake_case:v1\",\n  \"metadata\": {\n \
+          \   \"name\": \"Snake Case Variables\",\n    \"description\": \"All variable names must use snake_case convention\"\
+          ,\n    \"category\": \"cpp\",\n    \"severity\": \"error\",\n    \"version\": \"v1\"\n  },\n  \"validation\": {\n\
+          \    \"patte..."
+      gid-based-traceability-implementation:
+        id: akao:doc::plan:gid-based-traceability-implementation:v1
+        title: GID-Based Traceability Implementation
+        content: "```cpp\nnamespace akao::trace {\nclass Logger {\npublic:\n    static void logRuleViolation(const std::string&\
+          \ gid, const Violation& violation) {\n        auto entry = TraceEntry{\n            .timestamp = getCurrentTimestamp(),\n\
+          \            .type = \"rule_violation\",\n            .gid = gid,\n            .fil..."
+      ruleset-system:
+        id: akao:doc::plan:ruleset-system:v1
+        title: RuleSet System
+        content: "> **Philosophy Foundation**: This RuleSet system implements the \"Every rule is part of at least one RuleSet\"\
+          \ principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\n> \n> **Architecture Implementation**: RuleSet\
+          \ management is implemented through the RuleSet Management system detailed in [ARCHIT..."
+  akaorulesetscppyaml:
+    id: akao:doc::plan:akaorulesetscppyaml:v1
+    title: .akao/rulesets/cpp.yaml
+    content: "name: \"cpp\"\nversion: \"v1\"\ndescription: \"C++ development standards and best practices\"\nparent: \"core\"\
+      \  # Inherits from core RuleSet\n\nrules:\n  - \"akao:rule:cpp:naming:snake_case:v1\"\n  - \"akao:rule:cpp:structure:one_class_per_folder:v1\"\
+      \ \n  - \"akao:rule:cpp:testing:coverage_threshold:v2\"\n  - \"akao:rule:cpp:documentation:header_comments:v1\"\n\n\
+      includes:\n  - \"security\"  # Include all rules from security RuleSet\n  \nexcludes:\n  - \"akao:rule:core:build:incremental:v1\"\
+      \  # Override parent rule\n\nmetadata:\n  a..."
+    subsections:
+      ruleset-inheritance-and-resolution:
+        id: akao:doc::plan:ruleset-inheritance-and-resolution:v1
+        title: RuleSet Inheritance and Resolution
+        content: "```cpp\nnamespace akao::ruleset {\nclass RuleSetResolver {\npublic:\n    static std::vector<std::string>\
+          \ resolveRuleSet(const std::string& name) {\n        auto ruleset = loadRuleSet(name);\n        std::vector<std::string>\
+          \ resolved_gids;\n        \n        // Resolve parent RuleSets first (depth-first)\n   ..."
+      cli-integration-for-rulesets:
+        id: akao:doc::plan:cli-integration-for-rulesets:v1
+        title: CLI Integration for RuleSets
+        content: '```bash'
+  ruleset-management:
+    id: akao:doc::plan:ruleset-management:v1
+    title: RuleSet Management
+    content: 'akao ruleset list                    # List all available RuleSets
+
+      akao ruleset info <name>             # Show RuleSet details and inheritance
+
+      akao ruleset validate <name>         # Validate RuleSet definition and dependencies
+
+      akao ruleset create <name>           # Create new RuleSet interactively'
+    subsections: {}
+  ruleset-based-operations:
+    id: akao:doc::plan:ruleset-based-operations:v1
+    title: RuleSet-based Operations
+    content: 'akao validate --ruleset=cpp          # Validate using C++ RuleSet
+
+      akao validate --ruleset=security     # Validate using security RuleSet
+
+      akao audit --ruleset=performance     # Audit performance compliance
+
+      akao docgen --ruleset=core           # Generate docs for core RuleSet rules
+
+      ```
+
+
+      ---
+
+
+      ## Graph Generation System
+
+
+      > **Philosophy Foundation**: This graph system implements the "Code must be graph-explorable" and "All logic must be
+      explainable visually" principles from [PHILOSOPHY.md](./PHILOSOP...'
+    subsections:
+      graph-generation-system:
+        id: akao:doc::plan:graph-generation-system:v1
+        title: Graph Generation System
+        content: "> **Philosophy Foundation**: This graph system implements the \"Code must be graph-explorable\" and \"All\
+          \ logic must be explainable visually\" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\n> \n> **Architecture\
+          \ Implementation**: Graph generation is implemented through the Graph Generation..."
+  graph-generation-commands:
+    id: akao:doc::plan:graph-generation-commands:v1
+    title: Graph Generation Commands
+    content: 'akao graph --type=rules --format=svg --output=rules.svg        # Rule dependency graph
+
+      akao graph --type=rulesets --format=dot --output=rulesets.dot  # RuleSet relationships
+
+      akao graph --type=project --format=json                        # Project structure (stdout)
+
+      akao graph --type=features --format=png --output=features.png  # Feature dependencies
+
+      akao graph --type=validation --format=svg                      # Validation flow graph
+
+      akao graph --type=audit --format=dot --ruleset=security      ...'
+    subsections: {}
+  graph-integration-with-other-commands:
+    id: akao:doc::plan:graph-integration-with-other-commands:v1
+    title: Graph Integration with Other Commands
+    content: 'akao docgen --include-graphs                                   # Embed graphs in documentation
+
+      akao audit --graph-output=compliance.svg                       # Generate compliance graph
+
+      akao validate --graph-output=validation_flow.dot               # Show validation execution graph
+
+      ```
+
+
+      ### Graph Integration Points
+
+
+      **Documentation Integration**: Generated graphs automatically embedded in `akao docgen` output:
+
+      ```markdown'
+    subsections:
+      graph-integration-points:
+        id: akao:doc::plan:graph-integration-points:v1
+        title: Graph Integration Points
+        content: '**Documentation Integration**: Generated graphs automatically embedded in `akao docgen` output:
+
+          ```markdown'
+  rules-overview:
+    id: akao:doc::plan:rules-overview:v1
+    title: Rules Overview
+    content: '![Rule Dependency Graph](graphs/rules.svg)'
+    subsections: {}
+  ruleset-inheritance:
+    id: akao:doc::plan:ruleset-inheritance:v1
+    title: RuleSet Inheritance
+    content: "![RuleSet Graph](graphs/rulesets.svg)\n```\n\n**Web UI Integration**: Graph viewer mode with interactive navigation:\n\
+      ```cpp\nnamespace akao::web {\nclass GraphController {\npublic:\n    void serveGraphViewer(const HttpRequest& req, HttpResponse&\
+      \ res) {\n        auto type = req.getParam(\"type\");\n        auto format = req.getParam(\"format\", \"json\");\n \
+      \       \n        auto graph = graph::GraphGenerator::generateGraph(parseGraphType(type));\n        res.setContentType(\"\
+      application/json\");\n        res.setBody(..."
+    subsections:
+      implementation-requirements-class-structure:
+        id: akao:doc::plan:implementation-requirements-class-structure:v1
+        title: Implementation Requirements & Class Structure
+        content: "### Core Implementation Strategy\n\n**Single-Pass Implementation**: All components must be implemented together\
+          \ as a cohesive unit to ensure:\n- Cross-component dependencies are properly resolved\n- Universal validation works\
+          \ from the start  \n- Integration points are correctly designed\n- Consistent erro..."
+      implementation-phases:
+        id: akao:doc::plan:implementation-phases:v1
+        title: Implementation Phases
+        content: "### Phase 1: Core Framework Foundation\n**Establish core infrastructure and universal validation**:\n\n\
+          1. **Core Framework Components**\n   - `src/core/config/` - Configuration management with `.akao/config.json` support\n\
+          \   - `src/core/filesystem/` - Safe file operations with path validation\n   - `src/c..."
+      critical-implementation-details:
+        id: akao:doc::plan:critical-implementation-details:v1
+        title: Critical Implementation Details
+        content: "### Universal Validation Implementation\n\n**Bootstrap Validation**: Akao applies universal validation to\
+          \ any project, including itself as a standard use case:\n\n```cpp\n// Universal validation that works on any project\n\
+          namespace akao::rule {\nclass Validator {\npublic:\n    static ValidationResult validat..."
+      component-integration-map:
+        id: akao:doc::plan:component-integration-map:v1
+        title: Component Integration Map
+        content: "### Core System Dependencies\n\n```\nRule Engine ──┐\n              ├── Universal Validator ──┐\nBuild Engine\
+          \ ─┘                        ├── CLI Controller ──┐\n                                        │                  \
+          \ ├── All Interfaces\nDocumentation ──┐                      │                   │\n      ..."
+      success-criteria-validation:
+        id: akao:doc::plan:success-criteria-validation:v1
+        title: Success Criteria & Validation
+        content: '### Performance Requirements
+
+          - **Startup Time**: <100ms cold start for CLI operations
+
+          - **Validation Speed**: <1s for medium projects (1000 files)
+
+          - **Build Speed**: <5s for incremental dev builds, <30s for prod builds
+
+          - **Memory Usage**: <100MB for typical operations
+
+
+          ### Quality Requirements
+
+          - **T...'
+      build-configuration:
+        id: akao:doc::plan:build-configuration:v1
+        title: Build Configuration
+        content: '### CMakeLists.txt Specification
+
+
+          ```cmake
+
+          cmake_minimum_required(VERSION 3.20)
+
+          project(akao VERSION 1.0.0 LANGUAGES CXX)
+
+
+          set(CMAKE_CXX_STANDARD 17)
+
+          set(CMAKE_CXX_STANDARD_REQUIRED ON)'
+  cross-platform-configuration-options:
+    id: akao:doc::plan:cross-platform-configuration-options:v1
+    title: Cross-platform configuration options
+    content: 'option(AKAO_BUILD_TESTS "Build comprehensive test suite" ON)
+
+      option(AKAO_BUILD_PLUGINS "Build language and platform plugins" ON)
+
+      option(AKAO_BUILD_WEB_UI "Build Web UI interface" ON)
+
+      option(AKAO_BUILD_TUI "Build Text User Interface" ON)
+
+      option(AKAO_ENABLE_ASAN "Enable AddressSanitizer" OFF)
+
+      option(AKAO_ENABLE_TSAN "Enable ThreadSanitizer" OFF)
+
+      option(AKAO_STATIC_LINKING "Use static linking for dependencies" ON)'
+    subsections: {}
+  platform-detection-and-configuration:
+    id: akao:doc::plan:platform-detection-and-configuration:v1
+    title: Platform detection and configuration
+    content: "if(CMAKE_SYSTEM_NAME STREQUAL \"Linux\")\n    set(AKAO_PLATFORM \"linux\")\nelseif(CMAKE_SYSTEM_NAME STREQUAL\
+      \ \"Darwin\")\n    set(AKAO_PLATFORM \"macos\")\nelseif(CMAKE_SYSTEM_NAME STREQUAL \"Windows\")\n    set(AKAO_PLATFORM\
+      \ \"windows\")\nelseif(CMAKE_SYSTEM_NAME STREQUAL \"Android\")\n    set(AKAO_PLATFORM \"android\")\nelseif(CMAKE_SYSTEM_NAME\
+      \ STREQUAL \"iOS\")\n    set(AKAO_PLATFORM \"ios\")\nelseif(EMSCRIPTEN)\n    set(AKAO_PLATFORM \"wasm\")\nelse()\n \
+      \   set(AKAO_PLATFORM \"embedded\")\nendif()\n\nmessage(STATUS \"Building Akao ..."
+    subsections: {}
+  compiler-specific-options-with-cross-platform-support:
+    id: akao:doc::plan:compiler-specific-options-with-cross-platform-support:v1
+    title: Compiler-specific options with cross-platform support
+    content: "if(CMAKE_CXX_COMPILER_ID STREQUAL \"GNU\" OR CMAKE_CXX_COMPILER_ID STREQUAL \"Clang\")\n    add_compile_options(-Wall\
+      \ -Wextra -Wpedantic)\n    if(AKAO_ENABLE_ASAN)\n        add_compile_options(-fsanitize=address)\n        add_link_options(-fsanitize=address)\n\
+      \    endif()\n    if(AKAO_ENABLE_TSAN)\n        add_compile_options(-fsanitize=thread)\n        add_link_options(-fsanitize=thread)\n\
+      \    endif()\nelseif(CMAKE_CXX_COMPILER_ID STREQUAL \"MSVC\")\n    add_compile_options(/W4)\n    if(AKAO_STATIC_LINKING)\n\
+      \      ..."
+    subsections: {}
+  third-party-dependencies-with-cross-platform-support:
+    id: akao:doc::plan:third-party-dependencies-with-cross-platform-support:v1
+    title: Third-party dependencies with cross-platform support
+    content: "if(AKAO_STATIC_LINKING)\n    set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})\nendif()\n\n\
+      find_package(nlohmann_json REQUIRED)\nfind_package(fmt REQUIRED)\nfind_package(yaml-cpp REQUIRED)"
+    subsections: {}
+  platform-specific-dependencies:
+    id: akao:doc::plan:platform-specific-dependencies:v1
+    title: Platform-specific dependencies
+    content: "if(AKAO_PLATFORM STREQUAL \"wasm\")\n    # WebAssembly-specific configuration\n    set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS}\
+      \ -s WASM=1 -s EXPORTED_FUNCTIONS='[\\\"_main\\\"]'\")\nelseif(AKAO_PLATFORM STREQUAL \"android\")\n    # Android NDK\
+      \ configuration\n    find_library(log-lib log)\n    set(PLATFORM_LIBS ${log-lib})\nelseif(AKAO_PLATFORM STREQUAL \"\
+      windows\")\n    # Windows-specific libraries\n    set(PLATFORM_LIBS ws2_32 iphlpapi)\nendif()"
+    subsections: {}
+  webassembly-specific-configuration:
+    id: akao:doc::plan:webassembly-specific-configuration:v1
+    title: WebAssembly-specific configuration
+    content: ''
+    subsections: {}
+  android-ndk-configuration:
+    id: akao:doc::plan:android-ndk-configuration:v1
+    title: Android NDK configuration
+    content: ''
+    subsections: {}
+  windows-specific-libraries:
+    id: akao:doc::plan:windows-specific-libraries:v1
+    title: Windows-specific libraries
+    content: ''
+    subsections: {}
+  include-directories:
+    id: akao:doc::plan:include-directories:v1
+    title: Include directories
+    content: 'include_directories(include)
+
+      include_directories(src)'
+    subsections: {}
+  core-library-with-cross-platform-sources:
+    id: akao:doc::plan:core-library-with-cross-platform-sources:v1
+    title: Core library with cross-platform sources
+    content: "file(GLOB_RECURSE AKAO_CORE_SOURCES \n    \"src/core/*.cpp\"\n    \"src/rule/*.cpp\" \n    \"src/build/*.cpp\"\
+      \n    \"src/docgen/*.cpp\"\n    \"src/graph/*.cpp\"\n    \"src/metrics/*.cpp\"\n    \"src/feature/*.cpp\"\n    \"src/project/*.cpp\"\
+      \n    \"src/automation/*.cpp\"\n)"
+    subsections: {}
+  platform-specific-sources:
+    id: akao:doc::plan:platform-specific-sources:v1
+    title: Platform-specific sources
+    content: 'file(GLOB_RECURSE AKAO_PLATFORM_SOURCES "src/platform/${AKAO_PLATFORM}/*.cpp")
+
+      file(GLOB_RECURSE AKAO_INTERFACES_SOURCES "src/interfaces/*.cpp")'
+    subsections: {}
+  language-adapter-sources:
+    id: akao:doc::plan:language-adapter-sources:v1
+    title: Language adapter sources
+    content: "file(GLOB_RECURSE AKAO_LANGUAGE_SOURCES \"src/language/*.cpp\")\n\nadd_library(akao_core STATIC \n    ${AKAO_CORE_SOURCES}\
+      \ \n    ${AKAO_PLATFORM_SOURCES}\n    ${AKAO_LANGUAGE_SOURCES}\n)\n\ntarget_link_libraries(akao_core \n    nlohmann_json::nlohmann_json\
+      \ \n    fmt::fmt \n    yaml-cpp\n    ${PLATFORM_LIBS}\n)"
+    subsections: {}
+  cli-interface:
+    id: akao:doc::plan:cli-interface:v1
+    title: CLI interface
+    content: 'add_library(akao_cli STATIC ${AKAO_INTERFACES_SOURCES})
+
+      target_link_libraries(akao_cli akao_core)'
+    subsections: {}
+  main-executable:
+    id: akao:doc::plan:main-executable:v1
+    title: Main executable
+    content: 'add_executable(akao src/main.cpp)
+
+      target_link_libraries(akao akao_cli akao_core)'
+    subsections: {}
+  web-ui-interface-optional:
+    id: akao:doc::plan:web-ui-interface-optional:v1
+    title: Web UI interface (optional)
+    content: "if(AKAO_BUILD_WEB_UI AND NOT AKAO_PLATFORM STREQUAL \"embedded\")\n    find_package(httplib REQUIRED)\n    add_executable(akao_web\
+      \ src/interfaces/web/main.cpp)\n    target_link_libraries(akao_web akao_core httplib::httplib)\nendif()"
+    subsections: {}
+  tui-interface-optional:
+    id: akao:doc::plan:tui-interface-optional:v1
+    title: TUI interface (optional)
+    content: "if(AKAO_BUILD_TUI AND NOT AKAO_PLATFORM STREQUAL \"wasm\")\n    find_package(ftxui REQUIRED)\n    add_executable(akao_tui\
+      \ src/interfaces/tui/main.cpp)\n    target_link_libraries(akao_tui akao_core ftxui::screen ftxui::dom ftxui::component)\n\
+      endif()"
+    subsections: {}
+  comprehensive-test-suite:
+    id: akao:doc::plan:comprehensive-test-suite:v1
+    title: Comprehensive test suite
+    content: "if(AKAO_BUILD_TESTS)\n    find_package(Catch2 REQUIRED)\n    \n    # Unit tests\n    file(GLOB_RECURSE UNIT_TEST_SOURCES\
+      \ \"tests/unit/*.cpp\")\n    add_executable(akao_unit_tests ${UNIT_TEST_SOURCES})\n    target_link_libraries(akao_unit_tests\
+      \ akao_core Catch2::Catch2WithMain)\n    \n    # Integration tests\n    file(GLOB_RECURSE INTEGRATION_TEST_SOURCES \"\
+      tests/integration/*.cpp\")\n    add_executable(akao_integration_tests ${INTEGRATION_TEST_SOURCES})\n    target_link_libraries(akao_integration_tests\
+      \ akao_co..."
+    subsections: {}
+  unit-tests:
+    id: akao:doc::plan:unit-tests:v1
+    title: Unit tests
+    content: ''
+    subsections: {}
+  integration-tests:
+    id: akao:doc::plan:integration-tests:v1
+    title: Integration tests
+    content: ''
+    subsections: {}
+  principle-tests:
+    id: akao:doc::plan:principle-tests:v1
+    title: Principle tests
+    content: ''
+    subsections: {}
+  interface-parity-tests:
+    id: akao:doc::plan:interface-parity-tests:v1
+    title: Interface parity tests
+    content: ''
+    subsections: {}
+  cross-platform-validation-test:
+    id: akao:doc::plan:cross-platform-validation-test:v1
+    title: Cross-platform validation test
+    content: ''
+    subsections: {}
+  gid-system-tests:
+    id: akao:doc::plan:gid-system-tests:v1
+    title: GID system tests
+    content: ''
+    subsections: {}
+  language-and-platform-plugins:
+    id: akao:doc::plan:language-and-platform-plugins:v1
+    title: Language and platform plugins
+    content: "if(AKAO_BUILD_PLUGINS)\n    # Only build plugins supported by current platform\n    if(AKAO_PLATFORM STREQUAL\
+      \ \"wasm\")\n        add_subdirectory(plugins/wasm)\n    endif()\n    \n    if(NOT AKAO_PLATFORM STREQUAL \"embedded\"\
+      \ AND NOT AKAO_PLATFORM STREQUAL \"wasm\")\n        add_subdirectory(plugins/js)\n        add_subdirectory(plugins/rust)\n\
+      \        add_subdirectory(plugins/python)\n        add_subdirectory(plugins/go)\n    endif()\n    \n    if(AKAO_PLATFORM\
+      \ STREQUAL \"android\")\n        add_subdirectory(plugins..."
+    subsections: {}
+  only-build-plugins-supported-by-current-platform:
+    id: akao:doc::plan:only-build-plugins-supported-by-current-platform:v1
+    title: Only build plugins supported by current platform
+    content: ''
+    subsections: {}
+  cross-platform-installation:
+    id: akao:doc::plan:cross-platform-installation:v1
+    title: Cross-platform installation
+    content: "if(AKAO_PLATFORM STREQUAL \"windows\")\n    install(TARGETS akao DESTINATION bin)\n    install(FILES $<TARGET_PDB_FILE:akao>\
+      \ DESTINATION bin OPTIONAL)\nelse()\n    install(TARGETS akao DESTINATION bin)\nendif()\n\ninstall(DIRECTORY templates/\
+      \ DESTINATION share/akao/templates)\ninstall(DIRECTORY rules/ DESTINATION share/akao/rules)\ninstall(DIRECTORY .akao/rulesets/\
+      \ DESTINATION share/akao/rulesets)"
+    subsections: {}
+  platform-specific-installation:
+    id: akao:doc::plan:platform-specific-installation:v1
+    title: Platform-specific installation
+    content: "if(AKAO_PLATFORM STREQUAL \"android\")\n    # Android APK packaging\n    set_property(TARGET akao PROPERTY OUTPUT_NAME\
+      \ \"libakao\")\nelseif(AKAO_PLATFORM STREQUAL \"wasm\")\n    # WebAssembly packaging\n    set_target_properties(akao\
+      \ PROPERTIES\n        SUFFIX \".wasm\"\n        COMPILE_FLAGS \"-s WASM=1\"\n        LINK_FLAGS \"-s WASM=1 -s EXPORTED_FUNCTIONS='[\\\
+      \"_main\\\"]'\"\n    )\nendif()\n```\n\n---\n\n## Final Validation Checklist\n\n### Cross-Document Consistency\n- [\
+      \ ] All CLI commands from README.md implemented with f..."
+    subsections: {}
+  android-apk-packaging:
+    id: akao:doc::plan:android-apk-packaging:v1
+    title: Android APK packaging
+    content: ''
+    subsections: {}
+  webassembly-packaging:
+    id: akao:doc::plan:webassembly-packaging:v1
+    title: WebAssembly packaging
+    content: ''
+    subsections:
+      final-validation-checklist:
+        id: akao:doc::plan:final-validation-checklist:v1
+        title: Final Validation Checklist
+        content: '### Cross-Document Consistency
+
+          - [ ] All CLI commands from README.md implemented with full interface parity (CLI=Web=TUI=API)
+
+          - [ ] All 9+ components from ARCHITECTURE.md have corresponding implementation with layered architecture
+
+          - [ ] All 19+ principles from PHILOSOPHY.md enforced through testable...'
+links:
+- akao:doc::architecture:architecture:v1
+- akao:doc::architecture:core-components:v1
+- akao:doc::architecture:system-overview:v1
+- akao:doc::philosophy:core-beliefs:v1
+- akao:doc::philosophy:philosophy:v1
+- akao:doc::readme:commands:v1
+- akao:doc::readme:core-capabilities:v1
+- akao:doc::readme:interface-parity-cli-web-tui-api:v1
+- akao:doc::readme:overview:v1
+- akao:doc::readme:readme:v1
+- akao:doc::summary:cli-command-taxonomy:v1
+- akao:doc::summary:directory-structure:v1
+- akao:doc::summary:global-rule-identifier-gid-system:v1
+- akao:doc::summary:ruleset-system:v1
+- akao:doc::summary:summary:v1
+- akao:doc::summary:system-overview:v1

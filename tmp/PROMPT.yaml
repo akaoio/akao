@@ -1,0 +1,205 @@
+id: akao:doc::prompt:prompt:v1
+version: 1
+language: en
+title: Akao Framework One-Shot Implementation Prompt
+description: Technical documentation for Akao Framework One-Shot Implementation Prompt
+content:
+  akao-framework-one-shot-implementation-prompt:
+    id: akao:doc::prompt:akao-framework-one-shot-implementation-prompt:v1
+    title: Akao Framework One-Shot Implementation Prompt
+    content: '## Session Objective
+
+
+      Generate the complete Akao framework implementation in C++ (C++17+) - a rule-based system for project structure enforcement,
+      build management, automation, and documentation generation with cross-platform support and multi-language capability.
+      This single coding session must produce a fully functional framework that validates, builds, documents, and manages
+      any software project while enforcing all philosophical principles through code with Global Rule Identifier (GID) tracea...'
+    subsections:
+      session-objective:
+        id: akao:doc::prompt:session-objective:v1
+        title: Session Objective
+        content: Generate the complete Akao framework implementation in C++ (C++17+) - a rule-based system for project structure
+          enforcement, build management, automation, and documentation generation with cross-platform support and multi-language
+          capability. This single coding session must produce a fully functiona...
+      system-overview:
+        id: akao:doc::prompt:system-overview:v1
+        title: System Overview
+        content: Akao is a comprehensive C++ framework implementing universal validation, rule-driven enforcement, and automation
+          across any language, OS, or runtime. The system provides identical functionality through CLI, Web UI, TUI, and API
+          interfaces while maintaining complete audit trails through a Global Rule...
+      component-breakdown:
+        id: akao:doc::prompt:component-breakdown:v1
+        title: Component Breakdown
+        content: '### 1. Core Framework (`src/core/`)
+
+          **Responsibility**: Foundation services for configuration, file system operations, audit logging, and plugin management
+          across all platforms.
+
+          **Purpose**: Provide cross-platform foundation services that work identically across all supported platforms.
+
+          **Connection...'
+      technical-constraints:
+        id: akao:doc::prompt:technical-constraints:v1
+        title: Technical Constraints
+        content: '### Architectural Constraints
+
+
+          **Layered Architecture Requirements:**
+
+          - Core business logic must be completely agnostic to language, interface, and OS
+
+          - Language binding layer provides consistent APIs across C++, JS, Rust, Python, Go
+
+          - Platform adapter layer handles OS-specific implementations with ...'
+      expected-output:
+        id: akao:doc::prompt:expected-output:v1
+        title: Expected Output
+        content: '### Complete Directory Structure (555+ Files)
+
+
+          ```
+
+          akao/
+
+          ├── .akao/                      # Framework runtime configuration
+
+          │   ├── config.json            # Main configuration file
+
+          │   ├── pipeline.yaml          # CI/CD pipeline configuration
+
+          │   ├── profiles/               # Language-specific rule p...'
+  platform-detection-and-configuration:
+    id: akao:doc::prompt:platform-detection-and-configuration:v1
+    title: Platform detection and configuration
+    content: "if(CMAKE_SYSTEM_NAME STREQUAL \"Linux\")\n    set(AKAO_PLATFORM \"linux\")\nelseif(CMAKE_SYSTEM_NAME STREQUAL\
+      \ \"Darwin\")\n    set(AKAO_PLATFORM \"macos\")\nelseif(CMAKE_SYSTEM_NAME STREQUAL \"Windows\")\n    set(AKAO_PLATFORM\
+      \ \"windows\")\nelseif(CMAKE_SYSTEM_NAME STREQUAL \"Android\")\n    set(AKAO_PLATFORM \"android\")\nelseif(CMAKE_SYSTEM_NAME\
+      \ STREQUAL \"iOS\")\n    set(AKAO_PLATFORM \"ios\")\nelseif(EMSCRIPTEN)\n    set(AKAO_PLATFORM \"wasm\")\nelse()\n \
+      \   set(AKAO_PLATFORM \"embedded\")\nendif()"
+    subsections: {}
+  cross-platform-configuration-options:
+    id: akao:doc::prompt:cross-platform-configuration-options:v1
+    title: Cross-platform configuration options
+    content: 'option(AKAO_BUILD_TESTS "Build comprehensive test suite" ON)
+
+      option(AKAO_BUILD_PLUGINS "Build language and platform plugins" ON)
+
+      option(AKAO_BUILD_WEB_UI "Build Web UI interface" ON)
+
+      option(AKAO_BUILD_TUI "Build Text User Interface" ON)
+
+      option(AKAO_STATIC_LINKING "Use static linking for dependencies" ON)'
+    subsections: {}
+  all-core-libraries-and-executables-with-cross-platform-support:
+    id: akao:doc::prompt:all-core-libraries-and-executables-with-cross-platform-support:v1
+    title: All core libraries and executables with cross-platform support
+    content: ''
+    subsections: {}
+  complete-cmake-configuration-for-all-platforms-and-features:
+    id: akao:doc::prompt:complete-cmake-configuration-for-all-platforms-and-features:v1
+    title: '[Complete CMake configuration for all platforms and features]'
+    content: "```\n\n### Interface Parity Implementation\n\nAll interfaces must provide identical functionality through common\
+      \ execution layer:\n\n```cpp\nnamespace akao::interfaces {\nclass InterfaceController {\npublic:\n    CommandResult\
+      \ executeCommand(const CommandRequest& request);\nprivate:\n    CommandRegistry command_registry_;\n};\n\nstruct CommandRequest\
+      \ {\n    std::string command_name;\n    std::map<std::string, std::string> parameters;\n    std::string interface_type;\
+      \  // \"cli\", \"web\", \"tui\", \"api\"\n};\n\nstruct Comma..."
+    subsections:
+      interface-parity-implementation:
+        id: akao:doc::prompt:interface-parity-implementation:v1
+        title: Interface Parity Implementation
+        content: "All interfaces must provide identical functionality through common execution layer:\n\n```cpp\nnamespace\
+          \ akao::interfaces {\nclass InterfaceController {\npublic:\n    CommandResult executeCommand(const CommandRequest&\
+          \ request);\nprivate:\n    CommandRegistry command_registry_;\n};\n\nstruct CommandRequest {\n  ..."
+      cli-command-interface-must-be-fully-implemented:
+        id: akao:doc::prompt:cli-command-interface-must-be-fully-implemented:v1
+        title: CLI Command Interface (Must Be Fully Implemented)
+        content: '#### Project Management Commands
+
+          ```bash
+
+          akao init [--template=<type>]               # Initialize project with templates
+
+          akao feature add/remove/list/info <name>    # Local feature management
+
+          akao registry add/list <url>                # External feature registry management
+
+          akao install/update/unins...'
+  types-rules-rulesets-project-features-validation-audit:
+    id: akao:doc::prompt:types-rules-rulesets-project-features-validation-audit:v1
+    title: 'Types: rules, rulesets, project, features, validation, audit'
+    content: ''
+    subsections: {}
+  formats-dot-svg-json-png:
+    id: akao:doc::prompt:formats-dot-svg-json-png:v1
+    title: 'Formats: dot, svg, json, png'
+    content: '```
+
+
+      #### Automation & CI/CD Commands
+
+      ```bash
+
+      akao pipeline generate/validate             # Pipeline configuration
+
+      akao workflow create/update                 # GitHub Actions workflows
+
+      akao deploy configure                       # Deployment settings
+
+      ```
+
+
+      ### Build Configuration Files
+
+
+      #### CMakeLists.txt (Cross-Platform)
+
+      Must include complete CMake configuration supporting:
+
+      - All target platforms (Linux, macOS, Windows, Android, iOS, WebAssembly, embedded)
+
+      - Cross-platform dependency managemen...'
+    subsections:
+      automation-cicd-commands:
+        id: akao:doc::prompt:automation-cicd-commands:v1
+        title: Automation & CI/CD Commands
+        content: '```bash
+
+          akao pipeline generate/validate             # Pipeline configuration
+
+          akao workflow create/update                 # GitHub Actions workflows
+
+          akao deploy configure                       # Deployment settings
+
+          ```'
+      build-configuration-files:
+        id: akao:doc::prompt:build-configuration-files:v1
+        title: Build Configuration Files
+        content: '#### CMakeLists.txt (Cross-Platform)
+
+          Must include complete CMake configuration supporting:
+
+          - All target platforms (Linux, macOS, Windows, Android, iOS, WebAssembly, embedded)
+
+          - Cross-platform dependency management
+
+          - Platform-specific optimizations
+
+          - Complete test suite integration
+
+          - Plugin system su...'
+      integration-requirements:
+        id: akao:doc::prompt:integration-requirements:v1
+        title: Integration Requirements
+        content: '#### Universal Validation Implementation
+
+          - Must validate any project structure including Akao itself
+
+          - Must work identically across all platforms
+
+          - Must produce consistent results with GID-based violation reporting
+
+          - Must integrate with all rule categories and RuleSet systems
+
+
+          #### Interface Parity ...'
+links: []

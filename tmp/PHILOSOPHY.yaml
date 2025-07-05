@@ -1,0 +1,175 @@
+id: akao:doc::philosophy:philosophy:v1
+version: 1
+language: en
+title: Akao Philosophy
+description: Technical documentation for Akao Philosophy
+content:
+  akao-philosophy:
+    id: akao:doc::philosophy:akao-philosophy:v1
+    title: Akao Philosophy
+    content: '> Akao is not only a framework. It is a set of codified doctrines — enforced by rule, measured by trace, validated
+      by code.
+
+
+      ## Table of Contents
+
+
+      1. [Core Beliefs](#core-beliefs)
+
+      2. [Inspirations](#inspirations)
+
+      3. [Rules as Doctrine](#rules-as-doctrine)
+
+      4. [Verification](#verification)
+
+      5. [Usage](#usage)
+
+      6. [Summary](#summary)
+
+
+      ---
+
+
+      ## Core Beliefs
+
+
+      > **Implementation Note**: Each principle below is technically enforced through the [core components architecture](./ARCHITECTURE.md#core-componen...'
+    subsections:
+      table-of-contents:
+        id: akao:doc::philosophy:table-of-contents:v1
+        title: Table of Contents
+        content: '1. [Core Beliefs](#core-beliefs)
+
+          2. [Inspirations](#inspirations)
+
+          3. [Rules as Doctrine](#rules-as-doctrine)
+
+          4. [Verification](#verification)
+
+          5. [Usage](#usage)
+
+          6. [Summary](#summary)
+
+
+          ---'
+      core-beliefs:
+        id: akao:doc::philosophy:core-beliefs:v1
+        title: Core Beliefs
+        content: '> **Implementation Note**: Each principle below is technically enforced through the [core components architecture](./ARCHITECTURE.md#core-components)
+          and implemented according to the [implementation specifications](./PLAN.md#implementation-requirements-class-structure).
+          The user-facing manifestation...'
+      inspirations:
+        id: akao:doc::philosophy:inspirations:v1
+        title: Inspirations
+        content: 'While Akao is original in vision, its principles are strengthened by prior systems:
+
+
+          * Bazel (hermetic, deterministic build)
+
+          * Cargo (manifest-driven modules)
+
+          * Clean Architecture (layered logic separation)
+
+          * ESLint/Clippy (rule enforcement with testable logic)
+
+          * Git + GitHub Actions (traceable acti...'
+      rules-as-doctrine:
+        id: akao:doc::philosophy:rules-as-doctrine:v1
+        title: Rules as Doctrine
+        content: 'All principles must:
+
+
+          1. Be implemented as a JSON rule.
+
+          2. Be backed by test file.
+
+          3. Be referenced in the CLI.
+
+          4. Be used to generate documentation.
+
+          5. Cause a CI failure if broken.
+
+
+          > Akao is the union of structure and behavior, measured in commits.
+
+
+          ---'
+      verification:
+        id: akao:doc::philosophy:verification:v1
+        title: Verification
+        content: 'Every principle here is:
+
+
+          * Part of `PRINCIPLES.md` (generated)
+
+          * Validated by a test in `tests/`
+
+          * Mapped to a rule in `rules/`
+
+          * Linked to violations in `.akao/trace.json`
+
+
+          Akao refuses to function in contradiction to its principles.
+
+
+          ---'
+      usage:
+        id: akao:doc::philosophy:usage:v1
+        title: Usage
+        content: 'Whether a solo developer or an enterprise team:
+
+
+          * You may disable any rule — but not hide it.
+
+          * You may extend principles — but must test and document them.
+
+          * You must not rename the Akao core or claim its principles under another name.
+
+
+          Akao is strict not for ego, but for **precision, traceability...'
+      summary:
+        id: akao:doc::philosophy:summary:v1
+        title: Summary
+        content: '* Rules = principles = code.
+
+          * Tests = measurement = enforcement.
+
+          * Docs = trace = explanation.
+
+
+          If any part is missing, Akao is broken.
+
+
+          > "Akao is not negotiable. Akao is enforced truth."'
+links:
+- akao:doc::architecture:architecture:v1
+- akao:doc::architecture:core-components:v1
+- akao:doc::architecture:security-sandboxing:v1
+- akao:doc::architecture:system-overview:v1
+- akao:doc::plan:build-configuration:v1
+- akao:doc::plan:critical-implementation-details:v1
+- akao:doc::plan:global-rule-identifier-gid-system:v1
+- akao:doc::plan:graph-generation-system:v1
+- akao:doc::plan:implementation-requirements-class-structure:v1
+- akao:doc::plan:interface-consistency-system-cliwebtui:v1
+- akao:doc::plan:layered-architecture-design:v1
+- akao:doc::plan:plan:v1
+- akao:doc::plan:ruleset-system:v1
+- akao:doc::plan:universal-validation-implementation:v1
+- akao:doc::readme:commands:v1
+- akao:doc::readme:core-capabilities:v1
+- akao:doc::readme:cross-platform-support:v1
+- akao:doc::readme:interface-parity-cli-web-tui-api:v1
+- akao:doc::readme:readme:v1
+- akao:doc::readme:structure:v1
+- akao:doc::summary:cli-command-taxonomy:v1
+- akao:doc::summary:directory-structure:v1
+- akao:doc::summary:file-formats-and-structure:v1
+- akao:doc::summary:global-rule-identifier-gid-system:v1
+- akao:doc::summary:implementation-requirements:v1
+- akao:doc::summary:platform-and-language-support:v1
+- akao:doc::summary:quick-start-guide:v1
+- akao:doc::summary:ruleset-system:v1
+- akao:doc::summary:security-sandboxing-architecture:v1
+- akao:doc::summary:summary:v1
+- akao:doc::summary:system-overview:v1

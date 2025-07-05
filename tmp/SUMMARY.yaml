@@ -1,0 +1,400 @@
+id: akao:doc::summary:summary:v1
+version: 1
+language: en
+title: Akao Framework Technical Summary
+description: Technical documentation for Akao Framework Technical Summary
+content:
+  akao-framework-technical-summary:
+    id: akao:doc::summary:akao-framework-technical-summary:v1
+    title: Akao Framework Technical Summary
+    content: '> **Developer Quick Reference**: Complete technical specification for implementing the Akao framework
+
+
+      ## Table of Contents
+
+
+      1. [System Overview](#system-overview)
+
+      2. [Directory Structure](#directory-structure)
+
+      3. [CLI Command Taxonomy](#cli-command-taxonomy)
+
+      4. [Quick Start Guide](#quick-start-guide)
+
+      5. [Global Rule Identifier (GID) System](#global-rule-identifier-gid-system)
+
+      6. [RuleSet System](#ruleset-system)
+
+      7. [File Formats and Structure](#file-formats-and-structure)
+
+      8. [Platform and Langu...'
+    subsections:
+      table-of-contents:
+        id: akao:doc::summary:table-of-contents:v1
+        title: Table of Contents
+        content: '1. [System Overview](#system-overview)
+
+          2. [Directory Structure](#directory-structure)
+
+          3. [CLI Command Taxonomy](#cli-command-taxonomy)
+
+          4. [Quick Start Guide](#quick-start-guide)
+
+          5. [Global Rule Identifier (GID) System](#global-rule-identifier-gid-system)
+
+          6. [RuleSet System](#ruleset-system)
+
+          7. [File...'
+      system-overview:
+        id: akao:doc::summary:system-overview:v1
+        title: System Overview
+        content: "**Core Technology**: C++ (C++17+) with layered architecture for cross-platform, multi-language support \
+          \ \n**Primary Purpose**: Rule-based project structure enforcement, build management, automation, and documentation\
+          \ generation  \n**Architecture Pattern**: Layered separation with interface adapters (C..."
+      directory-structure:
+        id: akao:doc::summary:directory-structure:v1
+        title: Directory Structure
+        content: '### Core Implementation (`src/`)
+
+          ```
+
+          src/
+
+          ├── core/                    # Foundation services
+
+          │   ├── config/             # Configuration management
+
+          │   ├── filesystem/         # Cross-platform file operations
+
+          │   ├── trace/              # Audit logging and trace system
+
+          │   └── plugin/             # ...'
+      cli-command-taxonomy:
+        id: akao:doc::summary:cli-command-taxonomy:v1
+        title: CLI Command Taxonomy
+        content: '### Project Management
+
+          - `akao init [--template=<type>]` - Initialize project with templates
+
+          - `akao feature add/remove/list/info <name>` - Local feature management
+
+          - `akao registry add/list <url>` - External feature registry management
+
+          - `akao install/update/uninstall <feature>` - External feature ...'
+      quick-start-guide:
+        id: akao:doc::summary:quick-start-guide:v1
+        title: Quick Start Guide
+        content: '### Installation
+
+          ```bash'
+  clone-the-repository:
+    id: akao:doc::summary:clone-the-repository:v1
+    title: Clone the repository
+    content: 'git clone https://github.com/akao-framework/akao.git
+
+      cd akao'
+    subsections: {}
+  build-the-framework:
+    id: akao:doc::summary:build-the-framework:v1
+    title: Build the framework
+    content: 'mkdir build && cd build
+
+      cmake ..
+
+      make -j$(nproc)'
+    subsections: {}
+  install-system-wide-optional:
+    id: akao:doc::summary:install-system-wide-optional:v1
+    title: Install system-wide (optional)
+    content: 'sudo make install
+
+      ```
+
+
+      ### Basic Usage
+
+      ```bash'
+    subsections:
+      basic-usage:
+        id: akao:doc::summary:basic-usage:v1
+        title: Basic Usage
+        content: '```bash'
+  initialize-a-new-project:
+    id: akao:doc::summary:initialize-a-new-project:v1
+    title: Initialize a new project
+    content: akao init --template=cpp
+    subsections: {}
+  validate-project-structure:
+    id: akao:doc::summary:validate-project-structure:v1
+    title: Validate project structure
+    content: akao validate
+    subsections: {}
+  build-the-project:
+    id: akao:doc::summary:build-the-project:v1
+    title: Build the project
+    content: akao build --dev
+    subsections: {}
+  generate-documentation:
+    id: akao:doc::summary:generate-documentation:v1
+    title: Generate documentation
+    content: akao docgen
+    subsections: {}
+  run-tests:
+    id: akao:doc::summary:run-tests:v1
+    title: Run tests
+    content: 'akao test
+
+      ```
+
+
+      ### Project Structure Verification
+
+      ```bash'
+    subsections:
+      project-structure-verification:
+        id: akao:doc::summary:project-structure-verification:v1
+        title: Project Structure Verification
+        content: '```bash'
+  check-if-project-follows-akao-principles:
+    id: akao:doc::summary:check-if-project-follows-akao-principles:v1
+    title: Check if project follows Akao principles
+    content: akao validate --ruleset=core
+    subsections: {}
+  view-compliance-report:
+    id: akao:doc::summary:view-compliance-report:v1
+    title: View compliance report
+    content: akao audit
+    subsections: {}
+  generate-project-graph:
+    id: akao:doc::summary:generate-project-graph:v1
+    title: Generate project graph
+    content: "akao graph --type=project --format=svg --output=project.svg\n```\n\n---\n\n## Global Rule Identifier (GID) System\n\
+      \n### Format Specification\n```\nakao:rule::<category>:<name>:v<version>\n```\n\n**Examples**:\n- `akao:rule::cpp:naming:snake_case:v1`\n\
+      - `akao:rule::structure:one_class_per_folder:v1` \n- `akao:rule::testing:coverage_minimum:v2`\n\n> **Philosophy Alignment**:\
+      \ The GID system implements the \"Every rule is traceable\" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\
+      \ This format ensures gl..."
+    subsections:
+      global-rule-identifier-gid-system:
+        id: akao:doc::summary:global-rule-identifier-gid-system:v1
+        title: Global Rule Identifier (GID) System
+        content: "### Format Specification\n```\nakao:rule::<category>:<name>:v<version>\n```\n\n**Examples**:\n- `akao:rule::cpp:naming:snake_case:v1`\n\
+          - `akao:rule::structure:one_class_per_folder:v1` \n- `akao:rule::testing:coverage_minimum:v2`\n\n> **Philosophy\
+          \ Alignment**: The GID system implements the \"Every rule is trace..."
+      ruleset-system:
+        id: akao:doc::summary:ruleset-system:v1
+        title: RuleSet System
+        content: '### Structure and Location
+
+          - **Location**: `.akao/rulesets/` directory
+
+          - **Formats**: YAML or JSON
+
+          - **Inheritance**: Parent RuleSets, includes, excludes resolution
+
+          - **Built-in RuleSets**: core.yaml, cpp.yaml, security.yaml, performance.yaml
+
+
+          ### Example RuleSet Definition
+
+          ```yaml'
+  akaorulesetscppyaml:
+    id: akao:doc::summary:akaorulesetscppyaml:v1
+    title: .akao/rulesets/cpp.yaml
+    content: "name: \"C++ Development RuleSet\"\ndescription: \"Standard C++ development rules\"\nversion: \"1.0\"\nparent:\
+      \ \"core\"\nincludes:\n  - \"akao:rule::cpp:naming:snake_case:v1\"\n  - \"akao:rule::structure:one_class_per_folder:v1\"\
+      \n  - \"akao:rule::testing:coverage_minimum:v2\"\nexcludes:\n  - \"akao:rule::general:line_length:v1\"\nmetadata:\n\
+      \  tags: [\"cpp\", \"development\"]\n  documentation: \"Standard rules for C++ development\"\n```\n\n### RuleSet Operations\n\
+      ```bash\nakao ruleset list                    # List all available RuleS..."
+    subsections:
+      ruleset-operations:
+        id: akao:doc::summary:ruleset-operations:v1
+        title: RuleSet Operations
+        content: '```bash
+
+          akao ruleset list                    # List all available RuleSets
+
+          akao ruleset info cpp                # Show cpp RuleSet details
+
+          akao validate --ruleset=security     # Validate using security RuleSet
+
+          akao audit --ruleset=cpp             # Audit compliance for C++ RuleSet
+
+          ```
+
+
+          ---'
+      file-formats-and-structure:
+        id: akao:doc::summary:file-formats-and-structure:v1
+        title: File Formats and Structure
+        content: "### Rule Files (Multi-format support)\n```json\n// rules/naming.json\n{\n  \"rules\": [\n    {\n      \"\
+          gid\": \"akao:rule::cpp:naming:snake_case:v1\",\n      \"name\": \"Snake Case Naming\",\n      \"description\":\
+          \ \"Variables and functions must use snake_case\",\n      \"category\": \"naming\",\n      \"severity\": \"error\"\
+          ,\n  ..."
+      platform-and-language-support:
+        id: akao:doc::summary:platform-and-language-support:v1
+        title: Platform and Language Support
+        content: '### Supported Operating Systems
+
+          - **Desktop**: Linux (x86_64, ARM64), macOS (x86_64, ARM64), Windows (x86_64)
+
+          - **Mobile**: Android (NDK), iOS (SDK)
+
+          - **Embedded**: WebAssembly, Embedded Linux ARM
+
+          - **Cloud**: Docker Alpine/Ubuntu containers
+
+
+          ### Language Adapters
+
+          - **Primary**: C++ (core implementa...'
+  auto-generated-github-actions-matrix:
+    id: akao:doc::summary:auto-generated-github-actions-matrix:v1
+    title: Auto-generated GitHub Actions matrix
+    content: 'platforms: [ubuntu-latest, ubuntu-arm64, macos-latest, macos-arm64, windows-latest, android-ndk, ios-sdk, wasm32]
+
+      validation: ["akao validate", "akao test", "akao build --dev", "akao build --prod"]
+
+      ```
+
+
+      ---
+
+
+      ## Implementation Requirements
+
+
+      ### Architectural Constraints
+
+      - **One Class Per Folder**: Every `src/` folder contains exactly one class (`.cpp` + `.hpp`)
+
+      - **Corresponding Tests**: Every class has unit test in `tests/unit/<path>/`
+
+      - **Interface Parity**: CLI = Web = TUI = API (identical fun...'
+    subsections:
+      implementation-requirements:
+        id: akao:doc::summary:implementation-requirements:v1
+        title: Implementation Requirements
+        content: '### Architectural Constraints
+
+          - **One Class Per Folder**: Every `src/` folder contains exactly one class (`.cpp` + `.hpp`)
+
+          - **Corresponding Tests**: Every class has unit test in `tests/unit/<path>/`
+
+          - **Interface Parity**: CLI = Web = TUI = API (identical functionality)
+
+          - **Layered Architecture**: ...'
+      security-sandboxing-architecture:
+        id: akao:doc::summary:security-sandboxing-architecture:v1
+        title: Security & Sandboxing Architecture
+        content: '### Feature Security Model
+
+          - **External Feature Sandboxing**: Features from external sources run in controlled environments
+
+          - **Resource Limits**: Memory, CPU, and I/O constraints for feature execution
+
+          - **Network Isolation**: Controlled network access for features
+
+          - **Filesystem Sandboxing**: Limit...'
+      system-dependencies:
+        id: akao:doc::summary:system-dependencies:v1
+        title: System Dependencies
+        content: '### Build Requirements
+
+          - **CMake**: Version 3.15 or higher
+
+          - **Compiler**: GCC 7+, Clang 9+, MSVC 2019+, or equivalent C++17 support
+
+          - **Git**: Version 2.20 or higher for repository management
+
+          - **Make/Ninja**: Build system backend (platform-specific)
+
+
+          ### Runtime Dependencies
+
+          - **Operating System**...'
+  linux:
+    id: akao:doc::summary:linux:v1
+    title: Linux
+    content: "dependencies:\n  - build-essential\n  - cmake\n  - git\n  - pkg-config"
+    subsections: {}
+  macos:
+    id: akao:doc::summary:macos:v1
+    title: macOS
+    content: "dependencies:\n  - xcode-command-line-tools\n  - cmake (via Homebrew)\n  - git"
+    subsections: {}
+  windows:
+    id: akao:doc::summary:windows:v1
+    title: Windows
+    content: "dependencies:\n  - Visual Studio 2019+\n  - CMake\n  - Git for Windows\n```\n\n---\n\n## Performance Specifications\n\
+      \n### Resource Requirements\n- **Memory Usage**: 50-200MB base footprint depending on project size\n- **CPU Usage**:\
+      \ Scales linearly with project complexity\n- **Disk I/O**: Optimized for SSD performance, HDD compatible\n- **Network**:\
+      \ Minimal usage except for external feature downloads\n\n### Performance Benchmarks\n- **Validation Speed**: 1000+ files/second\
+      \ for typical C++ projects\n- **Build Tim..."
+    subsections:
+      performance-specifications:
+        id: akao:doc::summary:performance-specifications:v1
+        title: Performance Specifications
+        content: '### Resource Requirements
+
+          - **Memory Usage**: 50-200MB base footprint depending on project size
+
+          - **CPU Usage**: Scales linearly with project complexity
+
+          - **Disk I/O**: Optimized for SSD performance, HDD compatible
+
+          - **Network**: Minimal usage except for external feature downloads
+
+
+          ### Performance B...'
+      key-technical-specifications:
+        id: akao:doc::summary:key-technical-specifications:v1
+        title: Key Technical Specifications
+        content: '### Build System Details
+
+          - **Development Mode**: Hot reload, fast compilation, debugging symbols, incremental builds
+
+          - **Production Mode**: Aggressive optimization, reproducible hashes, static linking, minimal size
+
+          - **Cross-Platform**: CMake-based build system supporting all target platforms
+
+          - **De...'
+      reference-documents:
+        id: akao:doc::summary:reference-documents:v1
+        title: Reference Documents
+        content: "### Primary Documentation (Cross-Referenced)\n- **[PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs)**: Core\
+          \ beliefs and principles that drive all technical decisions\n  - *Referenced in*: All technical specifications implement\
+          \ philosophical doctrines\n  - *Key Principles*: \"Every rule is traceable\", \"CLI =..."
+links:
+- akao:doc::architecture:architecture:v1
+- akao:doc::architecture:core-components:v1
+- akao:doc::architecture:security-sandboxing:v1
+- akao:doc::architecture:system-overview:v1
+- akao:doc::philosophy:core-beliefs:v1
+- akao:doc::philosophy:philosophy:v1
+- akao:doc::philosophy:rules-as-doctrine:v1
+- akao:doc::plan:build-configuration:v1
+- akao:doc::plan:complete-project-structure:v1
+- akao:doc::plan:critical-implementation-details:v1
+- akao:doc::plan:executive-summary:v1
+- akao:doc::plan:global-rule-identifier-gid-system:v1
+- akao:doc::plan:graph-generation-system:v1
+- akao:doc::plan:implementation-requirements-class-structure:v1
+- akao:doc::plan:interface-parity-enforcement:v1
+- akao:doc::plan:layered-architecture-design:v1
+- akao:doc::plan:plan:v1
+- akao:doc::plan:ruleset-system:v1
+- akao:doc::readme:commands:v1
+- akao:doc::readme:core-capabilities:v1
+- akao:doc::readme:cross-platform-support:v1
+- akao:doc::readme:interface-parity-cli-web-tui-api:v1
+- akao:doc::readme:overview:v1
+- akao:doc::readme:readme:v1
+- akao:doc::readme:use-cases:v1
+- akao:doc::summary:cli-command-taxonomy:v1
+- akao:doc::summary:file-formats-and-structure:v1
+- akao:doc::summary:global-rule-identifier-gid-system:v1
+- akao:doc::summary:platform-and-language-support:v1
+- akao:doc::summary:quick-start-guide:v1
+- akao:doc::summary:ruleset-system:v1
+- akao:doc::summary:security-sandboxing-architecture:v1
+- akao:doc::summary:summary:v1

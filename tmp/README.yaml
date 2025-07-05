@@ -1,0 +1,332 @@
+id: akao:doc::readme:readme:v1
+version: 1
+language: en
+title: Akao Framework
+description: Technical documentation for Akao Framework
+content:
+  akao-framework:
+    id: akao:doc::readme:akao-framework:v1
+    title: Akao Framework
+    content: '> **A unified, rule-based framework written in C++ for structuring, building, testing, and documenting any software
+      project.**
+
+
+      ## Table of Contents
+
+
+      1. [Overview](#overview)
+
+      2. [Core Capabilities](#core-capabilities)
+
+      3. [Philosophy Highlights](#philosophy-highlights)
+
+      4. [Use Cases](#use-cases)
+
+      5. [Structure](#structure)
+
+      6. [Commands](#commands)
+
+      7. [Plugin Targets (Examples)](#plugin-targets-examples)
+
+      8. [Licensing & Attribution](#licensing-attribution)
+
+      9. [Interface Parity (CLI = Web = TUI = AP...'
+    subsections:
+      table-of-contents:
+        id: akao:doc::readme:table-of-contents:v1
+        title: Table of Contents
+        content: '1. [Overview](#overview)
+
+          2. [Core Capabilities](#core-capabilities)
+
+          3. [Philosophy Highlights](#philosophy-highlights)
+
+          4. [Use Cases](#use-cases)
+
+          5. [Structure](#structure)
+
+          6. [Commands](#commands)
+
+          7. [Plugin Targets (Examples)](#plugin-targets-examples)
+
+          8. [Licensing & Attribution](#licensing-attri...'
+      overview:
+        id: akao:doc::readme:overview:v1
+        title: Overview
+        content: Akao is not a library — it is a **philosophy, architecture, and enforcement system** encoded in code. It
+          uses declarative rules, written in JSON, YAML, or TOML, to validate structure, enforce best practices, automate
+          builds, and generate documentation. Each rule has a Global Rule Identifier (GID) in...
+      core-capabilities:
+        id: akao:doc::readme:core-capabilities:v1
+        title: Core Capabilities
+        content: "✅ Universal validation system  \n✅ Rule-driven validation system  \n✅ Build engine for dev/prod (hot reload,\
+          \ optimized)  \n✅ Auto-generated documentation and principle tracing  \n✅ Automated CI/CD pipeline generation  \n\
+          ✅ Audit logs, coverage, enforcement trace  \n✅ Unified CLI + Web UI + TUI  \n✅ Plugin s..."
+      philosophy-highlights:
+        id: akao:doc::readme:philosophy-highlights:v1
+        title: Philosophy Highlights
+        content: '* Rules are the law. They govern everything.
+
+          * All behavior is deterministic and reproducible.
+
+          * Documentation is generated, never hand-written.
+
+          * Every test, validation, and build must be traceable.
+
+          * Structure is enforced, not suggested.
+
+          * Every class = 1 folder, every folder = 1 rule scope.
+
+          * All...'
+      use-cases:
+        id: akao:doc::readme:use-cases:v1
+        title: Use Cases
+        content: "> **Philosophy Foundation**: These use cases demonstrate the practical application of principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs),\
+          \ particularly \"Universal validation\" and \"Structure is enforced\".\n> \n> **Technical Implementation**: The\
+          \ architecture enabling these use cases is detail..."
+      structure:
+        id: akao:doc::readme:structure:v1
+        title: Structure
+        content: "> **Philosophy Foundation**: This structure implements the \"One class per folder\", \"Only one truth\"\
+          , and \"No external implicit behavior\" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\n> \n> **Architecture\
+          \ Implementation**: This structure is architected according to the layered design ..."
+      commands:
+        id: akao:doc::readme:commands:v1
+        title: Commands
+        content: "> **Philosophy Foundation**: These commands implement the \"CLI = Web = TUI\", \"Every rule is traceable\"\
+          , and \"Every action is measurable\" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\n> \n> **Architecture\
+          \ Implementation**: Command execution is handled through the CLI & Interface Syste..."
+  project-management:
+    id: akao:doc::readme:project-management:v1
+    title: Project Management
+    content: 'akao init                     # Initialize new Akao project with templates
+
+      akao init --template=cpp      # Initialize with specific language template
+
+      akao init --template=web      # Initialize web project template'
+    subsections: {}
+  feature-management:
+    id: akao:doc::readme:feature-management:v1
+    title: Feature Management
+    content: 'akao feature add <name>       # Add new feature to project
+
+      akao feature remove <name>    # Remove feature from project
+
+      akao feature list             # List all features in project
+
+      akao feature info <name>      # Show feature details and dependencies'
+    subsections: {}
+  external-feature-management:
+    id: akao:doc::readme:external-feature-management:v1
+    title: External Feature Management
+    content: 'akao registry add <url>       # Add external feature registry
+
+      akao registry list            # List available registries
+
+      akao install <feature>        # Install feature from registry
+
+      akao update <feature>         # Update installed feature
+
+      akao uninstall <feature>      # Remove installed feature'
+    subsections: {}
+  core-operations:
+    id: akao:doc::readme:core-operations:v1
+    title: Core Operations
+    content: 'akao validate                 # Enforce structure and rules
+
+      akao validate --gid=<gid>     # Validate specific rule by Global Rule Identifier
+
+      akao validate --category=<cat> # Validate all rules in a category
+
+      akao test                     # Run unit & principle tests
+
+      akao build --dev              # Start build in hot-reload mode
+
+      akao build --prod             # Production build with hashes
+
+      akao docgen                   # Generate RULES.md, README.md, etc
+
+      akao audit                    # Print audit ...'
+    subsections: {}
+  rule-management-gid-based:
+    id: akao:doc::readme:rule-management-gid-based:v1
+    title: Rule Management (GID-based)
+    content: 'akao rule list                # List all rules with their categories
+
+      akao rule list --format=gid   # List all rules showing their GIDs
+
+      akao rule info --gid=<gid>    # Show detailed rule information by GID
+
+      akao rule disable --gid=<gid> --reason="<reason>" # Disable rule (tracked)
+
+      akao rule enable --gid=<gid>  # Re-enable previously disabled rule'
+    subsections: {}
+  ruleset-management:
+    id: akao:doc::readme:ruleset-management:v1
+    title: RuleSet Management
+    content: 'akao ruleset list             # List all available RuleSets
+
+      akao ruleset info <name>      # Show RuleSet details and inheritance
+
+      akao ruleset validate <name>  # Validate RuleSet definition and dependencies
+
+      akao ruleset create <name>    # Create new RuleSet interactively'
+    subsections: {}
+  ruleset-based-operations:
+    id: akao:doc::readme:ruleset-based-operations:v1
+    title: RuleSet-based Operations
+    content: 'akao validate --ruleset=<name> # Validate using specific RuleSet
+
+      akao audit --ruleset=<name>   # Audit compliance for specific RuleSet
+
+      akao docgen --ruleset=<name>  # Generate docs for specific RuleSet rules'
+    subsections: {}
+  graph-generation:
+    id: akao:doc::readme:graph-generation:v1
+    title: Graph Generation
+    content: 'akao graph --type=rules --format=svg --output=rules.svg        # Rule dependency graph
+
+      akao graph --type=rulesets --format=dot --output=rulesets.dot  # RuleSet relationships
+
+      akao graph --type=project --format=json                        # Project structure (stdout)
+
+      akao graph --type=features --format=png --output=features.png  # Feature dependencies
+
+      akao graph --type=validation --format=svg                      # Validation flow graph
+
+      akao graph --type=audit --format=dot --ruleset=security      ...'
+    subsections: {}
+  automation-cicd:
+    id: akao:doc::readme:automation-cicd:v1
+    title: Automation & CI/CD
+    content: 'akao pipeline generate        # Generate CI/CD pipeline configuration
+
+      akao pipeline validate       # Validate pipeline configuration
+
+      akao workflow create          # Create GitHub Actions workflows
+
+      akao workflow update          # Update existing workflows
+
+      akao deploy configure        # Configure deployment settings
+
+      ```
+
+
+      ---
+
+
+      ## Plugin Targets (Examples)
+
+
+      * wasm / web-assembly builds
+
+      * js bindings (for Node.js)
+
+      * android (via NDK)
+
+      * custom doc extractors or linters
+
+
+      Each plugin is declared in `plu...'
+    subsections:
+      plugin-targets-examples:
+        id: akao:doc::readme:plugin-targets-examples:v1
+        title: Plugin Targets (Examples)
+        content: '* wasm / web-assembly builds
+
+          * js bindings (for Node.js)
+
+          * android (via NDK)
+
+          * custom doc extractors or linters
+
+
+          Each plugin is declared in `plugins/*.json` with:
+
+
+          * inputs, outputs
+
+          * language scope
+
+          * enforcement flags
+
+          * optional trace hooks
+
+
+          ---'
+      licensing-attribution:
+        id: akao:doc::readme:licensing-attribution:v1
+        title: Licensing & Attribution
+        content: '* Akao core is MIT-licensed
+
+          * The name "Akao" is trademarked by Son Nguyen
+
+          * You may fork, use, and remix the system, but cannot use the name "Akao" without permission
+
+
+          ---'
+      interface-parity-cli-web-tui-api:
+        id: akao:doc::readme:interface-parity-cli-web-tui-api:v1
+        title: Interface Parity (CLI = Web = TUI = API)
+        content: 'Akao provides **identical functionality** across all user interfaces:
+
+
+          ### Command Line Interface (CLI)
+
+          ```bash
+
+          akao validate --gid="akao:rule::cpp:naming:snake_case:v1"
+
+          akao build --dev --watch
+
+          akao graph --type=rules --format=svg
+
+          ```
+
+
+          ### Web User Interface
+
+          - Browser-based interface at `http://loc...'
+      cross-platform-support:
+        id: akao:doc::readme:cross-platform-support:v1
+        title: Cross-Platform Support
+        content: 'Akao runs on **any language, any OS, any runtime**:
+
+
+          ### Supported Platforms
+
+          - **Desktop**: Linux (x86_64, ARM64), macOS (Intel, Apple Silicon), Windows
+
+          - **Mobile**: Android (NDK), iOS (Framework)
+
+          - **Web**: WebAssembly (WASM) for browser execution
+
+          - **Embedded**: Minimal footprint for constrained ...'
+      status:
+        id: akao:doc::readme:status:v1
+        title: Status
+        content: "> **Philosophy Foundation**: This README implements the \"Documentation is code\" and \"Auto-update all\
+          \ documentation\" principles from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs).\n> \n> **Architecture Validation**:\
+          \ All features described here are architecturally specified in [ARCHITECTURE.md](./ARCHIT..."
+links:
+- akao:doc::architecture:architecture:v1
+- akao:doc::architecture:core-components:v1
+- akao:doc::architecture:design-principles:v1
+- akao:doc::architecture:directory-structure:v1
+- akao:doc::architecture:system-overview:v1
+- akao:doc::philosophy:core-beliefs:v1
+- akao:doc::philosophy:philosophy:v1
+- akao:doc::philosophy:rules-as-doctrine:v1
+- akao:doc::plan:complete-project-structure:v1
+- akao:doc::plan:executive-summary:v1
+- akao:doc::plan:global-rule-identifier-gid-system:v1
+- akao:doc::plan:implementation-requirements-class-structure:v1
+- akao:doc::plan:interface-parity-enforcement:v1
+- akao:doc::plan:plan:v1
+- akao:doc::plan:ruleset-system:v1
+- akao:doc::summary:cli-command-taxonomy:v1
+- akao:doc::summary:directory-structure:v1
+- akao:doc::summary:implementation-requirements:v1
+- akao:doc::summary:reference-documents:v1
+- akao:doc::summary:summary:v1
+- akao:doc::summary:system-overview:v1

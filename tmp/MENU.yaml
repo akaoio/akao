@@ -1,0 +1,275 @@
+id: akao:doc::menu:menu:v1
+version: 1
+language: en
+title: AKAO Documentation Menu
+description: Technical documentation for AKAO Documentation Menu
+content:
+  akao-documentation-menu:
+    id: akao:doc::menu:akao-documentation-menu:v1
+    title: AKAO Documentation Menu
+    content: '## 📋 Project Documentation Overview
+
+
+      This document serves as the main navigation hub for all AKAO project documentation. Each section provides direct access
+      to key topics and implementation details.
+
+
+      ## 🧠 PHILOSOPHY.md - Project Philosophy
+
+
+      **Core principles, inspirations, and philosophical foundations of the AKAO system**
+
+
+      ### Philosophical Foundations
+
+      - [Core Beliefs](./PHILOSOPHY.md#core-beliefs) - Fundamental principles driving the project
+
+      - [Inspirations](./PHILOSOPHY.md#inspirations) - His...'
+    subsections:
+      project-documentation-overview:
+        id: akao:doc::menu:project-documentation-overview:v1
+        title: 📋 Project Documentation Overview
+        content: This document serves as the main navigation hub for all AKAO project documentation. Each section provides
+          direct access to key topics and implementation details.
+      philosophymd-project-philosophy:
+        id: akao:doc::menu:philosophymd-project-philosophy:v1
+        title: 🧠 PHILOSOPHY.md - Project Philosophy
+        content: '**Core principles, inspirations, and philosophical foundations of the AKAO system**
+
+
+          ### Philosophical Foundations
+
+          - [Core Beliefs](./PHILOSOPHY.md#core-beliefs) - Fundamental principles driving the project
+
+          - [Inspirations](./PHILOSOPHY.md#inspirations) - Historical and theoretical influences
+
+          - [Rul...'
+      readmemd-project-introduction:
+        id: akao:doc::menu:readmemd-project-introduction:v1
+        title: 📖 README.md - Project Introduction
+        content: '**Main project documentation with overview, capabilities, and getting started information**
+
+
+          ### Project Overview
+
+          - [Overview](./README.md#overview) - What is AKAO?
+
+          - [Core Capabilities](./README.md#core-capabilities) - Key system features
+
+          - [Philosophy Highlights](./README.md#philosophy-highlights)...'
+      architecturemd-system-architecture:
+        id: akao:doc::menu:architecturemd-system-architecture:v1
+        title: 🏗️ ARCHITECTURE.md - System Architecture
+        content: '**Detailed technical architecture and system design documentation**
+
+
+          ### Core Architecture Components
+
+          - [System Overview](./ARCHITECTURE.md#system-overview) - High-level system architecture
+
+          - [Core Components](./ARCHITECTURE.md#core-components) - Essential system modules
+
+          - [Directory Structure](./AR...'
+      planmd-complete-implementation-plan:
+        id: akao:doc::menu:planmd-complete-implementation-plan:v1
+        title: 📝 PLAN.md - Complete Implementation Plan
+        content: '**Comprehensive project implementation roadmap with detailed technical specifications**
+
+
+          ### Core Planning Sections
+
+          - [Executive Summary](./PLAN.md#executive-summary) - Project overview and key objectives
+
+          - [Complete Project Structure](./PLAN.md#complete-project-structure) - Full directory hierarchy...'
+      summarymd-technical-summary:
+        id: akao:doc::menu:summarymd-technical-summary:v1
+        title: 📊 SUMMARY.md - Technical Summary
+        content: "**Comprehensive technical summary with quick reference information**\n\n### System Overview\n- [System Overview](./SUMMARY.md#system-overview)\
+          \ - Complete system description\n- [Directory Structure](./SUMMARY.md#directory-structure) - Project layout reference\n\
+          \  - [Core Implementation (`src/`)](./SUMMARY...."
+      quick-navigation:
+        id: akao:doc::menu:quick-navigation:v1
+        title: 🚀 Quick Navigation
+        content: '- **Understanding the Vision?** Start with [core beliefs](./PHILOSOPHY.md#core-beliefs) for fundamental
+          principles
+
+          - **New to AKAO?** Continue with [project overview](./README.md#overview) for framework introduction
+
+          - **Technical Architecture?** Study [system components](./ARCHITECTURE.md#core-compo...'
+      documentation-flow:
+        id: akao:doc::menu:documentation-flow:v1
+        title: 📚 Documentation Flow
+        content: "```\n\U0001F9E0 Philosophy → \U0001F4D6 Overview → \U0001F3D7️ Architecture → \U0001F4DD Planning → \U0001F4CA\
+          \ Implementation\n   (Why?)        (What?)       (How?)         (When?)      (Reference)\n```"
+      documentation-status:
+        id: akao:doc::menu:documentation-status:v1
+        title: 📋 Documentation Status
+        content: '| Document | Status | Last Updated | Primary Focus |
+
+          |----------|---------|--------------|---------------|
+
+          | PHILOSOPHY.md | ✅ Complete | Current | Core Principles & Vision |
+
+          | README.md | ✅ Complete | Current | Project Introduction |
+
+          | ARCHITECTURE.md | ✅ Complete | Current | System Design |
+
+          | PLAN...'
+links:
+- akao:doc::architecture:architecture:v1
+- akao:doc::architecture:build-flow:v1
+- akao:doc::architecture:configuration:v1
+- akao:doc::architecture:core-components:v1
+- akao:doc::architecture:data-flow:v1
+- akao:doc::architecture:design-principles:v1
+- akao:doc::architecture:directory-structure:v1
+- akao:doc::architecture:documentation-flow:v1
+- akao:doc::architecture:feature-management-flow:v1
+- akao:doc::architecture:integration-tests:v1
+- akao:doc::architecture:performance-considerations:v1
+- akao:doc::architecture:plugin-architecture:v1
+- akao:doc::architecture:principle-tests:v1
+- akao:doc::architecture:project-initialization-flow:v1
+- akao:doc::architecture:security-sandboxing:v1
+- akao:doc::architecture:system-overview:v1
+- akao:doc::architecture:testing-strategy:v1
+- akao:doc::architecture:unit-tests:v1
+- akao:doc::architecture:validation-flow:v1
+- akao:doc::philosophy:core-beliefs:v1
+- akao:doc::philosophy:inspirations:v1
+- akao:doc::philosophy:philosophy:v1
+- akao:doc::philosophy:rules-as-doctrine:v1
+- akao:doc::philosophy:summary:v1
+- akao:doc::philosophy:usage:v1
+- akao:doc::philosophy:verification:v1
+- akao:doc::plan:automation-cicd-integration:v1
+- akao:doc::plan:automation-cicd-system:v1
+- akao:doc::plan:build-configuration:v1
+- akao:doc::plan:build-system-architecture:v1
+- akao:doc::plan:class-structure-organization:v1
+- akao:doc::plan:cli-command-specification:v1
+- akao:doc::plan:cli-integration-for-graph-generation:v1
+- akao:doc::plan:cli-integration-for-rulesets:v1
+- akao:doc::plan:cli-integration-with-gid-support:v1
+- akao:doc::plan:complete-project-structure:v1
+- akao:doc::plan:component-integration-map:v1
+- akao:doc::plan:core-architecture-principles:v1
+- akao:doc::plan:core-implementation-strategy:v1
+- akao:doc::plan:core-system-dependencies:v1
+- akao:doc::plan:critical-implementation-details:v1
+- akao:doc::plan:cross-document-consistency:v1
+- akao:doc::plan:cross-platform-cicd-matrix:v1
+- akao:doc::plan:data-flow-architecture:v1
+- akao:doc::plan:documentation-generation-system:v1
+- akao:doc::plan:essential-classes-for-implementation:v1
+- akao:doc::plan:executive-summary:v1
+- akao:doc::plan:feature-management-system:v1
+- akao:doc::plan:final-validation-checklist:v1
+- akao:doc::plan:gid-based-traceability-implementation:v1
+- akao:doc::plan:gid-format-specification:v1
+- akao:doc::plan:gid-integration-architecture:v1
+- akao:doc::plan:global-rule-identifier-gid-system:v1
+- akao:doc::plan:graph-architecture:v1
+- akao:doc::plan:graph-generation-implementation:v1
+- akao:doc::plan:graph-generation-system:v1
+- akao:doc::plan:graph-integration-points:v1
+- akao:doc::plan:implementation-architecture:v1
+- akao:doc::plan:implementation-phases:v1
+- akao:doc::plan:implementation-requirements-class-structure:v1
+- akao:doc::plan:interface-consistency-system-cliwebtui:v1
+- akao:doc::plan:interface-parity-enforcement:v1
+- akao:doc::plan:layered-architecture-design:v1
+- akao:doc::plan:layered-architecture-implementation:v1
+- akao:doc::plan:multi-format-rule-support:v1
+- akao:doc::plan:performance-requirements:v1
+- akao:doc::plan:phase-1-core-framework-foundation:v1
+- akao:doc::plan:phase-2-universal-validation-principle-testing:v1
+- akao:doc::plan:phase-3-project-management-templates:v1
+- akao:doc::plan:phase-4-build-system-documentation:v1
+- akao:doc::plan:phase-5-external-feature-management:v1
+- akao:doc::plan:phase-6-automation-system-cicd:v1
+- akao:doc::plan:phase-7-interface-parity-multi-language-support:v1
+- akao:doc::plan:phase-8-metrics-compliance-system:v1
+- akao:doc::plan:phase-9-advanced-features-extensibility:v1
+- akao:doc::plan:philosophical-principle-implementation:v1
+- akao:doc::plan:plan:v1
+- akao:doc::plan:quality-requirements:v1
+- akao:doc::plan:rule-registry-with-gid-management:v1
+- akao:doc::plan:ruleset-architecture:v1
+- akao:doc::plan:ruleset-definition-format:v1
+- akao:doc::plan:ruleset-inheritance-and-resolution:v1
+- akao:doc::plan:ruleset-system-implementation:v1
+- akao:doc::plan:ruleset-system:v1
+- akao:doc::plan:security-requirements:v1
+- akao:doc::plan:success-criteria-validation:v1
+- akao:doc::plan:technical-implementation-completeness:v1
+- akao:doc::plan:universal-validation-implementation:v1
+- akao:doc::readme:command-line-interface-cli:v1
+- akao:doc::readme:commands:v1
+- akao:doc::readme:core-capabilities:v1
+- akao:doc::readme:cross-platform-support:v1
+- akao:doc::readme:interface-parity-cli-web-tui-api:v1
+- akao:doc::readme:language-support:v1
+- akao:doc::readme:licensing-attribution:v1
+- akao:doc::readme:overview:v1
+- akao:doc::readme:philosophy-highlights:v1
+- akao:doc::readme:plugin-targets-examples:v1
+- akao:doc::readme:readme:v1
+- akao:doc::readme:rest-api:v1
+- akao:doc::readme:runtime-environments:v1
+- akao:doc::readme:status:v1
+- akao:doc::readme:structure:v1
+- akao:doc::readme:supported-platforms:v1
+- akao:doc::readme:text-user-interface-tui:v1
+- akao:doc::readme:use-cases:v1
+- akao:doc::readme:web-user-interface:v1
+- akao:doc::summary:audit-output-files:v1
+- akao:doc::summary:basic-usage:v1
+- akao:doc::summary:build-requirements:v1
+- akao:doc::summary:build-system-details:v1
+- akao:doc::summary:cli-command-taxonomy:v1
+- akao:doc::summary:code-organization-rules:v1
+- akao:doc::summary:configuration-files:v1
+- akao:doc::summary:core-implementation-src:v1
+- akao:doc::summary:core-operations:v1
+- akao:doc::summary:development-dependencies:v1
+- akao:doc::summary:directory-structure:v1
+- akao:doc::summary:example-ruleset-definition:v1
+- akao:doc::summary:feature-security-model:v1
+- akao:doc::summary:file-formats-and-structure:v1
+- akao:doc::summary:format-specification:v1
+- akao:doc::summary:gid-based-cli-usage:v1
+- akao:doc::summary:global-rule-identifier-gid-system:v1
+- akao:doc::summary:graph-generation-capabilities:v1
+- akao:doc::summary:graph-generation:v1
+- akao:doc::summary:implementation-requirements:v1
+- akao:doc::summary:installation:v1
+- akao:doc::summary:integration-points:v1
+- akao:doc::summary:interface-parity-technical-details:v1
+- akao:doc::summary:key-technical-specifications:v1
+- akao:doc::summary:language-adapters:v1
+- akao:doc::summary:performance-benchmarks:v1
+- akao:doc::summary:performance-specifications:v1
+- akao:doc::summary:platform-and-language-support:v1
+- akao:doc::summary:platform-specific-dependencies:v1
+- akao:doc::summary:project-management:v1
+- akao:doc::summary:project-runtime-akao:v1
+- akao:doc::summary:project-structure-verification:v1
+- akao:doc::summary:quick-start-guide:v1
+- akao:doc::summary:reference-documents:v1
+- akao:doc::summary:resource-requirements:v1
+- akao:doc::summary:rule-engine-specifications:v1
+- akao:doc::summary:rule-files-multi-format-support:v1
+- akao:doc::summary:rule-management-gid-based:v1
+- akao:doc::summary:ruleset-management:v1
+- akao:doc::summary:ruleset-operations:v1
+- akao:doc::summary:ruleset-system:v1
+- akao:doc::summary:runtime-dependencies:v1
+- akao:doc::summary:scalability-limits:v1
+- akao:doc::summary:security-sandboxing-architecture:v1
+- akao:doc::summary:security-validation-rules:v1
+- akao:doc::summary:structure-and-location:v1
+- akao:doc::summary:summary:v1
+- akao:doc::summary:supported-operating-systems:v1
+- akao:doc::summary:system-dependencies:v1
+- akao:doc::summary:system-overview:v1

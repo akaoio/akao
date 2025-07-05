@@ -1,0 +1,213 @@
+id: akao:doc::architecture:architecture:v1
+version: 1
+language: en
+title: Akao Architecture
+description: Technical documentation for Akao Architecture
+content:
+  akao-architecture:
+    id: akao:doc::architecture:akao-architecture:v1
+    title: Akao Architecture
+    content: '> **Technical architecture and system design for the Akao framework**
+
+
+      ## Table of Contents
+
+
+      1. [System Overview](#system-overview)
+
+      2. [Core Components](#core-components)
+
+      3. [Directory Structure](#directory-structure)
+
+      4. [Data Flow](#data-flow)
+
+      5. [Testing Strategy](#testing-strategy)
+
+      6. [Plugin Architecture](#plugin-architecture)
+
+      7. [Security & Sandboxing](#security-sandboxing)
+
+      8. [Performance Considerations](#performance-considerations)
+
+      9. [Configuration](#configuration)
+
+      10. [Design Principles...'
+    subsections:
+      table-of-contents:
+        id: akao:doc::architecture:table-of-contents:v1
+        title: Table of Contents
+        content: '1. [System Overview](#system-overview)
+
+          2. [Core Components](#core-components)
+
+          3. [Directory Structure](#directory-structure)
+
+          4. [Data Flow](#data-flow)
+
+          5. [Testing Strategy](#testing-strategy)
+
+          6. [Plugin Architecture](#plugin-architecture)
+
+          7. [Security & Sandboxing](#security-sandboxing)
+
+          8. [Perform...'
+      system-overview:
+        id: akao:doc::architecture:system-overview:v1
+        title: System Overview
+        content: 'Akao is built as a modular C++ framework with **strict layered architecture** supporting any language, any
+          OS, any runtime:
+
+
+          > **Philosophy Alignment**: This architecture implements the "Observable, explainable, deterministic" principle
+          from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs) and the "CLI...'
+      core-components:
+        id: akao:doc::architecture:core-components:v1
+        title: Core Components
+        content: 'The Akao framework consists of **9 major subsystems** implemented with layered architecture for cross-platform
+          and multi-language support:
+
+
+          > **Philosophy Foundation**: Each subsystem implements the "One class per folder" principle from [PHILOSOPHY.md](./PHILOSOPHY.md#core-beliefs)
+          and contributes t...'
+      directory-structure:
+        id: akao:doc::architecture:directory-structure:v1
+        title: Directory Structure
+        content: '```
+
+          akao/
+
+          ├── .akao/                    # Framework configuration
+
+          │   ├── config.json          # Main configuration
+
+          │   ├── pipeline.yaml        # CI/CD pipeline configuration
+
+          │   ├── profiles/             # Language-specific profiles
+
+          │   ├── features/             # Installed features metadata
+
+          │   │...'
+      data-flow:
+        id: akao:doc::architecture:data-flow:v1
+        title: Data Flow
+        content: '### Validation Flow
+
+          ```
+
+          1. Load rules from rules/ with GID validation
+
+          2. Parse project structure
+
+          3. Apply rules to each scope with GID tracking
+
+          4. Generate violation reports with GID references
+
+          5. Update trace.json and audit.json with GID-based results
+
+          ```
+
+
+          ### Build Flow
+
+          ```
+
+          1. Read build profile (...'
+      testing-strategy:
+        id: akao:doc::architecture:testing-strategy:v1
+        title: Testing Strategy
+        content: '### Unit Tests
+
+          - Each class in `src/` has corresponding test in `tests/unit/`
+
+          - Mock external dependencies
+
+          - Test isolated functionality
+
+
+          ### Integration Tests
+
+          - Test component interactions
+
+          - Validate CLI command flows
+
+          - Test rule engine with real projects
+
+
+          ### Principle Tests
+
+          - Validate that Akao f...'
+      plugin-architecture:
+        id: akao:doc::architecture:plugin-architecture:v1
+        title: Plugin Architecture
+        content: "Plugins extend Akao functionality through:\n\n```cpp\nclass AkaoPlugin {\npublic:\n    virtual std::string\
+          \ name() const = 0;\n    virtual bool validate(const Project& project) = 0;\n    virtual BuildResult build(const\
+          \ BuildConfig& config) = 0;\n    virtual void configure(const PluginConfig& config) = 0;\n};\n..."
+      security-sandboxing:
+        id: akao:doc::architecture:security-sandboxing:v1
+        title: Security & Sandboxing
+        content: '- All file operations go through controlled API
+
+          - Build processes run in isolated environments
+
+          - Plugin execution is sandboxed
+
+          - Network access restricted during builds
+
+
+          ---'
+      performance-considerations:
+        id: akao:doc::architecture:performance-considerations:v1
+        title: Performance Considerations
+        content: '- Rule validation uses cached results when possible
+
+          - Build dependency graph optimized for parallel execution
+
+          - File watching uses efficient OS-specific mechanisms
+
+          - Documentation generation is incremental
+
+
+          ---'
+      configuration:
+        id: akao:doc::architecture:configuration:v1
+        title: Configuration
+        content: "Main configuration in `.akao/config.json`:\n```json\n{\n  \"version\": \"1.0.0\",\n  \"project\": {\n  \
+          \  \"name\": \"my-project\",\n    \"type\": \"cpp\",\n    \"template\": \"library\",\n    \"features\": [\"core\"\
+          , \"testing\", \"docs\"]\n  },\n  \"language_profiles\": [\"cpp\", \"js\"],\n  \"enabled_rules\": [\"*\"],\n  \"\
+          disabled_rules\": [],\n ..."
+      design-principles:
+        id: akao:doc::architecture:design-principles:v1
+        title: Design Principles
+        content: '1. **Modularity**: Each component can be tested and replaced independently
+
+          2. **Extensibility**: Plugin system allows custom functionality
+
+          3. **Performance**: Designed for large codebases with efficient caching
+
+          4. **Reliability**: Comprehensive error handling and recovery
+
+          5. **Transparency**: All op...'
+links:
+- akao:doc::philosophy:core-beliefs:v1
+- akao:doc::philosophy:philosophy:v1
+- akao:doc::plan:build-configuration:v1
+- akao:doc::plan:core-architecture-principles:v1
+- akao:doc::plan:graph-generation-system:v1
+- akao:doc::plan:implementation-requirements-class-structure:v1
+- akao:doc::plan:interface-parity-enforcement:v1
+- akao:doc::plan:layered-architecture-design:v1
+- akao:doc::plan:plan:v1
+- akao:doc::plan:ruleset-system:v1
+- akao:doc::readme:commands:v1
+- akao:doc::readme:core-capabilities:v1
+- akao:doc::readme:cross-platform-support:v1
+- akao:doc::readme:interface-parity-cli-web-tui-api:v1
+- akao:doc::readme:readme:v1
+- akao:doc::summary:cli-command-taxonomy:v1
+- akao:doc::summary:directory-structure:v1
+- akao:doc::summary:file-formats-and-structure:v1
+- akao:doc::summary:global-rule-identifier-gid-system:v1
+- akao:doc::summary:implementation-requirements:v1
+- akao:doc::summary:quick-start-guide:v1
+- akao:doc::summary:ruleset-system:v1
+- akao:doc::summary:summary:v1
