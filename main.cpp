@@ -61,8 +61,40 @@ void printVersion() {
     std::cout << "Universal Validation and Enforcement Framework\n";
     std::cout << "Built with C++ Standard Library and native YAML parsing\n";
     std::cout << "Copyright (c) 2024 Akao Project\n";
-    std::cout << "\nPhilosophies: " << std::filesystem::exists("philosophies") << " loaded\n";
-    std::cout << "Rules: " << std::filesystem::exists("rules") << " loaded\n";
+    
+    // Count actual loaded rules and philosophies
+    int philosophy_count = 0;
+    int rule_count = 0;
+    
+    try {
+        // Count philosophy files
+        if (std::filesystem::exists("philosophies")) {
+            for (const auto& entry : std::filesystem::recursive_directory_iterator("philosophies")) {
+                if (entry.is_regular_file() && entry.path().extension() == ".yaml") {
+                    philosophy_count++;
+                }
+            }
+        }
+        
+        // Count rule files (excluding index files)
+        if (std::filesystem::exists("rules")) {
+            for (const auto& entry : std::filesystem::recursive_directory_iterator("rules")) {
+                if (entry.is_regular_file() && entry.path().extension() == ".yaml") {
+                    std::string filename = entry.path().filename().string();
+                    if (filename != "index.yaml") {
+                        rule_count++;
+                    }
+                }
+            }
+        }
+    } catch (const std::exception& e) {
+        // Fallback to directory existence check if counting fails
+        philosophy_count = std::filesystem::exists("philosophies") ? -1 : 0;
+        rule_count = std::filesystem::exists("rules") ? -1 : 0;
+    }
+    
+    std::cout << "\nPhilosophies: " << philosophy_count << " loaded\n";
+    std::cout << "Rules: " << rule_count << " loaded\n";
 }
 
 int main(int argc, char* argv[]) {
