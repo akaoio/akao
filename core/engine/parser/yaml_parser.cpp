@@ -65,6 +65,27 @@ std::shared_ptr<YamlNode> YamlParser::parseDocument() {
         skipToNextLine();
     }
     
+    // BUGFIX: Skip comments and empty lines after document marker before determining content type
+    size_t saved_pos = pos_;
+    while (!isAtEnd()) {
+        std::string line = readLine();
+        if (isEmptyLine(line) || isCommentLine(line)) {
+            continue; // skip this line
+        } else {
+            // This is content - check if it's a sequence or mapping
+            if (isSequenceItem(line)) {
+                // Reset position and parse as sequence
+                pos_ = saved_pos;
+                return parseSequence(0);
+            } else {
+                // Reset position and parse as mapping
+                pos_ = saved_pos;
+                return parseMapping(0);
+            }
+        }
+    }
+    
+    // If we get here, the document is empty, return empty mapping
     return parseMapping(0);
 }
 

@@ -2,6 +2,8 @@
 #include <sstream>
 #include <algorithm>
 #include <regex>
+#include <iostream>
+#include <fstream>
 
 namespace akao::core::rule::loader {
 
@@ -70,7 +72,30 @@ bool RuleLoader::loadRule(const std::string& rule_file_path) {
             throwLoadError(rule_file_path, "Not a valid rule file");
         }
         
-        auto yaml_root = yaml_parser_.parseFile(rule_file_path);
+        // BUGFIX: Preprocess YAML to remove document markers that cause parsing issues
+        std::ifstream file(rule_file_path);
+        if (!file.is_open()) {
+            throwLoadError(rule_file_path, "Cannot open rule file");
+        }
+        
+        std::string yaml_content;
+        std::string line;
+        bool skip_first_doc_marker = true;
+        while (std::getline(file, line)) {
+            // Skip the first document marker but keep others
+            if (line == "---" && skip_first_doc_marker) {
+                std::cerr << "DEBUG: Skipping document marker in " << rule_file_path << std::endl;
+                skip_first_doc_marker = false;
+                continue;
+            }
+            yaml_content += line + "\n";
+        }
+        file.close();
+        
+        std::cerr << "DEBUG: Preprocessed YAML content length: " << yaml_content.length() << std::endl;
+        std::cerr << "DEBUG: First 100 chars: " << yaml_content.substr(0, 100) << std::endl;
+        
+        auto yaml_root = yaml_parser_.parse(yaml_content);
         if (!yaml_root) {
             throwLoadError(rule_file_path, "Failed to parse YAML");
         }
@@ -155,9 +180,30 @@ std::vector<std::shared_ptr<Rule>> RuleLoader::getRulesByPhilosophy(const std::s
 
 // Rule validation
 bool RuleLoader::validateRule(const Rule& rule) const {
-    return isValidRuleId(rule.id) && 
-           hasRequiredFields(rule) && 
-           hasValidPhilosophyReferences(rule);
+    bool valid_id = isValidRuleId(rule.id);
+    bool has_fields = hasRequiredFields(rule);
+    bool valid_philosophies = hasValidPhilosophyReferences(rule);
+    
+    // Debug output to identify which validation is failing
+    if (!valid_id) {
+        std::cerr << "DEBUG: Rule ID validation failed for: '" << rule.id << "'" << std::endl;
+    }
+    if (!has_fields) {
+        std::cerr << "DEBUG: Required fields validation failed for rule: '" << rule.id << "'" << std::endl;
+        std::cerr << "  - id: '" << rule.id << "' (empty: " << rule.id.empty() << ")" << std::endl;
+        std::cerr << "  - name: '" << rule.name << "' (empty: " << rule.name.empty() << ")" << std::endl;
+        std::cerr << "  - category: '" << rule.category << "' (empty: " << rule.category.empty() << ")" << std::endl;
+        std::cerr << "  - scope: '" << rule.scope << "' (empty: " << rule.scope.empty() << ")" << std::endl;
+        std::cerr << "  - target: '" << rule.target << "' (empty: " << rule.target.empty() << ")" << std::endl;
+    }
+    if (!valid_philosophies) {
+        std::cerr << "DEBUG: Philosophy validation failed for rule: '" << rule.id << "'" << std::endl;
+        for (const auto& phil : rule.philosophies) {
+            std::cerr << "  - philosophy: '" << phil << "'" << std::endl;
+        }
+    }
+    
+    return valid_id && has_fields && valid_philosophies;
 }
 
 std::vector<std::string> RuleLoader::validateAllRules() const {
@@ -224,43 +270,84 @@ bool RuleLoader::isValidRuleFile(const std::string& file_path) const {
 // YAML parsing helpers
 std::shared_ptr<Rule> RuleLoader::parseRuleFromYaml(std::shared_ptr<engine::parser::YamlNode> yaml_root, 
                                                    const std::string& source_file) {
+    std::cerr << "DEBUG: parseRuleFromYaml called for file: " << source_file << std::endl;
+    
+    if (!yaml_root) {
+        std::cerr << "DEBUG: yaml_root is null!" << std::endl;
+        return nullptr;
+    }
+    
+    std::cerr << "DEBUG: yaml_root type: " << static_cast<int>(yaml_root->getType()) << std::endl;
+    std::cerr << "DEBUG: yaml_root isMapping: " << yaml_root->isMapping() << std::endl;
+    
+    // BUGFIX: Handle case where YAML parser returns a sequence instead of mapping due to document marker
+    std::shared_ptr<engine::parser::YamlNode> actual_root = yaml_root;
+    if (yaml_root->isSequence() && yaml_root->size() > 0) {
+        std::cerr << "DEBUG: Root is sequence with " << yaml_root->size() << " elements, taking first element" << std::endl;
+        actual_root = yaml_root->operator[](0);
+        if (actual_root) {
+            std::cerr << "DEBUG: First element type: " << static_cast<int>(actual_root->getType()) << std::endl;
+            std::cerr << "DEBUG: First element isMapping: " << actual_root->isMapping() << std::endl;
+            if (actual_root->isString()) {
+                std::cerr << "DEBUG: First element string value: '" << actual_root->asString() << "'" << std::endl;
+            }
+        }
+    }
+    
+    if (actual_root && actual_root->isMapping()) {
+        auto keys = actual_root->getKeys();
+        std::cerr << "DEBUG: actual_root has " << keys.size() << " keys: ";
+        for (const auto& key : keys) {
+            std::cerr << "'" << key << "' ";
+        }
+        std::cerr << std::endl;
+    }
+    
     auto rule = std::make_shared<Rule>();
     rule->file_path = source_file;
     
+    std::cerr << "DEBUG: Checking for metadata section..." << std::endl;
     // Parse metadata
-    if (auto metadata = yaml_root->operator[]("metadata")) {
+    if (auto metadata = actual_root->operator[]("metadata")) {
+        std::cerr << "DEBUG: Found metadata section, parsing..." << std::endl;
         parseMetadata(*rule, metadata);
+    } else {
+        std::cerr << "DEBUG: No metadata section found!" << std::endl;
     }
     
+    std::cerr << "DEBUG: After parsing metadata - rule.id: '" << rule->id << "'" << std::endl;
+    
     // Parse description
-    if (auto desc = yaml_root->operator[]("description")) {
+    if (auto desc = actual_root->operator[]("description")) {
         rule->description = desc->asString();
     }
     
     // Parse philosophies
-    if (auto philosophies = yaml_root->operator[]("philosophies")) {
+    if (auto philosophies = actual_root->operator[]("philosophies")) {
         parsePhilosophies(*rule, philosophies);
     }
     
     // Parse rule definition
-    if (auto rule_def = yaml_root->operator[]("rule_definition")) {
+    if (auto rule_def = actual_root->operator[]("rule_definition")) {
         parseRuleDefinition(*rule, rule_def);
     }
     
     // Parse implementation
-    if (auto impl = yaml_root->operator[]("implementation")) {
+    if (auto impl = actual_root->operator[]("implementation")) {
         parseImplementation(*rule, impl);
     }
     
     // Parse validation
-    if (auto validation = yaml_root->operator[]("validation")) {
+    if (auto validation = actual_root->operator[]("validation")) {
         parseValidation(*rule, validation);
     }
     
     // Parse audit
-    if (auto audit = yaml_root->operator[]("audit")) {
+    if (auto audit = actual_root->operator[]("audit")) {
         parseAudit(*rule, audit);
     }
+    
+    std::cerr << "DEBUG: Final rule - id: '" << rule->id << "', name: '" << rule->name << "', scope: '" << rule->scope << "', target: '" << rule->target << "'" << std::endl;
     
     return rule;
 }
