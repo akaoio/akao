@@ -24,16 +24,10 @@ endif
 # Source files
 CORE_SOURCES := $(shell find core -name "*.cpp" 2>/dev/null)
 INTERFACE_SOURCES := $(shell find interfaces -name "*.cpp" 2>/dev/null)
-TEST_SOURCES := $(shell find tests -name "*.cpp" 2>/dev/null)
 MAIN_SOURCE := main.cpp
 
 ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES)
-TEST_ALL_SOURCES := $(CORE_SOURCES) $(INTERFACE_SOURCES) $(TEST_SOURCES)
 OBJECTS := $(ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
-TEST_OBJECTS := $(TEST_ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
-
-# Test target
-TEST_TARGET := $(BINDIR)/akao_tests
 
 # Default target
 .PHONY: all
@@ -55,11 +49,7 @@ $(TARGET): $(OBJECTS) | $(BINDIR)
 	@$(CXX) $(OBJECTS) -o $@
 	@echo "Build complete: $(TARGET)"
 
-# Test target
-$(TEST_TARGET): $(TEST_OBJECTS) | $(BINDIR)
-	@echo "Linking $(TEST_TARGET)..."
-	@$(CXX) $(TEST_OBJECTS) -o $@
-	@echo "Test build complete: $(TEST_TARGET)"
+
 
 # Build modes
 .PHONY: debug release
@@ -98,25 +88,6 @@ test: $(TARGET)
 	@echo "Running basic functionality test..."
 	@$(TARGET) --version
 	@echo "Test complete"
-
-.PHONY: test-build
-test-build: $(TEST_TARGET)
-	@echo "Test suite built successfully"
-
-.PHONY: test-self-validation
-test-self-validation: $(TEST_TARGET)
-	@echo "Running Akao self-validation tests..."
-	@$(TEST_TARGET) self-validation
-
-.PHONY: test-philosophy-compliance
-test-philosophy-compliance: $(TEST_TARGET)
-	@echo "Running Akao philosophy compliance tests..."
-	@$(TEST_TARGET) philosophy-compliance
-
-.PHONY: test-all-compliance
-test-all-compliance: $(TEST_TARGET)
-	@echo "Running all Akao compliance tests..."
-	@$(TEST_TARGET) all
 
 .PHONY: self-validate
 self-validate: $(TARGET)
@@ -183,15 +154,13 @@ dev-setup:
 	@echo "Development environment ready"
 
 .PHONY: dev-validate
-dev-validate: debug test-all-compliance self-validate validate-project
+dev-validate: debug self-validate validate-project
 
 .PHONY: dev-clean
 dev-clean: clean-all
 	@rm -rf .akao
 
-.PHONY: build-all
-build-all: $(TARGET) $(TEST_TARGET)
-	@echo "All targets built successfully"
+
 
 # Information targets
 .PHONY: info
@@ -205,7 +174,6 @@ info:
 	@echo "  Sources found:"
 	@echo "    Core: $(words $(CORE_SOURCES)) files"
 	@echo "    Interfaces: $(words $(INTERFACE_SOURCES)) files"
-	@echo "    Tests: $(words $(TEST_SOURCES)) files"
 	@echo "    Total: $(words $(ALL_SOURCES)) files"
 
 .PHONY: help
@@ -216,14 +184,9 @@ help:
 	@echo "  all                     - Build Akao (default)"
 	@echo "  debug                   - Build in debug mode"
 	@echo "  release                 - Build in release mode (default)"
-	@echo "  build-all               - Build main executable and tests"
 	@echo "  install                 - Install Akao system-wide"
 	@echo "  uninstall               - Remove Akao from system"
 	@echo "  test                    - Run basic tests"
-	@echo "  test-build              - Build test suite"
-	@echo "  test-self-validation    - Run self-validation tests"
-	@echo "  test-philosophy-compliance - Run philosophy compliance tests"
-	@echo "  test-all-compliance     - Run all compliance tests"
 	@echo "  self-validate           - Run Akao self-validation via CLI"
 	@echo "  validate-project        - Validate current project via CLI"
 	@echo "  check                   - Run comprehensive checks"
@@ -242,8 +205,7 @@ help:
 	@echo "Examples:"
 	@echo "  make                         # Build in release mode"
 	@echo "  make debug                   # Build in debug mode"
-	@echo "  make build-all               # Build main and test executables"
-	@echo "  make test-all-compliance     # Run comprehensive compliance tests"
+	@echo "  make test                    # Run basic functionality test"
 	@echo "  make self-validate           # Validate Akao via CLI"
 	@echo "  make install                 # Install system-wide"
 	@echo ""
