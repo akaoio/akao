@@ -109,11 +109,14 @@ std::shared_ptr<YamlNode> YamlParser::parseMapping(int base_indent) {
             break;
         }
         
-        if (isSequenceItem(line)) {
-            // This is actually a sequence, not a mapping
-            pos_ -= line.length() + 1;
-            return parseSequence(base_indent);
-        }
+        // Remove problematic logic that converts entire document to sequence
+        // when encountering sequence items. This should be handled in value parsing.
+        // 
+        // if (isSequenceItem(line)) {
+        //     // This is actually a sequence, not a mapping
+        //     pos_ -= line.length() + 1;
+        //     return parseSequence(base_indent);
+        // }
         
         auto [key, value_str] = parseKeyValue(line);
         if (key.empty()) {
