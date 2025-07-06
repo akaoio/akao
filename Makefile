@@ -3,7 +3,7 @@
 
 # Variables
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -I/usr/local/include
+CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -I/usr/local/include -Iyaml-cpp-yaml-cpp-0.7.0/include
 DEBUGFLAGS := -g -O0 -DDEBUG
 RELEASEFLAGS := -O3 -DNDEBUG
 SRCDIR := .
@@ -51,13 +51,13 @@ $(BUILDSUBDIR)/%.o: %.cpp | $(BUILDSUBDIR)
 # Main target
 $(TARGET): $(OBJECTS) | $(BINDIR)
 	@echo "Linking $(TARGET)..."
-	@$(CXX) $(OBJECTS) -L/usr/local/lib -lyaml-cpp -o $@
+	@$(CXX) $(OBJECTS) -Lyaml-cpp-yaml-cpp-0.7.0/build -lyaml-cpp -o $@
 	@echo "Build complete: $(TARGET)"
 
 # Test target
 $(TEST_TARGET): $(TEST_OBJECTS) | $(BINDIR)
 	@echo "Linking $(TEST_TARGET)..."
-	@$(CXX) $(filter-out $(BUILDSUBDIR)/main.o, $(TEST_OBJECTS)) -L/usr/local/lib -lyaml-cpp -o $@
+	@$(CXX) $(filter-out $(BUILDSUBDIR)/main.o, $(TEST_OBJECTS)) -Lyaml-cpp-yaml-cpp-0.7.0/build -lyaml-cpp -o $@
 	@echo "Test build complete: $(TEST_TARGET)"
 
 # Build modes
