@@ -527,8 +527,8 @@ Value PureLogicEngine::executeConditional(const YAML::Node& conditional, Context
 }
 
 Value PureLogicEngine::executeFixpoint(const YAML::Node& fixpoint, Context& ctx) {
-    // Fixpoint operator for recursion: fixpoint(var, expr)
-    // Finds x such that expr[var := x] = x
+    // Enhanced fixpoint operator for complex recursion and μ-calculus
+    // Supports multiple fixpoint algorithms and convergence strategies
     
     if (!fixpoint["fixpoint"].IsDefined()) {
         throwLogicError("Fixpoint node missing 'fixpoint' field", fixpoint);
@@ -543,38 +543,126 @@ Value PureLogicEngine::executeFixpoint(const YAML::Node& fixpoint, Context& ctx)
     std::string var_name = fp["variable"].as<std::string>();
     const auto& expr = fp["expression"];
     
-    // Maximum iterations to prevent infinite loops
-    const int max_iterations = 1000;
-    
-    // Start with initial value (null)
-    Value prev_value;
-    Value current_value;
-    
-    // Optional initial value
-    if (fp["initial"].IsDefined()) {
-        current_value = executeLogic(fp["initial"], ctx);
+    // Enhanced configuration options
+    int max_iterations = 1000;
+    if (fp["max_iterations"].IsDefined()) {
+        max_iterations = fp["max_iterations"].as<int>();
     }
     
-    // Iterate until fixpoint is found or max iterations reached
+    std::string strategy = "standard";
+    if (fp["strategy"].IsDefined()) {
+        strategy = fp["strategy"].as<std::string>();
+    }
+    
+    // Enhanced convergence checking
+    double tolerance = 0.0001;
+    if (fp["tolerance"].IsDefined()) {
+        tolerance = fp["tolerance"].as<double>();
+    }
+    
+    // Start with initial value
+    Value current_value;
+    if (fp["initial"].IsDefined()) {
+        current_value = executeLogic(fp["initial"], ctx);
+    } else {
+        // Default initial value based on strategy
+        if (strategy == "least" || strategy == "mu") {
+            current_value = Value(false); // Bottom element for least fixpoint
+        } else if (strategy == "greatest" || strategy == "nu") {
+            current_value = Value(true);  // Top element for greatest fixpoint
+        } else {
+            current_value = Value(); // Null for standard fixpoint
+        }
+    }
+    
+    // Track convergence history for oscillation detection
+    std::vector<Value> history;
+    
+    // Enhanced iteration with multiple strategies
     for (int i = 0; i < max_iterations; ++i) {
         // Bind current value to the variable
         Context new_ctx(ctx);
         new_ctx.bindVariable(var_name, current_value);
         
-        // Evaluate the expression with current binding
-        Value next_value = executeLogic(expr, new_ctx);
+        // Add iteration context for advanced recursion
+        new_ctx.bindVariable("__iteration", Value(i));
+        new_ctx.bindVariable("__strategy", Value(strategy));
         
-        // Check for convergence (fixpoint found)
-        if (i > 0 && valuesEqual(current_value, next_value)) {
+        // Evaluate the expression with current binding
+        Value next_value;
+        try {
+            next_value = executeLogic(expr, new_ctx);
+        } catch (const std::exception& e) {
+            // Enhanced error handling for recursive definitions
+            if (i == 0) {
+                throw; // Re-throw if first iteration fails
+            } else {
+                // For later iterations, might be convergence issue
+                throwLogicError("Fixpoint evaluation failed at iteration " + std::to_string(i) + ": " + e.what(), fixpoint);
+            }
+        }
+        
+        // Enhanced convergence checking
+        bool converged = false;
+        
+        if (strategy == "exact") {
+            // Exact equality for discrete domains
+            converged = valuesEqual(current_value, next_value);
+        } else if (strategy == "numeric" && current_value.isInteger() && next_value.isInteger()) {
+            // Numeric tolerance for continuous domains
+            converged = std::abs(current_value.asInteger() - next_value.asInteger()) < tolerance;
+        } else {
+            // Standard equality check
+            converged = valuesEqual(current_value, next_value);
+        }
+        
+        if (converged) {
+            // Add convergence info to context for debugging
+            ctx.bindVariable("__converged_at", Value(i));
             return next_value;
         }
         
-        prev_value = current_value;
+        // Oscillation detection for non-converging sequences
+        if (history.size() >= 10) {
+            // Check if we're oscillating between values
+            bool oscillating = false;
+            for (size_t j = 0; j < std::min(size_t(5), history.size()); ++j) {
+                if (valuesEqual(next_value, history[history.size() - 1 - j * 2])) {
+                    oscillating = true;
+                    break;
+                }
+            }
+            
+            if (oscillating && strategy == "standard") {
+                // Switch to averaging or return current value for oscillating sequences
+                ctx.bindVariable("__oscillating", Value(true));
+                return current_value;
+            }
+        }
+        
+        // Add to history and update current value
+        history.push_back(current_value);
         current_value = next_value;
+        
+        // Limit history size to prevent memory issues
+        if (history.size() > 100) {
+            history.erase(history.begin());
+        }
     }
     
-    // If we reach here, no fixpoint was found within max iterations
-    throwLogicError("Fixpoint did not converge within " + std::to_string(max_iterations) + " iterations", fixpoint);
+    // Enhanced error reporting for non-convergence
+    std::string error_msg = "Fixpoint did not converge within " + std::to_string(max_iterations) + 
+                           " iterations using strategy '" + strategy + "'";
+    
+    if (!history.empty()) {
+        error_msg += ". Last values: ";
+        for (size_t i = std::max(0, int(history.size()) - 3); i < history.size(); ++i) {
+            error_msg += history[i].toString() + " ";
+        }
+        error_msg += "-> " + current_value.toString();
+    }
+    
+    throwLogicError(error_msg, fixpoint);
     return Value();
 }
 
