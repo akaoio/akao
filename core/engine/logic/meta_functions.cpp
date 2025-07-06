@@ -193,6 +193,200 @@ void registerMetaFunctions(PureLogicEngine& engine) {
     engine.registerFunction(std::make_unique<IsWellFormedFunction>());
     engine.registerFunction(std::make_unique<HasFieldFunction>());
     engine.registerFunction(std::make_unique<GetFieldFunction>());
+    
+    // New meta-logical functions for self-reference and consistency
+    engine.registerFunction(std::make_unique<EncodeFormulaFunction>());
+    engine.registerFunction(std::make_unique<DecodeFormulaFunction>());
+    engine.registerFunction(std::make_unique<SelfReferenceFunction>());
+    engine.registerFunction(std::make_unique<DiagonalizationFunction>());
+    
+    auto consistencyCheck = std::make_unique<ConsistencyCheckFunction>();
+    consistencyCheck->setEngine(&engine);
+    engine.registerFunction(std::move(consistencyCheck));
+    
+    auto provability = std::make_unique<ProvabilityFunction>();
+    provability->setEngine(&engine);
+    engine.registerFunction(std::move(provability));
+}
+
+// =============================================================================
+// Meta-Logical Functions for Self-Reference and Consistency
+// =============================================================================
+
+// Simple Gödel encoding using string hash (placeholder for full implementation)
+int simpleGodelEncode(const std::string& formula) {
+    std::hash<std::string> hasher;
+    return static_cast<int>(hasher(formula) % 1000000); // Keep numbers manageable
+}
+
+std::string simpleGodelDecode(int godelNumber) {
+    // Placeholder: In real implementation, this would decode back to formula
+    return "formula_" + std::to_string(godelNumber);
+}
+
+// EncodeFormulaFunction
+Value EncodeFormulaFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("metalogic.encode_formula expects 1 argument (formula string)");
+    }
+    
+    if (!args[0].isString()) {
+        throw std::runtime_error("metalogic.encode_formula expects string argument");
+    }
+    
+    std::string formula = args[0].asString();
+    int godelNumber = simpleGodelEncode(formula);
+    
+    return Value(godelNumber);
+}
+
+std::vector<Value::Type> EncodeFormulaFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
+}
+
+// DecodeFormulaFunction  
+Value DecodeFormulaFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("metalogic.decode_formula expects 1 argument (Gödel number)");
+    }
+    
+    if (!args[0].isInteger()) {
+        throw std::runtime_error("metalogic.decode_formula expects integer argument");
+    }
+    
+    int godelNumber = args[0].asInteger();
+    std::string formula = simpleGodelDecode(godelNumber);
+    
+    return Value(formula);
+}
+
+std::vector<Value::Type> DecodeFormulaFunction::getParameterTypes() const {
+    return {Value::Type::INTEGER};
+}
+
+// SelfReferenceFunction
+Value SelfReferenceFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("metalogic.self_reference expects 1 argument (formula template)");
+    }
+    
+    if (!args[0].isString()) {
+        throw std::runtime_error("metalogic.self_reference expects string argument");
+    }
+    
+    std::string template_formula = args[0].asString();
+    
+    // Apply diagonalization: substitute formula with its own Gödel number
+    std::string self_ref = template_formula + "_self_" + std::to_string(simpleGodelEncode(template_formula));
+    int self_ref_godel = simpleGodelEncode(self_ref);
+    
+    return Value(self_ref_godel);
+}
+
+std::vector<Value::Type> SelfReferenceFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
+}
+
+// ConsistencyCheckFunction
+Value ConsistencyCheckFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("metalogic.consistency_check expects 1 argument (statement)");
+    }
+    
+    if (!args[0].isString()) {
+        throw std::runtime_error("metalogic.consistency_check expects string argument");
+    }
+    
+    std::string statement = args[0].asString();
+    
+    // Placeholder consistency check - in real implementation this would:
+    // 1. Parse the statement
+    // 2. Check if both statement and its negation are provable
+    // 3. Return false if both are provable (inconsistent)
+    
+    // For now, assume system is consistent unless statement contains "contradiction"
+    bool consistent = statement.find("contradiction") == std::string::npos;
+    
+    return Value(consistent);
+}
+
+std::vector<Value::Type> ConsistencyCheckFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
+}
+
+// ProvabilityFunction
+Value ProvabilityFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("metalogic.provability expects 1 argument (statement)");
+    }
+    
+    if (!args[0].isString()) {
+        throw std::runtime_error("metalogic.provability expects string argument");
+    }
+    
+    std::string statement = args[0].asString();
+    
+    // Placeholder provability check - in real implementation this would:
+    // 1. Try to construct a proof for the statement
+    // 2. Return true if proof exists, false otherwise
+    
+    // For now, simple heuristics:
+    // - Tautologies are provable
+    // - Self-referential statements about unprovability are not provable (Gödel sentence)
+    
+    if (statement.find("tautology") != std::string::npos) {
+        return Value(true);
+    }
+    
+    if (statement.find("unprovable") != std::string::npos && 
+        statement.find("self_") != std::string::npos) {
+        return Value(false); // Gödel sentence
+    }
+    
+    // Default: assume provable for simple statements
+    return Value(true);
+}
+
+std::vector<Value::Type> ProvabilityFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
+}
+
+// DiagonalizationFunction
+Value DiagonalizationFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("metalogic.diagonalization expects 1 argument (formula template)");
+    }
+    
+    if (!args[0].isString()) {
+        throw std::runtime_error("metalogic.diagonalization expects string argument");
+    }
+    
+    std::string template_formula = args[0].asString();
+    
+    // Diagonalization: create a statement that refers to itself
+    // Template should contain placeholder for Gödel number
+    std::string placeholder = "GODEL_NUMBER";
+    
+    if (template_formula.find(placeholder) == std::string::npos) {
+        throw std::runtime_error("metalogic.diagonalization: template must contain GODEL_NUMBER placeholder");
+    }
+    
+    // First encoding to get a number
+    int temp_godel = simpleGodelEncode(template_formula);
+    
+    // Replace placeholder with the Gödel number
+    std::string diagonal_formula = template_formula;
+    size_t pos = diagonal_formula.find(placeholder);
+    diagonal_formula.replace(pos, placeholder.length(), std::to_string(temp_godel));
+    
+    // Final Gödel number for the diagonalized formula
+    int final_godel = simpleGodelEncode(diagonal_formula);
+    
+    return Value(final_godel);
+}
+
+std::vector<Value::Type> DiagonalizationFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
 }
 
 } // namespace akao::logic::meta
