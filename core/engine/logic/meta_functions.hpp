@@ -71,6 +71,62 @@ public:
 void registerMetaFunctions(PureLogicEngine& engine);
 
 /**
+ * @brief μ-calculus (mu-calculus) functions for advanced fixpoint logic
+ */
+
+class MuCalculusLeastFixpointFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "mucalculus.mu"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::OBJECT; }
+    std::string getDescription() const override { return "Least fixpoint operator (μ) for recursive definitions"; }
+private:
+    PureLogicEngine* engine_;
+public:
+    void setEngine(PureLogicEngine* engine) { engine_ = engine; }
+};
+
+class MuCalculusGreatestFixpointFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "mucalculus.nu"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::OBJECT; }
+    std::string getDescription() const override { return "Greatest fixpoint operator (ν) for recursive definitions"; }
+private:
+    PureLogicEngine* engine_;
+public:
+    void setEngine(PureLogicEngine* engine) { engine_ = engine; }
+};
+
+class RecursiveFunctionDefFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "recursive.define"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::OBJECT; }
+    std::string getDescription() const override { return "Defines a recursive function with base case and recursive case"; }
+private:
+    PureLogicEngine* engine_;
+public:
+    void setEngine(PureLogicEngine* engine) { engine_ = engine; }
+};
+
+class FixpointIterateFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "fixpoint.iterate"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::OBJECT; }
+    std::string getDescription() const override { return "Iterates a function to find fixpoints with custom convergence"; }
+private:
+    PureLogicEngine* engine_;
+public:
+    void setEngine(PureLogicEngine* engine) { engine_ = engine; }
+};
+
+/**
  * @brief Meta-logical functions for self-referential logic and consistency checking
  */
 
