@@ -19,7 +19,7 @@ struct ExecutionContext {
     bool verbose_mode = false;
     bool debug_mode = false;
     bool quiet_mode = false;
-    std::string output_format = "yaml";
+    std::string output_format = "table";  // Default to table format as per CLI specification
 };
 
 /**
@@ -30,6 +30,9 @@ struct ExecutionResult {
     std::string output_message;
     std::string error_message;
     bool success = true;
+    
+    // Structured output data for complex commands
+    std::map<std::string, std::string> data;
     
     // Performance metrics
     double execution_time_seconds = 0.0;
@@ -149,6 +152,13 @@ public:
                                  const std::vector<std::string>& args);
 
     /**
+     * @brief Execute help command
+     */
+    ExecutionResult executeHelp(const std::map<std::string, std::string>& options,
+                               const std::map<std::string, bool>& flags,
+                               const std::vector<std::string>& args);
+
+    /**
      * @brief Get execution statistics
      */
     struct ExecutionStats {
@@ -201,8 +211,34 @@ private:
     
     // Output formatting
     std::string formatValidationResult(const core::engine::validator::ValidationResult& result);
+    std::string formatValidationTableOutput(const core::engine::validator::ValidationResult& result);
     std::string formatComplianceReport(const core::trace::reporter::Report& report);
     std::string formatExecutionSummary(const ExecutionResult& result);
+    
+    // Rule ID parsing helpers
+    std::string extractCategoryFromRuleId(const std::string& rule_id);
+    std::string extractRuleNameFromId(const std::string& rule_id);
+    
+    // Unified validation logic
+    struct ValidationOptions {
+        std::string target_path;
+        std::string rules_filter;      // e.g., "structure", "interface"
+        std::string philosophy_filter; // e.g., "isolation", "consistency"
+        bool include_trace = false;
+        bool auto_fix = false;
+        std::string output_format;
+        ValidationOptions(const std::string& path) : target_path(path) {}
+    };
+    
+    ExecutionResult performUnifiedValidation(const ValidationOptions& options);
+    
+    // Validation result filtering helpers
+    core::engine::validator::ValidationResult filterValidationResultsByCategory(
+        const core::engine::validator::ValidationResult& original_result,
+        const std::string& category);
+    core::engine::validator::ValidationResult filterValidationResultsByPhilosophy(
+        const core::engine::validator::ValidationResult& original_result,
+        const std::string& philosophy);
     
     // Error handling
     void handleValidationError(const std::exception& e, ExecutionResult& result);

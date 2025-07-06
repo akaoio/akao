@@ -10,4 +10,10 @@ build/release/main.o: main.cpp interfaces/cli/parser/command_parser.hpp \
  interfaces/cli/executor/../../../core/filesystem/enforcer/../scanner/directory_scanner.hpp \
  interfaces/cli/executor/../../../core/trace/tracer/violation_tracer.hpp \
  interfaces/cli/executor/../../../core/trace/reporter/report_generator.hpp \
- interfaces/cli/formatter/output_formatter.hpp
+ interfaces/cli/formatter/output_formatter.hpp \
+ interfaces/cli/commands/validate_command.hpp \
+ interfaces/cli/commands/init_command.hpp \
+ interfaces/cli/commands/generate_command.hpp \
+ interfaces/cli/commands/build_command.hpp \
+ interfaces/cli/commands/test_command.hpp \
+ interfaces/cli/commands/additional_commands.hpp

@@ -10,6 +10,7 @@ SRCDIR := .
 BUILDDIR := build
 BINDIR := $(BUILDDIR)/bin
 TARGET := $(BINDIR)/akao
+TEST_TARGET := $(BINDIR)/akao_tests
 
 # Build mode (debug or release)
 MODE ?= release
@@ -24,14 +25,18 @@ endif
 # Source files
 CORE_SOURCES := $(shell find core -name "*.cpp" 2>/dev/null)
 INTERFACE_SOURCES := $(shell find interfaces -name "*.cpp" 2>/dev/null)
+TEST_SOURCES := $(shell find tests -name "*.cpp" 2>/dev/null)
 MAIN_SOURCE := main.cpp
 
 ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES)
+TEST_ALL_SOURCES := $(TEST_SOURCES) $(CORE_SOURCES) $(INTERFACE_SOURCES)
 OBJECTS := $(ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
+TEST_OBJECTS := $(TEST_ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
 
 # Default target
-.PHONY: all
+.PHONY: all tests
 all: $(TARGET)
+tests: $(TEST_TARGET)
 
 # Create directories
 $(BUILDSUBDIR) $(BINDIR):
@@ -49,7 +54,11 @@ $(TARGET): $(OBJECTS) | $(BINDIR)
 	@$(CXX) $(OBJECTS) -o $@
 	@echo "Build complete: $(TARGET)"
 
-
+# Test target
+$(TEST_TARGET): $(TEST_OBJECTS) | $(BINDIR)
+	@echo "Linking $(TEST_TARGET)..."
+	@$(CXX) $(filter-out $(BUILDSUBDIR)/main.o, $(TEST_OBJECTS)) -o $@
+	@echo "Test build complete: $(TEST_TARGET)"
 
 # Build modes
 .PHONY: debug release
@@ -176,12 +185,23 @@ info:
 	@echo "    Interfaces: $(words $(INTERFACE_SOURCES)) files"
 	@echo "    Total: $(words $(ALL_SOURCES)) files"
 
+# Run tests
+.PHONY: run-tests
+run-tests: $(TEST_TARGET)
+	@echo "Running Akao test suite..."
+	@$(TEST_TARGET)
+
+.PHONY: test
+test: run-tests
+
 .PHONY: help
 help:
 	@echo "Akao Universal Validation Framework - Build System"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  all                     - Build Akao (default)"
+	@echo "  tests                   - Build test suite"
+	@echo "  run-tests              - Build and run comprehensive test suite"
 	@echo "  debug                   - Build in debug mode"
 	@echo "  release                 - Build in release mode (default)"
 	@echo "  install                 - Install Akao system-wide"
@@ -205,6 +225,7 @@ help:
 	@echo "Examples:"
 	@echo "  make                         # Build in release mode"
 	@echo "  make debug                   # Build in debug mode"
+	@echo "  make run-tests              # Build and run comprehensive tests"
 	@echo "  make test                    # Run basic functionality test"
 	@echo "  make self-validate           # Validate Akao via CLI"
 	@echo "  make install                 # Install system-wide"
