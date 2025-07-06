@@ -135,13 +135,6 @@ public:
                                  const std::vector<std::string>& args);
 
     /**
-     * @brief Execute self-validate command
-     */
-    ExecutionResult executeSelfValidate(const std::map<std::string, std::string>& options,
-                                       const std::map<std::string, bool>& flags,
-                                       const std::vector<std::string>& args);
-
-    /**
      * @brief Execute status command
      */
     ExecutionResult executeStatus(const std::map<std::string, std::string>& options,

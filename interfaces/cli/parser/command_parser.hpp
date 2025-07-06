@@ -182,7 +182,6 @@ Command getFixCommand();
 Command getConfigCommand();
 Command getVersionCommand();
 Command getHelpCommand();
-Command getSelfValidateCommand();
 Command getStatusCommand();
 
 } // namespace akao_commands

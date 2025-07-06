@@ -92,7 +92,7 @@ test: $(TARGET)
 .PHONY: self-validate
 self-validate: $(TARGET)
 	@echo "Running Akao self-validation..."
-	@$(TARGET) self-validate
+	@$(TARGET) validate .
 
 .PHONY: validate-project
 validate-project: $(TARGET)

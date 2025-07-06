@@ -87,14 +87,10 @@ public:
     void disableCategory(const std::string& category);
     void excludeRule(const std::string& rule_id);
 
-    // Main validation methods
+    // Main validation method - handles all types (files, directories, projects)
     ValidationResult validate(const std::string& target_path);
-    ValidationResult validateFile(const std::string& file_path);
-    ValidationResult validateDirectory(const std::string& directory_path);
-    ValidationResult validateProject(const std::string& project_path);
     
-    // Self-validation (required by philosophy)
-    ValidationResult validateSelf();
+    // Self-validation helper (required by philosophy)
     bool isSelfCompliant();
 
     // Batch validation

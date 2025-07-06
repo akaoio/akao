@@ -370,7 +370,6 @@ std::vector<Command> getDefaultCommands() {
         getReportCommand(),
         getFixCommand(),
         getConfigCommand(),
-        getSelfValidateCommand(),
         getStatusCommand()
     };
 }
@@ -538,21 +537,6 @@ Command getConfigCommand() {
     cmd.positional_args = {"action"};
     cmd.option_choices = {
         {"action", {"set", "get", "list", "reset"}}
-    };
-    
-    return cmd;
-}
-
-Command getSelfValidateCommand() {
-    Command cmd;
-    cmd.name = "self-validate";
-    cmd.description = "Validate Akao framework itself";
-    cmd.usage = "akao self-validate [options]";
-    cmd.aliases = {"self-check"};
-    
-    cmd.flags = {
-        {"full", "Run full self-validation suite"},
-        {"quick", "Run quick self-validation"}
     };
     
     return cmd;

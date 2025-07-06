@@ -64,7 +64,7 @@ add_custom_target(clean-all
 
 # Self-validation target
 add_custom_target(self-validate
-    COMMAND ${CMAKE_BINARY_DIR}/bin/akao self-validate
+    COMMAND ${CMAKE_BINARY_DIR}/bin/akao validate .
     DEPENDS akao
     COMMENT "Running Akao self-validation"
 )

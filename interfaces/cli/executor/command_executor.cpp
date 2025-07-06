@@ -40,9 +40,6 @@ CommandExecutor::CommandExecutor() {
     command_handlers_["config"] = [this](const auto& options, const auto& flags, const auto& args) {
         return executeConfig(options, flags, args);
     };
-    command_handlers_["self-validate"] = [this](const auto& options, const auto& flags, const auto& args) {
-        return executeSelfValidate(options, flags, args);
-    };
     command_handlers_["status"] = [this](const auto& options, const auto& flags, const auto& args) {
         return executeStatus(options, flags, args);
     };
@@ -507,42 +504,6 @@ ExecutionResult CommandExecutor::executeConfig(const std::map<std::string, std::
     } catch (const std::exception& e) {
         ExecutionResult result;
         handleConfigurationError(e, result);
-        return result;
-    }
-}
-
-ExecutionResult CommandExecutor::executeSelfValidate(const std::map<std::string, std::string>& options,
-                                                    const std::map<std::string, bool>& flags,
-                                                    const std::vector<std::string>& args) {
-    try {
-        utils::printInfo("Performing Akao self-validation...");
-        
-        // Validate Akao itself using its own rules
-        std::string akao_source_path = std::filesystem::current_path().string();
-        
-        auto validation_result = validator_->validate(akao_source_path);
-        
-        ExecutionResult result = createSuccessResult("Self-validation completed");
-        result.violations_found = validation_result.getViolations().size();
-        
-        if (!context_.quiet_mode) {
-            std::string formatted_result = formatValidationResult(validation_result);
-            std::cout << formatted_result << std::endl;
-            
-            if (validation_result.getViolations().empty()) {
-                utils::printSuccess("Akao passes self-validation - all philosophies and rules satisfied!");
-            } else {
-                utils::printError("Akao failed self-validation!");
-                result.success = false;
-                result.exit_code = 1;
-            }
-        }
-        
-        return result;
-        
-    } catch (const std::exception& e) {
-        ExecutionResult result;
-        handleValidationError(e, result);
         return result;
     }
 }

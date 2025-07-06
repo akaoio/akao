@@ -32,7 +32,7 @@ void printUsage(const std::string& program_name) {
     std::cout << "  --version           Show version information\n\n";
     
     std::cout << "Commands:\n";
-    std::cout << "  validate <path>     Validate project against Akao rules\n";
+    std::cout << "  validate <path>     Validate project against Akao rules (use '.' for self-validation)\n";
     std::cout << "  init [path]         Initialize new Akao project\n";
     std::cout << "  generate <type>     Generate project templates\n";
     std::cout << "  check <path>        Check project structure compliance\n";
@@ -40,15 +40,14 @@ void printUsage(const std::string& program_name) {
     std::cout << "  report <path>       Generate comprehensive compliance report\n";
     std::cout << "  fix <path>          Automatically fix violations where possible\n";
     std::cout << "  config <action>     Manage configuration (get, set, list)\n";
-    std::cout << "  self-validate       Validate Akao against its own rules\n";
     std::cout << "  status [path]       Show project and tool status\n\n";
     
     std::cout << "Examples:\n";
     std::cout << "  " << program_name << " validate ./my-project\n";
+    std::cout << "  " << program_name << " validate .              # Self-validation\n";
     std::cout << "  " << program_name << " init --type cpp ./new-project\n";
     std::cout << "  " << program_name << " report --output report.yaml ./project\n";
-    std::cout << "  " << program_name << " fix --dry-run ./project\n";
-    std::cout << "  " << program_name << " self-validate\n\n";
+    std::cout << "  " << program_name << " fix --dry-run ./project\n\n";
     
     std::cout << "For detailed help on a specific command, use:\n";
     std::cout << "  " << program_name << " <command> --help\n\n";

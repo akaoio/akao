@@ -119,17 +119,6 @@ std::string ViolationTracer::traceViolation(const engine::validator::Violation& 
     return trace.trace_id;
 }
 
-std::vector<std::string> ViolationTracer::traceViolations(const std::vector<engine::validator::Violation>& violations) {
-    std::vector<std::string> trace_ids;
-    trace_ids.reserve(violations.size());
-    
-    for (const auto& violation : violations) {
-        trace_ids.push_back(traceViolation(violation));
-    }
-    
-    return trace_ids;
-}
-
 void ViolationTracer::addContextVariable(const std::string& name, const std::string& value) {
     if (config_.capture_context_variables && 
         current_context_.size() < config_.max_context_variables) {

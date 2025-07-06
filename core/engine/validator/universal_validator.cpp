@@ -108,27 +108,8 @@ ValidationResult UniversalValidator::validate(const std::string& target_path) {
     }
 }
 
-ValidationResult UniversalValidator::validateProject(const std::string& project_path) {
-    return validate(project_path);
-}
-
-ValidationResult UniversalValidator::validateFile(const std::string& file_path) {
-    return validate(file_path);
-}
-
-ValidationResult UniversalValidator::validateDirectory(const std::string& directory_path) {
-    return validate(directory_path);
-}
-
-// Self-validation (CRITICAL for Akao philosophy compliance)
-ValidationResult UniversalValidator::validateSelf() {
-    // Validate Akao itself - this is required by akao:philosophy::validation:universal:v1
-    std::string akao_root = ".";  // Current directory should be Akao root
-    return validate(akao_root);
-}
-
 bool UniversalValidator::isSelfCompliant() {
-    auto result = validateSelf();
+    auto result = validate(".");  // Validate current directory (Akao root)
     return result.isCompliant();
 }
 

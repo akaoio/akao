@@ -1,0 +1,12 @@
+trace_id: "trace:akao:rule::structure:class_separation:v1:rule_executor.hpp:47:7f367a79ae6f149c"
+violation_id: "akao:rule::structure:class_separation:v1:violation:rule_executor.hpp:47"
+rule_id: "akao:rule::structure:class_separation:v1"
+philosophy_id: ""
+file_path: "/home/runner/work/akao/akao/./core/rule/executor/rule_executor.hpp"
+line_number: 47
+violation_category: "structural"
+violation_severity: ""
+root_cause: "Project structure does not follow Akao conventions"
+suggested_fix: "Move additional classes to separate files"
+detected_at: "2025-07-06T05:35:03Z"
+traced_at: "2025-07-06T05:35:03Z"

@@ -152,13 +152,6 @@ public:
     std::string traceViolation(const engine::validator::Violation& violation);
 
     /**
-     * @brief Trace multiple violations
-     * @param violations The violations to trace
-     * @return Vector of trace IDs
-     */
-    std::vector<std::string> traceViolations(const std::vector<engine::validator::Violation>& violations);
-
-    /**
      * @brief Add context variable to current trace
      */
     void addContextVariable(const std::string& name, const std::string& value);
