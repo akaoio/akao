@@ -35,13 +35,13 @@ add_executable(akao
     ${INTERFACE_SOURCES}
 )
 
-# Set output directory
+# Set output directories
 set_target_properties(akao PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
 # Installation
-install(TARGETS akao 
+install(TARGETS akao
     RUNTIME DESTINATION bin
 )
 
@@ -80,6 +80,8 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/tests")
     # Collect test sources
     file(GLOB_RECURSE TEST_SOURCES 
         "tests/compliance/*.cpp"
+        "tests/cli/*.cpp"
+        "tests/unit/*.cpp"
     )
     
     # Create test executable

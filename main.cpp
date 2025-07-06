@@ -1,6 +1,12 @@
 #include "interfaces/cli/parser/command_parser.hpp"
 #include "interfaces/cli/executor/command_executor.hpp"
 #include "interfaces/cli/formatter/output_formatter.hpp"
+#include "interfaces/cli/commands/validate_command.hpp"
+#include "interfaces/cli/commands/init_command.hpp"
+#include "interfaces/cli/commands/generate_command.hpp"
+#include "interfaces/cli/commands/build_command.hpp"
+#include "interfaces/cli/commands/test_command.hpp"
+#include "interfaces/cli/commands/additional_commands.hpp"
 #include <iostream>
 #include <filesystem>
 
@@ -32,23 +38,24 @@ void printUsage(const std::string& program_name) {
     std::cout << "  --version           Show version information\n\n";
     
     std::cout << "Commands:\n";
-    std::cout << "  validate <path>     Validate project against Akao rules\n";
+    std::cout << "  validate <path>     Universal validation - works on ANY project\n";
     std::cout << "  init [path]         Initialize new Akao project\n";
-    std::cout << "  generate <type>     Generate project templates\n";
-    std::cout << "  check <path>        Check project structure compliance\n";
-    std::cout << "  trace <path>        Trace violation sources and dependencies\n";
-    std::cout << "  report <path>       Generate comprehensive compliance report\n";
-    std::cout << "  fix <path>          Automatically fix violations where possible\n";
-    std::cout << "  config <action>     Manage configuration (get, set, list)\n";
-    std::cout << "  self-validate       Validate Akao against its own rules\n";
-    std::cout << "  status [path]       Show project and tool status\n\n";
+    std::cout << "  generate <type>     Generate universes (projects, frameworks, languages)\n";
+    std::cout << "  build [options]     Build with duality support (development/production)\n";
+    std::cout << "  test [scope]        Run compliance tests with coverage\n";
+    std::cout << "  docs [action]       Documentation generation and serving\n";
+    std::cout << "  metrics [action]    Metrics operations and observability\n";
+    std::cout << "  security [action]   Security operations and enforcement\n";
+    std::cout << "  rules [action]      Rule management operations\n";
+    std::cout << "  config [action]     Configuration management\n\n";
     
     std::cout << "Examples:\n";
     std::cout << "  " << program_name << " validate ./my-project\n";
     std::cout << "  " << program_name << " init --type cpp ./new-project\n";
-    std::cout << "  " << program_name << " report --output report.yaml ./project\n";
-    std::cout << "  " << program_name << " fix --dry-run ./project\n";
-    std::cout << "  " << program_name << " self-validate\n\n";
+    std::cout << "  " << program_name << " generate project --lang rust\n";
+    std::cout << "  " << program_name << " build --mode production\n";
+    std::cout << "  " << program_name << " test --coverage\n";
+    std::cout << "  " << program_name << " validate --self\n\n";
     
     std::cout << "For detailed help on a specific command, use:\n";
     std::cout << "  " << program_name << " <command> --help\n\n";
@@ -99,13 +106,15 @@ void printVersion() {
 
 int main(int argc, char* argv[]) {
     try {
-        // Early help/version checks
+        // Early help/version checks - only for global help
         for (int i = 1; i < argc; ++i) {
             std::string arg(argv[i]);
-            if (arg == "--help" || arg == "-h") {
+            if ((arg == "--help" || arg == "-h") && i == 1) {
+                // Only show global help if --help is the first argument
                 printUsage(argv[0]);
                 return 0;
-            } else if (arg == "--version") {
+            } else if (arg == "--version" && i == 1) {
+                // Only show version if --version is the first argument
                 printVersion();
                 return 0;
             }
@@ -120,11 +129,98 @@ int main(int argc, char* argv[]) {
         // Parse command line arguments
         akao::interfaces::cli::parser::CommandParser parser;
         
-        // Register default Akao commands
-        auto default_commands = akao::interfaces::cli::parser::akao_commands::getDefaultCommands();
-        for (const auto& command : default_commands) {
-            parser.registerCommand(command);
-        }
+        // Create command instances
+        auto validate_cmd = std::make_shared<akao::interfaces::cli::commands::ValidateCommand>();
+        auto init_cmd = std::make_shared<akao::interfaces::cli::commands::InitCommand>();
+        auto generate_cmd = std::make_shared<akao::interfaces::cli::commands::GenerateCommand>();
+        auto build_cmd = std::make_shared<akao::interfaces::cli::commands::BuildCommand>();
+        auto test_cmd = std::make_shared<akao::interfaces::cli::commands::TestCommand>();
+        auto docs_cmd = std::make_shared<akao::interfaces::cli::commands::DocsCommand>();
+        auto metrics_cmd = std::make_shared<akao::interfaces::cli::commands::MetricsCommand>();
+        auto security_cmd = std::make_shared<akao::interfaces::cli::commands::SecurityCommand>();
+        auto rules_cmd = std::make_shared<akao::interfaces::cli::commands::RulesCommand>();
+        auto config_cmd = std::make_shared<akao::interfaces::cli::commands::ConfigCommand>();
+
+        // Register commands manually since we now have individual command classes
+        akao::interfaces::cli::parser::Command validate_command;
+        validate_command.name = "validate";
+        validate_command.description = "Universal validation engine - works on ANY project";
+        validate_command.usage = validate_cmd->getUsage();
+        validate_command.options = validate_cmd->getSupportedOptions();
+        validate_command.flags = validate_cmd->getSupportedFlags();
+        parser.registerCommand(validate_command);
+
+        akao::interfaces::cli::parser::Command init_command;
+        init_command.name = "init";
+        init_command.description = "Initialize new Akao project";
+        init_command.usage = init_cmd->getUsage();
+        init_command.options = init_cmd->getSupportedOptions();
+        init_command.flags = init_cmd->getSupportedFlags();
+        parser.registerCommand(init_command);
+
+        akao::interfaces::cli::parser::Command generate_command;
+        generate_command.name = "generate";
+        generate_command.description = "Generate universes - projects, frameworks, languages";
+        generate_command.usage = generate_cmd->getUsage();
+        generate_command.options = generate_cmd->getSupportedOptions();
+        generate_command.flags = generate_cmd->getSupportedFlags();
+        parser.registerCommand(generate_command);
+
+        akao::interfaces::cli::parser::Command build_command;
+        build_command.name = "build";
+        build_command.description = "Build with duality support";
+        build_command.usage = build_cmd->getUsage();
+        build_command.options = build_cmd->getSupportedOptions();
+        build_command.flags = build_cmd->getSupportedFlags();
+        parser.registerCommand(build_command);
+
+        akao::interfaces::cli::parser::Command test_command;
+        test_command.name = "test";
+        test_command.description = "Run compliance tests";
+        test_command.usage = test_cmd->getUsage();
+        test_command.options = test_cmd->getSupportedOptions();
+        test_command.flags = test_cmd->getSupportedFlags();
+        parser.registerCommand(test_command);
+
+        akao::interfaces::cli::parser::Command docs_command;
+        docs_command.name = "docs";
+        docs_command.description = "Documentation commands";
+        docs_command.usage = docs_cmd->getUsage();
+        docs_command.options = docs_cmd->getSupportedOptions();
+        docs_command.flags = docs_cmd->getSupportedFlags();
+        parser.registerCommand(docs_command);
+
+        akao::interfaces::cli::parser::Command metrics_command;
+        metrics_command.name = "metrics";
+        metrics_command.description = "Metrics operations";
+        metrics_command.usage = metrics_cmd->getUsage();
+        metrics_command.options = metrics_cmd->getSupportedOptions();
+        metrics_command.flags = metrics_cmd->getSupportedFlags();
+        parser.registerCommand(metrics_command);
+
+        akao::interfaces::cli::parser::Command security_command;
+        security_command.name = "security";
+        security_command.description = "Security operations";
+        security_command.usage = security_cmd->getUsage();
+        security_command.options = security_cmd->getSupportedOptions();
+        security_command.flags = security_cmd->getSupportedFlags();
+        parser.registerCommand(security_command);
+
+        akao::interfaces::cli::parser::Command rules_command;
+        rules_command.name = "rules";
+        rules_command.description = "Rule management";
+        rules_command.usage = rules_cmd->getUsage();
+        rules_command.options = rules_cmd->getSupportedOptions();
+        rules_command.flags = rules_cmd->getSupportedFlags();
+        parser.registerCommand(rules_command);
+
+        akao::interfaces::cli::parser::Command config_command;
+        config_command.name = "config";
+        config_command.description = "Configuration management";
+        config_command.usage = config_cmd->getUsage();
+        config_command.options = config_cmd->getSupportedOptions();
+        config_command.flags = config_cmd->getSupportedFlags();
+        parser.registerCommand(config_command);
         
         auto parse_result = parser.parse(args);
         
@@ -173,8 +269,45 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         
-        // Execute command
-        auto execution_result = executor.execute(parse_result);
+        // Check for command-specific help flag or option
+        auto help_flag = parse_result.flags.find("help");
+        auto help_option = parse_result.options.find("help");
+        
+        if ((help_flag != parse_result.flags.end() && help_flag->second) ||
+            (help_option != parse_result.options.end())) {
+            // Show command-specific help
+            std::cout << parser.getCommandHelp(parse_result.command_name) << std::endl;
+            return 0;
+        }
+        
+        // Execute command using the appropriate command instance
+        akao::interfaces::cli::executor::ExecutionResult execution_result;
+        
+        if (parse_result.command_name == "validate") {
+            execution_result = validate_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "init") {
+            execution_result = init_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "generate") {
+            execution_result = generate_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "build") {
+            execution_result = build_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "test") {
+            execution_result = test_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "docs") {
+            execution_result = docs_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "metrics") {
+            execution_result = metrics_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "security") {
+            execution_result = security_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "rules") {
+            execution_result = rules_cmd->execute(context, parse_result.positional_arguments);
+        } else if (parse_result.command_name == "config") {
+            execution_result = config_cmd->execute(context, parse_result.positional_arguments);
+        } else {
+            execution_result.success = false;
+            execution_result.exit_code = 1;
+            execution_result.error_message = "Unknown command: " + parse_result.command_name;
+        }
         
         // Setup output formatter
         akao::interfaces::cli::formatter::FormatOptions format_options;

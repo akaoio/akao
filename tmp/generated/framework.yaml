@@ -1,0 +1,9 @@
+framework:
+  name: GeneratedFramework
+  version: 1.0.0
+  type: universal
+  philosophy: akao-compliant
+  components:
+    - core
+    - interfaces
+    - adapters

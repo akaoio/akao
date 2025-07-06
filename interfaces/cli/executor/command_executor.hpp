@@ -31,6 +31,9 @@ struct ExecutionResult {
     std::string error_message;
     bool success = true;
     
+    // Structured output data for complex commands
+    std::map<std::string, std::string> data;
+    
     // Performance metrics
     double execution_time_seconds = 0.0;
     size_t files_processed = 0;
