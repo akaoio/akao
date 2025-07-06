@@ -371,31 +371,37 @@ std::vector<Command> getDefaultCommands() {
         getFixCommand(),
         getConfigCommand(),
         getSelfValidateCommand(),
-        getStatusCommand()
+        getStatusCommand(),
+        getHelpCommand()
     };
 }
 
 Command getValidateCommand() {
     Command cmd;
     cmd.name = "validate";
-    cmd.description = "Validate project against Akao rules and philosophies";
+    cmd.description = "Universal validation engine - works on ANY project";
     cmd.usage = "akao validate [path] [options]";
-    cmd.aliases = {"val", "check"};
+    cmd.aliases = {"val"};
     
     cmd.options = {
-        {"rules", "Rules directory path"},
-        {"output", "Output format (yaml, json, markdown, html)"},
-        {"exclude", "Exclude patterns"},
-        {"severity", "Minimum severity level (error, warning, info)"}
+        {"rules", "Validate specific rule category (structure, interface, security, testing, automation, etc.)"},
+        {"philosophy", "Validate specific philosophy (isolation, consistency, universal, etc.)"},
+        {"format", "Output format (table, json, yaml) - default: table"},
+        {"export", "Export metrics to file"}
     };
     
     cmd.flags = {
-        {"auto-fix", "Automatically fix violations when possible"},
-        {"strict", "Enable strict validation mode"},
-        {"recursive", "Validate subdirectories recursively"}
+        {"fix", "Auto-fix violations where possible"},
+        {"trace", "Include detailed trace information"},
+        {"all", "Validate all rules (default behavior)"}
     };
     
     cmd.positional_args = {"path"};
+    cmd.option_choices = {
+        {"rules", {"all", "structure", "interface", "language", "security", "testing", "automation", "measurement", "validation", "visualization", "documentation", "governance", "verification", "build", "duality"}},
+        {"philosophy", {"isolation", "consistency", "universal", "governance", "duality", "automation", "measurement", "validation", "visualization", "documentation", "language", "security", "testing", "verification"}},
+        {"format", {"table", "json", "yaml"}}
+    };
     
     return cmd;
 }
@@ -403,24 +409,25 @@ Command getValidateCommand() {
 Command getInitCommand() {
     Command cmd;
     cmd.name = "init";
-    cmd.description = "Initialize new project with Akao structure";
-    cmd.usage = "akao init <project-type> [path] [options]";
+    cmd.description = "Universal project genesis - initialize Akao-compliant projects";
+    cmd.usage = "akao init [project-type] [path] [options]";
     
     cmd.options = {
-        {"template", "Project template to use"},
-        {"name", "Project name"},
-        {"description", "Project description"}
+        {"template", "Project template (minimal, full)"},
+        {"rules", "Custom rule set file"},
+        {"philosophy", "Philosophy compliance level (strict, normal)"}
     };
     
     cmd.flags = {
-        {"force", "Overwrite existing files"},
-        {"minimal", "Create minimal structure only"}
+        {"interactive", "Interactive project setup"},
+        {"force", "Overwrite existing files"}
     };
     
     cmd.positional_args = {"project-type", "path"};
-    cmd.required_options = {};
     cmd.option_choices = {
-        {"project-type", {"akao", "cpp", "python", "javascript", "rust", "go"}}
+        {"project-type", {"cpp-project", "rust-project", "framework", "language-adapter"}},
+        {"template", {"minimal", "full"}},
+        {"philosophy", {"strict", "normal"}}
     };
     
     return cmd;
@@ -429,19 +436,26 @@ Command getInitCommand() {
 Command getGenerateCommand() {
     Command cmd;
     cmd.name = "generate";
-    cmd.description = "Generate project components";
+    cmd.description = "Universe generation - generate infinite possibilities";
     cmd.usage = "akao generate <type> [options]";
     cmd.aliases = {"gen"};
     
     cmd.options = {
-        {"output", "Output directory"},
-        {"template", "Template to use"},
-        {"config", "Configuration file"}
+        {"lang", "Programming language (cpp, rust, etc.)"},
+        {"name", "Component name"},
+        {"template", "Template file to use"},
+        {"universe", "Target universe directory"}
+    };
+    
+    cmd.flags = {
+        {"coverage", "Generate with full coverage"},
+        {"force", "Overwrite existing files"}
     };
     
     cmd.positional_args = {"type"};
     cmd.option_choices = {
-        {"type", {"project", "rules", "docs", "tests", "config"}}
+        {"type", {"project", "framework", "language-support", "build-system", "documentation", "tests"}},
+        {"lang", {"cpp", "rust", "python", "javascript", "go"}}
     };
     
     return cmd;
@@ -450,16 +464,24 @@ Command getGenerateCommand() {
 Command getCheckCommand() {
     Command cmd;
     cmd.name = "check";
-    cmd.description = "Check project structure and compliance";
-    cmd.usage = "akao check [component] [options]";
+    cmd.description = "Rule compliance checking - check specific rule categories";
+    cmd.usage = "akao check [category] [options]";
     
     cmd.options = {
-        {"component", "Component to check (structure, rules, philosophies)"}
+        {"category", "Rule category (structure, interface, security, testing, automation)"},
+        {"rule", "Specific rule to check"},
+        {"philosophy", "Philosophy compliance (isolation, consistency, etc.)"}
     };
     
     cmd.flags = {
-        {"fix", "Fix issues found"},
-        {"preview", "Preview changes without applying"}
+        {"fix", "Auto-fix violations"},
+        {"dry-run", "Show what would be fixed without applying"}
+    };
+    
+    cmd.positional_args = {"category"};
+    cmd.option_choices = {
+        {"category", {"structure", "interface", "security", "testing", "automation", "measurement", "validation", "visualization", "documentation", "governance", "verification", "build", "duality"}},
+        {"philosophy", {"isolation", "consistency", "universal", "governance", "duality", "automation", "measurement", "validation", "visualization", "documentation", "language", "security", "testing", "verification"}}
     };
     
     return cmd;
@@ -468,15 +490,28 @@ Command getCheckCommand() {
 Command getTraceCommand() {
     Command cmd;
     cmd.name = "trace";
-    cmd.description = "Trace violation details and relationships";
-    cmd.usage = "akao trace <violation-id> [options]";
+    cmd.description = "Violation traceability - trace violation details and relationships";
+    cmd.usage = "akao trace [violation-id] [options]";
     
     cmd.options = {
-        {"format", "Output format"},
-        {"depth", "Trace depth level"}
+        {"rule", "Trace all violations for specific rule category"},
+        {"file", "Trace all violations in specific file"},
+        {"philosophy", "Trace philosophy violations"},
+        {"export", "Export trace to file"},
+        {"format", "Output format (yaml, json, text)"}
+    };
+    
+    cmd.flags = {
+        {"graph", "Show violation dependency graph"},
+        {"detailed", "Show detailed trace information"}
     };
     
     cmd.positional_args = {"violation-id"};
+    cmd.option_choices = {
+        {"rule", {"structure", "interface", "security", "testing", "automation", "measurement", "validation", "visualization", "documentation", "governance", "verification", "build", "duality"}},
+        {"philosophy", {"isolation", "consistency", "universal", "governance", "duality", "automation", "measurement", "validation", "visualization", "documentation", "language", "security", "testing", "verification"}},
+        {"format", {"yaml", "json", "text"}}
+    };
     
     return cmd;
 }
@@ -572,6 +607,17 @@ Command getStatusCommand() {
         {"summary", "Show summary only"},
         {"verbose", "Show detailed status"}
     };
+    
+    return cmd;
+}
+
+Command getHelpCommand() {
+    Command cmd;
+    cmd.name = "help";
+    cmd.description = "Show help information for commands";
+    cmd.usage = "akao help [command]";
+    
+    cmd.positional_args = {"command"};
     
     return cmd;
 }

@@ -149,6 +149,13 @@ public:
                                  const std::vector<std::string>& args);
 
     /**
+     * @brief Execute help command
+     */
+    ExecutionResult executeHelp(const std::map<std::string, std::string>& options,
+                               const std::map<std::string, bool>& flags,
+                               const std::vector<std::string>& args);
+
+    /**
      * @brief Get execution statistics
      */
     struct ExecutionStats {

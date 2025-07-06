@@ -46,6 +46,9 @@ CommandExecutor::CommandExecutor() {
     command_handlers_["status"] = [this](const auto& options, const auto& flags, const auto& args) {
         return executeStatus(options, flags, args);
     };
+    command_handlers_["help"] = [this](const auto& options, const auto& flags, const auto& args) {
+        return executeHelp(options, flags, args);
+    };
 }
 
 bool CommandExecutor::initialize() {
@@ -584,6 +587,35 @@ ExecutionResult CommandExecutor::executeStatus(const std::map<std::string, std::
         ExecutionResult result;
         handleConfigurationError(e, result);
         return result;
+    }
+}
+
+ExecutionResult CommandExecutor::executeHelp(const std::map<std::string, std::string>& options,
+                                            const std::map<std::string, bool>& flags,
+                                            const std::vector<std::string>& args) {
+    ExecutionResult result = createSuccessResult("Help displayed");
+    
+    try {
+        // Initialize command parser to get help
+        parser::CommandParser parser;
+        auto default_commands = parser::akao_commands::getDefaultCommands();
+        for (const auto& command : default_commands) {
+            parser.registerCommand(command);
+        }
+        
+        if (args.empty()) {
+            // Show global help
+            std::cout << parser.getGlobalHelp() << std::endl;
+        } else {
+            // Show command-specific help
+            std::string command_name = args[0];
+            std::cout << parser.getCommandHelp(command_name) << std::endl;
+        }
+        
+        return result;
+        
+    } catch (const std::exception& e) {
+        return createErrorResult("Help display failed: " + std::string(e.what()));
     }
 }
 
