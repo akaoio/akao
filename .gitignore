@@ -43,3 +43,6 @@ docs/generated/
 # Local development
 .akao/
 compliance-report.yaml
+
+# Akao trace files
+.akao_traces/
