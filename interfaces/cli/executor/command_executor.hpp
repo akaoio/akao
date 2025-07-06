@@ -216,6 +216,27 @@ private:
     std::string extractCategoryFromRuleId(const std::string& rule_id);
     std::string extractRuleNameFromId(const std::string& rule_id);
     
+    // Unified validation logic
+    struct ValidationOptions {
+        std::string target_path;
+        std::string rules_filter;      // e.g., "structure", "interface"
+        std::string philosophy_filter; // e.g., "isolation", "consistency"
+        bool include_trace = false;
+        bool auto_fix = false;
+        std::string output_format;
+        ValidationOptions(const std::string& path) : target_path(path) {}
+    };
+    
+    ExecutionResult performUnifiedValidation(const ValidationOptions& options);
+    
+    // Validation result filtering helpers
+    core::engine::validator::ValidationResult filterValidationResultsByCategory(
+        const core::engine::validator::ValidationResult& original_result,
+        const std::string& category);
+    core::engine::validator::ValidationResult filterValidationResultsByPhilosophy(
+        const core::engine::validator::ValidationResult& original_result,
+        const std::string& philosophy);
+    
     // Error handling
     void handleValidationError(const std::exception& e, ExecutionResult& result);
     void handleFileSystemError(const std::exception& e, ExecutionResult& result);

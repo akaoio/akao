@@ -135,58 +135,42 @@ ExecutionResult CommandExecutor::execute(const parser::ParseResult& parse_result
 ExecutionResult CommandExecutor::executeValidate(const std::map<std::string, std::string>& options,
                                                 const std::map<std::string, bool>& flags,
                                                 const std::vector<std::string>& args) {
-    try {
-        std::string target_path = resolveTargetPath(args);
-        
-        if (!std::filesystem::exists(target_path)) {
-            return createErrorResult("Target path does not exist: " + target_path);
-        }
-        
-        utils::printInfo("Validating: " + target_path);
-        
-        // Perform universal validation
-        auto validation_result = validator_->validate(target_path);
-        
-        ExecutionResult result = createSuccessResult("Validation completed");
-        result.violations_found = validation_result.getViolations().size();
-        result.files_processed = validation_result.getFilesProcessed();
-        
-        // Format and output results
-        std::string formatted_result = formatValidationResult(validation_result);
-        
-        // Output to file if specified
-        std::string output_path = resolveOutputPath(options);
-        if (!output_path.empty()) {
-            std::ofstream output_file(output_path);
-            if (output_file.is_open()) {
-                output_file << formatted_result;
-                output_file.close();
-                utils::printSuccess("Results written to: " + output_path);
-            } else {
-                utils::printWarning("Failed to write results to: " + output_path);
-            }
-        }
-        
-        // Print summary
-        if (!context_.quiet_mode) {
-            std::cout << formatted_result << std::endl;
-            
-            if (validation_result.getViolations().empty()) {
-                utils::printSuccess("No violations found - project is compliant!");
-            } else {
-                utils::printWarning("Found " + std::to_string(validation_result.getViolations().size()) + " violations");
-                result.success = false;
-                result.exit_code = 1;
-            }
-        }
-        
-        return result;
-        
-    } catch (const std::exception& e) {
-        ExecutionResult result;
-        handleValidationError(e, result);
-        return result;
+    
+    // Parse target path
+    std::string target_path = resolveTargetPath(args);
+    
+    // Create validation options
+    ValidationOptions validation_options(target_path);
+    
+    // Apply command-line options
+    auto rules_it = options.find("rules");
+    if (rules_it != options.end()) {
+        validation_options.rules_filter = rules_it->second;
     }
+    
+    auto philosophy_it = options.find("philosophy");
+    if (philosophy_it != options.end()) {
+        validation_options.philosophy_filter = philosophy_it->second;
+    }
+    
+    auto format_it = options.find("format");
+    if (format_it != options.end()) {
+        validation_options.output_format = format_it->second;
+    }
+    
+    // Apply flags
+    auto trace_it = flags.find("trace");
+    if (trace_it != flags.end()) {
+        validation_options.include_trace = trace_it->second;
+    }
+    
+    auto fix_it = flags.find("fix");
+    if (fix_it != flags.end()) {
+        validation_options.auto_fix = fix_it->second;
+    }
+    
+    // Use unified validation
+    return performUnifiedValidation(validation_options);
 }
 
 ExecutionResult CommandExecutor::executeInit(const std::map<std::string, std::string>& options,
@@ -284,37 +268,64 @@ ExecutionResult CommandExecutor::executeGenerate(const std::map<std::string, std
 ExecutionResult CommandExecutor::executeCheck(const std::map<std::string, std::string>& options,
                                              const std::map<std::string, bool>& flags,
                                              const std::vector<std::string>& args) {
-    try {
-        std::string target_path = resolveTargetPath(args);
-        
-        utils::printInfo("Checking project structure: " + target_path);
-        
-        // Use structure enforcer to validate structure
-        auto enforcement_result = enforcer_->validateStructure(target_path);
-        
-        ExecutionResult result = createSuccessResult("Structure check completed");
-        result.violations_found = enforcement_result.violations.size();
-        
-        if (!context_.quiet_mode) {
-            if (enforcement_result.violations.empty()) {
-                utils::printSuccess("Project structure is compliant!");
-            } else {
-                utils::printWarning("Found " + std::to_string(enforcement_result.violations.size()) + " structure violations");
-                for (const auto& violation : enforcement_result.violations) {
-                    utils::printError("  " + violation.message + " (" + violation.file_path + ")");
-                }
-                result.success = false;
-                result.exit_code = 1;
-            }
+    
+    // Parse target path (or use first positional argument as category)
+    std::string target_path;
+    std::string category_filter;
+    
+    if (!args.empty()) {
+        // Check if first argument is a path or category
+        if (std::filesystem::exists(args[0])) {
+            target_path = args[0];
+        } else {
+            // Treat as category, use current directory as target
+            category_filter = args[0];
+            target_path = std::filesystem::current_path().string();
         }
-        
-        return result;
-        
-    } catch (const std::exception& e) {
-        ExecutionResult result;
-        handleFileSystemError(e, result);
-        return result;
+    } else {
+        target_path = std::filesystem::current_path().string();
     }
+    
+    utils::printInfo("Checking project: " + target_path);
+    if (!category_filter.empty()) {
+        utils::printInfo("Category filter: " + category_filter);
+    }
+    
+    // Create validation options
+    ValidationOptions validation_options(target_path);
+    
+    // Apply category filter
+    if (!category_filter.empty()) {
+        validation_options.rules_filter = category_filter;
+    }
+    
+    // Apply command-line options
+    auto category_it = options.find("category");
+    if (category_it != options.end()) {
+        validation_options.rules_filter = category_it->second;
+    }
+    
+    auto rule_it = options.find("rule");
+    if (rule_it != options.end()) {
+        validation_options.rules_filter = rule_it->second;
+    }
+    
+    auto philosophy_it = options.find("philosophy");
+    if (philosophy_it != options.end()) {
+        validation_options.philosophy_filter = philosophy_it->second;
+    }
+    
+    // Apply flags
+    auto fix_it = flags.find("fix");
+    if (fix_it != flags.end()) {
+        validation_options.auto_fix = fix_it->second;
+    }
+    
+    // Use unified validation
+    auto result = performUnifiedValidation(validation_options);
+    result.output_message = "Check completed";
+    
+    return result;
 }
 
 ExecutionResult CommandExecutor::executeTrace(const std::map<std::string, std::string>& options,
@@ -517,37 +528,35 @@ ExecutionResult CommandExecutor::executeConfig(const std::map<std::string, std::
 ExecutionResult CommandExecutor::executeSelfValidate(const std::map<std::string, std::string>& options,
                                                     const std::map<std::string, bool>& flags,
                                                     const std::vector<std::string>& args) {
-    try {
-        utils::printInfo("Performing Akao self-validation...");
-        
-        // Validate Akao itself using its own rules
-        std::string akao_source_path = std::filesystem::current_path().string();
-        
-        auto validation_result = validator_->validate(akao_source_path);
-        
-        ExecutionResult result = createSuccessResult("Self-validation completed");
-        result.violations_found = validation_result.getViolations().size();
-        
-        if (!context_.quiet_mode) {
-            std::string formatted_result = formatValidationResult(validation_result);
-            std::cout << formatted_result << std::endl;
-            
-            if (validation_result.getViolations().empty()) {
-                utils::printSuccess("Akao passes self-validation - all philosophies and rules satisfied!");
-            } else {
-                utils::printError("Akao failed self-validation!");
-                result.success = false;
-                result.exit_code = 1;
-            }
-        }
-        
-        return result;
-        
-    } catch (const std::exception& e) {
-        ExecutionResult result;
-        handleValidationError(e, result);
-        return result;
+    
+    utils::printInfo("Performing Akao self-validation...");
+    
+    // Self-validate using current directory
+    ValidationOptions validation_options(std::filesystem::current_path().string());
+    
+    // Apply any format options
+    auto format_it = options.find("format");
+    if (format_it != options.end()) {
+        validation_options.output_format = format_it->second;
     }
+    
+    // Self-validation should be comprehensive (no filters)
+    auto result = performUnifiedValidation(validation_options);
+    
+    // Update message to reflect self-validation context
+    if (result.success) {
+        result.output_message = "Self-validation completed";
+        if (!context_.quiet_mode && result.violations_found == 0) {
+            utils::printSuccess("Akao passes self-validation - all philosophies and rules satisfied!");
+        }
+    } else {
+        result.output_message = "Self-validation completed";
+        if (!context_.quiet_mode) {
+            utils::printError("Akao failed self-validation!");
+        }
+    }
+    
+    return result;
 }
 
 ExecutionResult CommandExecutor::executeStatus(const std::map<std::string, std::string>& options,
@@ -954,6 +963,124 @@ std::string CommandExecutor::extractRuleNameFromId(const std::string& rule_id) {
     }
     
     return rule_name;
+}
+
+ExecutionResult CommandExecutor::performUnifiedValidation(const ValidationOptions& options) {
+    try {
+        // Validate target path exists
+        if (!std::filesystem::exists(options.target_path)) {
+            return createErrorResult("Target path does not exist: " + options.target_path);
+        }
+        
+        utils::printInfo("Validating: " + options.target_path);
+        
+        // Perform validation using the universal validator
+        auto validation_result = validator_->validate(options.target_path);
+        
+        // Filter results if needed
+        if (!options.rules_filter.empty() && options.rules_filter != "all") {
+            validation_result = filterValidationResultsByCategory(validation_result, options.rules_filter);
+        }
+        
+        if (!options.philosophy_filter.empty()) {
+            validation_result = filterValidationResultsByPhilosophy(validation_result, options.philosophy_filter);
+        }
+        
+        // Create execution result
+        ExecutionResult result = createSuccessResult("Validation completed");
+        result.violations_found = validation_result.getViolations().size();
+        result.files_processed = validation_result.getFilesProcessed();
+        
+        // Format and output results unless quiet mode
+        if (!context_.quiet_mode) {
+            // Use specified format or default
+            std::string original_format = context_.output_format;
+            if (!options.output_format.empty()) {
+                context_.output_format = options.output_format;
+            }
+            
+            std::string formatted_result = formatValidationResult(validation_result);
+            std::cout << formatted_result << std::endl;
+            
+            // Restore original format
+            context_.output_format = original_format;
+            
+            // Set result status based on violations
+            if (validation_result.getViolations().empty()) {
+                utils::printSuccess("No violations found - project is compliant!");
+            } else {
+                utils::printWarning("Found " + std::to_string(validation_result.getViolations().size()) + " violations");
+                result.success = false;
+                result.exit_code = 1;
+            }
+        }
+        
+        // Auto-fix if requested
+        if (options.auto_fix && !validation_result.getViolations().empty()) {
+            utils::printInfo("Attempting to auto-fix violations...");
+            // TODO: Implement auto-fix logic
+            utils::printWarning("Auto-fix functionality not yet implemented");
+        }
+        
+        return result;
+        
+    } catch (const std::exception& e) {
+        return createErrorResult("Validation failed: " + std::string(e.what()));
+    }
+}
+
+core::engine::validator::ValidationResult CommandExecutor::filterValidationResultsByCategory(
+    const core::engine::validator::ValidationResult& original_result,
+    const std::string& category) {
+    
+    // Create a new result with filtered violations
+    core::engine::validator::ValidationResult filtered_result(
+        original_result.getTargetPath(),
+        original_result.getTargetType()
+    );
+    
+    // Copy metadata
+    filtered_result.setFilesProcessed(original_result.getFilesProcessed());
+    filtered_result.setTotalRulesExecuted(original_result.getTotalRulesExecuted());
+    
+    // Filter violations by category
+    std::string target_category = category;
+    std::transform(target_category.begin(), target_category.end(), target_category.begin(), ::tolower);
+    
+    for (const auto& violation : original_result.getViolations()) {
+        std::string violation_category = extractCategoryFromRuleId(violation.rule_id);
+        std::transform(violation_category.begin(), violation_category.end(), violation_category.begin(), ::tolower);
+        
+        if (violation_category == target_category) {
+            filtered_result.addViolation(violation);
+        }
+    }
+    
+    return filtered_result;
+}
+
+core::engine::validator::ValidationResult CommandExecutor::filterValidationResultsByPhilosophy(
+    const core::engine::validator::ValidationResult& original_result,
+    const std::string& philosophy) {
+    
+    // Create a new result with filtered violations
+    core::engine::validator::ValidationResult filtered_result(
+        original_result.getTargetPath(),
+        original_result.getTargetType()
+    );
+    
+    // Copy metadata
+    filtered_result.setFilesProcessed(original_result.getFilesProcessed());
+    filtered_result.setTotalRulesExecuted(original_result.getTotalRulesExecuted());
+    
+    // Filter violations by philosophy
+    for (const auto& violation : original_result.getViolations()) {
+        if (violation.philosophy_id.find(philosophy) != std::string::npos) {
+            filtered_result.addViolation(violation);
+        }
+    }
+    
+    return filtered_result;
 }
 
 std::string CommandExecutor::formatComplianceReport(const core::trace::reporter::Report& report) {
