@@ -246,3 +246,267 @@ philosophy:
 ✅ **Formal**: Logic syntax rõ ràng, có thể verify được
 
 **Bạn thấy approach này như thế nào?**
+
+---
+
+## 🚀 **NEXT STEPS: IMPLEMENTATION PLAN**
+
+### **Phase 1: Core Engine Foundation**
+1. **Pure Logic Engine skeleton** (`core/engine/logic/pure_logic_engine.cpp`)
+2. **YAML Logic Parser** để parse các construct như `forall`, `exists`, `operator`
+3. **Built-in Function Registry** load từ `builtin_functions.yaml`
+4. **Basic operators**: `equals`, `less_than`, `count`, `contains`
+
+### **Phase 2: Domain Functions** 
+1. **Filesystem functions**: `get_cpp_files()`, `extract_classes()`, etc.
+2. **Code analysis functions**: `extract_functions()`, `get_includes()`, etc.
+3. **Meta functions**: `has_field()`, `is_satisfiable()`, etc.
+
+### **Phase 3: Self-Validation System**
+1. **Philosophy self-proof execution** 
+2. **Rule self-validation execution**
+3. **Meta-validation** cho toàn hệ thống
+4. **Unit test execution** cũng bằng logic engine
+
+### **Phase 4: Integration**
+1. **CLI integration** route tất cả qua logic engine
+2. **Reporting system** format violations và validation results
+3. **Performance optimization** với caching và lazy evaluation
+
+---
+
+## 🔬 **TECHNICAL DETAILS**
+
+### **YAML Logic Language Specification**
+
+#### **Basic Constructs**
+```yaml
+# Logical operators
+logic:
+  operator: "and|or|not|implies|equals|less_than|greater_than"
+  left: <expression>
+  right: <expression>
+
+# Quantifiers  
+logic:
+  forall|exists:
+    variable: "var_name"
+    domain: <expression>  # Evaluates to collection
+    condition: <expression>  # Boolean expression
+
+# Function calls
+logic:
+  function: "function_name"
+  argument: <expression>
+  # hoặc
+  arguments: [<expr1>, <expr2>, ...]
+
+# Variables and literals
+logic:
+  var: "variable_name"
+  # hoặc
+  literal: "string|number|boolean"
+```
+
+#### **Advanced Constructs**
+```yaml
+# Conditional logic
+logic:
+  if:
+    condition: <expression>
+    then: <expression>
+    else: <expression>
+
+# Let bindings (local variables)
+logic:
+  let:
+    bindings:
+      var1: <expression>
+      var2: <expression>
+    in: <expression>
+
+# Recursion với fixed-point
+logic:
+  fixpoint:
+    variable: "func_var"
+    parameter: "input_var"  
+    body: <expression>  # Can reference func_var for recursion
+    argument: <expression>
+```
+
+### **Unit Testing in YAML**
+```yaml
+# rules/structure/one_class_per_file.yaml
+unit_tests:
+  - name: "single_class_file_passes"
+    setup:
+      mock_filesystem:
+        - file: "Person.cpp"
+          content: "class Person { };"
+    expected: "no_violations"
+    
+  - name: "multiple_classes_fail"
+    setup:
+      mock_filesystem:
+        - file: "Multiple.cpp"
+          content: "class A { }; class B { };"
+    expected: 
+      violations:
+        - type: "multiple_classes_in_file"
+          file: "Multiple.cpp"
+          count: 2
+
+# Engine sẽ execute tests này bằng chính logic engine
+test_execution:
+  logic:
+    forall:
+      variable: "test"
+      domain: "this.unit_tests"
+      condition:
+        function: "test_passes"
+        argument: { var: "test" }
+```
+
+### **Error Handling and Debugging**
+```yaml
+# Mọi logic expression có thể có debugging info
+logic:
+  operator: "equals"
+  left: { function: "count", argument: { var: "classes" } }
+  right: 1
+  debug:
+    description: "Check if file has exactly one class"
+    trace_variables: ["classes"]
+    log_level: "info"
+
+# Engine sẽ generate detailed traces khi logic fails
+```
+
+---
+
+## 🎭 **PHILOSOPHY: PURE INTERPRETATION**
+
+**Core Insight**: Engine là một **pure interpreter** cho logic language
+
+**Analogy**: 
+- **JavaScript Engine** không biết gì về DOM, React, hay business logic
+- **SQL Engine** không biết gì về schema hay business rules  
+- **AKAO Logic Engine** không biết gì về filesystem rules hay code quality
+
+**Benefits**:
+1. **Separation of Concerns**: Logic ở YAML, execution ở C++
+2. **Testability**: Logic có thể test riêng biệt khỏi engine
+3. **Extensibility**: Thêm rules không cần rebuild engine
+4. **Verifiability**: Logic có thể formal verify bằng mathematical tools
+5. **Portability**: Logic có thể chạy trên engines khác nhau
+
+**Trade-offs**:
+- **Performance**: YAML parsing + interpretation có thể chậm hơn compiled code
+- **Complexity**: Cần design language syntax carefully
+- **Debugging**: Stack traces sẽ ở logic level, không phải C++ level
+
+**Mitigation**:
+- **Caching**: Compile YAML logic to internal representation
+- **JIT compilation**: Generate native code cho hot paths
+- **Rich debugging**: Provide detailed traces và error messages
+
+---
+
+## 🔄 **COMPLETE EXAMPLE: END-TO-END**
+
+**File**: `rules/structure/one_class_per_file.yaml`
+```yaml
+rule:
+  id: "akao:rule:structure:one_class_per_file:v1"
+  name: "One Class Per File"
+  
+  logic:
+    forall:
+      variable: "file"
+      domain: 
+        function: "filesystem.get_files"
+        argument:
+          function: "filesystem.current_directory"
+      condition:
+        if:
+          condition:
+            function: "filesystem.has_extension"
+            arguments: [{ var: "file" }, ".cpp"]
+          then:
+            operator: "less_equal"
+            left:
+              function: "cpp.count_classes"
+              argument: { var: "file" }
+            right: 1
+          else: true  # Non-C++ files are ignored
+  
+  self_validation:
+    tests:
+      - name: "logic_is_well_formed"
+        check:
+          function: "logic.is_well_formed"
+          argument: "this.logic"
+      
+      - name: "uses_only_available_functions"
+        check:
+          function: "logic.all_functions_exist"
+          arguments: ["this.logic", "builtin_functions"]
+    
+    meta_check:
+      logic:
+        forall:
+          variable: "test"
+          domain: "this.self_validation.tests"
+          condition:
+            function: "test.passes"
+            argument: { var: "test" }
+
+unit_tests:
+  - name: "single_class_passes"
+    mock_context:
+      filesystem:
+        files:
+          - name: "Person.cpp"
+            content: |
+              class Person {
+                public:
+                  void getName();
+              };
+    expected_result: "no_violations"
+    
+  - name: "multiple_classes_fail"  
+    mock_context:
+      filesystem:
+        files:
+          - name: "Multiple.cpp"
+            content: |
+              class Person {};
+              class Student {};
+    expected_result:
+      violations:
+        - type: "multiple_classes_in_file"
+          file: "Multiple.cpp"
+          details: { class_count: 2 }
+```
+
+**Execution Flow**:
+1. **CLI** calls `engine.validateRules(["rules/structure/one_class_per_file.yaml"])`
+2. **Engine** loads rule, parses logic section
+3. **Engine** calls `filesystem.get_files(filesystem.current_directory())`
+4. **Engine** loops through files với `forall` logic
+5. **Engine** calls `cpp.count_classes(file)` cho mỗi .cpp file
+6. **Engine** evaluates `count <= 1` condition
+7. **Engine** generates violations nếu condition fails
+8. **Engine** runs `self_validation` tests
+9. **Engine** runs `unit_tests` với mock context
+10. **CLI** displays formatted results
+
+**Key Points**:
+- Engine chỉ biết cách execute `forall`, `if`, `operator`, `function`
+- Engine không biết gì về "class", "file", hay "C++"
+- Tất cả domain knowledge ở built-in functions và YAML logic
+- Self-validation và unit tests cũng chạy qua engine
+
+---
+
+**Ready để implement?** 🚀

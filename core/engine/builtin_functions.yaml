@@ -1,0 +1,261 @@
+# Built-in Functions Registry for AKAO Pure Logic Engine
+# 
+# IMPORTANT: This is the ONLY file the engine "knows" about.
+# The engine is a pure interpreter - it only knows how to:
+# 1. Execute these computational functions
+# 2. Parse and execute logic syntax
+# 
+# NO DOMAIN LOGIC is encoded here - only computational primitives.
+
+builtin_functions:
+  # =============================================================================
+  # Filesystem Operations - Pure computational functions for file system access
+  # =============================================================================
+  filesystem:
+    - name: "get_files"
+      description: "Returns all files in a directory"
+      parameters:
+        - type: "string"
+          name: "directory_path"
+      returns: "collection"
+      
+    - name: "get_cpp_files"
+      description: "Returns all .cpp and .hpp files in a directory"
+      parameters:
+        - type: "string"
+          name: "directory_path"
+      returns: "collection"
+      
+    - name: "has_extension"
+      description: "Checks if a file has a specific extension"
+      parameters:
+        - type: "string"
+          name: "file_path"
+        - type: "string"
+          name: "extension"
+      returns: "boolean"
+      
+    - name: "read_file"
+      description: "Reads the content of a file"
+      parameters:
+        - type: "string"
+          name: "file_path"
+      returns: "string"
+      
+    - name: "current_directory"
+      description: "Returns the current working directory"
+      parameters: []
+      returns: "string"
+
+  # =============================================================================
+  # C++ Code Analysis - Pure computational functions for analyzing C++ source
+  # =============================================================================
+  cpp:
+    - name: "extract_classes"
+      description: "Extracts class names from C++ code"
+      parameters:
+        - type: "string"
+          name: "code"
+      returns: "collection"
+      
+    - name: "count_classes"
+      description: "Counts the number of classes in C++ code"
+      parameters:
+        - type: "string"
+          name: "code"
+      returns: "integer"
+      
+    - name: "extract_functions"
+      description: "Extracts function names from C++ code"
+      parameters:
+        - type: "string"
+          name: "code"
+      returns: "collection"
+      
+    - name: "get_includes"
+      description: "Extracts include statements from C++ code"
+      parameters:
+        - type: "string"
+          name: "code"
+      returns: "collection"
+      
+    - name: "has_main"
+      description: "Checks if C++ code contains a main function"
+      parameters:
+        - type: "string"
+          name: "code"
+      returns: "boolean"
+
+  # =============================================================================
+  # Meta-Logic Functions - Pure computational functions for logic validation
+  # =============================================================================
+  logic:
+    - name: "is_well_formed"
+      description: "Checks if a logic expression is well-formed"
+      parameters:
+        - type: "object"
+          name: "expression"
+      returns: "boolean"
+      
+    - name: "all_functions_exist"
+      description: "Checks if all referenced functions exist in the engine"
+      parameters:
+        - type: "object"
+          name: "expression"
+      returns: "boolean"
+
+  test:
+    - name: "passes"
+      description: "Executes a test expression and returns whether it passes"
+      parameters:
+        - type: "object"
+          name: "test_expression"
+      returns: "boolean"
+
+  # =============================================================================
+  # Object Manipulation - Pure computational functions for object operations
+  # =============================================================================
+  object:
+    - name: "has_field"
+      description: "Checks if an object has a specific field"
+      parameters:
+        - type: "object"
+          name: "object"
+        - type: "string"
+          name: "field_name"
+      returns: "boolean"
+      
+    - name: "get_field"
+      description: "Gets the value of a field from an object"
+      parameters:
+        - type: "object"
+          name: "object"
+        - type: "string"
+          name: "field_name"
+      returns: "any"
+
+  # =============================================================================
+  # Collection Operations - Pure computational functions on collections
+  # =============================================================================
+  collection:
+    - name: "count"
+      description: "Returns the number of items in a collection"
+      parameters:
+        - type: "collection"
+          name: "items"
+      returns: "integer"
+      
+    - name: "contains"
+      description: "Checks if a collection contains a specific item"
+      parameters:
+        - type: "collection"
+          name: "items"
+        - type: "any"
+          name: "item"
+      returns: "boolean"
+      
+    - name: "filter"
+      description: "Filters a collection based on a condition"
+      parameters:
+        - type: "collection"
+          name: "items"
+        - type: "string"
+          name: "condition_var"
+        - type: "logic"
+          name: "condition"
+      returns: "collection"
+      
+    - name: "map"
+      description: "Transforms each item in a collection"
+      parameters:
+        - type: "collection"
+          name: "items"
+        - type: "string"
+          name: "transform_var"
+        - type: "logic"
+          name: "transform"
+      returns: "collection"
+
+  # =============================================================================
+  # Math Operations - Basic computational math
+  # =============================================================================
+  math:
+    - name: "add"
+      description: "Adds two numbers"
+      parameters:
+        - type: "integer"
+          name: "a"
+        - type: "integer"
+          name: "b"
+      returns: "integer"
+      
+    - name: "subtract"
+      description: "Subtracts second number from first"
+      parameters:
+        - type: "integer"
+          name: "a"
+        - type: "integer"
+          name: "b"
+      returns: "integer"
+      
+    - name: "multiply"
+      description: "Multiplies two numbers"
+      parameters:
+        - type: "integer"
+          name: "a"
+        - type: "integer"
+          name: "b"
+      returns: "integer"
+
+  # =============================================================================
+  # String Operations - Text manipulation functions
+  # =============================================================================
+  string:
+    - name: "length"
+      description: "Returns the length of a string"
+      parameters:
+        - type: "string"
+          name: "text"
+      returns: "integer"
+      
+    - name: "concat"
+      description: "Concatenates two strings"
+      parameters:
+        - type: "string"
+          name: "a"
+        - type: "string"
+          name: "b"
+      returns: "string"
+      
+    - name: "substring"
+      description: "Extracts a substring"
+      parameters:
+        - type: "string"
+          name: "text"
+        - type: "integer"
+          name: "start"
+        - type: "integer"
+          name: "length"
+      returns: "string"
+
+  # =============================================================================
+  # Test and Mock Operations - For unit testing and validation
+  # =============================================================================
+  test:
+    - name: "mock_collection"
+      description: "Creates a mock collection for testing"
+      parameters:
+        - type: "string"
+          name: "type"
+        - type: "integer"
+          name: "count"
+      returns: "collection"
+      
+    - name: "assert_equals"
+      description: "Asserts that two values are equal"
+      parameters:
+        - type: "any"
+          name: "expected"
+        - type: "any"
+          name: "actual"
+      returns: "boolean"

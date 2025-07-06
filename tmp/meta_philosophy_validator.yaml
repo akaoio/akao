@@ -1,0 +1,90 @@
+id: "akao:meta:philosophy_validator:v1"
+description: "Meta-rule that validates all AKAO philosophy definitions"
+version: "1.0.0"
+author: "AKAO System"
+category: "meta-validation"
+
+# This meta-rule validates that all philosophy YAML files are properly structured
+logic:
+  forall:
+    variable: "philosophy_file"
+    domain:
+      function: "filesystem.get_files"
+      argument:
+        literal: "philosophies"
+    condition:
+      operator: "and"
+      left:
+        function: "has_extension"
+        arguments:
+          - var: "philosophy_file"
+          - literal: ".yaml"
+      right:
+        operator: "and"
+        left:
+          # Philosophy file must have required fields
+          function: "logic.is_well_formed"
+          argument:
+            function: "filesystem.read_file"
+            argument:
+              var: "philosophy_file"
+        right:
+          # Philosophy must prove its own correctness
+          function: "test.passes"
+          argument:
+            function: "filesystem.read_file"
+            argument:
+              var: "philosophy_file"
+
+# Self-validation: This meta-rule must validate itself
+self_validation:
+  logic:
+    operator: "and"
+    left:
+      # This rule must have proper structure
+      function: "has_field"
+      arguments:
+        - literal:
+            id: "akao:meta:philosophy_validator:v1"
+            description: "Meta-rule that validates all AKAO philosophy definitions"
+            logic: {}
+            self_validation: {}
+        - literal: "logic"
+    right:
+      # This rule must apply to itself as a philosophical statement
+      function: "test.passes"
+      argument:
+        literal:
+          function: "logic.is_well_formed"
+          argument:
+            get_field:
+              object:
+                literal:
+                  id: "akao:meta:philosophy_validator:v1"
+                  logic: {}
+              field: "logic"
+
+unit_tests:
+  - name: "meta_philosophy_structure_valid"
+    setup:
+      mock_context:
+        philosophy_files:
+          - "philosophies/validation/universal.yaml"
+    expected:
+      status: "pass"
+      message: "All philosophy files have valid structure"
+
+  - name: "validates_sample_philosophy"
+    setup:
+      mock_context:
+        sample_philosophy_content: |
+          id: "test_philosophy"
+          formal_logic:
+            axioms:
+              - literal: true
+          self_proof:
+            logic:
+              literal: true
+    expected:
+      status: "pass"
+      message: "Sample philosophy validates correctly"
