@@ -756,9 +756,18 @@ void CommandExecutor::applyGlobalFlags(const std::map<std::string, bool>& flags)
 
 std::string CommandExecutor::formatValidationResult(const core::engine::validator::ValidationResult& result) {
     std::string output_format = context_.output_format;
+    
+    // Default to table format if no format specified
+    if (output_format.empty()) {
+        output_format = "table";
+    }
+    
     std::stringstream ss;
     
-    if (utils::isYamlOutput(output_format)) {
+    if (output_format == "table") {
+        // Default table format (matches CLI specification)
+        ss << formatValidationTableOutput(result);
+    } else if (utils::isYamlOutput(output_format)) {
         ss << "validation_result:\n";
         ss << "  files_processed: " << result.getFilesProcessed() << "\n";
         ss << "  total_violations: " << result.getViolations().size() << "\n";
@@ -796,9 +805,155 @@ std::string CommandExecutor::formatValidationResult(const core::engine::validato
         ss << "    ]\n";
         ss << "  }\n";
         ss << "}\n";
+    } else {
+        // Fallback to table format
+        ss << formatValidationTableOutput(result);
     }
     
     return ss.str();
+}
+
+std::string CommandExecutor::formatValidationTableOutput(const core::engine::validator::ValidationResult& result) {
+    std::stringstream ss;
+    
+    // Header with emoji and timestamp
+    auto now = std::chrono::system_clock::now();
+    auto time_t = std::chrono::system_clock::to_time_t(now);
+    
+    if (result.getViolations().empty()) {
+        ss << "✅ AKAO VALIDATION REPORT\n";
+    } else {
+        ss << "❌ AKAO VALIDATION REPORT\n";
+    }
+    
+    ss << "📊 Project: " << result.getTargetPath() << "\n";
+    ss << "🕒 Timestamp: " << std::put_time(std::gmtime(&time_t), "%Y-%m-%dT%H:%M:%SZ") << "\n";
+    
+    // Count violations by category
+    std::map<std::string, int> category_violations;
+    std::map<std::string, int> category_total;
+    
+    // Initialize categories from the violations
+    for (const auto& violation : result.getViolations()) {
+        std::string category = extractCategoryFromRuleId(violation.rule_id);
+        category_violations[category]++;
+        category_total[category]++; // For now, assume 1 rule per violation
+    }
+    
+    // Add categories that might have 0 violations
+    std::vector<std::string> all_categories = {
+        "Structure", "Interface", "Language", "Security", 
+        "Testing", "Automation", "Measurement", "Validation",
+        "Visualization", "Documentation", "Governance", "Verification"
+    };
+    
+    for (const auto& cat : all_categories) {
+        if (category_total.find(cat) == category_total.end()) {
+            category_total[cat] = 0; // No rules found for this category
+            category_violations[cat] = 0;
+        }
+    }
+    
+    // Calculate totals
+    int total_rules = 0;
+    int total_violations = result.getViolations().size();
+    
+    for (const auto& [cat, count] : category_total) {
+        total_rules += count;
+    }
+    
+    int total_passed = total_rules - total_violations;
+    
+    ss << "🏛️ Rules: " << total_rules << " checked, " << total_passed << " passed, " << total_violations << " failed\n\n";
+    
+    // Create table
+    ss << "┌─────────────────────────┬──────────┬──────────┬───────────┐\n";
+    ss << "│ Category                │ Rules    │ Passed   │ Failed    │\n";
+    ss << "├─────────────────────────┼──────────┼──────────┼───────────┤\n";
+    
+    for (const auto& cat : all_categories) {
+        if (category_total[cat] > 0 || category_violations[cat] > 0) {
+            int rules = std::max(category_total[cat], 1); // At least 1 if there are violations
+            int failed = category_violations[cat];
+            int passed = rules - failed;
+            
+            ss << "│ " << std::left << std::setw(23) << cat 
+               << " │ " << std::right << std::setw(8) << rules
+               << " │ " << std::right << std::setw(8) << passed 
+               << " │ " << std::right << std::setw(9) << failed << " │\n";
+        }
+    }
+    
+    ss << "├─────────────────────────┼──────────┼──────────┼───────────┤\n";
+    ss << "│ " << std::left << std::setw(23) << "TOTAL"
+       << " │ " << std::right << std::setw(8) << total_rules
+       << " │ " << std::right << std::setw(8) << total_passed
+       << " │ " << std::right << std::setw(9) << total_violations << " │\n";
+    ss << "└─────────────────────────┴──────────┴──────────┴───────────┘\n";
+    
+    // Show violations if any
+    if (!result.getViolations().empty()) {
+        ss << "\n❌ VIOLATIONS:\n";
+        for (const auto& violation : result.getViolations()) {
+            ss << violation.rule_id << ":" << violation.file_path << ":" << violation.line_number << "\n";
+            ss << "  📁 File: " << violation.file_path << ":" << violation.line_number << "\n";
+            ss << "  📋 Rule: " << extractRuleNameFromId(violation.rule_id) << "\n";
+            ss << "  🎯 Issue: " << violation.message << "\n";
+            ss << "  💡 Suggestion: " << violation.suggestion << "\n";
+            if (!violation.philosophy_id.empty()) {
+                ss << "  📚 Philosophy: " << violation.philosophy_id << "\n";
+            }
+            ss << "\n";
+        }
+    }
+    
+    return ss.str();
+}
+
+std::string CommandExecutor::extractCategoryFromRuleId(const std::string& rule_id) {
+    // Extract category from rule_id like "akao:rule::structure:class_separation:v1"
+    size_t start = rule_id.find("::") + 2;
+    if (start == std::string::npos + 2) return "Unknown";
+    
+    size_t end = rule_id.find(":", start);
+    if (end == std::string::npos) return "Unknown";
+    
+    std::string category = rule_id.substr(start, end - start);
+    
+    // Capitalize first letter
+    if (!category.empty()) {
+        category[0] = std::toupper(category[0]);
+    }
+    
+    return category;
+}
+
+std::string CommandExecutor::extractRuleNameFromId(const std::string& rule_id) {
+    // Extract rule name from rule_id like "akao:rule::structure:class_separation:v1"
+    size_t start = rule_id.find("::") + 2;
+    if (start == std::string::npos + 2) return "Unknown Rule";
+    
+    size_t category_end = rule_id.find(":", start);
+    if (category_end == std::string::npos) return "Unknown Rule";
+    
+    size_t rule_start = category_end + 1;
+    size_t rule_end = rule_id.find(":", rule_start);
+    if (rule_end == std::string::npos) rule_end = rule_id.length();
+    
+    std::string rule_name = rule_id.substr(rule_start, rule_end - rule_start);
+    
+    // Convert underscore to space and capitalize
+    std::replace(rule_name.begin(), rule_name.end(), '_', ' ');
+    if (!rule_name.empty()) {
+        rule_name[0] = std::toupper(rule_name[0]);
+        for (size_t i = 1; i < rule_name.length(); ++i) {
+            if (rule_name[i-1] == ' ') {
+                rule_name[i] = std::toupper(rule_name[i]);
+            }
+        }
+    }
+    
+    return rule_name;
 }
 
 std::string CommandExecutor::formatComplianceReport(const core::trace::reporter::Report& report) {

@@ -19,7 +19,7 @@ struct ExecutionContext {
     bool verbose_mode = false;
     bool debug_mode = false;
     bool quiet_mode = false;
-    std::string output_format = "yaml";
+    std::string output_format = "table";  // Default to table format as per CLI specification
 };
 
 /**
@@ -208,8 +208,13 @@ private:
     
     // Output formatting
     std::string formatValidationResult(const core::engine::validator::ValidationResult& result);
+    std::string formatValidationTableOutput(const core::engine::validator::ValidationResult& result);
     std::string formatComplianceReport(const core::trace::reporter::Report& report);
     std::string formatExecutionSummary(const ExecutionResult& result);
+    
+    // Rule ID parsing helpers
+    std::string extractCategoryFromRuleId(const std::string& rule_id);
+    std::string extractRuleNameFromId(const std::string& rule_id);
     
     // Error handling
     void handleValidationError(const std::exception& e, ExecutionResult& result);
