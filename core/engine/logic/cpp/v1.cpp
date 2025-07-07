@@ -203,6 +203,88 @@ std::vector<Value::Type> HasMainFunction::getParameterTypes() const {
     return {Value::Type::STRING};
 }
 
+// Phase 2: Enhanced C++ analysis functions implementation
+Value CountFunctionsFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    ExtractFunctionsFunction extractor;
+    Value result = extractor.execute(args, ctx);
+    return Value(static_cast<int>(result.asCollection().size()));
+}
+
+std::vector<Value::Type> CountFunctionsFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
+}
+
+Value ExtractNamespacesFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("cpp.extract_namespaces expects 1 argument (code string)");
+    }
+    
+    if (args[0].getType() != Value::Type::STRING) {
+        throw std::runtime_error("cpp.extract_namespaces expects string argument");
+    }
+    
+    std::string code = removeComments(args[0].asString());
+    std::vector<Value> namespaces;
+    
+    // Regex to match namespace declarations
+    std::regex namespaceRegex(R"(\bnamespace\s+(\w+)(?:\s*\{|\s*=))");
+    std::sregex_iterator iter(code.begin(), code.end(), namespaceRegex);
+    std::sregex_iterator end;
+    
+    for (; iter != end; ++iter) {
+        std::smatch match = *iter;
+        namespaces.emplace_back(match[1].str());
+    }
+    
+    return Value(namespaces);
+}
+
+std::vector<Value::Type> ExtractNamespacesFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
+}
+
+Value HasClassFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 2) {
+        throw std::runtime_error("cpp.has_class expects 2 arguments (code string, class name)");
+    }
+    
+    if (args[0].getType() != Value::Type::STRING || args[1].getType() != Value::Type::STRING) {
+        throw std::runtime_error("cpp.has_class expects string arguments");
+    }
+    
+    std::string code = removeComments(args[0].asString());
+    std::string className = args[1].asString();
+    
+    // Create regex pattern to find the specific class
+    std::string pattern = R"(\b(?:class|struct)\s+)" + className + R"((?:\s*:\s*[^{]+)?\s*\{)";
+    std::regex classRegex(pattern);
+    
+    return Value(std::regex_search(code, classRegex));
+}
+
+std::vector<Value::Type> HasClassFunction::getParameterTypes() const {
+    return {Value::Type::STRING, Value::Type::STRING};
+}
+
+Value GetLineCountFunction::execute(const std::vector<Value>& args, Context& ctx) {
+    if (args.size() != 1) {
+        throw std::runtime_error("cpp.get_line_count expects 1 argument (code string)");
+    }
+    
+    if (args[0].getType() != Value::Type::STRING) {
+        throw std::runtime_error("cpp.get_line_count expects string argument");
+    }
+    
+    std::string code = args[0].asString();
+    int lineCount = std::count(code.begin(), code.end(), '\n') + 1;
+    
+    return Value(lineCount);
+}
+
+std::vector<Value::Type> GetLineCountFunction::getParameterTypes() const {
+    return {Value::Type::STRING};
+}
+
 // Registration function
 void registerCppFunctions(PureLogicEngine& engine) {
     engine.registerFunction(std::make_unique<ExtractClassesFunction>());
@@ -210,6 +292,12 @@ void registerCppFunctions(PureLogicEngine& engine) {
     engine.registerFunction(std::make_unique<ExtractFunctionsFunction>());
     engine.registerFunction(std::make_unique<GetIncludesFunction>());
     engine.registerFunction(std::make_unique<HasMainFunction>());
+    
+    // Phase 2: Enhanced functions
+    engine.registerFunction(std::make_unique<CountFunctionsFunction>());
+    engine.registerFunction(std::make_unique<ExtractNamespacesFunction>());
+    engine.registerFunction(std::make_unique<HasClassFunction>());
+    engine.registerFunction(std::make_unique<GetLineCountFunction>());
 }
 
 } // namespace akao::logic::cpp

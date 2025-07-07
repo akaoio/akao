@@ -58,6 +58,43 @@ public:
     std::string getDescription() const override { return "Checks if C++ code contains a main function"; }
 };
 
+// Phase 2: Enhanced C++ analysis functions
+class CountFunctionsFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "cpp.count_functions"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::INTEGER; }
+    std::string getDescription() const override { return "Counts the number of functions in C++ code"; }
+};
+
+class ExtractNamespacesFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "cpp.extract_namespaces"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::COLLECTION; }
+    std::string getDescription() const override { return "Extracts namespace declarations from C++ code"; }
+};
+
+class HasClassFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "cpp.has_class"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::BOOLEAN; }
+    std::string getDescription() const override { return "Checks if C++ code contains a specific class"; }
+};
+
+class GetLineCountFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "cpp.get_line_count"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::INTEGER; }
+    std::string getDescription() const override { return "Counts the number of lines in C++ code"; }
+};
+
 /**
  * @brief Register all C++ analysis functions
  */

@@ -58,6 +58,43 @@ public:
     std::string getDescription() const override { return "Returns the current working directory"; }
 };
 
+// Phase 2: Additional filesystem functions
+class ListSubdirsFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "filesystem.list_subdirs"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::COLLECTION; }
+    std::string getDescription() const override { return "Lists all subdirectories in a directory"; }
+};
+
+class FileExistsFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "filesystem.file_exists"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::BOOLEAN; }
+    std::string getDescription() const override { return "Checks if a file or directory exists"; }
+};
+
+class IsDirectoryFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "filesystem.is_directory"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::BOOLEAN; }
+    std::string getDescription() const override { return "Checks if a path is a directory"; }
+};
+
+class GetFileNameFunction : public BuiltinFunction {
+public:
+    Value execute(const std::vector<Value>& args, Context& ctx) override;
+    std::string getName() const override { return "filesystem.get_filename"; }
+    std::vector<Value::Type> getParameterTypes() const override;
+    Value::Type getReturnType() const override { return Value::Type::STRING; }
+    std::string getDescription() const override { return "Extracts the filename from a path"; }
+};
+
 /**
  * @brief Register all filesystem functions
  */
