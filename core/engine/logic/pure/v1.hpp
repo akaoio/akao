@@ -8,51 +8,8 @@
 #include <variant>
 #include <functional>
 
-// TEMPORARY: Minimal compatibility layer during legacy cleanup
-// This is a STUB implementation that allows compilation while external yaml-cpp is removed
-// Full functionality will be restored with new robust YAML library
-namespace YAML {
-    class Node {
-    public:
-        // Minimal stub to allow compilation
-        bool IsDefined() const { return false; }
-        bool IsNull() const { return true; }
-        bool IsScalar() const { return false; }
-        bool IsMap() const { return false; }
-        bool IsSequence() const { return false; }
-        
-        template<typename T>
-        T as() const { return T{}; }
-        
-        Node operator[](const std::string& key) const { return Node{}; }
-        Node operator[](const char* key) const { return Node{}; }
-        Node operator[](size_t) const { return Node{}; }
-        
-        // Boolean conversion for if-checks
-        operator bool() const { return false; }
-        
-        // Empty iterator to prevent compilation errors
-        class iterator {
-        public:
-            iterator& operator++() { return *this; }
-            Node operator*() const { return Node{}; }
-            bool operator!=(const iterator&) const { return false; }
-        };
-        
-        iterator begin() const { return iterator{}; }
-        iterator end() const { return iterator{}; }
-    };
-    
-    // Stub functions
-    static Node LoadFile(const std::string&) { return Node{}; }
-    static Node Load(const std::string&) { return Node{}; }
-    static std::string Dump(const Node&) { return ""; }
-    
-    class Exception : public std::exception {
-    public:
-        const char* what() const noexcept override { return "YAML stub - functionality disabled during legacy cleanup"; }
-    };
-}
+// Integration with AKAO's Enhanced YAML Library
+// Use AKAO's production-ready internal YAML implementation
 
 namespace akao::logic {
 
@@ -83,10 +40,10 @@ public:
     ~PureLogicEngine();
 
     // Core logic execution - pure interpreter methods
-    Value executeLogic(const YAML::Node& logic, Context& ctx);
-    Value evaluate(const YAML::Node& logic, Context& ctx); // Alias for convenience  
+    Value executeLogic(const akao::core::engine::parser::YamlNode& logic, Context& ctx);
+    Value evaluate(const akao::core::engine::parser::YamlNode& logic, Context& ctx); // Alias for convenience  
     Value evaluate(const std::string& logic_str, Context& ctx); // String convenience method
-    bool evaluateCondition(const YAML::Node& condition, Context& ctx);
+    bool evaluateCondition(const akao::core::engine::parser::YamlNode& condition, Context& ctx);
     
     // Function and operator execution - no domain knowledge
     Value executeFunction(const std::string& func, const std::vector<Value>& args);
@@ -132,25 +89,25 @@ public:
 
 private:
     // Internal execution methods - pure syntax handling
-    Value executeQuantifier(const YAML::Node& quantifier, Context& ctx);
-    Value executeConditional(const YAML::Node& conditional, Context& ctx);
-    Value executeFixpoint(const YAML::Node& fixpoint, Context& ctx);
-    Value executeLiteral(const YAML::Node& literal);
+    Value executeQuantifier(const akao::core::engine::parser::YamlNode& quantifier, Context& ctx);
+    Value executeConditional(const akao::core::engine::parser::YamlNode& conditional, Context& ctx);
+    Value executeFixpoint(const akao::core::engine::parser::YamlNode& fixpoint, Context& ctx);
+    Value executeLiteral(const akao::core::engine::parser::YamlNode& literal);
     Value executeVariable(const std::string& var_name, Context& ctx);
     
     // Expression type detection - syntax only
-    bool isQuantifier(const YAML::Node& node);
-    bool isOperator(const YAML::Node& node);
-    bool isFunction(const YAML::Node& node);
-    bool isConditional(const YAML::Node& node);
-    bool isVariable(const YAML::Node& node);
-    bool isLiteral(const YAML::Node& node);
+    bool isQuantifier(const akao::core::engine::parser::YamlNode& node);
+    bool isOperator(const akao::core::engine::parser::YamlNode& node);
+    bool isFunction(const akao::core::engine::parser::YamlNode& node);
+    bool isConditional(const akao::core::engine::parser::YamlNode& node);
+    bool isVariable(const akao::core::engine::parser::YamlNode& node);
+    bool isLiteral(const akao::core::engine::parser::YamlNode& node);
     
     // Error handling
-    void throwLogicError(const std::string& message, const YAML::Node& context);
+    void throwLogicError(const std::string& message, const akao::core::engine::parser::YamlNode& context);
     
     // YAML-Value conversion helpers
-    Value convertYamlToValue(const YAML::Node& node);
+    Value convertYamlToValue(const akao::core::engine::parser::YamlNode& node);
 
     // Function registry - pure computational functions only
     std::map<std::string, std::shared_ptr<BuiltinFunction>> builtin_functions_;
@@ -169,8 +126,8 @@ private:
     
     // Helper methods
     bool valuesEqual(const Value& a, const Value& b);
-    bool containsVariables(const YAML::Node& node);
-    std::string nodeToString(const YAML::Node& node);
+    bool containsVariables(const akao::core::engine::parser::YamlNode& node);
+    std::string nodeToString(const akao::core::engine::parser::YamlNode& node);
     void clearCache();
 };
 
