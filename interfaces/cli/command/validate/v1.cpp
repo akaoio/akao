@@ -3,9 +3,11 @@
 #include "../../../../core/filesystem/scanner/directory_scanner.hpp"
 #include "../../../../core/engine/parser/yaml/parser/v1.hpp"
 #include "../../../../core/trace/tracer/violation_tracer.hpp"
+#include "../../../../core/engine/self_validation/v1.hpp"
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 namespace akao::interfaces::cli::commands {
 
@@ -184,17 +186,79 @@ executor::ExecutionResult ValidateCommand::selfValidate(const ValidationOptions&
     executor::ExecutionResult result;
     result.success = true;
     result.exit_code = 0;
+    
+    std::cout << "🎯 Initiating Phase 3: Self-Validation Architecture Implementation" << std::endl;
+    
+    try {
+        // Create Phase 3 self-validation orchestrator
+        akao::core::engine::self_validation::SelfValidationOrchestrator orchestrator;
+        
+        // Execute comprehensive Phase 3 self-validation
+        auto validation_result = orchestrator.executePhase3SelfValidation();
+        
+        // Set execution result based on validation outcome
+        result.success = validation_result.overall_success;
+        result.exit_code = validation_result.overall_success ? 0 : 1;
+        
+        // Populate result data
+        result.data["validation_type"] = "phase3_self_validation";
+        result.data["architectural_compliance"] = std::to_string(validation_result.architectural_compliance_score);
+        result.data["philosophical_consistency"] = std::to_string(validation_result.philosophical_consistency_score);
+        result.data["mathematical_soundness"] = std::to_string(validation_result.mathematical_soundness_score);
+        result.data["overall_quality"] = std::to_string(validation_result.overall_quality_score);
+        result.data["total_issues"] = std::to_string(validation_result.total_issues_found);
+        result.data["critical_issues"] = std::to_string(validation_result.critical_issues);
+        result.data["files_analyzed"] = std::to_string(validation_result.reflection_result.files_analyzed);
+        result.data["functions_analyzed"] = std::to_string(validation_result.reflection_result.functions_analyzed);
+        
+        // Set result messages
+        if (validation_result.overall_success) {
+            result.output_message = "✅ Phase 3: Self-Validation Architecture Implementation COMPLETE\n" +
+                                   validation_result.executive_summary;
+        } else {
+            result.output_message = "⚠️ Phase 3: Self-Validation requires attention\n" +
+                                   validation_result.executive_summary;
+        }
+        
+        // Export detailed report if requested
+        if (!options.export_file.empty()) {
+            std::ofstream report_file(options.export_file);
+            if (report_file.is_open()) {
+                report_file << validation_result.detailed_report;
+                report_file.close();
+                result.data["exported_report"] = options.export_file;
+            }
+        }
+        
+        // Set performance metrics
+        result.files_processed = validation_result.reflection_result.files_analyzed;
+        result.violations_found = validation_result.total_issues_found;
+        
+        std::cout << "\n📊 Phase 3 Self-Validation Summary:" << std::endl;
+        std::cout << "   Overall Success: " << (validation_result.overall_success ? "✅ YES" : "❌ NO") << std::endl;
+        std::cout << "   Files Analyzed: " << validation_result.reflection_result.files_analyzed << std::endl;
+        std::cout << "   Functions Analyzed: " << validation_result.reflection_result.functions_analyzed << std::endl;
+        std::cout << "   Issues Found: " << validation_result.total_issues_found << std::endl;
+        std::cout << "   Quality Score: " << std::fixed << std::setprecision(1) 
+                  << (validation_result.overall_quality_score * 100) << "%" << std::endl;
+        
+    } catch (const std::exception& e) {
+        result.success = false;
+        result.exit_code = 1;
+        result.error_message = "Phase 3 self-validation failed: " + std::string(e.what());
+        std::cerr << "❌ Phase 3 self-validation error: " << e.what() << std::endl;
+        
+        // Fallback to traditional self-validation
+        std::cout << "🔄 Falling back to traditional self-validation..." << std::endl;
+        ValidationOptions self_options = options;
+        self_options.target_path = ".";
+        self_options.rule_categories = {"structure", "interface", "language", "security"};
+        self_options.enable_tracing = true;
+        
+        return validateProject(self_options, context);
+    }
 
-    // Self-validation: validate Akao against its own rules
-    ValidationOptions self_options = options;
-    self_options.target_path = "."; // Current directory (Akao itself)
-    self_options.rule_categories = {"structure", "interface", "language", "security"};
-    self_options.enable_tracing = true;
-
-    result.data["self_validation"] = "true";
-    result.data["message"] = "Akao validating itself using its own rules";
-
-    return validateProject(self_options, context);
+    return result;
 }
 
 executor::ExecutionResult ValidateCommand::traceViolation(const std::string& violation_id,
