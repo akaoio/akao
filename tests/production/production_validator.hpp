@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../core/engine/logic/pure/v1.hpp"
 #include "../../core/engine/validator/universal/v1.hpp"
 #include <chrono>
 #include <string>
@@ -49,11 +48,12 @@ public:
      */
     BenchmarkResult benchmarkSelfProving();
 
-private:
+public:
     static constexpr size_t DEFAULT_ITERATIONS = 10000;
     static constexpr double ACCEPTABLE_TIME_MS = 1000.0; // 1 second for 10k operations
+
+private:
     
-    core::engine::logic::PureLogicEngine logic_engine_;
     core::engine::validator::UniversalValidator validator_;
 };
 

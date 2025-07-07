@@ -287,7 +287,7 @@ ProductionValidator::ValidationReport ProductionValidator::validateProductionRea
             report.blocking_issues.push_back("Performance issue: " + perf.operation_name + 
                                             " too slow (" + std::to_string(perf.execution_time_ms) + "ms)");
             report.production_ready = false;
-        } else if (perf.execution_time_ms > ACCEPTABLE_TIME_MS * 0.8) {
+        } else if (perf.execution_time_ms > PerformanceBenchmark::ACCEPTABLE_TIME_MS * 0.8) {
             report.warnings.push_back("Performance warning: " + perf.operation_name + 
                                     " approaching threshold (" + std::to_string(perf.execution_time_ms) + "ms)");
         }
