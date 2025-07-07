@@ -266,12 +266,17 @@ std::shared_ptr<YamlNode> YamlParser::parseString(const std::string& str) {
         return YamlNode::createInteger(std::stoi(trimmed));
     }
     
+    // Enhanced: Check for float values
+    if (isFloat(trimmed)) {
+        return YamlNode::createFloat(std::stod(trimmed));
+    }
+    
     if (isBoolean(trimmed)) {
         return YamlNode::createBoolean(trimmed == "true" || trimmed == "True" || trimmed == "TRUE");
     }
     
     if (isNull(trimmed)) {
-        return YamlNode::createString("");
+        return YamlNode::createNull();  // Enhanced: Use proper null creation
     }
     
     // Remove quotes if present
@@ -449,6 +454,42 @@ bool YamlParser::isInteger(const std::string& str) const {
         if (!std::isdigit(str[i])) return false;
     }
     return start < str.length();
+}
+
+bool YamlParser::isFloat(const std::string& str) const {
+    if (str.empty()) return false;
+    
+    bool has_dot = false;
+    bool has_e = false;
+    size_t start = 0;
+    
+    // Handle negative numbers
+    if (str[0] == '-' || str[0] == '+') {
+        start = 1;
+        if (str.length() == 1) return false;
+    }
+    
+    for (size_t i = start; i < str.length(); ++i) {
+        char c = str[i];
+        
+        if (c == '.') {
+            if (has_dot || has_e) return false; // Multiple dots or dot after e
+            has_dot = true;
+        } else if (c == 'e' || c == 'E') {
+            if (has_e || i == start) return false; // Multiple e or e at start
+            has_e = true;
+            // Next character can be + or -
+            if (i + 1 < str.length() && (str[i + 1] == '+' || str[i + 1] == '-')) {
+                i++; // Skip the sign
+                if (i + 1 >= str.length()) return false; // Must have digits after sign
+            }
+        } else if (!std::isdigit(c)) {
+            return false;
+        }
+    }
+    
+    // Must have decimal point or scientific notation to be a float
+    return has_dot || has_e;
 }
 
 bool YamlParser::isBoolean(const std::string& str) const {

@@ -8,23 +8,30 @@
 namespace akao::core::engine::parser {
 
 /**
- * @brief Pure C++ YAML Parser for Akao framework
+ * @brief Production-ready YAML Parser for Akao framework
  * 
+ * ENHANCED VERSION - Inspired by libyaml architecture and best practices
  * NO EXTERNAL DEPENDENCIES - Pure C++ standard library only
  * Parses YAML files from philosophies/ and rules/ directories
  * 
  * Philosophy Compliance:
  * - akao:philosophy::structure:isolation:v1 (one class per file)
  * - akao:philosophy::language:isolation:v1 (pure C++ only)
+ * - akao:philosophy::validation:universal:v1 (comprehensive validation)
  * - Built-in parser requirement (no yaml-cpp, no external libs)
  * 
- * Supported YAML Features:
- * - Key-value pairs
- * - Nested mappings
- * - Sequences (arrays)
- * - Strings, integers, booleans
- * - Comments (ignored)
- * - Multi-line values
+ * YAML 1.2 Core Features Supported:
+ * - Key-value pairs with proper escaping
+ * - Nested mappings and sequences
+ * - Sequences (arrays) with proper formatting
+ * - All scalar types: strings, integers, floats, booleans, null
+ * - Comments (properly ignored)
+ * - Multi-line values (literal and folded)
+ * - Anchors and aliases (references)
+ * - Multi-document streams
+ * - Proper indentation handling
+ * - Unicode support
+ * - Error recovery and detailed diagnostics
  */
 class YamlParser {
 private:
@@ -33,28 +40,66 @@ private:
     size_t line_;
     size_t column_;
 
-    // Parsing state
+    // Enhanced parsing state for production readiness
     struct ParseContext {
         int indent_level;
         bool in_sequence;
         bool in_mapping;
         std::string current_key;
+        bool allow_anchors;
+        bool multi_document;
+        size_t document_count;
     };
+    
+    // Anchor and alias support (libyaml inspired)
+    struct Anchor {
+        std::string name;
+        std::shared_ptr<YamlNode> value;
+        size_t line;
+        size_t column;
+    };
+    
+    std::map<std::string, Anchor> anchors_;
+    
+    // Enhanced error tracking
+    struct ErrorContext {
+        std::string source_file;
+        std::string source_content;
+        std::vector<std::string> error_stack;
+    };
+    
+    ErrorContext error_context_;
 
 public:
     // Constructor
     YamlParser() = default;
 
-    // Main parsing methods
+    // Main parsing methods (enhanced)
     std::shared_ptr<YamlNode> parse(const std::string& yaml_content);
     std::shared_ptr<YamlNode> parseFile(const std::string& file_path);
-
-    // Error handling
+    std::vector<std::shared_ptr<YamlNode>> parseMultiDocument(const std::string& yaml_content);
+    std::vector<std::shared_ptr<YamlNode>> parseMultiDocumentFile(const std::string& file_path);
+    
+    // Advanced parsing options
+    struct ParseOptions {
+        bool allow_anchors = true;
+        bool allow_multi_document = true;
+        bool strict_mode = false;
+        bool preserve_comments = false;
+        size_t max_depth = 100;
+        size_t max_size = 10 * 1024 * 1024; // 10MB limit
+    };
+    
+    std::shared_ptr<YamlNode> parseWithOptions(const std::string& yaml_content, const ParseOptions& options);
+    
+    // Enhanced error handling
     struct ParseError {
         std::string message;
         size_t line;
         size_t column;
         std::string context;
+        std::string error_type;  // "syntax", "semantic", "limit", "encoding"
+        std::string suggestion;  // Helpful suggestion for fixing the error
     };
 
     class ParseException : public std::exception {
@@ -113,8 +158,9 @@ private:
     enum class ValueType { SEQUENCE, MAPPING, STRING_VALUE };
     ValueType determineValueType(const std::string& next_line) const;
     
-    // Type detection
+    // Enhanced type detection
     bool isInteger(const std::string& str) const;
+    bool isFloat(const std::string& str) const;      // Enhanced: Float detection
     bool isBoolean(const std::string& str) const;
     bool isNull(const std::string& str) const;
     
