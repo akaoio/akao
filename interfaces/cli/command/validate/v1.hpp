@@ -61,6 +61,7 @@ private:
         bool dry_run = false;
         std::string export_file;
         bool include_metrics = false;
+        bool phase6_integration = false;
     };
 
     /**
@@ -97,6 +98,15 @@ private:
      */
     executor::ExecutionResult autoFixViolations(const ValidationOptions& options,
                                                const executor::ExecutionContext& context);
+
+    /**
+     * @brief Execute Phase 6 integration testing
+     * 
+     * Runs complete system integration and final validation
+     * as specified in Phase 6 requirements.
+     */
+    executor::ExecutionResult executePhase6Integration(const ValidationOptions& options,
+                                                      const executor::ExecutionContext& context);
 
     /**
      * @brief Load and validate rules

@@ -4,6 +4,7 @@
 #include "../../../../core/engine/parser/yaml/parser/v1.hpp"
 #include "../../../../core/trace/tracer/violation_tracer.hpp"
 #include "../../../../core/engine/self_validation/v1.hpp"
+#include "../../../../core/engine/phase6/v1.hpp"
 #include <filesystem>
 #include <iostream>
 #include <fstream>
@@ -25,6 +26,11 @@ executor::ExecutionResult ValidateCommand::execute(const executor::ExecutionCont
         // Handle self-validation
         if (options.self_validate) {
             return selfValidate(options, context);
+        }
+
+        // Handle Phase 6 integration testing
+        if (options.phase6_integration) {
+            return executePhase6Integration(options, context);
         }
 
         // Handle violation tracing
@@ -80,6 +86,9 @@ ValidateCommand::ValidationOptions ValidateCommand::parseArguments(const std::ve
         }
         else if (arg == "--self") {
             options.self_validate = true;
+        }
+        else if (arg == "--phase6") {
+            options.phase6_integration = true;
         }
         else if (arg == "--dry-run") {
             options.dry_run = true;
@@ -454,8 +463,108 @@ std::map<std::string, std::string> ValidateCommand::getSupportedFlags() const {
         {"fix", "Auto-fix violations where possible"},
         {"self", "Self-validate Akao against its own rules"},
         {"dry-run", "Show what would be fixed without making changes"},
-        {"metrics", "Include detailed metrics in output"}
+        {"metrics", "Include detailed metrics in output"},
+        {"phase6", "Execute Phase 6 complete system integration testing"}
     };
+}
+
+executor::ExecutionResult ValidateCommand::executePhase6Integration(const ValidationOptions& options,
+                                                                   const executor::ExecutionContext& context) {
+    executor::ExecutionResult result;
+    result.success = true;
+    result.exit_code = 0;
+
+    try {
+        std::ostringstream output;
+        output << "=== AKAO Phase 6: Complete System Integration and Final Validation ===\n\n";
+
+        // Initialize Phase 6 System Integrator
+        akao::core::engine::phase6::Phase6SystemIntegrator integrator(context.current_directory, context.verbose_mode);
+
+        // Execute Phase 6 integration
+        auto phase6_result = integrator.executePhase6Integration();
+
+        // Generate output based on results
+        if (phase6_result.success) {
+            output << "✅ Phase 6 Integration: SUCCESS\n\n";
+            output << "Overall Score: " << std::fixed << std::setprecision(1) << phase6_result.overall_score << "%\n";
+            output << "Execution Time: " << phase6_result.end_to_end_latency_ms << " ms\n\n";
+
+            // Component status summary
+            output << "Component Integration Results:\n";
+            for (const auto& component : phase6_result.component_status) {
+                std::string status = component.second ? "✅ PASS" : "❌ FAIL";
+                output << "  " << component.first << ": " << status << "\n";
+            }
+            output << "\n";
+
+            // Quality metrics
+            output << "Quality Metrics:\n";
+            output << "  Architectural Compliance: " << std::fixed << std::setprecision(1) << phase6_result.architectural_compliance_score << "%\n";
+            output << "  Philosophical Alignment: " << std::fixed << std::setprecision(1) << phase6_result.philosophical_alignment_score << "%\n";
+            output << "  Production Readiness: " << std::fixed << std::setprecision(1) << phase6_result.production_readiness_score << "%\n\n";
+
+            // Production certification status
+            if (phase6_result.production_readiness_score >= 75.0) {
+                output << "🎉 PRODUCTION CERTIFICATION: APPROVED\n";
+                output << "System is ready for production deployment.\n\n";
+            } else {
+                output << "⚠️  PRODUCTION CERTIFICATION: PENDING\n";
+                output << "System requires improvements before production deployment.\n\n";
+            }
+
+            result.success = true;
+            result.exit_code = 0;
+            result.output_message = output.str();
+
+            // Include detailed report if verbose
+            if (context.verbose_mode) {
+                std::string detailed_report = integrator.generateFinalCertificationReport(phase6_result);
+                result.output_message += "\n" + detailed_report;
+            }
+
+        } else {
+            output << "❌ Phase 6 Integration: FAILED\n\n";
+            output << "Critical Issues Detected:\n";
+            for (const auto& issue : phase6_result.critical_issues) {
+                output << "  🚨 " << issue << "\n";
+            }
+            output << "\n";
+
+            if (!phase6_result.warnings.empty()) {
+                output << "Warnings:\n";
+                for (const auto& warning : phase6_result.warnings) {
+                    output << "  ⚠️  " << warning << "\n";
+                }
+                output << "\n";
+            }
+
+            if (!phase6_result.recommendations.empty()) {
+                output << "Recommendations:\n";
+                for (const auto& recommendation : phase6_result.recommendations) {
+                    output << "  💡 " << recommendation << "\n";
+                }
+                output << "\n";
+            }
+
+            result.success = false;
+            result.exit_code = 1;
+            result.error_message = "Phase 6 integration validation failed";
+            result.output_message = output.str();
+        }
+
+        // Set performance metrics
+        result.execution_time_seconds = phase6_result.end_to_end_latency_ms / 1000.0;
+        result.files_processed = phase6_result.total_components_tested;
+
+        return result;
+
+    } catch (const std::exception& e) {
+        result.success = false;
+        result.exit_code = 1;
+        result.error_message = "Phase 6 integration execution failed: " + std::string(e.what());
+        return result;
+    }
 }
 
 } // namespace akao::interfaces::cli::commands
