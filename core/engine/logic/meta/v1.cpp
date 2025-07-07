@@ -1,6 +1,7 @@
 #include "v1.hpp"
-#include <yaml-cpp/yaml.h>
+// #include <yaml-cpp/yaml.h>  // Removed: external dependency cleanup
 #include <algorithm>
+#include <stdexcept>
 
 namespace akao::logic::meta {
 

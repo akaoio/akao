@@ -1,5 +1,6 @@
 #include "v1.hpp"
 #include <memory>
+#include <stdexcept>
 
 namespace akao::logic::builtin {
 
