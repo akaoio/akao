@@ -1,4 +1,5 @@
 #include "v1.hpp"
+#include "../../logic/pure/v1.hpp"
 #include <filesystem>
 #include <fstream>
 #include <regex>
@@ -39,6 +40,8 @@ UniversalValidator::UniversalValidator(const std::string& rules_directory)
     yaml_parser_ = std::make_unique<parser::YamlParser>();
     rule_registry_ = std::make_unique<rule::registry::RuleRegistry>(rules_directory);
 }
+
+UniversalValidator::~UniversalValidator() = default;
 
 // Initialization
 bool UniversalValidator::initialize() {
@@ -262,11 +265,24 @@ std::vector<Violation> UniversalValidator::executeRule(const rule::loader::Rule&
     } else if (rule.category == "testing") {
         violations = executeTestingRule(rule, context);
     } else {
-        // Generic rule execution using Datalog queries
-        if (!rule.datalog_rules.empty()) {
+        // Execute Pure Logic expressions with mathematical formal proofs
+        if (!rule.pure_logic_expressions.empty()) {
+            for (const auto& logic_expression : rule.pure_logic_expressions) {
+                auto pure_logic_violations = findPureLogicViolations(logic_expression, context);
+                for (const auto& violation_desc : pure_logic_violations) {
+                    auto violation = createViolation(rule, context.target_path, 1, violation_desc);
+                    violations.push_back(violation);
+                }
+            }
+        }
+        
+        // Fallback to datalog_rules for backward compatibility during migration
+        if (violations.empty() && !rule.datalog_rules.empty()) {
             for (const auto& datalog_rule : rule.datalog_rules) {
-                auto datalog_violations = findDatalogViolations(datalog_rule, context);
-                for (const auto& violation_desc : datalog_violations) {
+                // Convert datalog to Pure Logic automatically
+                std::string pure_logic_expr = convertDatalogToPureLogic(datalog_rule);
+                auto pure_logic_violations = findPureLogicViolations(pure_logic_expr, context);
+                for (const auto& violation_desc : pure_logic_violations) {
                     auto violation = createViolation(rule, context.target_path, 1, violation_desc);
                     violations.push_back(violation);
                 }
@@ -495,6 +511,98 @@ size_t UniversalValidator::getLoadedRulesCount() const {
 
 std::vector<std::string> UniversalValidator::getAvailableCategories() const {
     return rule_registry_->getAllCategories();
+}
+
+std::vector<std::string> UniversalValidator::findPureLogicViolations(const std::string& logic_expression, 
+                                                                     const RuleExecutionContext& context) {
+    std::vector<std::string> violations;
+    
+    try {
+        // Create Pure Logic Engine execution context
+        akao::logic::Context logic_context;
+        
+        // Set up context variables
+        logic_context.bindVariable("target_path", akao::logic::Value(context.target_path));
+        
+        // Convert ProjectType enum to string
+        std::string project_type_str;
+        switch (context.project_type) {
+            case UniversalValidator::ProjectType::CPP_PROJECT: project_type_str = "cpp"; break;
+            case UniversalValidator::ProjectType::RUST_PROJECT: project_type_str = "rust"; break;
+            case UniversalValidator::ProjectType::PYTHON_PROJECT: project_type_str = "python"; break;
+            case UniversalValidator::ProjectType::JAVASCRIPT_PROJECT: project_type_str = "javascript"; break;
+            case UniversalValidator::ProjectType::GO_PROJECT: project_type_str = "go"; break;
+            case UniversalValidator::ProjectType::MIXED_PROJECT: project_type_str = "mixed"; break;
+            case UniversalValidator::ProjectType::AKAO_PROJECT: project_type_str = "akao"; break;
+            default: project_type_str = "unknown"; break;
+        }
+        logic_context.bindVariable("project_type", akao::logic::Value(project_type_str));
+        
+        // Add discovered files
+        std::vector<akao::logic::Value> files;
+        for (const auto& file : context.discovered_files) {
+            files.push_back(akao::logic::Value(file));
+        }
+        logic_context.bindVariable("discovered_files", akao::logic::Value(files));
+        
+        // Initialize Pure Logic Engine if not already done
+        if (!pure_logic_engine_) {
+            pure_logic_engine_ = std::make_unique<akao::logic::PureLogicEngine>();
+            pure_logic_engine_->initialize();
+        }
+        
+        // Execute the Pure Logic expression
+        auto result = pure_logic_engine_->evaluate(logic_expression, logic_context);
+        
+        // Convert result to violations
+        if (result.isBoolean() && !result.asBoolean()) {
+            violations.push_back("Pure Logic validation failed: " + logic_expression);
+        } else if (result.isCollection()) {
+            auto violation_list = result.asCollection();
+            for (const auto& v : violation_list) {
+                violations.push_back(v.toString());
+            }
+        }
+        
+    } catch (const std::exception& e) {
+        violations.push_back("Pure Logic execution error: " + std::string(e.what()));
+    }
+    
+    return violations;
+}
+
+std::string UniversalValidator::convertDatalogToPureLogic(const std::string& datalog_rule) {
+    // Simple conversion from datalog to Pure Logic syntax  
+    // This is a temporary bridge during migration
+    
+    std::string pure_logic = datalog_rule;
+    
+    // Convert basic datalog patterns to Pure Logic expressions
+    std::regex violation_pattern(R"((\w+)_violation\(([^)]+)\)\s*:-\s*(.+)\.)");
+    std::regex compliant_pattern(R"((\w+)_compliant\(([^)]+)\)\s*:-\s*(.+)\.)");
+    
+    std::smatch match;
+    if (std::regex_search(datalog_rule, match, violation_pattern)) {
+        // Convert violation rule to Pure Logic
+        std::string rule_type = match[1].str();
+        std::string file_var = match[2].str();
+        std::string conditions = match[3].str();
+        
+        pure_logic = "forall(" + file_var + ", " + 
+                     "implies(and(file_exists(" + file_var + "), " + conditions + "), " +
+                     "not(" + rule_type + "_compliant(" + file_var + "))))";
+    } else if (std::regex_search(datalog_rule, match, compliant_pattern)) {
+        // Convert compliance rule to Pure Logic
+        std::string rule_type = match[1].str();
+        std::string file_var = match[2].str();
+        std::string conditions = match[3].str();
+        
+        pure_logic = "forall(" + file_var + ", " +
+                     "implies(file_exists(" + file_var + "), " +
+                     "equals(" + rule_type + "_compliant(" + file_var + "), " + conditions + ")))";
+    }
+    
+    return pure_logic;
 }
 
 bool UniversalValidator::executeDatalogQuery(const std::string& query, const RuleExecutionContext& context) {

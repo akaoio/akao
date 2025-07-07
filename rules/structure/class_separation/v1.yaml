@@ -19,6 +19,9 @@ rule_definition:
   conditions:
   - Core condition for structure class_separation
   exceptions: []
+  pure_logic_expressions:
+  - "forall(file, implies(and(file_exists(file), has_extension(file, '.cpp')), equals(class_count(file), 1)))"
+  - "forall(file, implies(and(file_exists(file), has_extension(file, '.hpp')), equals(class_count(file), 1)))"
   datalog_rules:
   - class_separation_violation(File) :- structure_file(File), not class_separation_compliant(File).
   - class_separation_compliant(File) :- structure_file(File), meets_class_separation_criteria(File).

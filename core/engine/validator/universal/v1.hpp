@@ -8,6 +8,14 @@
 #include <vector>
 #include <functional>
 #include <map>
+#include <regex>
+
+// Forward declarations for Pure Logic Engine
+namespace akao::logic {
+    class PureLogicEngine;
+    class Context;
+    class Value;
+}
 
 namespace akao::core::engine::validator {
 
@@ -29,6 +37,9 @@ private:
     // Core components
     std::unique_ptr<rule::registry::RuleRegistry> rule_registry_;
     std::unique_ptr<parser::YamlParser> yaml_parser_;
+    
+    // Pure Logic Engine for mathematical formal proofs
+    mutable std::unique_ptr<akao::logic::PureLogicEngine> pure_logic_engine_;
     
     // Validation configuration
     struct ValidationConfig {
@@ -71,7 +82,7 @@ public:
     explicit UniversalValidator(const std::string& rules_directory = "rules");
     
     // Destructor
-    ~UniversalValidator() = default;
+    ~UniversalValidator();
 
     // Initialization
     bool initialize();
@@ -167,7 +178,11 @@ private:
     std::vector<Violation> executeSecurityRule(const rule::loader::Rule& rule, const RuleExecutionContext& context);
     std::vector<Violation> executeTestingRule(const rule::loader::Rule& rule, const RuleExecutionContext& context);
     
-    // Datalog/Prolog logic execution
+    // Pure Logic Engine execution with mathematical formal proofs
+    std::vector<std::string> findPureLogicViolations(const std::string& logic_expression, const RuleExecutionContext& context);
+    std::string convertDatalogToPureLogic(const std::string& datalog_rule);
+    
+    // Datalog/Prolog logic execution (deprecated - use Pure Logic Engine)
     bool executeDatalogQuery(const std::string& query, const RuleExecutionContext& context);
     std::vector<std::string> findDatalogViolations(const std::string& query, const RuleExecutionContext& context);
     

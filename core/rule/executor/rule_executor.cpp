@@ -1,4 +1,6 @@
 #include "rule_executor.hpp"
+#include "../../engine/logic/pure/v1.hpp"
+#include "../../engine/logic/godel/v1.hpp"
 #include <chrono>
 #include <algorithm>
 #include <regex>
@@ -14,7 +16,9 @@ RuleExecutor::RuleExecutor()
     : strategy_(ExecutionStrategy::SEQUENTIAL)
     , parallel_execution_enabled_(false)
     , max_threads_(std::thread::hardware_concurrency()) {
-    datalog_engine_ = std::make_unique<DatalogEngine>();
+    // Initialize Pure Logic Engine instead of Datalog
+    pure_logic_engine_ = std::make_unique<akao::logic::PureLogicEngine>();
+    pure_logic_engine_->initialize();
 }
 
 bool RuleExecutor::initialize() {
@@ -91,13 +95,25 @@ RuleExecutor::ExecutionResult RuleExecutor::executeRule(const loader::Rule& rule
             }
         }
         
-        // If no specific handler found, try Datalog execution
+        // Execute Pure Logic Engine expressions with mathematical formal proofs
+        if (result.violations.empty() && !rule.pure_logic_expressions.empty()) {
+            for (const auto& logic_expression : rule.pure_logic_expressions) {
+                auto logic_result = executePureLogicExpression(logic_expression, context);
+                result.violations.insert(result.violations.end(), 
+                                       logic_result.violations.begin(), 
+                                       logic_result.violations.end());
+            }
+        }
+        
+        // Fallback to datalog_rules for backward compatibility during migration
         if (result.violations.empty() && !rule.datalog_rules.empty()) {
             for (const auto& datalog_rule : rule.datalog_rules) {
-                auto datalog_result = executeDatalogQuery(datalog_rule, context);
+                // Convert datalog rule to Pure Logic expression automatically
+                std::string pure_logic_expr = convertDatalogToPureLogic(datalog_rule);
+                auto logic_result = executePureLogicExpression(pure_logic_expr, context);
                 result.violations.insert(result.violations.end(), 
-                                       datalog_result.violations.begin(), 
-                                       datalog_result.violations.end());
+                                       logic_result.violations.begin(), 
+                                       logic_result.violations.end());
             }
         }
         
@@ -164,38 +180,100 @@ RuleExecutor::ExecutionResult RuleExecutor::executeCategory(const std::string& c
     return result;
 }
 
-RuleExecutor::ExecutionResult RuleExecutor::executeDatalogQuery(const std::string& query, 
-                                                               const RuleExecutionContext& context) {
+RuleExecutor::ExecutionResult RuleExecutor::executePureLogicExpression(const std::string& logic_expression, 
+                                                                      const RuleExecutionContext& context) {
     ExecutionResult result = createSuccessResult();
     
-    if (!datalog_engine_->initialize(context)) {
-        return createFailureResult("Failed to initialize Datalog engine");
-    }
-    
-    auto query_result = datalog_engine_->executeQuery(query);
-    
-    if (!query_result.success) {
-        return createFailureResult("Datalog query failed: " + query_result.error_message);
-    }
-    
-    // Convert query results to violations
-    for (const auto& binding : query_result.bindings) {
-        auto it_file = binding.find("file");
-        auto it_line = binding.find("line");
-        auto it_message = binding.find("message");
+    try {
+        // Create execution context for Pure Logic Engine
+        akao::logic::Context logic_context;
         
-        if (it_file != binding.end() && it_message != binding.end()) {
+        // Set up context variables from RuleExecutionContext
+        logic_context.bindVariable("target_path", akao::logic::Value(context.target_path));
+        logic_context.bindVariable("project_type", akao::logic::Value(context.project_type));
+        
+        // Add discovered files as a collection
+        std::vector<akao::logic::Value> files;
+        for (const auto& file : context.discovered_files) {
+            files.push_back(akao::logic::Value(file));
+        }
+        logic_context.bindVariable("discovered_files", akao::logic::Value(files));
+        
+        // Execute the Pure Logic expression with mathematical formal proofs
+        auto logic_result = pure_logic_engine_->evaluate(logic_expression, logic_context);
+        
+        // Convert logic result to violations
+        if (logic_result.isBoolean() && !logic_result.asBoolean()) {
+            // Logic expression evaluated to false - this indicates a violation
             engine::validator::Violation violation;
-            violation.file_path = it_file->second;
-            violation.line_number = it_line != binding.end() ? std::stoul(it_line->second) : 1;
-            violation.message = it_message->second;
+            violation.file_path = context.target_path;
+            violation.line_number = 1;
+            violation.message = "Pure Logic validation failed: " + logic_expression;
             violation.detected_at = std::chrono::system_clock::now();
+            violation.rule_category = "pure_logic";
+            violation.severity = "MEDIUM";
             
             result.violations.push_back(violation);
+        } else if (logic_result.isCollection()) {
+            // Logic expression returned a collection of violations
+            auto violations_list = logic_result.asCollection();
+            for (const auto& violation_data : violations_list) {
+                if (violation_data.isObject()) {
+                    auto violation_obj = violation_data.asObject();
+                    
+                    engine::validator::Violation violation;
+                    violation.file_path = violation_obj.count("file") ? violation_obj.at("file").asString() : context.target_path;
+                    violation.line_number = violation_obj.count("line") ? violation_obj.at("line").asInteger() : 1;
+                    violation.message = violation_obj.count("message") ? violation_obj.at("message").asString() : "Pure Logic violation detected";
+                    violation.detected_at = std::chrono::system_clock::now();
+                    violation.rule_category = "pure_logic";
+                    violation.severity = "MEDIUM";
+                    
+                    result.violations.push_back(violation);
+                }
+            }
         }
+        
+    } catch (const std::exception& e) {
+        return createFailureResult("Pure Logic execution failed: " + std::string(e.what()));
     }
     
     return result;
+}
+
+// Backward compatibility: Convert datalog to Pure Logic expression
+std::string RuleExecutor::convertDatalogToPureLogic(const std::string& datalog_rule) {
+    // Simple conversion from datalog to Pure Logic syntax
+    // This is a temporary bridge during migration
+    
+    std::string pure_logic = datalog_rule;
+    
+    // Convert basic datalog patterns to Pure Logic expressions
+    std::regex violation_pattern(R"((\w+)_violation\(([^)]+)\)\s*:-\s*(.+)\.)");
+    std::regex compliant_pattern(R"((\w+)_compliant\(([^)]+)\)\s*:-\s*(.+)\.)");
+    
+    std::smatch match;
+    if (std::regex_search(datalog_rule, match, violation_pattern)) {
+        // Convert violation rule to Pure Logic
+        std::string rule_type = match[1].str();
+        std::string file_var = match[2].str();
+        std::string conditions = match[3].str();
+        
+        pure_logic = "forall(" + file_var + ", " + 
+                     "implies(and(file_exists(" + file_var + "), " + conditions + "), " +
+                     "not(" + rule_type + "_compliant(" + file_var + "))))";
+    } else if (std::regex_search(datalog_rule, match, compliant_pattern)) {
+        // Convert compliance rule to Pure Logic
+        std::string rule_type = match[1].str();
+        std::string file_var = match[2].str();
+        std::string conditions = match[3].str();
+        
+        pure_logic = "forall(" + file_var + ", " +
+                     "implies(file_exists(" + file_var + "), " +
+                     "equals(" + rule_type + "_compliant(" + file_var + "), " + conditions + ")))";
+    }
+    
+    return pure_logic;
 }
 
 void RuleExecutor::registerRuleHandler(const std::string& rule_pattern,
@@ -541,109 +619,6 @@ std::string RuleExecutor::generateViolationId(const std::string& rule_id,
                                              size_t line_number) {
     std::string filename = std::filesystem::path(file_path).filename();
     return rule_id + ":violation:" + filename + ":" + std::to_string(line_number);
-}
-
-// DatalogEngine implementation
-DatalogEngine::DatalogEngine() {}
-
-DatalogEngine::~DatalogEngine() {}
-
-bool DatalogEngine::initialize(const RuleExecutionContext& context) {
-    clear();
-    
-    // Add facts about the project
-    addFact("project", {context.target_path, context.project_type});
-    
-    // Add facts about files
-    for (const auto& file_path : context.discovered_files) {
-        std::string filename = std::filesystem::path(file_path).filename();
-        std::string extension = std::filesystem::path(file_path).extension();
-        
-        addFact("file", {filename, file_path, extension});
-        
-        auto file_type_it = context.file_types.find(file_path);
-        if (file_type_it != context.file_types.end()) {
-            addFact("file_type", {filename, file_type_it->second});
-        }
-    }
-    
-    return true;
-}
-
-DatalogEngine::QueryResult DatalogEngine::executeQuery(const std::string& query) {
-    QueryResult result;
-    result.success = true;
-    
-    // Simplified query processing
-    // In a real implementation, this would be a full Datalog/Prolog parser and evaluator
-    
-    if (query.find("file(") != std::string::npos) {
-        result = processFact(query);
-    } else {
-        result = processRule(query);
-    }
-    
-    return result;
-}
-
-void DatalogEngine::addFact(const std::string& predicate, const std::vector<std::string>& arguments) {
-    std::string fact = predicate + "(";
-    for (size_t i = 0; i < arguments.size(); ++i) {
-        if (i > 0) fact += ", ";
-        fact += "\"" + arguments[i] + "\"";
-    }
-    fact += ")";
-    facts_.push_back(fact);
-}
-
-void DatalogEngine::addRule(const std::string& head, const std::string& body) {
-    rules_.push_back(head + " :- " + body);
-}
-
-void DatalogEngine::clear() {
-    facts_.clear();
-    rules_.clear();
-}
-
-DatalogEngine::QueryResult DatalogEngine::processFact(const std::string& query) {
-    QueryResult result;
-    result.success = true;
-    
-    for (const auto& fact : facts_) {
-        if (unify(query, fact)) {
-            std::map<std::string, std::string> binding;
-            binding["match"] = fact;
-            result.bindings.push_back(binding);
-        }
-    }
-    
-    return result;
-}
-
-DatalogEngine::QueryResult DatalogEngine::processRule(const std::string& query) {
-    QueryResult result;
-    result.success = true;
-    // Simplified rule processing
-    return result;
-}
-
-bool DatalogEngine::unify(const std::string& pattern, const std::string& fact) {
-    // Simplified unification - just check if fact contains pattern elements
-    return fact.find(pattern.substr(0, pattern.find('('))) != std::string::npos;
-}
-
-std::vector<std::map<std::string, std::string>> DatalogEngine::findMatches(const std::string& pattern) {
-    std::vector<std::map<std::string, std::string>> matches;
-    
-    for (const auto& fact : facts_) {
-        if (unify(pattern, fact)) {
-            std::map<std::string, std::string> match;
-            match["fact"] = fact;
-            matches.push_back(match);
-        }
-    }
-    
-    return matches;
 }
 
 } // namespace akao::core::rule::executor
