@@ -1,8 +1,8 @@
-#include "pure_logic_engine.hpp"
-#include "builtin_functions.hpp"
-#include "filesystem_functions.hpp"
-#include "cpp_functions.hpp"
-#include "meta_functions.hpp"
+#include "v1.hpp"
+#include "../builtin/v1.hpp"
+#include "../filesystem/v1.hpp"
+#include "../cpp/v1.hpp"
+#include "../meta/v1.hpp"
 #include <fstream>
 #include <stdexcept>
 #include <iostream>

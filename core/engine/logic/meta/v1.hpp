@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pure_logic_engine.hpp"
+#include "../pure/v1.hpp"
 
 namespace akao::logic::meta {
 

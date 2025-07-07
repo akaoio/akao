@@ -1,8 +1,8 @@
 #pragma once
 
-#include "pure_logic_engine.hpp"
-#include "formal_system.hpp"
-#include "godel_encoding.hpp"
+#include "../pure/v1.hpp"
+#include "../formal/v1.hpp"
+#include "../godel/v1.hpp"
 #include <vector>
 #include <string>
 
