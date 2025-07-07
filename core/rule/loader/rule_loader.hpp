@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../engine/parser/yaml_parser.hpp"
-#include "../../engine/parser/yaml_node.hpp"
+#include "../../engine/parser/yaml_parser/v1.hpp"
+#include "../../engine/parser/yaml_node/v1.hpp"
 #include <string>
 #include <vector>
 #include <memory>

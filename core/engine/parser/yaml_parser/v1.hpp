@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yaml_node.hpp"
+#include "../yaml_node/v1.hpp"
 #include <string>
 #include <fstream>
 #include <memory>

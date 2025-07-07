@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../parser/command_parser.hpp"
-#include "../../../core/engine/validator/universal_validator.hpp"
+#include "../../../core/engine/validator/universal/v1.hpp"
 #include "../../../core/filesystem/enforcer/structure_enforcer.hpp"
 #include "../../../core/trace/tracer/violation_tracer.hpp"
 #include "../../../core/trace/reporter/report_generator.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../core/engine/validator/validation_result.hpp"
+#include "../../../core/engine/validator/validation_result/v1.hpp"
 #include "../../../core/trace/reporter/report_generator.hpp"
 #include "../executor/command_executor.hpp"
 #include <string>
