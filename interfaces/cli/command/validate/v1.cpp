@@ -114,8 +114,6 @@ executor::ExecutionResult ValidateCommand::validateProject(const ValidationOptio
     result.success = true;
     result.exit_code = 0;
 
-    std::cout << "Debug: Starting validateProject with target: " << options.target_path << std::endl;
-
     // Initialize universal validator
     core::engine::validator::UniversalValidator validator;
     if (!validator.initialize()) {
@@ -125,18 +123,12 @@ executor::ExecutionResult ValidateCommand::validateProject(const ValidationOptio
         return result;
     }
     
-    // Debug: Check if rules were loaded
-    size_t loaded_rules_count = validator.getLoadedRulesCount();
-    std::cout << "Debug: Loaded " << loaded_rules_count << " rules" << std::endl;
-    
     // Configure validation through public methods
     validator.enableAutoFix(options.enable_fixing);
     validator.setOutputFormat(context.output_format);
 
     // Perform validation - use the basic validate method for now
     core::engine::validator::ValidationResult validation_result = validator.validate(options.target_path);
-
-    std::cout << "Debug: Validation completed. Total rules executed: " << validation_result.getTotalRulesExecuted() << std::endl;
 
     // Format results
     result.data["validation"] = "completed";
@@ -197,6 +189,9 @@ executor::ExecutionResult ValidateCommand::validateProject(const ValidationOptio
 
     // Set files processed count from validation result
     result.files_processed = validation_result.getFilesProcessed();
+    
+    // Set violations found count from validation result  
+    result.violations_found = validation_result.getViolations().size();
 
     return result;
 }
