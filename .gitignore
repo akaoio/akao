@@ -1,5 +1,5 @@
-# Build artifacts
-build/
+# Build artifacts (only root build directory, not source modules)
+/build/
 *.o
 *.a
 *.so

@@ -35,12 +35,6 @@ add_executable(akao
     ${INTERFACE_SOURCES}
 )
 
-# Complete integration test executable
-add_executable(complete_test
-    complete_integration_test.cpp
-    ${CORE_SOURCES}
-)
-
 # Link libraries (no external dependencies)
 # target_link_libraries(akao ${YAML_CPP_LIBRARIES})
 # target_compile_options(akao PRIVATE ${YAML_CPP_CFLAGS_OTHER})
@@ -50,12 +44,8 @@ set_target_properties(akao PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
-set_target_properties(complete_test PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-)
-
 # Installation
-install(TARGETS akao complete_test
+install(TARGETS akao
     RUNTIME DESTINATION bin
 )
 
