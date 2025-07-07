@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../../interfaces/cli/command/validate/v1.hpp"
-#include "../../interfaces/cli/command/init/v1.hpp"
-#include "../../interfaces/cli/command/generate/v1.hpp"
-#include "../../interfaces/cli/command/build/v1.hpp"
-#include "../../interfaces/cli/command/test/v1.hpp"
-#include "../../interfaces/cli/command/additional/v1.hpp"
+#include "../../interfaces/cli/command/validate/header/v1.hpp"
+#include "../../interfaces/cli/command/init/header/v1.hpp"
+#include "../../interfaces/cli/command/generate/header/v1.hpp"
+#include "../../interfaces/cli/command/build/header/v1.hpp"
+#include "../../interfaces/cli/command/test/header/v1.hpp"
+#include "../../interfaces/cli/command/additional/header/v1.hpp"
 #include <string>
 #include <vector>
 #include <memory>
