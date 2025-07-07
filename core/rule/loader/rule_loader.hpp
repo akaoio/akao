@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../engine/parser/yaml_parser.hpp"
-#include "../../engine/parser/yaml_node.hpp"
+#include "../../engine/parser/yaml/parser/v1.hpp"
+#include "../../engine/parser/yaml/node/v1.hpp"
 #include <string>
 #include <vector>
 #include <memory>
@@ -34,7 +34,8 @@ struct Rule {
     std::string target;
     std::vector<std::string> conditions;
     std::vector<std::string> exceptions;
-    std::vector<std::string> datalog_rules;
+    std::vector<std::string> datalog_rules;  // Deprecated - use pure_logic_expressions
+    std::vector<std::string> pure_logic_expressions;  // Pure Logic Engine expressions with formal proofs
     
     // Logic queries
     std::string check_compliance_query;

@@ -16,13 +16,8 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
-# Find required packages
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(YAML_CPP REQUIRED yaml-cpp)
-
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${YAML_CPP_INCLUDE_DIRS})
 
 # Collect all source files
 file(GLOB_RECURSE CORE_SOURCES 
@@ -40,17 +35,27 @@ add_executable(akao
     ${INTERFACE_SOURCES}
 )
 
-# Link libraries
-target_link_libraries(akao ${YAML_CPP_LIBRARIES})
-target_compile_options(akao PRIVATE ${YAML_CPP_CFLAGS_OTHER})
+# Complete integration test executable
+add_executable(complete_test
+    complete_integration_test.cpp
+    ${CORE_SOURCES}
+)
+
+# Link libraries (no external dependencies)
+# target_link_libraries(akao ${YAML_CPP_LIBRARIES})
+# target_compile_options(akao PRIVATE ${YAML_CPP_CFLAGS_OTHER})
 
 # Set output directories
 set_target_properties(akao PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
+set_target_properties(complete_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
 # Installation
-install(TARGETS akao
+install(TARGETS akao complete_test
     RUNTIME DESTINATION bin
 )
 

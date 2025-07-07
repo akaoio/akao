@@ -1,12 +1,19 @@
 #pragma once
 
 #include "../loader/rule_loader.hpp"
-#include "../../engine/validator/validation_result.hpp"
+#include "../../engine/validator/validation_result/v1.hpp"
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
 #include <functional>
+
+// Forward declarations
+namespace akao::logic {
+    class PureLogicEngine;
+    class Context;
+    class Value;
+}
 
 namespace akao::core::rule::executor {
 
@@ -106,12 +113,12 @@ public:
     ExecutionResult executeCategory(const std::string& category, const RuleExecutionContext& context);
 
     /**
-     * @brief Execute a Datalog/Prolog query
-     * @param query The Datalog query string
+     * @brief Execute a Pure Logic expression with mathematical formal proofs
+     * @param logic_expression The Pure Logic expression string
      * @param context The execution context
      * @return Query result with violations
      */
-    ExecutionResult executeDatalogQuery(const std::string& query, const RuleExecutionContext& context);
+    ExecutionResult executePureLogicExpression(const std::string& logic_expression, const RuleExecutionContext& context);
 
     /**
      * @brief Register a custom rule handler
@@ -162,8 +169,8 @@ private:
     // Statistics
     ExecutionStats stats_;
 
-    // Datalog/Prolog engine
-    std::unique_ptr<class DatalogEngine> datalog_engine_;
+    // Pure Logic Engine for mathematical formal proofs
+    std::unique_ptr<akao::logic::PureLogicEngine> pure_logic_engine_;
 
     // Core execution methods
     ExecutionResult executeStructureRule(const loader::Rule& rule, const RuleExecutionContext& context);
@@ -184,6 +191,9 @@ private:
     ExecutionResult createFailureResult(const std::string& error_message);
     void updateStats(const ExecutionResult& result, const std::string& category);
     
+    // Pure Logic Engine conversion methods
+    std::string convertDatalogToPureLogic(const std::string& datalog_rule);
+    
     // File analysis helpers
     std::vector<std::string> extractFunctionNames(const std::string& file_content, const std::string& language);
     std::vector<std::string> extractClassNames(const std::string& file_content, const std::string& language);
@@ -200,62 +210,6 @@ private:
     std::string generateViolationId(const std::string& rule_id,
                                    const std::string& file_path,
                                    size_t line_number);
-};
-
-/**
- * @brief Simple Datalog/Prolog query engine for rule execution
- * 
- * Implements basic logical query processing for rules that use
- * formal logic expressions.
- */
-class DatalogEngine {
-public:
-    DatalogEngine();
-    ~DatalogEngine();
-
-    /**
-     * @brief Initialize the engine with facts from context
-     */
-    bool initialize(const RuleExecutionContext& context);
-
-    /**
-     * @brief Execute a Datalog query
-     * @param query The query string
-     * @return Query results
-     */
-    struct QueryResult {
-        bool success;
-        std::vector<std::map<std::string, std::string>> bindings;
-        std::string error_message;
-    };
-
-    QueryResult executeQuery(const std::string& query);
-
-    /**
-     * @brief Add a fact to the knowledge base
-     */
-    void addFact(const std::string& predicate, const std::vector<std::string>& arguments);
-
-    /**
-     * @brief Add a rule to the knowledge base
-     */
-    void addRule(const std::string& head, const std::string& body);
-
-    /**
-     * @brief Clear all facts and rules
-     */
-    void clear();
-
-private:
-    // Simple in-memory knowledge base
-    std::vector<std::string> facts_;
-    std::vector<std::string> rules_;
-    
-    // Query processing
-    QueryResult processFact(const std::string& query);
-    QueryResult processRule(const std::string& query);
-    bool unify(const std::string& pattern, const std::string& fact);
-    std::vector<std::map<std::string, std::string>> findMatches(const std::string& pattern);
 };
 
 } // namespace akao::core::rule::executor

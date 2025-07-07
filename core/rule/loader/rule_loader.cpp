@@ -471,6 +471,17 @@ void RuleLoader::parseRuleDefinition(Rule& rule, std::shared_ptr<engine::parser:
         }
     }
     
+    // Load Pure Logic expressions (preferred)
+    if (auto pure_logic_exprs = rule_def_node->operator[]("pure_logic_expressions")) {
+        if (pure_logic_exprs->isSequence()) {
+            const auto& sequence = pure_logic_exprs->asSequence();
+            for (const auto& item : sequence) {
+                rule.pure_logic_expressions.push_back(item->asString());
+            }
+        }
+    }
+    
+    // Load datalog_rules for backward compatibility
     if (auto datalog_rules = rule_def_node->operator[]("datalog_rules")) {
         if (datalog_rules->isSequence()) {
             const auto& sequence = datalog_rules->asSequence();

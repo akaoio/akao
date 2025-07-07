@@ -51,13 +51,13 @@ $(BUILDSUBDIR)/%.o: %.cpp | $(BUILDSUBDIR)
 # Main target
 $(TARGET): $(OBJECTS) | $(BINDIR)
 	@echo "Linking $(TARGET)..."
-	@$(CXX) $(OBJECTS) -Lyaml-cpp-yaml-cpp-0.7.0/build -lyaml-cpp -o $@
+	@$(CXX) $(OBJECTS) -o $@
 	@echo "Build complete: $(TARGET)"
 
 # Test target
 $(TEST_TARGET): $(TEST_OBJECTS) | $(BINDIR)
 	@echo "Linking $(TEST_TARGET)..."
-	@$(CXX) $(filter-out $(BUILDSUBDIR)/main.o, $(TEST_OBJECTS)) -Lyaml-cpp-yaml-cpp-0.7.0/build -lyaml-cpp -o $@
+	@$(CXX) $(filter-out $(BUILDSUBDIR)/main.o, $(TEST_OBJECTS)) -o $@
 	@echo "Test build complete: $(TEST_TARGET)"
 
 # Build modes

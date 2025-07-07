@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "../../core/engine/validator/universal_validator.hpp"
+#include "../../core/engine/validator/universal/v1.hpp"
 #include <string>
 #include <vector>
 
@@ -60,6 +60,11 @@ private:
     bool validateAkaoItself();
     size_t countExpectedViolations();
     bool isAcceptableViolation(const std::string& rule_id, const std::string& file_path);
+    
+    // Phase 3: Self-Validation Architecture Implementation test methods
+    bool testArchitecturalCompliance();
+    bool testContradictionDetection();
+    bool testSelfGovernance();
 };
 
 } // namespace akao::tests::compliance
