@@ -1,12 +1,12 @@
 #include "interfaces/cli/parser/command_parser.hpp"
 #include "interfaces/cli/executor/command_executor.hpp"
 #include "interfaces/cli/formatter/output_formatter.hpp"
-#include "interfaces/cli/commands/validate_command.hpp"
-#include "interfaces/cli/commands/init_command.hpp"
-#include "interfaces/cli/commands/generate_command.hpp"
-#include "interfaces/cli/commands/build_command.hpp"
-#include "interfaces/cli/commands/test_command.hpp"
-#include "interfaces/cli/commands/additional_commands.hpp"
+#include "interfaces/cli/command/validate/v1.hpp"
+#include "interfaces/cli/command/init/v1.hpp"
+#include "interfaces/cli/command/generate/v1.hpp"
+#include "interfaces/cli/command/build/v1.hpp"
+#include "interfaces/cli/command/test/v1.hpp"
+#include "interfaces/cli/command/additional/v1.hpp"
 #include <iostream>
 #include <filesystem>
 

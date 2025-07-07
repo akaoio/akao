@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../engine/parser/yaml_node/v1.hpp"
+#include "../../engine/parser/yaml/node/v1.hpp"
 #include <string>
 #include <vector>
 #include <memory>

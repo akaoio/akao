@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../validation_result/v1.hpp"
-#include "../../parser/yaml_parser/v1.hpp"
+#include "../../parser/yaml/parser/v1.hpp"
 #include "../../../rule/registry/rule_registry.hpp"
 #include <string>
 #include <memory>

@@ -1,8 +1,8 @@
-#include "validate_command.hpp"
-#include "../../../core/engine/validator/universal/v1.hpp"
-#include "../../../core/filesystem/scanner/directory_scanner.hpp"
-#include "../../../core/engine/parser/yaml_parser/v1.hpp"
-#include "../../../core/trace/tracer/violation_tracer.hpp"
+#include "v1.hpp"
+#include "../../../../core/engine/validator/universal/v1.hpp"
+#include "../../../../core/filesystem/scanner/directory_scanner.hpp"
+#include "../../../../core/engine/parser/yaml/parser/v1.hpp"
+#include "../../../../core/trace/tracer/violation_tracer.hpp"
 #include <filesystem>
 #include <iostream>
 #include <fstream>

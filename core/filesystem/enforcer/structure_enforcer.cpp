@@ -775,7 +775,7 @@ std::map<std::string, std::vector<std::string>> getAkaoTemplate() {
         {"rules", {"index.yaml"}},
         {"core", {"engine", "rule", "filesystem", "trace"}},
         {"core/engine", {"parser", "validator"}},
-        {"core/engine/parser", {"yaml_parser.hpp", "yaml_parser.cpp", "yaml_node.hpp", "yaml_node.cpp"}},
+        {"core/engine/parser", {"yaml"}},
         {"core/engine/validator", {"universal_validator.hpp", "universal_validator.cpp", "validation_result.hpp", "validation_result.cpp"}},
         {"core/rule", {"loader", "registry", "executor"}},
         {"core/rule/loader", {"rule_loader.hpp", "rule_loader.cpp"}},
