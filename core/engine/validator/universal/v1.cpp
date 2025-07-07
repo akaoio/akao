@@ -5,6 +5,7 @@
 #include <regex>
 #include <chrono>
 #include <algorithm>
+#include <iostream>
 
 namespace akao::core::engine::validator {
 
@@ -242,6 +243,9 @@ ValidationResult UniversalValidator::executeValidation(const RuleExecutionContex
     result.setRulesPassed(rules_passed);
     result.setRulesFailed(rules_failed);
     result.setRulesSkipped(rules_skipped);
+    
+    // Set the number of files processed
+    result.setFilesProcessed(context.discovered_files.size());
     
     // Calculate compliance scores
     result.calculateComplianceScores();

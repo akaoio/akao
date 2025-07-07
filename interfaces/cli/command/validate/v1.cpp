@@ -187,6 +187,12 @@ executor::ExecutionResult ValidateCommand::validateProject(const ValidationOptio
         result.exit_code = 1;
     }
 
+    // Set files processed count from validation result
+    result.files_processed = validation_result.getFilesProcessed();
+    
+    // Set violations found count from validation result  
+    result.violations_found = validation_result.getViolations().size();
+
     return result;
 }
 
