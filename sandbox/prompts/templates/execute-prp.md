@@ -2,8 +2,6 @@
 
 Implement a feature using using the PRP file.
 
-## PRP File: $ARGUMENTS
-
 ## Execution Process
 
 1. **Load PRP**
