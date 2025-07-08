@@ -1,0 +1,2 @@
+/usr/bin/ar qc libakao_transformation_framework.a CMakeFiles/akao_transformation_framework.dir/transformation_dummy.cpp.o
+/usr/bin/ranlib libakao_transformation_framework.a

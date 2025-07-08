@@ -1,0 +1,11 @@
+id: "akao:directory:interfaces:v1"
+metadata:
+  specification: "System interfaces directory containing API, CLI, and external interface components"
+  scope: "All external interfaces including command-line interface, API endpoints, and integration points"
+  timeline: "2025-07-08"
+  rationale: "Centralized location for all external system interfaces separate from core functionality"
+  methodology: "Interface segregation with clear boundaries between CLI, API, and integration interfaces"
+  references: 
+    - "akao:directory:interfaces:cli:v1"
+    - "akao:directory:interfaces:api:v1"
+    - "akao:file:interface:cli:main:v1"

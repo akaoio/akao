@@ -1,0 +1,57 @@
+id: "akao:component:tests:v1"
+metadata:
+  name: "Akao Integration Test Suite"
+  description: "Comprehensive integration testing framework for architectural reformation validation"
+  version: "1.0.0"
+  created: "2025-08-22"
+  type: "test_framework"
+  scope: "system_integration_validation"
+  purpose: "Validate complete architectural transformation success and system readiness"
+  timeline: "2025-07-08 to 2025-08-22"
+  rationale: "Comprehensive testing system supporting quality assurance, compliance validation, and production readiness"
+  methodology: "Multi-level testing approach with unit, integration, compliance, and production testing capabilities"
+  references: 
+    - "akao:directory:tests:unit:v1"
+    - "akao:directory:tests:compliance:v1"
+    - "akao:directory:tests:production:v1"
+    - "akao:file:core:engine:compliance_validator:v1"
+    - "akao:artifact:architectural-reformation:phase-3:step-4:integration-requirements:v1"
+
+# Component Structure
+structure:
+  integration/:
+    description: "Integration test framework and test cases"
+    components:
+      - "integration_test_suite.hpp/cpp: Core integration test framework"
+      - "End-to-end workflow testing"
+      - "Cross-platform validation"
+      - "Compatibility testing"
+  
+  performance/:
+    description: "Performance benchmarking framework"
+    components:
+      - "performance_benchmark_framework.hpp: Performance testing framework"
+      - "Startup performance benchmarks"
+      - "Execution performance benchmarks"
+      - "Build performance benchmarks"
+      - "Memory efficiency tests"
+  
+  transformation/:
+    description: "Transformation validation suite"
+    components:
+      - "transformation_validation_suite.hpp: Transformation success validation"
+      - "Phase 1 validation (Architectural Purification)"
+      - "Phase 2 validation (Governance Implementation)"
+      - "Phase 3 validation (Technology Evolution)"
+      - "System integration validation"
+  
+  data/:
+    description: "Test data and sample files"
+    components:
+      - "sample_pure_logic.a: Pure Logic language test file"
+      - "sample_cpp.cpp: C++ parsing test file"
+      - "sample_python.py: Python parsing test file"
+      - "sample_javascript.js: JavaScript parsing test file"
+      - "sample_config.yaml: YAML configuration test file"
+
+component_directory: true

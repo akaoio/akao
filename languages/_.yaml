@@ -1,0 +1,10 @@
+id: "akao:directory:languages:v1"
+metadata:
+  specification: "Language adapters directory containing language-specific integration components"
+  scope: "Language-specific adapters and integration modules for C++, future languages, and external language support"
+  timeline: "2025-07-08"
+  rationale: "Isolated language-specific functionality to support multi-language integration while maintaining core independence"
+  methodology: "Adapter pattern implementation with standardized interfaces for language-specific functionality"
+  references: 
+    - "akao:directory:languages:cpp:v1"
+    - "akao:artifact:architectural-reformation:phase-1:step-3:migration_mapping:v1"

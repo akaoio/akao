@@ -1,0 +1,404 @@
+id: "akao:artifact:architectural-reformation:phase-2:step-1:existing_components_inventory:v1"
+metadata:
+  specification: "Complete inventory of existing Akao system components for identification schema deployment"
+  scope: "All directories, files, classes, and functions in current system requiring compliance migration"
+  timeline: "2025-07-08"
+  rationale: "Enable systematic deployment of identification standards by cataloging all existing components"
+  methodology: "Comprehensive system scan with component categorization and compliance gap analysis"
+  references: 
+    - "akao:artifact:architectural-reformation:phase-2:step-1:identification_schema:v1"
+    - "akao:file:core:engine:compliance_validator:v1"
+
+# System-wide component inventory
+component_inventory:
+  
+  # Core engine components
+  core_engine:
+    directories:
+      - path: "core/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "high"
+      - path: "core/engine/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "high"
+      - path: "core/engine/semantic/"
+        type: "directory"
+        compliance_status: "partial"
+        priority: "high"
+      - path: "core/engine/validator/"
+        type: "directory"
+        compliance_status: "partial"
+        priority: "high"
+      - path: "core/filesystem/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "core/rule/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "core/trace/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+    
+    files:
+      - path: "core/engine/semantic/mapping-framework/v1.hpp"
+        type: "file"
+        component_type: "framework"
+        compliance_status: "compliant"
+        priority: "reference"
+      - path: "core/engine/semantic/mapping-framework/v1.cpp"
+        type: "file"
+        component_type: "framework"
+        compliance_status: "compliant"
+        priority: "reference"
+      - path: "core/engine/validator/universal-framework/v1.hpp"
+        type: "file"
+        component_type: "framework"
+        compliance_status: "compliant"
+        priority: "reference"
+      - path: "core/engine/validator/universal-framework/v1.cpp"
+        type: "file"
+        component_type: "framework"
+        compliance_status: "compliant"
+        priority: "reference"
+      - path: "core/engine/metadata_standards.hpp"
+        type: "file"
+        component_type: "framework"
+        compliance_status: "compliant"
+        priority: "reference"
+      - path: "core/engine/compliance_validator.cpp"
+        type: "file"
+        component_type: "framework"
+        compliance_status: "compliant"
+        priority: "reference"
+    
+    legacy_files:
+      - path: "core/engine/builtin_functions.yaml"
+        type: "file"
+        component_type: "rule"
+        compliance_status: "non_compliant"
+        priority: "migration_required"
+        issues: ["missing_akao_namespace", "missing_metadata", "naming_convention"]
+  
+  # Language adapters
+  language_adapters:
+    directories:
+      - path: "languages/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "languages/cpp/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+    
+    files:
+      - path: "languages/cpp/cpp_adapter.cpp"
+        type: "file"
+        component_type: "class"
+        compliance_status: "non_compliant"
+        priority: "migration_required"
+        issues: ["missing_akao_namespace", "missing_metadata", "naming_convention"]
+      - path: "languages/cpp/cpp_adapter.hpp"
+        type: "file"
+        component_type: "class"
+        compliance_status: "non_compliant"
+        priority: "migration_required"
+        issues: ["missing_akao_namespace", "missing_metadata", "naming_convention"]
+  
+  # Build system components
+  build_system:
+    directories:
+      - path: "builders/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "builders/cmake/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+    
+    files:
+      - path: "builders/cmake/cmake_builder.cpp"
+        type: "file"
+        component_type: "class"
+        compliance_status: "non_compliant"
+        priority: "migration_required"
+        issues: ["missing_akao_namespace", "missing_metadata", "naming_convention"]
+      - path: "builders/cmake/cmake_builder.hpp"
+        type: "file"
+        component_type: "class"
+        compliance_status: "non_compliant"
+        priority: "migration_required"
+        issues: ["missing_akao_namespace", "missing_metadata", "naming_convention"]
+      - path: "CMakeLists.txt"
+        type: "file"
+        component_type: "system"
+        compliance_status: "requires_migration"
+        priority: "low"
+        issues: ["non_akao_format"]
+      - path: "Makefile"
+        type: "file"
+        component_type: "system"
+        compliance_status: "requires_migration"
+        priority: "low"
+        issues: ["non_akao_format"]
+  
+  # Interface components
+  interfaces:
+    directories:
+      - path: "interfaces/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "interfaces/api/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "interfaces/cli/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+    
+    files:
+      - path: "main.cpp"
+        type: "file"
+        component_type: "function"
+        compliance_status: "non_compliant"
+        priority: "migration_required"
+        issues: ["missing_akao_namespace", "missing_metadata", "naming_convention"]
+  
+  # Test system components
+  test_system:
+    directories:
+      - path: "tests/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "tests/unit/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "tests/compliance/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+      - path: "tests/production/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "medium"
+    
+    files:
+      - path: "tests/test_runner.cpp"
+        type: "file"
+        component_type: "class"
+        compliance_status: "non_compliant"
+        priority: "migration_required"
+        issues: ["missing_akao_namespace", "missing_metadata", "naming_convention"]
+  
+  # Documentation system
+  documentation:
+    directories:
+      - path: "docs/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "low"
+      - path: "sandbox/"
+        type: "directory"
+        compliance_status: "requires_metadata"
+        priority: "low"
+    
+    files:
+      - path: "README.md"
+        type: "file"
+        component_type: "artifact"
+        compliance_status: "requires_migration"
+        priority: "low"
+        issues: ["missing_akao_namespace"]
+      - path: "CONTRIBUTING.md"
+        type: "file"
+        component_type: "artifact"
+        compliance_status: "partial"
+        priority: "medium"
+        issues: ["missing_complete_metadata"]
+      - path: "LICENSE"
+        type: "file"
+        component_type: "artifact"
+        compliance_status: "exempt"
+        priority: "none"
+        note: "Standard license file - exempt from akao standards"
+  
+  # Configuration system
+  configuration:
+    directories:
+      - path: "philosophies/"
+        type: "directory"
+        compliance_status: "partial"
+        priority: "high"
+        note: "Updated during phase 1"
+      - path: "rules/"
+        type: "directory"
+        compliance_status: "partial"
+        priority: "high"
+        note: "Updated during phase 1"
+      - path: "rulesets/"
+        type: "directory"
+        compliance_status: "partial"
+        priority: "high"
+        note: "Restructured during phase 1"
+    
+    files:
+      - path: "philosophies/index.yaml"
+        type: "file"
+        component_type: "ruleset"
+        compliance_status: "partial"
+        priority: "medium"
+        note: "Updated during phase 1 - needs full compliance"
+      - path: "rules/index.yaml"
+        type: "file"
+        component_type: "ruleset"
+        compliance_status: "partial"
+        priority: "medium"
+        note: "Updated during phase 1 - needs full compliance"
+      - path: "rulesets/index.yaml"
+        type: "file"
+        component_type: "ruleset"
+        compliance_status: "partial"
+        priority: "medium"
+        note: "Updated during phase 1 - needs full compliance"
+
+# Compliance gap analysis
+compliance_analysis:
+  compliant_components:
+    count: 6
+    components:
+      - "core/engine/semantic/mapping-framework/v1.hpp"
+      - "core/engine/semantic/mapping-framework/v1.cpp"
+      - "core/engine/validator/universal-framework/v1.hpp"
+      - "core/engine/validator/universal-framework/v1.cpp"
+      - "core/engine/metadata_standards.hpp"
+      - "core/engine/compliance_validator.cpp"
+  
+  partial_compliance:
+    count: 6
+    components:
+      - "philosophies/index.yaml"
+      - "rules/index.yaml"
+      - "rulesets/index.yaml"
+      - "CONTRIBUTING.md"
+      - "core/engine/semantic/"
+      - "core/engine/validator/"
+  
+  non_compliant_components:
+    count: 8
+    components:
+      - "main.cpp"
+      - "languages/cpp/cpp_adapter.cpp"
+      - "languages/cpp/cpp_adapter.hpp"
+      - "builders/cmake/cmake_builder.cpp"
+      - "builders/cmake/cmake_builder.hpp"
+      - "tests/test_runner.cpp"
+      - "core/engine/builtin_functions.yaml"
+      - "README.md"
+  
+  requires_metadata_only:
+    count: 15
+    components:
+      - "core/"
+      - "core/engine/"
+      - "core/filesystem/"
+      - "core/rule/"
+      - "core/trace/"
+      - "languages/"
+      - "languages/cpp/"
+      - "builders/"
+      - "builders/cmake/"
+      - "interfaces/"
+      - "interfaces/api/"
+      - "interfaces/cli/"
+      - "tests/"
+      - "tests/unit/"
+      - "docs/"
+
+# Migration priorities
+migration_strategy:
+  immediate_priority:
+    description: "Components requiring immediate compliance for system functionality"
+    components:
+      - "main.cpp"
+      - "core/engine/"
+      - "core/"
+    timeline: "2025-07-08"
+  
+  high_priority:
+    description: "Core system components essential for operation"
+    components:
+      - "languages/cpp/cpp_adapter.cpp"
+      - "languages/cpp/cpp_adapter.hpp"
+      - "builders/cmake/cmake_builder.cpp"
+      - "builders/cmake/cmake_builder.hpp"
+      - "tests/test_runner.cpp"
+    timeline: "2025-07-09"
+  
+  medium_priority:
+    description: "Supporting components for complete system compliance"
+    components:
+      - "CONTRIBUTING.md"
+      - "philosophies/index.yaml"
+      - "rules/index.yaml"
+      - "rulesets/index.yaml"
+      - "interfaces/"
+      - "tests/"
+    timeline: "2025-07-10"
+  
+  low_priority:
+    description: "Documentation and non-critical components"
+    components:
+      - "README.md"
+      - "docs/"
+      - "sandbox/"
+      - "CMakeLists.txt"
+      - "Makefile"
+    timeline: "2025-07-11"
+
+# Deployment validation
+deployment_validation:
+  success_criteria:
+    - "100% directory metadata files deployed"
+    - "All code files have akao namespace headers"
+    - "All mandatory metadata fields populated"
+    - "Cross-reference resolution functional"
+    - "Automated compliance validation operational"
+  
+  test_requirements:
+    - "Compliance validator system test"
+    - "Metadata extraction verification"
+    - "Cross-reference resolution test"
+    - "Naming convention enforcement test"
+    - "System-wide compliance scan"
+  
+  rollback_plan:
+    triggers:
+      - "System functionality degradation"
+      - "Build system failures"
+      - "Critical component access issues"
+    procedure:
+      - "Disable compliance enforcement"
+      - "Restore original file headers"
+      - "Remove directory metadata files"
+      - "Revert to backup state"
+    
+  monitoring:
+    metrics:
+      - "Compliance percentage"
+      - "Blocking error count"
+      - "System functionality status"
+      - "Build success rate"
+    alerts:
+      - "Compliance percentage below 95%"
+      - "New blocking errors detected"
+      - "System functionality failures"

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libakao_performance_framework.a CMakeFiles/akao_performance_framework.dir/performance_dummy.cpp.o
+/usr/bin/ranlib libakao_performance_framework.a

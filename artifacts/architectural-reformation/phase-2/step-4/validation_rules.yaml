@@ -1,0 +1,218 @@
+id: "akao:artifact:architectural-reformation:phase-2:step-4:validation-rules:v1"
+metadata:
+  specification: "Comprehensive validation rules for automated compliance checking"
+  scope: "Rule definitions for identification, metadata, governance, and architectural compliance"
+  timeline: "2025-08-02"
+  rationale: "Formalize validation logic for consistent automated enforcement"
+  methodology: "Rule-based validation system with configurable severity and actions"
+  references:
+    - "akao:artifact:architectural-reformation:phase-2:step-4:compliance-requirements:v1"
+    - "akao:core:engine:validator:universal-framework:v1"
+
+# Core Validation Rules Engine
+validation_engine:
+  rule_categories:
+    - "identification_rules"
+    - "metadata_rules" 
+    - "governance_rules"
+    - "architecture_rules"
+    - "cross_reference_rules"
+
+# Identification Validation Rules
+identification_rules:
+  namespace_format:
+    rule_id: "IDENT_001"
+    description: "Validate akao namespace format compliance"
+    pattern: "^akao:[a-z]+:[a-z_]+:[a-z_]+:v[0-9]+$"
+    severity: "critical"
+    applies_to: ["yaml_files", "cpp_files", "hpp_files"]
+    validation_logic: |
+      def validate_namespace(identifier):
+          import re
+          pattern = r'^akao:[a-z]+:[a-z_]+:[a-z_]+:v[0-9]+$'
+          return re.match(pattern, identifier) is not None
+    
+  component_category:
+    rule_id: "IDENT_002"
+    description: "Verify component category is from approved list"
+    approved_categories: ["core", "interface", "language", "rule", "philosophy", "artifact", "test", "script", "doc", "governance"]
+    severity: "major"
+    applies_to: ["all_components"]
+    validation_logic: |
+      def validate_component_category(namespace):
+          parts = namespace.split(':')
+          if len(parts) >= 2:
+              return parts[1] in approved_categories
+          return False
+  
+  version_consistency:
+    rule_id: "IDENT_003"
+    description: "Ensure version numbers are consistent and sequential"
+    severity: "major"
+    applies_to: ["all_components"]
+    validation_logic: |
+      def validate_version_consistency(component_id, version):
+          # Check if version follows v[number] format
+          import re
+          version_pattern = r'^v[0-9]+$'
+          return re.match(version_pattern, version) is not None
+
+# Metadata Validation Rules
+metadata_rules:
+  mandatory_fields_yaml:
+    rule_id: "META_001"
+    description: "Verify all mandatory YAML metadata fields are present"
+    required_fields: ["id", "metadata.specification", "metadata.scope", "metadata.rationale", "metadata.methodology"]
+    severity: "critical"
+    applies_to: ["yaml_files"]
+    validation_logic: |
+      def validate_yaml_metadata(yaml_content):
+          required = ["id", "metadata"]
+          if "metadata" in yaml_content:
+              meta_required = ["specification", "scope", "rationale", "methodology"]
+              for field in meta_required:
+                  if field not in yaml_content["metadata"]:
+                      return False
+          for field in required:
+              if field not in yaml_content:
+                  return False
+          return True
+  
+  mandatory_fields_cpp:
+    rule_id: "META_002"
+    description: "Verify C++ files have required namespace and documentation"
+    required_elements: ["namespace akao", "component_identification", "purpose_documentation"]
+    severity: "major"
+    applies_to: ["cpp_files", "hpp_files"]
+    validation_logic: |
+      def validate_cpp_metadata(file_content):
+          has_namespace = "namespace akao" in file_content
+          has_identification = "akao:" in file_content[:500]  # Check first 500 chars
+          return has_namespace and has_identification
+  
+  directory_metadata:
+    rule_id: "META_003"
+    description: "Ensure directories have _.yaml metadata files"
+    required_file: "_.yaml"
+    severity: "major"
+    applies_to: ["directories"]
+    validation_logic: |
+      def validate_directory_metadata(directory_path):
+          import os
+          metadata_file = os.path.join(directory_path, "_.yaml")
+          return os.path.exists(metadata_file)
+
+# Governance Validation Rules
+governance_rules:
+  workflow_compliance:
+    rule_id: "GOV_001"
+    description: "Verify adherence to formal development workflows"
+    requirements: ["archaeological_preservation", "quality_gates", "documentation_sync"]
+    severity: "major"
+    applies_to: ["all_changes"]
+    validation_logic: |
+      def validate_workflow_compliance(change_context):
+          # Check if proper artifacts are being created/updated
+          # Verify quality gates are satisfied
+          # Ensure documentation is synchronized
+          return True  # Implemented by enforcement engine
+  
+  architecture_taxonomy:
+    rule_id: "GOV_002"
+    description: "Maintain architecture-based organization"
+    forbidden_patterns: ["language-based grouping", "ad-hoc categorization"]
+    required_patterns: ["architecture-based taxonomy", "governance categories"]
+    severity: "major"
+    applies_to: ["rulesets", "directory_structure"]
+    validation_logic: |
+      def validate_architecture_taxonomy(path):
+          # Check if path follows architecture-based organization
+          architecture_paths = ["rulesets/architecture/", "core/engine/", "governance/"]
+          return any(arch_path in path for arch_path in architecture_paths)
+
+# Architecture Validation Rules
+architecture_rules:
+  universal_validation:
+    rule_id: "ARCH_001"
+    description: "Ensure universal validation framework usage"
+    required_usage: "All validation must use universal validation framework"
+    forbidden_usage: "Self-validation concepts are prohibited"
+    severity: "critical"
+    applies_to: ["validation_code"]
+    validation_logic: |
+      def validate_universal_validation_usage(code_content):
+          forbidden_terms = ["self_validate", "self-validate", "validate_self"]
+          required_terms = ["universal_validation", "UniversalValidator"]
+          has_forbidden = any(term in code_content for term in forbidden_terms)
+          has_required = any(term in code_content for term in required_terms)
+          return not has_forbidden and (has_required or "validate" not in code_content)
+  
+  semantic_mapping:
+    rule_id: "ARCH_002"
+    description: "Verify semantic mapping framework consistency"
+    requirements: ["philosophy-rule mapping", "translation algorithms", "semantic coherence"]
+    severity: "major"
+    applies_to: ["philosophy_components", "rule_components"]
+    validation_logic: |
+      def validate_semantic_mapping(component):
+          # Check if component properly integrates with semantic mapping framework
+          return True  # Complex validation implemented in enforcement engine
+
+# Cross-Reference Validation Rules
+cross_reference_rules:
+  reference_integrity:
+    rule_id: "XREF_001"
+    description: "Verify all cross-references resolve to existing components"
+    severity: "critical"
+    applies_to: ["all_references"]
+    validation_logic: |
+      def validate_reference_integrity(reference, component_registry):
+          return reference in component_registry
+  
+  dependency_consistency:
+    rule_id: "XREF_002"
+    description: "Ensure dependency relationships are consistent"
+    severity: "major"
+    applies_to: ["component_dependencies"]
+    validation_logic: |
+      def validate_dependency_consistency(dependencies):
+          # Check for circular dependencies and invalid relationships
+          return True  # Complex graph validation implemented in enforcement engine
+
+# Rule Execution Configuration
+execution_config:
+  validation_triggers:
+    - "file_creation"
+    - "file_modification" 
+    - "directory_creation"
+    - "commit_preparation"
+    - "build_initiation"
+  
+  rule_precedence:
+    - "critical_rules_first"
+    - "identification_before_metadata"
+    - "architecture_before_governance"
+    - "cross_references_last"
+  
+  failure_handling:
+    critical: "block_operation"
+    major: "warn_and_log"
+    minor: "log_only"
+    warning: "informational"
+
+# Performance Optimization
+performance_settings:
+  caching:
+    enabled: true
+    cache_duration: "5_minutes"
+    cache_invalidation: "on_file_change"
+  
+  parallel_validation:
+    enabled: true
+    max_threads: 4
+    batch_size: 10
+  
+  incremental_validation:
+    enabled: true
+    track_changes: true
+    validate_dependencies: true

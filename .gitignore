@@ -38,6 +38,3 @@ docs/generated/
 # Local development
 .akao/
 compliance-report.yaml
-
-# Dependencies
-yaml-cpp-*

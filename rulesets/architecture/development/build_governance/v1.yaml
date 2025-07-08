@@ -1,0 +1,140 @@
+id: "akao:ruleset:architecture:development:build_governance:v1"
+metadata:
+  specification: "Development architecture build governance ruleset enforcing build environment switching, configuration modes, and development process standards across all system components"
+  scope: "Development process governance covering build standards, environment management, and development workflow consistency"
+  timeline: "2025-07-08"
+  rationale: "Ensure consistent development process governance through unified build and environment management standards"
+  methodology: "Architecture-based ruleset organization integrating build rules under unified development governance framework"
+  references: ["akao:philosophy:build:duality:v1", "akao:philosophy:rule:governance:v1"]
+
+# Development Architecture Build Governance Ruleset
+# Generated: 2025-07-08
+
+ruleset_info:
+  name: "Development Architecture Build Governance"
+  category: "architecture"
+  subcategory: "development"
+  governance_domain: "build"
+  description: "Comprehensive build governance enforcing environment switching, configuration modes, and development process standards across all system components"
+  
+  philosophy_links:
+    - akao:philosophy::build:duality:v1
+    - akao:philosophy::rule:governance:v1
+    - akao:philosophy::validation:universal:v1
+  
+  architecture_scope:
+    - "Build environment consistency and switching"
+    - "Configuration mode management"
+    - "Development workflow governance"
+    - "Build process standardization"
+    - "Runtime architecture preparation"
+
+# Integrated Rules
+rules:
+  - rule_id: "akao:rule::build:environment_switching:v1"
+    governance_role: "primary"
+    architectural_purpose: "Ensure consistent build environment switching across all development contexts"
+    integration_rationale: "Core to development architecture build governance and runtime preparation"
+    original_file: "rules/build/environment_switching/v1.yaml"
+    
+  - rule_id: "akao:rule::build:configuration_modes:v1"
+    governance_role: "primary"
+    architectural_purpose: "Govern configuration management and mode consistency"
+    integration_rationale: "Foundation for build duality philosophy implementation"
+    original_file: "rules/build/configuration_modes/v1.yaml"
+
+# Governance Framework
+governance:
+  enforcement_level: "mandatory"
+  validation_scope: "universal"
+  compliance_requirements:
+    - "All build targets must support both development and production modes"
+    - "Environment switching must be consistent and reliable"
+    - "Configuration modes must be properly validated"
+    - "Build processes must maintain architectural integrity"
+  
+  violation_handling:
+    - "Build failures trigger immediate investigation"
+    - "Environment inconsistencies require resolution before deployment"
+    - "Configuration errors constitute governance violations"
+    - "Build process deviations impact architectural integrity"
+  
+  quality_metrics:
+    - "Build environment switching reliability >= 100%"
+    - "Configuration mode consistency >= 98%"
+    - "Build process standardization >= 95%"
+    - "Runtime architecture compatibility >= 100%"
+
+# Build Duality Implementation
+build_duality:
+  development_mode:
+    characteristics:
+      - "Enhanced debugging capabilities"
+      - "Verbose logging and diagnostics"
+      - "Development tool integration"
+      - "Rapid iteration support"
+    governance_requirements:
+      - "Development mode must be clearly identified"
+      - "Debug features must not leak to production"
+      - "Development dependencies must be isolated"
+  
+  production_mode:
+    characteristics:
+      - "Optimized performance"
+      - "Minimal resource consumption"
+      - "Security hardening"
+      - "Production monitoring integration"
+    governance_requirements:
+      - "Production mode must be secure and optimized"
+      - "Performance requirements must be met"
+      - "Production monitoring must be enabled"
+
+# Runtime Architecture Integration
+runtime_integration:
+  akao_runtime_preparation:
+    - "Build governance supports future Akao runtime environment"
+    - "Command interface compatibility maintained"
+    - "Project lifecycle management enabled"
+    - "Pure Logic integration readiness"
+  
+  command_interface_support:
+    - "akao main.a execution support"
+    - "akao start project management"
+    - "akao run build execution"
+    - "Development/production mode switching"
+
+# Cross-Ruleset Integration
+integration:
+  dependent_rulesets:
+    - "akao:ruleset:architecture:system:structural_governance:v1"
+    - "akao:ruleset:architecture:quality:measurement_governance:v1"
+  
+  provides_foundation_for:
+    - "Universal validation system build requirements"
+    - "Quality measurement build baselines"
+    - "Future Akao runtime environment"
+  
+  architectural_coherence:
+    - "Enables consistent build governance across all architectural domains"
+    - "Provides build foundation for architectural evolution"
+    - "Supports development process architectural alignment"
+
+# Implementation Notes
+implementation:
+  migration_status: "migrated_from_build_category"
+  migration_date: "2025-07-08"
+  semantic_validation: "verified_through_semantic_mapping_framework"
+  architectural_alignment: "confirmed_with_governance_taxonomy"
+  
+  future_evolution:
+    - "Integration with Akao runtime architecture transformation"
+    - "Enhanced build duality enforcement"
+    - "Automated build governance validation"
+
+# Archaeological Preservation
+archaeological_data:
+  original_categorization: "build_based_rules"
+  migration_rationale: "development_architecture_governance_alignment"
+  semantic_mapping_validation: "completed"
+  governance_taxonomy_verification: "passed"
+  build_duality_philosophy_integration: "verified"

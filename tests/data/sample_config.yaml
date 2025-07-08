@@ -1,0 +1,198 @@
+id: "akao:test:configuration:integration-test-config:v1"
+metadata:
+  name: "Integration Test Configuration"
+  description: "YAML test file for multi-language parsing validation"
+  version: "1.0.0"
+  created: "2025-08-22"
+  tags: ["testing", "integration", "yaml", "configuration"]
+
+# Application configuration
+application:
+  name: "Akao Integration Test Suite"
+  version: "1.0.0"
+  environment: "test"
+  debug: true
+  
+  # Server configuration
+  server:
+    host: "localhost"
+    port: 8080
+    ssl_enabled: false
+    timeout: 30
+    
+  # Database configuration
+  database:
+    type: "postgresql"
+    host: "localhost"
+    port: 5432
+    name: "akao_test_db"
+    username: "test_user"
+    password: "test_password"
+    pool_size: 10
+    connection_timeout: 5000
+    
+  # Logging configuration
+  logging:
+    level: "debug"
+    format: "json"
+    output: "stdout"
+    file_rotation: true
+    max_file_size: "100MB"
+    max_files: 5
+
+# Test configuration
+testing:
+  integration_tests:
+    enabled: true
+    timeout: 300
+    parallel_execution: true
+    max_workers: 4
+    
+    # Test suites
+    suites:
+      - name: "end_to_end_workflow"
+        description: "End-to-end workflow testing"
+        tests:
+          - "project_creation"
+          - "development_workflow" 
+          - "build_and_test"
+          - "multi_language_integration"
+      
+      - name: "performance_benchmarks"
+        description: "Performance benchmarking suite"
+        tests:
+          - "startup_performance"
+          - "execution_performance"
+          - "build_performance"
+          - "parse_performance"
+      
+      - name: "transformation_validation"
+        description: "Transformation validation suite"
+        tests:
+          - "phase_1_validation"
+          - "phase_2_validation"
+          - "phase_3_validation"
+          - "system_integration_validation"
+
+# Performance targets
+performance_targets:
+  startup_time_ms: 100
+  execution_time_ms: 50
+  build_time_s: 5
+  parse_speed_kb_s: 500
+  memory_usage_mb: 50
+  
+  baselines:
+    python:
+      startup_time_ms: 150
+      execution_time_ms: 80
+    nodejs:
+      startup_time_ms: 120
+      build_time_s: 3
+    gcc:
+      build_time_s: 10
+
+# Test data configuration
+test_data:
+  pure_logic_files:
+    - "sample_pure_logic.a"
+    - "complex_logic_test.a"
+    - "performance_test.a"
+  
+  multi_language_files:
+    cpp: ["sample_cpp.cpp", "complex_cpp.cpp"]
+    python: ["sample_python.py", "async_python.py"]
+    javascript: ["sample_javascript.js", "es6_features.js"]
+    yaml: ["sample_config.yaml", "complex_structure.yaml"]
+    json: ["sample_data.json", "schema_test.json"]
+  
+  performance_test_sizes:
+    small: "1KB"
+    medium: "100KB"
+    large: "1MB"
+    xlarge: "10MB"
+
+# Validation criteria
+validation_criteria:
+  functional_requirements:
+    - "complete_system_integration"
+    - "akao_commands_functionality"
+    - "multi_language_parsing"
+    - "build_execution_pipeline"
+    - "compliance_validation_system"
+  
+  performance_requirements:
+    - "performance_vs_established_systems"
+    - "startup_time_requirements"
+    - "build_speed_requirements"
+    - "memory_usage_requirements"
+    - "parse_speed_requirements"
+  
+  quality_requirements:
+    - "code_coverage_90_percent"
+    - "documentation_completeness"
+    - "error_handling_robustness"
+    - "user_experience_quality"
+  
+  transformation_requirements:
+    - "transformation_objectives_achievement"
+    - "archaeological_preservation"
+    - "governance_framework_operation"
+    - "system_architecture_coherence"
+
+# Output configuration
+output:
+  reports:
+    directory: "/workspaces/akao/artifacts/architectural-reformation/phase-3/step-4/reports"
+    formats: ["html", "markdown", "json", "csv"]
+    include_charts: true
+    include_detailed_logs: true
+  
+  artifacts:
+    preserve_test_data: true
+    preserve_intermediate_results: true
+    compress_large_outputs: true
+  
+  notifications:
+    email_enabled: false
+    slack_enabled: false
+    console_output: true
+    log_file: "integration_test.log"
+
+# Environment configuration
+environment:
+  variables:
+    AKAO_HOME: "/workspaces/akao"
+    AKAO_CONFIG: "/workspaces/akao/akao.yaml"
+    TEST_DATA_PATH: "/workspaces/akao/tests/data"
+    OUTPUT_PATH: "/workspaces/akao/artifacts/architectural-reformation/phase-3/step-4"
+  
+  paths:
+    source_root: "/workspaces/akao"
+    test_root: "/workspaces/akao/tests"
+    artifacts_root: "/workspaces/akao/artifacts"
+    build_directory: "/workspaces/akao/build"
+    temp_directory: "/tmp/akao_integration_test"
+
+# Advanced configuration
+advanced:
+  memory_profiling: true
+  cpu_profiling: true
+  network_monitoring: false
+  disk_io_monitoring: true
+  
+  parallelization:
+    test_execution: true
+    parsing_operations: true
+    build_operations: true
+    
+  optimization:
+    cache_test_results: true
+    reuse_compiled_artifacts: true
+    parallel_file_processing: true
+  
+  debugging:
+    verbose_logging: true
+    preserve_temporary_files: false
+    capture_stack_traces: true
+    detailed_timing_info: true

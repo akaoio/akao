@@ -1,0 +1,11 @@
+id: "akao:directory:core:engine:governance:v1"
+metadata:
+  specification: "Governance framework directory containing process governance, workflow enforcement, and operational procedure validation systems"
+  scope: "Complete governance framework including workflow compliance, procedure enforcement, and governance protocol automation"
+  timeline: "2025-07-08"
+  rationale: "Centralized governance framework for systematic process management and compliance enforcement"
+  methodology: "Framework-based governance with automated compliance monitoring and enforcement mechanisms"
+  references: 
+    - "akao:file:core:engine:governance:process_governance:v1"
+    - "akao:artifact:architectural-reformation:phase-2:step-3:formal_workflows:v1"
+    - "akao:artifact:architectural-reformation:phase-2:step-3:operational_procedures:v1"

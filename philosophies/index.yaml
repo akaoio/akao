@@ -1,81 +1,76 @@
 ---
 # Akao Philosophy Registry
-# Auto-generated index of all philosophy files with their IDs
+# Updated post-architectural reformation - Phase 1 Step 1
+# Eliminated 8 non-functional philosophies, retained 6 core components
 
 philosophy_registry:
-  version: 1.0.0
-  generated_at: '2025-07-05T17:02:04.769747Z'
-  total_philosophies: 14
+  version: 2.0.0
+  generated_at: '2025-07-08T10:00:00.000000Z'
+  total_philosophies: 6
+  reformation_status: "phase-1-step-1-completed"
+  eliminated_components: 8
+  
 philosophies:
-- id: akao:philosophy::automation:updates:v1
-  file: automation/updates/v1.yaml
-  name: Automated updates
-  category: automation
-  description: All updates and maintenance must be automated
 - id: akao:philosophy::build:duality:v1
   file: build/duality/v1.yaml
   name: Build duality
   category: build
   description: Every build target must support both development and production modes
-- id: akao:philosophy::documentation:generation:v1
-  file: documentation/generation/v1.yaml
-  name: Documentation is code
-  category: documentation
-  description: All documentation must be generated from actual rules and tests
-- id: akao:philosophy::interface:consistency:v1
-  file: interface/consistency/v1.yaml
-  name: CLI equals Web equals TUI
-  category: interface
-  description: All tooling must behave identically across user interface modes
+  justification: "Critical for runtime architecture transformation"
+  architectural_impact: "Development/production mode support essential for Akao runtime environment"
+
 - id: akao:philosophy::language:isolation:v1
   file: language/isolation/v1.yaml
   name: One language per scope
   category: language
   description: Each scope should use exactly one primary language
-- id: akao:philosophy::measurement:observability:v1
-  file: measurement/observability/v1.yaml
-  name: Everything is observable
-  category: measurement
-  description: All system behaviors must be measurable and traceable
+  justification: "Essential for Pure Logic language development"
+  architectural_impact: "Enables YAML independence achievement and .a language specification"
+
 - id: akao:philosophy::measurement:traceability:v1
   file: measurement/traceability/v1.yaml
   name: Every rule is traceable
   category: measurement
-  description: Violations include Global Rule Identifier, stack trace, file, line,
-    and suggestion
+  description: Violations include Global Rule Identifier, stack trace, file, line, and suggestion
+  justification: "Core to archaeological preservation system"
+  architectural_impact: "Enables comprehensive development history tracking and artifacts framework"
+
 - id: akao:philosophy::rule:governance:v1
   file: rule/governance/v1.yaml
   name: Rules govern rules
   category: rule
   description: The rule system itself must follow rules and be validated
-- id: akao:philosophy::security:explicit_behavior:v1
-  file: security/explicit_behavior/v1.yaml
-  name: Explicit security behavior
-  category: security
-  description: All security behaviors must be explicitly defined and validated
+  justification: "Foundation for governance framework"
+  architectural_impact: "Critical for Phase 2 governance implementation and systematic rule management"
+
 - id: akao:philosophy::structure:enforcement:v1
   file: structure/enforcement/v1.yaml
   name: Structure is enforced
   category: structure
-  description: Every file, class, and folder must follow rule-driven structure
-- id: akao:philosophy::structure:isolation:v1
-  file: structure/isolation/v1.yaml
-  name: One class per folder
-  category: structure
-  description: Every folder must contain exactly one class and its tests
-- id: akao:philosophy::testing:coverage:v1
-  file: testing/coverage/v1.yaml
-  name: No rules without tests
-  category: testing
-  description: Each rule must have measurable test coverage with compliance and violation
-    scenarios
+  description: All structural rules must be automatically validated and enforced
+  justification: "Foundation for universal parser and validation"
+  architectural_impact: "Essential for architecture-based ruleset reorganization and structural coherence"
+
 - id: akao:philosophy::validation:universal:v1
   file: validation/universal/v1.yaml
-  name: Universal validation
+  name: Everything must validate
   category: validation
-  description: Any project can be validated using akao validate, including Akao itself
-- id: akao:philosophy::visualization:graph_explainability:v1
-  file: visualization/graph_explainability/v1.yaml
-  name: Graph explainability
-  category: visualization
-  description: All relationships and dependencies must be visualizable as graphs
+  description: All components must be universally validatable against all applicable rules
+  justification: "Fundamental to universal validation framework"
+  architectural_impact: "Essential for resolving validation paradox and implementing unified validation system"
+
+# Elimination Record
+eliminated_philosophies:
+  count: 8
+  reason: "Lack of logical system interaction and multi-dimensional correlational impact"
+  archaeological_backup: "artifacts/architectural-reformation/eliminated/"
+  elimination_date: "2025-07-08"
+  components:
+    - akao:philosophy::automation:updates:v1
+    - akao:philosophy::documentation:generation:v1
+    - akao:philosophy::interface:consistency:v1
+    - akao:philosophy::measurement:observability:v1
+    - akao:philosophy::security:explicit_behavior:v1
+    - akao:philosophy::structure:isolation:v1
+    - akao:philosophy::testing:coverage:v1
+    - akao:philosophy::visualization:graph_explainability:v1

@@ -3,7 +3,7 @@
 
 # Variables
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -I/usr/local/include -Iyaml-cpp-yaml-cpp-0.7.0/include
+CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -I. -Icore
 DEBUGFLAGS := -g -O0 -DDEBUG
 RELEASEFLAGS := -O3 -DNDEBUG
 SRCDIR := .

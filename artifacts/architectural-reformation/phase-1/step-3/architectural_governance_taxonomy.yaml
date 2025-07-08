@@ -1,0 +1,266 @@
+id: "akao:artifact:architectural-reformation:phase-1:step-3:architectural-governance-taxonomy:v1"
+metadata:
+  specification: "Complete architectural governance taxonomy for restructuring rulesets from language-based to architecture-management-based categories"
+  scope: "System-wide ruleset reorganization with architectural governance principles and management domains"
+  timeline: "2025-07-08"
+  rationale: "Align ruleset organization with architectural intent rather than programming language categorization to enable systematic governance"
+  methodology: "Systematic taxonomy development using architectural governance principles, management domains, and systematic categorization frameworks"
+  references: ["akao:philosophy:rule:governance:v1", "akao:philosophy:structure:enforcement:v1", "/workspaces/akao/artifacts/architectural-reformation/plan.yaml"]
+
+# Architectural Governance Taxonomy
+# Generated: 2025-07-08
+
+## Executive Summary
+Comprehensive taxonomy for restructuring Akao rulesets from language-based categorization to architecture-management-based organization, enabling systematic governance and architectural coherence across all system components.
+
+## Current State Analysis
+
+### Existing Language-Based Organization
+**Problem Identification:**
+- Current rulesets categorize by programming language (cpp_standards, etc.)
+- Contradicts architectural intent of ruleset governance
+- Creates artificial boundaries that don't reflect system architecture
+- Prevents cross-language architectural governance
+
+**Impact Assessment:**
+- Governance fragmentation across language silos
+- Architectural inconsistency in rule application
+- Inability to enforce system-wide architectural principles
+- Management complexity due to artificial categorization
+
+## New Architectural Governance Categories
+
+### 1. **System Architecture Governance**
+**Category ID:** `akao:ruleset:architecture:system:v1`
+**Purpose:** Govern overall system architectural integrity and coherence
+**Scope:** System-wide architectural principles and structural governance
+
+**Rule Domains:**
+- Component interaction patterns
+- System boundary definitions
+- Architectural layer enforcement
+- Integration pattern governance
+- Dependency management rules
+
+**Applicable Rules from Current System:**
+- structure:layout_enforcement
+- structure:class_separation
+- validation:cross_project
+- rule:meta_validation
+
+### 2. **Data Architecture Governance**
+**Category ID:** `akao:ruleset:architecture:data:v1`
+**Purpose:** Govern data flow, storage, and transformation across system components
+**Scope:** Data architecture integrity and consistency management
+
+**Rule Domains:**
+- Data flow validation
+- Storage pattern enforcement
+- Transformation consistency
+- Data integrity rules
+- Schema governance
+
+**Future Rule Development Required:**
+- Data flow validation rules
+- Schema consistency enforcement
+- Storage pattern compliance
+
+### 3. **Interface Architecture Governance**
+**Category ID:** `akao:ruleset:architecture:interface:v1`
+**Purpose:** Govern interface definitions, contracts, and interaction patterns
+**Scope:** Interface consistency and contract enforcement across components
+
+**Rule Domains:**
+- API contract enforcement
+- Interface consistency validation
+- Communication pattern governance
+- Protocol compliance rules
+- Interface versioning management
+
+**Applicable Rules from Current System:**
+- validation:rule_verification (adapted for interface validation)
+
+### 4. **Quality Architecture Governance**
+**Category ID:** `akao:ruleset:architecture:quality:v1`
+**Purpose:** Govern quality standards, measurement, and improvement across system
+**Scope:** Quality assurance and measurement consistency
+
+**Rule Domains:**
+- Quality metric enforcement
+- Performance standard governance
+- Reliability requirement validation
+- Maintainability standard enforcement
+- Quality gate compliance
+
+**Applicable Rules from Current System:**
+- measurement:performance_monitoring
+- measurement:metrics_collection
+- measurement:error_reporting
+- measurement:violation_tracking
+
+### 5. **Security Architecture Governance**
+**Category ID:** `akao:ruleset:architecture:security:v1`
+**Purpose:** Govern security principles, access control, and protection mechanisms
+**Scope:** Security architecture consistency and protection standard enforcement
+
+**Rule Domains:**
+- Access control pattern enforcement
+- Security boundary validation
+- Threat model compliance
+- Protection mechanism governance
+- Security standard enforcement
+
+**Future Rule Development Required:**
+- Security pattern enforcement rules
+- Access control validation
+- Threat model compliance checking
+
+### 6. **Evolution Architecture Governance**
+**Category ID:** `akao:ruleset:architecture:evolution:v1`
+**Purpose:** Govern system evolution, change management, and architectural migration
+**Scope:** Architectural evolution consistency and change impact management
+
+**Rule Domains:**
+- Change impact validation
+- Migration pattern enforcement
+- Backwards compatibility governance
+- Evolution strategy compliance
+- Deprecation management rules
+
+**Applicable Rules from Current System:**
+- rule:rule_compliance (evolved for change management)
+- validation:self_validation (to be eliminated and replaced)
+
+### 7. **Development Architecture Governance**
+**Category ID:** `akao:ruleset:architecture:development:v1`
+**Purpose:** Govern development practices, build processes, and delivery mechanisms
+**Scope:** Development process consistency and delivery standard enforcement
+
+**Rule Domains:**
+- Build process governance
+- Development workflow enforcement
+- Delivery pipeline validation
+- Development standard compliance
+- Process quality assurance
+
+**Applicable Rules from Current System:**
+- build:environment_switching
+- build:configuration_modes
+- language:scope_separation
+- language:single_primary_lang
+
+## Migration Mapping Strategy
+
+### Rule Classification Matrix
+| Current Rule | Current Category | New Architecture Category | Justification |
+|-------------|------------------|---------------------------|---------------|
+| structure:layout_enforcement | structure | System Architecture | Core architectural layout governance |
+| structure:class_separation | structure | System Architecture | Component separation principles |
+| structure:file_organization | structure | System Architecture | System organization standards |
+| structure:folder_validation | structure | System Architecture | Structural integrity validation |
+| validation:cross_project | validation | System Architecture | Cross-component validation governance |
+| validation:rule_verification | validation | Interface Architecture | Contract verification principles |
+| validation:self_validation | validation | ELIMINATE | Replaced by universal validation |
+| measurement:performance_monitoring | measurement | Quality Architecture | Performance quality governance |
+| measurement:metrics_collection | measurement | Quality Architecture | Quality measurement standards |
+| measurement:error_reporting | measurement | Quality Architecture | Quality issue governance |
+| measurement:violation_tracking | measurement | Quality Architecture | Quality compliance tracking |
+| rule:meta_validation | rule | System Architecture | System governance meta-principles |
+| rule:rule_compliance | rule | Evolution Architecture | Change and compliance governance |
+| build:environment_switching | build | Development Architecture | Development process governance |
+| build:configuration_modes | build | Development Architecture | Build process standards |
+| language:scope_separation | language | Development Architecture | Development practice governance |
+| language:single_primary_lang | language | Development Architecture | Development standard enforcement |
+
+### Directory Structure Transformation
+
+**Current Structure:**
+```
+rulesets/
+├── index.yaml
+└── structure/
+    └── cpp_standards/
+        └── v1.yaml
+```
+
+**New Architecture-Based Structure:**
+```
+rulesets/
+├── index.yaml
+├── architecture/
+│   ├── system/
+│   │   ├── structural_governance/v1.yaml
+│   │   ├── component_governance/v1.yaml
+│   │   └── validation_governance/v1.yaml
+│   ├── data/
+│   │   └── [future development]
+│   ├── interface/
+│   │   └── contract_governance/v1.yaml
+│   ├── quality/
+│   │   ├── measurement_governance/v1.yaml
+│   │   └── performance_governance/v1.yaml
+│   ├── security/
+│   │   └── [future development]
+│   ├── evolution/
+│   │   └── change_governance/v1.yaml
+│   └── development/
+│       ├── build_governance/v1.yaml
+│       └── language_governance/v1.yaml
+└── eliminated/
+    └── [archaeological backup of language-based structure]
+```
+
+## Implementation Strategy
+
+### Phase 1: Taxonomy Validation
+1. **Semantic Mapping Verification**: Use semantic mapping framework to validate rule-category alignments
+2. **Governance Coherence Check**: Ensure new categories align with architectural governance principles
+3. **Cross-Reference Validation**: Verify all existing rules have appropriate new categories
+
+### Phase 2: Rule Migration
+1. **Systematic Rule Transfer**: Move rules to new architecture-based categories
+2. **Rule Content Adaptation**: Update rule content to reflect architectural governance focus
+3. **Cross-Reference Updates**: Update all rule references and dependencies
+
+### Phase 3: Governance Integration
+1. **Category Validation**: Implement governance validation for each new category
+2. **Consistency Enforcement**: Ensure architectural consistency across categories
+3. **Quality Assurance**: Validate complete taxonomic transformation
+
+## Success Criteria
+
+### Taxonomic Completeness
+✅ **All rulesets organized by architectural governance categories**
+- 7 architectural governance categories defined
+- Complete migration mapping established
+- No orphaned rules remain
+
+### Governance Alignment
+✅ **Complete migration mapping documented**
+- Rule-to-category mapping verified
+- Semantic alignment validated through mapping framework
+- Architectural coherence ensured
+
+### System Coherence
+✅ **Taxonomy correctness verification**
+- All categories serve distinct architectural purposes
+- No overlapping governance domains
+- Clear category boundaries established
+
+✅ **Governance alignment validation**
+- Categories align with akao:philosophy:rule:governance:v1
+- Architectural intent correctly reflected in organization
+- System-wide governance capability enabled
+
+## Archaeological Preservation
+Complete preservation of transformation including:
+- Original language-based organization archived
+- Migration rationale and decision documentation
+- Semantic mapping validation results
+- Architectural governance taxonomy development history
+
+## Next Phase Dependencies
+Architecture-based ruleset organization provides foundation for:
+- **Phase 1 Step 4**: Universal validation system with architectural awareness
+- **Phase 2**: Governance implementation with proper architectural categories
+- **Phase 3**: Technology evolution with architectural consistency maintenance

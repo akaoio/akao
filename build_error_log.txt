@@ -1,0 +1,492 @@
+Compiling main.cpp...
+Compiling core/trace/logger/audit_logger.cpp...
+Compiling core/trace/reporter/report_generator.cpp...
+Compiling core/trace/tracer/violation_tracer.cpp...
+core/trace/tracer/violation_tracer.cpp: In member function ‘bool akao::core::trace::tracer::ViolationTracer::importTraces(const std::string&)’:
+core/trace/tracer/violation_tracer.cpp:360:55: warning: unused parameter ‘input_path’ [-Wunused-parameter]
+  360 | bool ViolationTracer::importTraces(const std::string& input_path) {
+      |                                    ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+core/trace/tracer/violation_tracer.cpp: In member function ‘void akao::core::trace::tracer::ViolationTracer::updateStats(const akao::core::trace::tracer::ViolationTrace&)’:
+core/trace/tracer/violation_tracer.cpp:566:57: warning: unused parameter ‘trace’ [-Wunused-parameter]
+  566 | void ViolationTracer::updateStats(const ViolationTrace& trace) {
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~^~~~~
+core/trace/tracer/violation_tracer.cpp: In member function ‘void akao::core::trace::tracer::ViolationTracer::updateCollectionStats(akao::core::trace::tracer::TraceCollection&)’:
+core/trace/tracer/violation_tracer.cpp:570:62: warning: unused parameter ‘collection’ [-Wunused-parameter]
+  570 | void ViolationTracer::updateCollectionStats(TraceCollection& collection) {
+      |                                             ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+core/trace/tracer/violation_tracer.cpp: In member function ‘akao::core::trace::tracer::ViolationTrace akao::core::trace::tracer::ViolationTracer::deserializeTrace(const std::string&, const std::string&) const’:
+core/trace/tracer/violation_tracer.cpp:595:69: warning: unused parameter ‘data’ [-Wunused-parameter]
+  595 | ViolationTrace ViolationTracer::deserializeTrace(const std::string& data, const std::string& format) const {
+      |                                                  ~~~~~~~~~~~~~~~~~~~^~~~
+core/trace/tracer/violation_tracer.cpp:595:94: warning: unused parameter ‘format’ [-Wunused-parameter]
+  595 | ViolationTrace ViolationTracer::deserializeTrace(const std::string& data, const std::string& format) const {
+      |                                                                           ~~~~~~~~~~~~~~~~~~~^~~~~~
+Compiling core/filesystem/enforcer/structure_enforcer.cpp...
+core/filesystem/enforcer/structure_enforcer.cpp: In member function ‘bool akao::core::filesystem::enforcer::StructureEnforcer::loadRules(const std::string&)’:
+core/filesystem/enforcer/structure_enforcer.cpp:53:54: warning: unused parameter ‘rules_directory’ [-Wunused-parameter]
+   53 | bool StructureEnforcer::loadRules(const std::string& rules_directory) {
+      |                                   ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+core/filesystem/enforcer/structure_enforcer.cpp: In member function ‘akao::core::filesystem::enforcer::EnforcementResult akao::core::filesystem::enforcer::StructureEnforcer::autoFix(const std::string&, const std::vector<akao::core::engine::validator::Violation>&)’:
+core/filesystem/enforcer/structure_enforcer.cpp:132:65: warning: unused parameter ‘directory_path’ [-Wunused-parameter]
+  132 | EnforcementResult StructureEnforcer::autoFix(const std::string& directory_path,
+      |                                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+core/filesystem/enforcer/structure_enforcer.cpp: In member function ‘akao::core::filesystem::enforcer::EnforcementResult akao::core::filesystem::enforcer::StructureEnforcer::migrateStructure(const std::string&, const std::map<std::__cxx11::basic_string<char>, std::vector<std::__cxx11::basic_string<char> > >&)’:
+core/filesystem/enforcer/structure_enforcer.cpp:214:74: warning: unused parameter ‘directory_path’ [-Wunused-parameter]
+  214 | EnforcementResult StructureEnforcer::migrateStructure(const std::string& directory_path,
+      |                                                       ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+core/filesystem/enforcer/structure_enforcer.cpp:215:109: warning: unused parameter ‘target_structure’ [-Wunused-parameter]
+  215 |                                                      const std::map<std::string, std::vector<std::string>>& target_structure) {
+      |                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+core/filesystem/enforcer/structure_enforcer.cpp: In member function ‘akao::core::filesystem::enforcer::EnforcementResult akao::core::filesystem::enforcer::StructureEnforcer::checkRules(const akao::core::filesystem::scanner::DirectoryInfo&, const std::string&)’:
+core/filesystem/enforcer/structure_enforcer.cpp:247:67: warning: unused parameter ‘base_path’ [-Wunused-parameter]
+  247 |                                                const std::string& base_path) {
+      |                                                ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+Compiling core/filesystem/watcher/file_watcher.cpp...
+Compiling core/filesystem/scanner/directory_scanner.cpp...
+Compiling core/rule/executor/rule_executor.cpp...
+core/rule/executor/rule_executor.cpp: In member function ‘akao::core::rule::executor::RuleExecutor::ExecutionResult akao::core::rule::executor::RuleExecutor::executeCategory(const std::string&, const akao::core::rule::executor::RuleExecutionContext&)’:
+core/rule/executor/rule_executor.cpp:176:80: warning: unused parameter ‘category’ [-Wunused-parameter]
+  176 | RuleExecutor::ExecutionResult RuleExecutor::executeCategory(const std::string& category,
+      |                                                             ~~~~~~~~~~~~~~~~~~~^~~~~~~~
+core/rule/executor/rule_executor.cpp:177:87: warning: unused parameter ‘context’ [-Wunused-parameter]
+  177 |                                                           const RuleExecutionContext& context) {
+      |                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/rule/executor/rule_executor.cpp: In member function ‘akao::core::rule::executor::RuleExecutor::ExecutionResult akao::core::rule::executor::RuleExecutor::executeInterfaceRule(const akao::core::rule::loader::Rule&, const akao::core::rule::executor::RuleExecutionContext&)’:
+core/rule/executor/rule_executor.cpp:361:92: warning: unused parameter ‘context’ [-Wunused-parameter]
+  361 |                                                                const RuleExecutionContext& context) {
+      |                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/rule/executor/rule_executor.cpp: In member function ‘akao::core::rule::executor::RuleExecutor::ExecutionResult akao::core::rule::executor::RuleExecutor::executeAutomationRule(const akao::core::rule::loader::Rule&, const akao::core::rule::executor::RuleExecutionContext&)’:
+core/rule/executor/rule_executor.cpp:534:87: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  534 | RuleExecutor::ExecutionResult RuleExecutor::executeAutomationRule(const loader::Rule& rule,
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~^~~~
+core/rule/executor/rule_executor.cpp:535:94: warning: unused parameter ‘context’ [-Wunused-parameter]
+  535 |                                                                  const RuleExecutionContext& context) {
+      |                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/rule/executor/rule_executor.cpp: In member function ‘akao::core::rule::executor::RuleExecutor::ExecutionResult akao::core::rule::executor::RuleExecutor::executeMeasurementRule(const akao::core::rule::loader::Rule&, const akao::core::rule::executor::RuleExecutionContext&)’:
+core/rule/executor/rule_executor.cpp:539:88: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  539 | RuleExecutor::ExecutionResult RuleExecutor::executeMeasurementRule(const loader::Rule& rule,
+      |                                                                    ~~~~~~~~~~~~~~~~~~~~^~~~
+core/rule/executor/rule_executor.cpp:540:95: warning: unused parameter ‘context’ [-Wunused-parameter]
+  540 |                                                                   const RuleExecutionContext& context) {
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/rule/executor/rule_executor.cpp: In member function ‘akao::core::rule::executor::RuleExecutor::ExecutionResult akao::core::rule::executor::RuleExecutor::executeValidationRule(const akao::core::rule::loader::Rule&, const akao::core::rule::executor::RuleExecutionContext&)’:
+core/rule/executor/rule_executor.cpp:544:87: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  544 | RuleExecutor::ExecutionResult RuleExecutor::executeValidationRule(const loader::Rule& rule,
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~^~~~
+core/rule/executor/rule_executor.cpp:545:94: warning: unused parameter ‘context’ [-Wunused-parameter]
+  545 |                                                                  const RuleExecutionContext& context) {
+      |                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/rule/executor/rule_executor.cpp: In member function ‘akao::core::rule::executor::RuleExecutor::ExecutionResult akao::core::rule::executor::RuleExecutor::executeVisualizationRule(const akao::core::rule::loader::Rule&, const akao::core::rule::executor::RuleExecutionContext&)’:
+core/rule/executor/rule_executor.cpp:549:90: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  549 | RuleExecutor::ExecutionResult RuleExecutor::executeVisualizationRule(const loader::Rule& rule,
+      |                                                                      ~~~~~~~~~~~~~~~~~~~~^~~~
+core/rule/executor/rule_executor.cpp:550:97: warning: unused parameter ‘context’ [-Wunused-parameter]
+  550 |                                                                     const RuleExecutionContext& context) {
+      |                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+Compiling core/rule/registry/rule_registry.cpp...
+In file included from core/rule/registry/rule_registry.cpp:1:
+core/rule/registry/rule_registry.hpp: In constructor ‘akao::core::rule::registry::RuleRegistry::RuleRegistry(const std::string&)’:
+core/rule/registry/rule_registry.hpp:37:17: warning: ‘akao::core::rule::registry::RuleRegistry::rules_directory_’ will be initialized after [-Wreorder]
+   37 |     std::string rules_directory_;
+      |                 ^~~~~~~~~~~~~~~~
+core/rule/registry/rule_registry.hpp:36:10: warning:   ‘bool akao::core::rule::registry::RuleRegistry::is_loaded_’ [-Wreorder]
+   36 |     bool is_loaded_;
+      |          ^~~~~~~~~~
+core/rule/registry/rule_registry.cpp:11:1: warning:   when initialized here [-Wreorder]
+   11 | RuleRegistry::RuleRegistry(const std::string& rules_directory)
+      | ^~~~~~~~~~~~
+core/rule/registry/rule_registry.cpp: In member function ‘std::vector<std::__cxx11::basic_string<char> > akao::core::rule::registry::RuleRegistry::getRuleDependencies(const std::string&) const’:
+core/rule/registry/rule_registry.cpp:277:79: warning: unused parameter ‘rule_id’ [-Wunused-parameter]
+  277 | std::vector<std::string> RuleRegistry::getRuleDependencies(const std::string& rule_id) const {
+      |                                                            ~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/rule/registry/rule_registry.cpp: In member function ‘std::vector<std::__cxx11::basic_string<char> > akao::core::rule::registry::RuleRegistry::getRuleDependents(const std::string&) const’:
+core/rule/registry/rule_registry.cpp:282:77: warning: unused parameter ‘rule_id’ [-Wunused-parameter]
+  282 | std::vector<std::string> RuleRegistry::getRuleDependents(const std::string& rule_id) const {
+      |                                                          ~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/rule/registry/rule_registry.cpp: In member function ‘std::vector<std::shared_ptr<akao::core::rule::loader::Rule> > akao::core::rule::registry::RuleRegistry::getRulesForTarget(const std::string&) const’:
+core/rule/registry/rule_registry.cpp:335:95: warning: unused parameter ‘target_path’ [-Wunused-parameter]
+  335 | std::vector<std::shared_ptr<loader::Rule>> RuleRegistry::getRulesForTarget(const std::string& target_path) const {
+      |                                                                            ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+core/rule/registry/rule_registry.cpp: In member function ‘bool akao::core::rule::registry::RuleRegistry::validateRuleReferences(const akao::core::rule::loader::Rule&) const’:
+core/rule/registry/rule_registry.cpp:417:63: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  417 | bool RuleRegistry::validateRuleReferences(const loader::Rule& rule) const {
+      |                                           ~~~~~~~~~~~~~~~~~~~~^~~~
+Compiling core/rule/loader/rule_loader.cpp...
+Compiling core/philosophy/engine/v1.cpp...
+Compiling core/engine/validator/validation_result/v1.cpp...
+Compiling core/engine/validator/universal-framework/v1.cpp...
+core/engine/validator/universal-framework/v1.cpp: In function ‘std::vector<std::__cxx11::basic_string<char> > akao::core::engine::validator::generateRuleSuggestions(const UniversalValidationRuleEngine::ValidationRule&, const CodebaseAbstraction&)’:
+core/engine/validator/universal-framework/v1.cpp:563:136: warning: unused parameter ‘codebase’ [-Wunused-parameter]
+  563 | std::vector<std::string> generateRuleSuggestions(const UniversalValidationRuleEngine::ValidationRule& rule, const CodebaseAbstraction& codebase) {
+      |                                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+Compiling core/engine/validator/universal/v1.cpp...
+In file included from core/engine/validator/universal/v1.cpp:1:
+core/engine/validator/universal/v1.hpp: In constructor ‘akao::core::engine::validator::UniversalValidator::UniversalValidator(const std::string&)’:
+core/engine/validator/universal/v1.hpp:230:17: warning: ‘akao::core::engine::validator::UniversalValidator::rules_directory_’ will be initialized after [-Wreorder]
+  230 |     std::string rules_directory_;
+      |                 ^~~~~~~~~~~~~~~~
+core/engine/validator/universal/v1.hpp:229:10: warning:   ‘bool akao::core::engine::validator::UniversalValidator::is_initialized_’ [-Wreorder]
+  229 |     bool is_initialized_;
+      |          ^~~~~~~~~~~~~~~
+core/engine/validator/universal/v1.cpp:39:1: warning:   when initialized here [-Wreorder]
+   39 | UniversalValidator::UniversalValidator(const std::string& rules_directory)
+      | ^~~~~~~~~~~~~~~~~~
+core/engine/validator/universal/v1.cpp: In member function ‘std::vector<akao::core::engine::validator::Violation> akao::core::engine::validator::UniversalValidator::executeInterfaceRule(const akao::core::rule::loader::Rule&, const RuleExecutionContext&)’:
+core/engine/validator/universal/v1.cpp:334:91: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  334 | std::vector<Violation> UniversalValidator::executeInterfaceRule(const rule::loader::Rule& rule,
+      |                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+core/engine/validator/universal/v1.cpp:335:92: warning: unused parameter ‘context’ [-Wunused-parameter]
+  335 |                                                                const RuleExecutionContext& context) {
+      |                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/engine/validator/universal/v1.cpp: In member function ‘std::vector<akao::core::engine::validator::Violation> akao::core::engine::validator::UniversalValidator::executeLanguageRule(const akao::core::rule::loader::Rule&, const RuleExecutionContext&)’:
+core/engine/validator/universal/v1.cpp:340:90: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  340 | std::vector<Violation> UniversalValidator::executeLanguageRule(const rule::loader::Rule& rule,
+      |                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+core/engine/validator/universal/v1.cpp:341:91: warning: unused parameter ‘context’ [-Wunused-parameter]
+  341 |                                                               const RuleExecutionContext& context) {
+      |                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/engine/validator/universal/v1.cpp: In member function ‘std::vector<akao::core::engine::validator::Violation> akao::core::engine::validator::UniversalValidator::executeSecurityRule(const akao::core::rule::loader::Rule&, const RuleExecutionContext&)’:
+core/engine/validator/universal/v1.cpp:346:90: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  346 | std::vector<Violation> UniversalValidator::executeSecurityRule(const rule::loader::Rule& rule,
+      |                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+core/engine/validator/universal/v1.cpp:347:91: warning: unused parameter ‘context’ [-Wunused-parameter]
+  347 |                                                               const RuleExecutionContext& context) {
+      |                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/engine/validator/universal/v1.cpp: In member function ‘std::vector<akao::core::engine::validator::Violation> akao::core::engine::validator::UniversalValidator::executeTestingRule(const akao::core::rule::loader::Rule&, const RuleExecutionContext&)’:
+core/engine/validator/universal/v1.cpp:352:89: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  352 | std::vector<Violation> UniversalValidator::executeTestingRule(const rule::loader::Rule& rule,
+      |                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+core/engine/validator/universal/v1.cpp:353:90: warning: unused parameter ‘context’ [-Wunused-parameter]
+  353 |                                                              const RuleExecutionContext& context) {
+      |                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/engine/validator/universal/v1.cpp: In member function ‘bool akao::core::engine::validator::UniversalValidator::isRuleApplicable(const akao::core::rule::loader::Rule&, const RuleExecutionContext&)’:
+core/engine/validator/universal/v1.cpp:420:69: warning: unused parameter ‘rule’ [-Wunused-parameter]
+  420 | bool UniversalValidator::isRuleApplicable(const rule::loader::Rule& rule, const RuleExecutionContext& context) {
+      |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+core/engine/validator/universal/v1.cpp:420:103: warning: unused parameter ‘context’ [-Wunused-parameter]
+  420 | bool UniversalValidator::isRuleApplicable(const rule::loader::Rule& rule, const RuleExecutionContext& context) {
+      |                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/engine/validator/universal/v1.cpp: In member function ‘bool akao::core::engine::validator::UniversalValidator::executeDatalogQuery(const std::string&, const RuleExecutionContext&)’:
+core/engine/validator/universal/v1.cpp:612:65: warning: unused parameter ‘query’ [-Wunused-parameter]
+  612 | bool UniversalValidator::executeDatalogQuery(const std::string& query, const RuleExecutionContext& context) {
+      |                                              ~~~~~~~~~~~~~~~~~~~^~~~~
+core/engine/validator/universal/v1.cpp:612:100: warning: unused parameter ‘context’ [-Wunused-parameter]
+  612 | bool UniversalValidator::executeDatalogQuery(const std::string& query, const RuleExecutionContext& context) {
+      |                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/engine/validator/universal/v1.cpp: In member function ‘std::vector<std::__cxx11::basic_string<char> > akao::core::engine::validator::UniversalValidator::findDatalogViolations(const std::string&, const RuleExecutionContext&)’:
+core/engine/validator/universal/v1.cpp:617:87: warning: unused parameter ‘query’ [-Wunused-parameter]
+  617 | std::vector<std::string> UniversalValidator::findDatalogViolations(const std::string& query,
+      |                                                                    ~~~~~~~~~~~~~~~~~~~^~~~~
+core/engine/validator/universal/v1.cpp:618:96: warning: unused parameter ‘context’ [-Wunused-parameter]
+  618 |                                                                    const RuleExecutionContext& context) {
+      |                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+Compiling core/engine/artifacts/archaeological_miner.cpp...
+Compiling core/engine/runtime/akao_runtime.cpp...
+In file included from core/engine/runtime/akao_runtime.cpp:12:
+core/engine/runtime/../language/pure_logic_grammar.hpp:160:25: warning: multi-line comment [-Wcomment]
+  160 |     LAMBDA,             // λ, \
+      |                         ^
+In file included from core/engine/runtime/../language/symbol_parser.cpp:23,
+                 from core/engine/runtime/akao_runtime.cpp:13:
+core/engine/runtime/../language/pure_logic_grammar.hpp:160:25: warning: multi-line comment [-Wcomment]
+  160 |     LAMBDA,             // λ, \
+      |                         ^
+core/engine/runtime/../language/pure_logic_grammar.hpp:305:68: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
+  305 |     LiteralExpression(ASTNodeType type, const SourcePosition& pos, auto val)
+      |                                                                    ^~~~
+In file included from core/engine/runtime/akao_runtime.cpp:15:
+core/engine/runtime/../compliance/automated_compliance_system.cpp: In member function ‘virtual bool akao::compliance::ValidationRule::attemptCorrection(const akao::compliance::ValidationContext&, std::string&) const’:
+core/engine/runtime/../compliance/automated_compliance_system.cpp:214:61: warning: unused parameter ‘context’ [-Wunused-parameter]
+  214 |     virtual bool attemptCorrection(const ValidationContext& context,
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+core/engine/runtime/../compliance/automated_compliance_system.cpp:215:48: warning: unused parameter ‘corrected_content’ [-Wunused-parameter]
+  215 |                                   std::string& corrected_content) const {
+      |                                   ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::ParseResult akao::core::engine::runtime::AkaoRuntime::parse_source(const std::string&, const std::string&)’:
+core/engine/runtime/akao_runtime.cpp:246:19: error: ‘PureLogicGrammar’ is not a member of ‘akao::language’; did you mean ‘akao::language::pure_logic::PureLogicGrammar’?
+  246 |         language::PureLogicGrammar grammar;
+      |                   ^~~~~~~~~~~~~~~~
+core/engine/runtime/../language/pure_logic_grammar.hpp:602:7: note: ‘akao::language::pure_logic::PureLogicGrammar’ declared here
+  602 | class PureLogicGrammar {
+      |       ^~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:247:19: error: ‘SymbolParser’ is not a member of ‘akao::language’; did you mean ‘akao::language::pure_logic::SymbolParser’?
+  247 |         language::SymbolParser parser;
+      |                   ^~~~~~~~~~~~
+core/engine/runtime/../language/symbol_parser.cpp:83:7: note: ‘akao::language::pure_logic::SymbolParser’ declared here
+   83 | class SymbolParser {
+      |       ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:250:15: error: expected primary-expression before ‘.’ token
+  250 |         parser.set_source_name(source_name);
+      |               ^
+core/engine/runtime/akao_runtime.cpp:253:26: error: expected primary-expression before ‘.’ token
+  253 |         auto ast = parser.parse(source_code);
+      |                          ^
+core/engine/runtime/akao_runtime.cpp:256:42: error: expected primary-expression before ‘.’ token
+  256 |             result.error_message = parser.get_last_error();
+      |                                          ^
+core/engine/runtime/akao_runtime.cpp:257:39: error: expected primary-expression before ‘.’ token
+  257 |             result.error_line = parser.get_error_line();
+      |                                       ^
+core/engine/runtime/akao_runtime.cpp:258:41: error: expected primary-expression before ‘.’ token
+  258 |             result.error_column = parser.get_error_column();
+      |                                         ^
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::ValidationResult akao::core::engine::runtime::AkaoRuntime::validate_semantics(const std::unique_ptr<akao::core::engine::runtime::ASTNode>&)’:
+core/engine/runtime/akao_runtime.cpp:278:20: error: ‘UniversalValidator’ is not a member of ‘akao::core::engine::validator’
+  278 |         validator::UniversalValidator validator;
+      |                    ^~~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:279:43: error: expected primary-expression before ‘.’ token
+  279 |         auto validation_result = validator.validate_ast(ast.get());
+      |                                           ^
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_node(akao::core::engine::runtime::ASTNode*)’:
+core/engine/runtime/akao_runtime.cpp:334:37: error: invalid ‘static_cast’ from type ‘akao::core::engine::runtime::ASTNode*’ to type ‘akao::core::engine::runtime::LiteralNode*’
+  334 |             return evaluate_literal(static_cast<LiteralNode*>(node));
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from core/engine/runtime/akao_runtime.cpp:11:
+core/engine/runtime/akao_runtime.hpp:27:7: note: class type ‘akao::core::engine::runtime::LiteralNode’ is incomplete
+   27 | class LiteralNode;
+      |       ^~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:337:36: error: invalid ‘static_cast’ from type ‘akao::core::engine::runtime::ASTNode*’ to type ‘akao::core::engine::runtime::SymbolNode*’
+  337 |             return evaluate_symbol(static_cast<SymbolNode*>(node));
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:28:7: note: class type ‘akao::core::engine::runtime::SymbolNode’ is incomplete
+   28 | class SymbolNode;
+      |       ^~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:340:43: error: invalid ‘static_cast’ from type ‘akao::core::engine::runtime::ASTNode*’ to type ‘akao::core::engine::runtime::FunctionCallNode*’
+  340 |             return evaluate_function_call(static_cast<FunctionCallNode*>(node));
+      |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:29:7: note: class type ‘akao::core::engine::runtime::FunctionCallNode’ is incomplete
+   29 | class FunctionCallNode;
+      |       ^~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:343:40: error: invalid ‘static_cast’ from type ‘akao::core::engine::runtime::ASTNode*’ to type ‘akao::core::engine::runtime::AssignmentNode*’
+  343 |             return evaluate_assignment(static_cast<AssignmentNode*>(node));
+      |                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:30:7: note: class type ‘akao::core::engine::runtime::AssignmentNode’ is incomplete
+   30 | class AssignmentNode;
+      |       ^~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:346:41: error: invalid ‘static_cast’ from type ‘akao::core::engine::runtime::ASTNode*’ to type ‘akao::core::engine::runtime::ConditionalNode*’
+  346 |             return evaluate_conditional(static_cast<ConditionalNode*>(node));
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:31:7: note: class type ‘akao::core::engine::runtime::ConditionalNode’ is incomplete
+   31 | class ConditionalNode;
+      |       ^~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:349:34: error: invalid ‘static_cast’ from type ‘akao::core::engine::runtime::ASTNode*’ to type ‘akao::core::engine::runtime::LoopNode*’
+  349 |             return evaluate_loop(static_cast<LoopNode*>(node));
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:32:7: note: class type ‘akao::core::engine::runtime::LoopNode’ is incomplete
+   32 | class LoopNode;
+      |       ^~~~~~~~
+core/engine/runtime/akao_runtime.cpp:352:35: error: invalid ‘static_cast’ from type ‘akao::core::engine::runtime::ASTNode*’ to type ‘akao::core::engine::runtime::BlockNode*’
+  352 |             return evaluate_block(static_cast<BlockNode*>(node));
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:33:7: note: class type ‘akao::core::engine::runtime::BlockNode’ is incomplete
+   33 | class BlockNode;
+      |       ^~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_literal(akao::core::engine::runtime::LiteralNode*)’:
+core/engine/runtime/akao_runtime.cpp:360:16: error: invalid use of incomplete type ‘class akao::core::engine::runtime::LiteralNode’
+  360 |     return node->value;
+      |                ^~
+core/engine/runtime/akao_runtime.hpp:27:7: note: forward declaration of ‘class akao::core::engine::runtime::LiteralNode’
+   27 | class LiteralNode;
+      |       ^~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_symbol(akao::core::engine::runtime::SymbolNode*)’:
+core/engine/runtime/akao_runtime.cpp:364:41: error: invalid use of incomplete type ‘class akao::core::engine::runtime::SymbolNode’
+  364 |     return symbol_table_->get_value(node->name);
+      |                                         ^~
+core/engine/runtime/akao_runtime.hpp:28:7: note: forward declaration of ‘class akao::core::engine::runtime::SymbolNode’
+   28 | class SymbolNode;
+      |       ^~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_function_call(akao::core::engine::runtime::FunctionCallNode*)’:
+core/engine/runtime/akao_runtime.cpp:369:70: error: invalid use of incomplete type ‘class akao::core::engine::runtime::FunctionCallNode’
+  369 |     auto builtin_it = execution_context_->builtin_functions.find(node->function_name);
+      |                                                                      ^~
+core/engine/runtime/akao_runtime.hpp:29:7: note: forward declaration of ‘class akao::core::engine::runtime::FunctionCallNode’
+   29 | class FunctionCallNode;
+      |       ^~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:372:30: error: invalid use of incomplete type ‘class akao::core::engine::runtime::FunctionCallNode’
+  372 |         for (auto& arg : node->arguments) {
+      |                              ^~
+core/engine/runtime/akao_runtime.hpp:29:7: note: forward declaration of ‘class akao::core::engine::runtime::FunctionCallNode’
+   29 | class FunctionCallNode;
+      |       ^~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:379:53: error: invalid use of incomplete type ‘class akao::core::engine::runtime::FunctionCallNode’
+  379 |     auto function = symbol_table_->get_function(node->function_name);
+      |                                                     ^~
+core/engine/runtime/akao_runtime.hpp:29:7: note: forward declaration of ‘class akao::core::engine::runtime::FunctionCallNode’
+   29 | class FunctionCallNode;
+      |       ^~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:381:63: error: invalid use of incomplete type ‘class akao::core::engine::runtime::FunctionCallNode’
+  381 |         throw std::runtime_error("Undefined function: " + node->function_name);
+      |                                                               ^~
+core/engine/runtime/akao_runtime.hpp:29:7: note: forward declaration of ‘class akao::core::engine::runtime::FunctionCallNode’
+   29 | class FunctionCallNode;
+      |       ^~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:385:48: error: invalid use of incomplete type ‘class akao::core::engine::runtime::FunctionCallNode’
+  385 |     return execute_user_function(function, node->arguments);
+      |                                                ^~
+core/engine/runtime/akao_runtime.hpp:29:7: note: forward declaration of ‘class akao::core::engine::runtime::FunctionCallNode’
+   29 | class FunctionCallNode;
+      |       ^~~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_assignment(akao::core::engine::runtime::AssignmentNode*)’:
+core/engine/runtime/akao_runtime.cpp:389:44: error: invalid use of incomplete type ‘class akao::core::engine::runtime::AssignmentNode’
+  389 |     RuntimeValue value = evaluate_node(node->value.get());
+      |                                            ^~
+core/engine/runtime/akao_runtime.hpp:30:7: note: forward declaration of ‘class akao::core::engine::runtime::AssignmentNode’
+   30 | class AssignmentNode;
+      |       ^~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:390:34: error: invalid use of incomplete type ‘class akao::core::engine::runtime::AssignmentNode’
+  390 |     symbol_table_->set_value(node->variable_name, value);
+      |                                  ^~
+core/engine/runtime/akao_runtime.hpp:30:7: note: forward declaration of ‘class akao::core::engine::runtime::AssignmentNode’
+   30 | class AssignmentNode;
+      |       ^~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_conditional(akao::core::engine::runtime::ConditionalNode*)’:
+core/engine/runtime/akao_runtime.cpp:395:48: error: invalid use of incomplete type ‘class akao::core::engine::runtime::ConditionalNode’
+  395 |     RuntimeValue condition = evaluate_node(node->condition.get());
+      |                                                ^~
+core/engine/runtime/akao_runtime.hpp:31:7: note: forward declaration of ‘class akao::core::engine::runtime::ConditionalNode’
+   31 | class ConditionalNode;
+      |       ^~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:398:34: error: invalid use of incomplete type ‘class akao::core::engine::runtime::ConditionalNode’
+  398 |         return evaluate_node(node->true_branch.get());
+      |                                  ^~
+core/engine/runtime/akao_runtime.hpp:31:7: note: forward declaration of ‘class akao::core::engine::runtime::ConditionalNode’
+   31 | class ConditionalNode;
+      |       ^~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:399:20: error: invalid use of incomplete type ‘class akao::core::engine::runtime::ConditionalNode’
+  399 |     } else if (node->false_branch) {
+      |                    ^~
+core/engine/runtime/akao_runtime.hpp:31:7: note: forward declaration of ‘class akao::core::engine::runtime::ConditionalNode’
+   31 | class ConditionalNode;
+      |       ^~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:400:34: error: invalid use of incomplete type ‘class akao::core::engine::runtime::ConditionalNode’
+  400 |         return evaluate_node(node->false_branch.get());
+      |                                  ^~
+core/engine/runtime/akao_runtime.hpp:31:7: note: forward declaration of ‘class akao::core::engine::runtime::ConditionalNode’
+   31 | class ConditionalNode;
+      |       ^~~~~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_loop(akao::core::engine::runtime::LoopNode*)’:
+core/engine/runtime/akao_runtime.cpp:410:52: error: invalid use of incomplete type ‘class akao::core::engine::runtime::LoopNode’
+  410 |         RuntimeValue condition = evaluate_node(node->condition.get());
+      |                                                    ^~
+core/engine/runtime/akao_runtime.hpp:32:7: note: forward declaration of ‘class akao::core::engine::runtime::LoopNode’
+   32 | class LoopNode;
+      |       ^~~~~~~~
+core/engine/runtime/akao_runtime.cpp:415:40: error: invalid use of incomplete type ‘class akao::core::engine::runtime::LoopNode’
+  415 |         last_value = evaluate_node(node->body.get());
+      |                                        ^~
+core/engine/runtime/akao_runtime.hpp:32:7: note: forward declaration of ‘class akao::core::engine::runtime::LoopNode’
+   32 | class LoopNode;
+      |       ^~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::evaluate_block(akao::core::engine::runtime::BlockNode*)’:
+core/engine/runtime/akao_runtime.cpp:424:32: error: invalid use of incomplete type ‘class akao::core::engine::runtime::BlockNode’
+  424 |     for (auto& statement : node->statements) {
+      |                                ^~
+core/engine/runtime/akao_runtime.hpp:33:7: note: forward declaration of ‘class akao::core::engine::runtime::BlockNode’
+   33 | class BlockNode;
+      |       ^~~~~~~~~
+core/engine/runtime/akao_runtime.cpp: In lambda function:
+core/engine/runtime/akao_runtime.cpp:451:47: warning: narrowing conversion of ‘(const char*)"unknown"’ from ‘const char*’ to ‘bool’ [-Wnarrowing]
+  451 |         if (args.empty()) return RuntimeValue{"unknown"};
+      |                                               ^~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:452:51: error: ‘this’ was not captured for this lambda function
+  452 |         return RuntimeValue{get_runtime_value_type(args[0])};
+      |                             ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:452:51: error: cannot call member function ‘std::string akao::core::engine::runtime::AkaoRuntime::get_runtime_value_type(const akao::core::engine::runtime::RuntimeValue&)’ without object
+core/engine/runtime/akao_runtime.cpp:452:60: error: no matching function for call to ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(<brace-enclosed initializer list>)’
+  452 |         return RuntimeValue{get_runtime_value_type(args[0])};
+      |                                                            ^
+core/engine/runtime/akao_runtime.hpp:47:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(const std::string&)’
+   47 |     RuntimeValue(const std::string& value) : type_(STRING), string_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:47:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:46:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(double)’
+   46 |     RuntimeValue(double value) : type_(FLOAT), float_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:46:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:45:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(int)’
+   45 |     RuntimeValue(int value) : type_(INTEGER), int_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:45:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:44:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(bool)’
+   44 |     RuntimeValue(bool value) : type_(BOOLEAN), bool_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:44:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:43:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue()’
+   43 |     RuntimeValue() : type_(NIL) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:43:5: note:   candidate expects 0 arguments, 1 provided
+core/engine/runtime/akao_runtime.hpp:39:7: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(const akao::core::engine::runtime::RuntimeValue&)’
+   39 | class RuntimeValue {
+      |       ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:39:7: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:39:7: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(akao::core::engine::runtime::RuntimeValue&&)’
+core/engine/runtime/akao_runtime.hpp:39:7: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.cpp: In lambda function:
+core/engine/runtime/akao_runtime.cpp:458:53: error: ‘this’ was not captured for this lambda function
+  458 |         return RuntimeValue{get_runtime_value_length(args[0])};
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:458:53: error: cannot call member function ‘int akao::core::engine::runtime::AkaoRuntime::get_runtime_value_length(const akao::core::engine::runtime::RuntimeValue&)’ without object
+core/engine/runtime/akao_runtime.cpp:458:62: error: no matching function for call to ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(<brace-enclosed initializer list>)’
+  458 |         return RuntimeValue{get_runtime_value_length(args[0])};
+      |                                                              ^
+core/engine/runtime/akao_runtime.hpp:47:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(const std::string&)’
+   47 |     RuntimeValue(const std::string& value) : type_(STRING), string_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:47:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:46:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(double)’
+   46 |     RuntimeValue(double value) : type_(FLOAT), float_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:46:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:45:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(int)’
+   45 |     RuntimeValue(int value) : type_(INTEGER), int_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:45:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:44:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(bool)’
+   44 |     RuntimeValue(bool value) : type_(BOOLEAN), bool_value_(value) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:44:5: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:43:5: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue()’
+   43 |     RuntimeValue() : type_(NIL) {}
+      |     ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:43:5: note:   candidate expects 0 arguments, 1 provided
+core/engine/runtime/akao_runtime.hpp:39:7: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(const akao::core::engine::runtime::RuntimeValue&)’
+   39 | class RuntimeValue {
+      |       ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.hpp:39:7: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.hpp:39:7: note: candidate: ‘akao::core::engine::runtime::RuntimeValue::RuntimeValue(akao::core::engine::runtime::RuntimeValue&&)’
+core/engine/runtime/akao_runtime.hpp:39:7: note:   conversion of argument 1 would be ill-formed:
+core/engine/runtime/akao_runtime.cpp: In member function ‘akao::core::engine::runtime::RuntimeValue akao::core::engine::runtime::AkaoRuntime::execute_user_function(akao::core::engine::runtime::UserFunction*, const std::vector<std::unique_ptr<akao::core::engine::runtime::ASTNode> >&)’:
+core/engine/runtime/akao_runtime.cpp:486:40: error: invalid use of incomplete type ‘class akao::core::engine::runtime::UserFunction’
+  486 |         for (size_t i = 0; i < function->parameters.size() && i < arguments.size(); ++i) {
+      |                                        ^~
+core/engine/runtime/akao_runtime.hpp:34:7: note: forward declaration of ‘class akao::core::engine::runtime::UserFunction’
+   34 | class UserFunction;
+      |       ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:488:46: error: invalid use of incomplete type ‘class akao::core::engine::runtime::UserFunction’
+  488 |             symbol_table_->set_value(function->parameters[i], arg_value);
+      |                                              ^~
+core/engine/runtime/akao_runtime.hpp:34:7: note: forward declaration of ‘class akao::core::engine::runtime::UserFunction’
+   34 | class UserFunction;
+      |       ^~~~~~~~~~~~
+core/engine/runtime/akao_runtime.cpp:492:53: error: invalid use of incomplete type ‘class akao::core::engine::runtime::UserFunction’
+  492 |         RuntimeValue result = evaluate_node(function->body.get());
+      |                                                     ^~
+core/engine/runtime/akao_runtime.hpp:34:7: note: forward declaration of ‘class akao::core::engine::runtime::UserFunction’
+   34 | class UserFunction;
+      |       ^~~~~~~~~~~~
+In file included from /usr/include/c++/13/memory:78,
+                 from core/engine/runtime/akao_runtime.hpp:16:
+/usr/include/c++/13/bits/unique_ptr.h: In instantiation of ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = akao::core::engine::runtime::UserFunction]’:
+/usr/include/c++/13/bits/unique_ptr.h:404:17:   required from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = akao::core::engine::runtime::UserFunction; _Dp = std::default_delete<akao::core::engine::runtime::UserFunction>]’
+/usr/include/c++/13/bits/stl_pair.h:187:12:   required from ‘void std::__new_allocator<_Tp>::destroy(_Up*) [with _Up = std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> >; _Tp = std::_Rb_tree_node<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >]’
+/usr/include/c++/13/bits/alloc_traits.h:558:15:   required from ‘static void std::allocator_traits<std::allocator<_CharT> >::destroy(allocator_type&, _Up*) [with _Up = std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> >; _Tp = std::_Rb_tree_node<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; allocator_type = std::allocator<std::_Rb_tree_node<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > > >]’
+/usr/include/c++/13/bits/stl_tree.h:625:24:   required from ‘void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_destroy_node(_Link_type) [with _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> >; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; _Link_type = std::_Rb_tree_node<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >*]’
+/usr/include/c++/13/bits/stl_tree.h:633:2:   required from ‘void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_drop_node(_Link_type) [with _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> >; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; _Link_type = std::_Rb_tree_node<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >*]’
+/usr/include/c++/13/bits/stl_tree.h:1938:4:   required from ‘void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_erase(_Link_type) [with _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> >; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; _Link_type = std::_Rb_tree_node<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >*]’
+/usr/include/c++/13/bits/stl_tree.h:986:9:   required from ‘std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::~_Rb_tree() [with _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> >; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::unique_ptr<akao::core::engine::runtime::UserFunction> > >]’
+/usr/include/c++/13/bits/stl_map.h:197:7:   required from ‘std::__detail::__unique_ptr_t<_Tp> std::make_unique(_Args&& ...) [with _Tp = akao::core::engine::runtime::SymbolTable; _Args = {}; __detail::__unique_ptr_t<_Tp> = __detail::__unique_ptr_t<akao::core::engine::runtime::SymbolTable>]’
+core/engine/runtime/akao_runtime.cpp:34:50:   required from here
+/usr/include/c++/13/bits/unique_ptr.h:97:23: error: invalid application of ‘sizeof’ to incomplete type ‘akao::core::engine::runtime::UserFunction’
+   97 |         static_assert(sizeof(_Tp)>0,
+      |                       ^~~~~~~~~~~
+make: *** [Makefile:49: build/release/core/engine/runtime/akao_runtime.o] Error 1

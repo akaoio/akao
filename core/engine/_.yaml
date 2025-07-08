@@ -1,0 +1,12 @@
+id: "akao:directory:core:engine:v1"
+metadata:
+  specification: "Core engine directory containing fundamental processing, validation, and semantic systems"
+  scope: "Engine subsystems including semantic mapping, universal validation, parser, runtime, and logic components"
+  timeline: "2025-07-08"
+  rationale: "Central engine functionality with clear separation of concerns for processing, validation, and semantic operations"
+  methodology: "Modular engine architecture with independent subsystems and standardized interfaces"
+  references: 
+    - "akao:file:core:engine:metadata_standards:v1"
+    - "akao:file:core:engine:compliance_validator:v1"
+    - "akao:directory:core:engine:semantic:v1"
+    - "akao:directory:core:engine:validator:v1"

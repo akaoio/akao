@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:interface:cli:main:v1
+ * @doc: Main entry point for Akao CLI application providing universal validation and enforcement framework with self-governing rule compliance
+ * @specification: CLI application entry point with command parsing, execution, and universal validation framework integration
+ * @scope: Primary interface for all Akao system operations including validation, building, testing, and rule enforcement
+ * @timeline: 2025-07-08
+ * @rationale: Provide unified entry point for all Akao operations with systematic governance and rule compliance
+ * @methodology: CLI-based interface with command routing, universal validation integration, and philosophy-rule enforcement
+ * @references: ["akao:file:core:engine:compliance_validator:v1", "akao:file:core:engine:metadata_standards:v1"]
+ */
+
 #include "interfaces/cli/parser/command_parser.hpp"
 #include "interfaces/cli/executor/command_executor.hpp"
 #include "interfaces/cli/formatter/output_formatter.hpp"
@@ -7,15 +18,20 @@
 #include "interfaces/cli/command/build/header/v1.hpp"
 #include "interfaces/cli/command/test/header/v1.hpp"
 #include "interfaces/cli/command/additional/header/v1.hpp"
+#include "core/engine/compliance_validator.cpp"
+#include "core/engine/metadata_standards.hpp"
 #include <iostream>
 #include <filesystem>
 
 /**
- * @brief Main entry point for Akao CLI application
- * 
- * Universal validation and enforcement framework that embodies
- * the "rules govern rules" philosophy - Akao validates itself
- * using its own rules and philosophies.
+ * @id: akao:function:interface:cli:main:v1
+ * @doc: Main entry point function implementing universal validation and enforcement with self-governing rule compliance
+ * @specification: CLI application main function with command parsing, validation, and systematic governance enforcement
+ * @scope: Primary system entry point for all Akao operations and command execution
+ * @timeline: 2025-07-08
+ * @rationale: Provide unified system entry point with mandatory compliance validation and systematic governance
+ * @methodology: Command-line interface with integrated compliance checking and universal validation framework
+ * @references: ["akao:file:interface:cli:main:v1", "akao:class:core:engine:compliance_validator:v1"]
  * 
  * Philosophy compliance:
  * - akao:philosophy:rule:governance:v1 - Self-governing rules system
