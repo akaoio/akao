@@ -1,0 +1,124 @@
+---
+id: "akao:artifact:oneshot:plan:v1"
+metadata:
+  specification: "Architectural reformation to address critical issues identified in overview.md"
+  scope: "Complete system architecture, governance framework, and technology stack"
+  timeline: "2025-07-08 single session implementation"
+  rationale: "Resolve fundamental architectural flaws, governance deficiencies, and technology gaps"
+  methodology: "Systematic phased approach with mandatory validation at each step"
+  references: 
+    - "/home/x/Projects/akao/sandbox/thoughts/refined/overview.md"
+    - "/home/x/Projects/akao/plan.md"
+    - "/home/x/Projects/akao/CONTRIBUTING.md"
+
+phases:
+  - id: "akao:artifact:oneshot:phase-1:v1"
+    name: "Critical Self-Validation Fixes"
+    duration: "45 minutes"
+    steps:
+      - id: "akao:artifact:oneshot:phase-1:step-1:v1"
+        name: "Analyze Structure Violations"
+        duration: "15 minutes"
+        inputs: 
+          - "Current 56 structure violations"
+          - "Architectural rule definitions"
+        outputs: 
+          - "Violation categorization report"
+          - "Targeted fix strategy"
+        validation:
+          unit_test: "tmp/oneshot/phase1/step1/structure_violation_test.cpp"
+          
+      - id: "akao:artifact:oneshot:phase-1:step-2:v1"
+        name: "Fix Architectural Compliance" 
+        duration: "20 minutes"
+        inputs:
+          - "Violation fix strategy"
+          - "Philosophy requirements"
+        outputs:
+          - "Compliant file structure"
+          - "Updated naming conventions"
+        validation:
+          unit_test: "tmp/oneshot/phase1/step2/architecture_compliance_test.cpp"
+          
+      - id: "akao:artifact:oneshot:phase-1:step-3:v1"
+        name: "Verify Self-Validation Success"
+        duration: "10 minutes"
+        inputs:
+          - "Fixed architecture"
+          - "Self-validation suite"
+        outputs:
+          - "0 violations report"
+          - ">95% quality score"
+        validation:
+          unit_test: "tmp/oneshot/phase1/step3/self_validation_complete_test.cpp"
+
+  - id: "akao:artifact:oneshot:phase-2:v1"
+    name: "Test Framework Enhancement"
+    duration: "25 minutes"
+    steps:
+      - id: "akao:artifact:oneshot:phase-2:step-1:v1"
+        name: "Fix Failing Tests"
+        duration: "15 minutes"
+        inputs:
+          - "Current failing tests"
+          - "Validation command issues"
+        outputs:
+          - "Fixed test suite"
+          - "Proper output validation"
+        validation:
+          unit_test: "tmp/oneshot/phase2/step1/failing_test_fixes_test.cpp"
+          
+      - id: "akao:artifact:oneshot:phase-2:step-2:v1"
+        name: "Enhance Test Quality"
+        duration: "10 minutes"
+        inputs:
+          - "Fixed tests"
+          - "Quality requirements"
+        outputs:
+          - "Meaningful assertions"
+          - "100% success rate"
+        validation:
+          unit_test: "tmp/oneshot/phase2/step2/test_quality_enhancement_test.cpp"
+
+  - id: "akao:artifact:oneshot:phase-3:v1"
+    name: "Code Quality Cleanup"
+    duration: "20 minutes"
+    steps:
+      - id: "akao:artifact:oneshot:phase-3:step-1:v1"
+        name: "Resolve Compilation Warnings"
+        duration: "10 minutes"
+        inputs:
+          - "Current compilation warnings"
+          - "Implementation stubs"
+        outputs:
+          - "Clean compilation"
+          - "Completed implementations"
+        validation:
+          unit_test: "tmp/oneshot/phase3/step1/compilation_clean_test.cpp"
+          
+      - id: "akao:artifact:oneshot:phase-3:step-2:v1"
+        name: "Final Validation"
+        duration: "10 minutes"
+        inputs:
+          - "Complete system"
+          - "All test suites"
+        outputs:
+          - "100% operational system"
+          - "Full compliance verification"
+        validation:
+          unit_test: "tmp/oneshot/phase3/step2/final_validation_test.cpp"
+
+success_criteria:
+  mandatory_completion:
+    - "Self-validation reports 0 violations"
+    - "All test suite passes (100% success rate)"
+    - "Clean compilation (zero warnings)"
+    - "Universal validation functionality confirmed operational"
+    - "All CLI commands functional and tested"
+  
+  quality_metrics:
+    self_validation_score: "≥95%"
+    architectural_compliance: "100%"
+    test_success_rate: "100%"
+    philosophy_compliance: "All 15 philosophies satisfied"
+    performance: "No regression in execution speed"
