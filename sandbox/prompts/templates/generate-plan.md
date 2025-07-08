@@ -185,11 +185,105 @@ User sẽ cung cấp:
 3. **Scope definition** (architectural impact và affected components)
 4. **Implementation approach** (methodology và technical approach)
 
-📤 Validation Process:
-1. **Feature name validation**: Grammar, kebab-case, max 2 words
-2. **Namespace generation**: Correct akao pattern application
-3. **Metadata completeness**: All 8 fields với appropriate content
-4. **Reference validation**: Cross-references giữa các files
-5. **Quality standards**: Compliance với tất cả CONTRIBUTING.md rules
+🔍 **MANDATORY System Architecture Research:**
 
-Chỉ bắt đầu tạo khi user cung cấp đủ thông tin và pass validation checks.
+### Phase 0: Pre-Planning Analysis (REQUIRED)
+Trước khi tạo plan.yaml, AI PHẢI thực hiện nghiên cứu toàn diện:
+
+#### A. Existing Codebase Analysis:
+1. **Scan current workspace structure** để identify:
+   - Existing similar functions/classes
+   - Current naming patterns và conventions
+   - Existing akao namespace IDs
+   - Related components đã implement
+
+2. **Check for duplications** và conflicts:
+   - Functions với similar purpose
+   - Classes với overlapping responsibilities  
+   - Files với similar names hoặc functionality
+   - Namespace ID conflicts
+
+3. **Analyze current architecture**:
+   - Core/engine components existing
+   - Parser/validator implementations available
+   - Test structures và patterns in use
+   - Documentation standards đã áp dụng
+
+#### B. Dependency Mapping:
+1. **Identify existing dependencies**:
+   - Components mà feature sẽ sử dụng
+   - Components sẽ bị impact bởi changes
+   - External references và integrations
+
+2. **Validate integration points**:
+   - Interface compatibility với existing code
+   - Data flow và processing pipeline impacts
+   - Philosophy-rule separation compliance
+
+#### C. Conflict Prevention:
+1. **Name collision detection**:
+   - Check existing file/folder names
+   - Verify akao namespace uniqueness
+   - Validate grammar consistency with existing patterns
+
+2. **Functionality overlap analysis**:
+   - Existing implementations với similar purpose
+   - Opportunities for extension vs new creation
+   - Refactoring needs để avoid duplication
+
+### Research Deliverables (MANDATORY before plan.yaml):
+```markdown
+## Architecture Research Report
+
+### Existing Components Analysis:
+- **Similar Functions**: [List existing functions với overlapping purpose]
+- **Related Classes**: [List classes trong same domain]
+- **Namespace Usage**: [Current akao IDs trong related area]
+- **Architecture Patterns**: [Current patterns được sử dụng]
+
+### Conflict Assessment:
+- **Name Conflicts**: [Potential naming collisions]
+- **Functionality Overlaps**: [Existing similar implementations]
+- **Integration Points**: [Components sẽ bị affected]
+
+### Implementation Strategy:
+- **New Components**: [Components cần tạo mới]
+- **Extensions**: [Existing components cần extend]
+- **Refactoring**: [Components cần modify để avoid conflicts]
+- **Dependencies**: [Required existing components]
+```
+
+📤 Execution Workflow:
+
+### Step 1: Architecture Research (MANDATORY)
+1. **System Analysis**: Scan workspace cho existing components
+2. **Conflict Detection**: Check duplications và name collisions  
+3. **Dependency Mapping**: Identify integration points
+4. **Research Report**: Generate comprehensive analysis
+
+### Step 2: Validation Process
+1. **Feature name validation**: Grammar, kebab-case, max 2 words
+2. **Uniqueness verification**: No conflicts với existing components
+3. **Namespace generation**: Correct akao pattern application
+4. **Metadata completeness**: All 8 fields với appropriate content
+5. **Reference validation**: Cross-references giữa các files
+6. **Quality standards**: Compliance với tất cả CONTRIBUTING.md rules
+
+### Step 3: Plan Generation (Only after research)
+1. **Architecture-informed planning**: Based on research findings
+2. **Conflict-free implementation**: No duplications hoặc overlaps
+3. **Integration-ready design**: Compatible với existing codebase
+4. **Archaeological preservation**: Complete traceability
+
+⚠️ **CRITICAL**: Không được tạo plan.yaml nếu:
+- **Chưa complete architecture research**
+- **Phát hiện name conflicts chưa resolve**
+- **Functionality duplications chưa address**
+- **Integration impacts chưa analyze**
+
+Chỉ bắt đầu tạo khi:
+1. ✅ Architecture research completed
+2. ✅ Conflict analysis finished
+3. ✅ User input validated
+4. ✅ Integration strategy defined
+5. ✅ All compliance checks passed

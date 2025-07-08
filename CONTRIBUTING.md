@@ -217,7 +217,32 @@ mkdir -p artifacts/feature-description
 touch artifacts/feature-description/{plan.yaml,checklist.md,quality.yaml}
 ```
 
+### 1.1. Architecture Research (MANDATORY)
+Before creating any plan.yaml, conduct comprehensive system analysis:
+
+**A. Codebase Analysis:**
+```bash
+# Scan for existing similar components
+find . -name "*.cpp" -o -name "*.hpp" | xargs grep -l "similar_functionality"
+find . -name "*.yaml" | xargs grep "akao:" | sort | uniq
+grep -r "@id:" --include="*.cpp" --include="*.hpp" . | cut -d'"' -f2 | sort
+```
+
+**B. Conflict Detection:**
+- Check existing akao namespace IDs for conflicts
+- Verify function/class names for duplications
+- Analyze directory structure for naming consistency
+- Review existing implementations for functionality overlap
+
+**C. Integration Analysis:**
+- Map dependencies with existing components
+- Identify affected interfaces and APIs
+- Assess philosophy-rule separation impact
+- Validate universal parser compatibility
+
 ### 2. Required plan.yaml Structure
+**ONLY create after completing architecture research**
+
 ```yaml
 id: "akao:artifact:feature-description:plan:v1"
 metadata:
@@ -227,6 +252,25 @@ metadata:
   rationale: "Justification"
   methodology: "Implementation approach"
   references: ["URLs"]
+
+# MANDATORY: Architecture research results
+architecture_research:
+  existing_components:
+    similar_functions: ["akao:function:...", "akao:function:..."]
+    related_classes: ["akao:class:...", "akao:class:..."]
+    namespace_usage: ["akao:directory:...", "akao:file:..."]
+  
+  conflict_analysis:
+    name_conflicts: []  # Must be empty or resolved
+    functionality_overlaps: []  # Must be addressed
+    integration_impacts: ["component1", "component2"]
+  
+  implementation_strategy:
+    new_components: ["component_list"]
+    extensions: ["existing_component_modifications"]
+    refactoring_required: ["components_needing_changes"]
+    dependencies: ["required_existing_components"]
+
 phases:
   - id: "akao:artifact:feature-description:phase-1:v1"
     steps:
@@ -280,6 +324,12 @@ metadata:
 
 ### 4. Pre-Commit Validation
 ```bash
+# Architecture compliance check
+akao research --validate-conflicts
+akao research --check-duplications
+akao research --verify-integration
+
+# Standard validation
 akao validate --comprehensive
 akao test --deterministic
 akao analyze --compliance
@@ -287,6 +337,10 @@ akao analyze --compliance
 
 ## Requirements
 
+- **MANDATORY architecture research before any plan.yaml creation**
+- **Conflict detection and resolution required**
+- **No duplicate functionality allowed**
+- **Integration impact analysis mandatory**
 - All IDs must follow akao namespace pattern
 - **All components with IDs MUST include complete metadata headers**
 - **@doc field MANDATORY for all code components (functions, classes, files)**
