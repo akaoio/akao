@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:validator:universal:v1
+ * @doc: Universal validator implementation providing comprehensive validation framework for any codebase including Akao with philosophy-rule separation, Pure Logic engine integration, and archaeological preservation capabilities
+ * @specification: Core universal validation engine with project type detection, rule execution, Pure Logic integration, and self-validation capabilities
+ * @scope: Core engine universal validation implementation for system-wide compliance and quality assurance
+ * @timeline: 2025-01-08
+ * @rationale: Provide universal validation capability that operates on any codebase while maintaining philosophy-rule separation and archaeological preservation
+ * @methodology: Universal validation architecture with Pure Logic engine integration, project type detection, and comprehensive rule execution framework
+ * @references: ["akao:file:core:engine:validator:universal:v1_hpp", "akao:class:core:engine:universal_validator:v1", "akao:philosophy:validation:universal:v1"]
+ */
+
 #include "v1.hpp"
 #include "../../logic/pure/v1.hpp"
 #include <filesystem>

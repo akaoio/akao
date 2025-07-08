@@ -1,0 +1,8 @@
+id: "akao:directory:tests:unit:v1"
+metadata:
+  specification: "Unit tests directory containing individual component testing with isolated validation and deterministic test cases"
+  scope: "Unit testing collection for component-level validation and quality assurance"
+  timeline: "2025-01-08"
+  rationale: "Provide isolated testing capability for individual components with deterministic validation and reproducible results"
+  methodology: "Component isolation testing with deterministic inputs/outputs and archaeological test data preservation"
+  references: ["akao:directory:tests:system:v1", "akao:directory:core:engine:v1", "akao:philosophy:validation:universal:v1"]

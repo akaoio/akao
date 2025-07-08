@@ -1,0 +1,8 @@
+id: "akao:directory:rulesets:system:v1"
+metadata:
+  specification: "System rulesets directory containing collections of related rules organized by architectural governance categories for comprehensive system management"
+  scope: "Core rulesets collection for architecture-based rule organization and systematic governance enforcement"
+  timeline: "2025-01-08"
+  rationale: "Centralized location for rule collections organized by architectural governance domains rather than programming language categorization"
+  methodology: "Architecture-management-based taxonomy with categorical organization by governance domains and systematic rule grouping"
+  references: ["akao:directory:rules:system:v1", "akao:directory:philosophies:system:v1", "akao:file:rulesets:index:v1"]

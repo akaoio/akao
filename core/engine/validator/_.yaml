@@ -1,11 +1,8 @@
 id: "akao:directory:core:engine:validator:v1"
 metadata:
-  specification: "Universal validation directory containing validation frameworks and compliance systems"
-  scope: "Universal validation framework, compliance validation, and cross-system validation capabilities"
-  timeline: "2025-07-08"
-  rationale: "Centralized validation system eliminating self-validation paradox with universal scope"
-  methodology: "Framework-based universal validation with compliance enforcement and automated checking"
-  references: 
-    - "akao:file:core:engine:validator:universal-framework:v1"
-    - "akao:file:core:engine:compliance_validator:v1"
-    - "akao:artifact:architectural-reformation:phase-1:step-4:completion_report:v1"
+  specification: "Core engine validator directory containing universal validation framework components for system-wide compliance and quality assurance"
+  scope: "Core engine validation subsystem for universal validation framework implementation"
+  timeline: "2025-01-08"
+  rationale: "Centralized validation engine components for universal validation capability across any codebase including Akao"
+  methodology: "Universal validation architecture with modular validator components and comprehensive validation framework"
+  references: ["akao:directory:core:engine:v1", "akao:class:core:engine:universal_validator:v1", "akao:philosophy:validation:universal:v1"]

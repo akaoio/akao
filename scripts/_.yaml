@@ -1,0 +1,8 @@
+id: "akao:directory:scripts:system:v1"
+metadata:
+  specification: "System scripts directory containing automation, validation, and maintenance scripts for Akao Universal Standards compliance and archaeological preservation"
+  scope: "System automation scripts collection for compliance validation and maintenance operations"
+  timeline: "2025-01-08"
+  rationale: "Centralized location for system automation scripts that support compliance validation and archaeological preservation"
+  methodology: "Script-based automation with compliance validation, maintenance operations, and archaeological data preservation"
+  references: ["akao:file:scripts:validate_akao_compliance:v1", "akao:artifact:oneshot:plan:v1", "akao:artifact:oneshot:checklist:v1"]

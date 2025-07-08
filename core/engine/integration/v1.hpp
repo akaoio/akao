@@ -2,7 +2,7 @@
 
 #include "../logic/pure/v1.hpp"
 #include "../../philosophy/engine/v1.hpp"
-#include "../../rule/registry/rule_registry.hpp"
+#include "../../rule/registry/rule-registry/v1.hpp"
 #include <string>
 #include <vector>
 #include <memory>

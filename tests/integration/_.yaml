@@ -1,0 +1,8 @@
+id: "akao:directory:tests:integration:v1"
+metadata:
+  specification: "Integration tests directory containing system component interaction testing with cross-component validation and archaeological test preservation"
+  scope: "Integration testing collection for component interaction validation and system-wide quality assurance"
+  timeline: "2025-01-08"
+  rationale: "Provide comprehensive testing capability for component interactions with deterministic validation and system integration verification"
+  methodology: "Cross-component integration testing with deterministic inputs/outputs and archaeological test data preservation"
+  references: ["akao:directory:tests:system:v1", "akao:directory:tests:unit:v1", "akao:directory:core:engine:v1"]

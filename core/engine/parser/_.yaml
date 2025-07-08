@@ -1,22 +1,8 @@
 id: "akao:directory:core:engine:parser:v1"
 metadata:
-  specification: "Universal parser components directory"
-  scope: "Multi-language parsing with zero-dependency architecture and unified AST generation"
-  purpose: "Universal parsing system supporting C, C++, Python, JavaScript, YAML, JSON, Prolog, and Pure Logic"
-  created: "2025-01-08"
-  dependencies: 
-    - "core/engine/language/"
-    - "core/engine/validator/"
-    - "languages/"
-  components:
-    - "language_detectors.hpp - Automatic language detection system"
-    - "universal_parser.hpp/cpp - Main universal parser with unified AST"
-    - "ast_generator.hpp/cpp - Unified AST generation and normalization"
-  integration:
-    - "Integrates with existing Pure Logic grammar"
-    - "Uses universal validation framework"
-    - "Supports build system integration"
-  compliance:
-    identification_schema: "v1"
-    metadata_standards: "v1"
-    archaeological_preservation: "enabled"
+  specification: "Core engine parser directory containing universal parsing framework components for multi-language code analysis and AST generation"
+  scope: "Core engine parsing subsystem for universal parser implementation with zero-dependency architecture"
+  timeline: "2025-01-08"
+  rationale: "Centralized parsing engine components for universal code analysis capability across multiple programming languages"
+  methodology: "Universal parser architecture with language detection, AST generation, and semantic normalization capabilities"
+  references: ["akao:directory:core:engine:v1", "akao:directory:languages:system:v1", "akao:philosophy:build:duality:v1"]

@@ -1,8 +1,19 @@
+/**
+ * @id: akao:file:core:engine:validator:universal:v1_hpp
+ * @doc: Universal validator header defining comprehensive validation framework interface for any codebase including Akao with philosophy-rule separation, Pure Logic engine integration, and archaeological preservation capabilities
+ * @specification: Header file for UniversalValidator class with complete interface definition, configuration structures, and validation framework declarations
+ * @scope: Core engine universal validation header for system-wide compliance and quality assurance interface
+ * @timeline: 2025-01-08
+ * @rationale: Provide universal validation interface that operates on any codebase while maintaining philosophy-rule separation and archaeological preservation
+ * @methodology: Universal validation architecture interface with Pure Logic engine integration, project type detection, and comprehensive rule execution framework
+ * @references: ["akao:file:core:engine:validator:universal:v1", "akao:class:core:engine:universal_validator:v1", "akao:philosophy:validation:universal:v1"]
+ */
+
 #pragma once
 
 #include "../validation_result/v1.hpp"
 #include "../../parser/yaml/parser/v1.hpp"
-#include "../../../rule/registry/rule_registry.hpp"
+#include "../../../rule/registry/rule-registry/v1.hpp"
 #include <string>
 #include <memory>
 #include <vector>
@@ -20,17 +31,14 @@ namespace akao::logic {
 namespace akao::core::engine::validator {
 
 /**
- * @brief Universal Validator for Akao framework
- * 
- * THE CORE OF AKAO - Validates ANY project type
- * "Language of Languages - Framework of Frameworks"
- * 
- * Philosophy Compliance:
- * - akao:philosophy::structure:isolation:v1 (one class per file)
- * - akao:philosophy::validation:universal:v1 (universal validation)
- * - akao:philosophy::language:isolation:v1 (pure C++ core)
- * - akao:philosophy::rule:governance:v1 (rules govern rules)
- * - akao:philosophy::measurement:traceability:v1 (complete traceability)
+ * @id: akao:class:core:engine:universal_validator:v1
+ * @doc: Universal Validator class for Akao framework providing comprehensive validation capability for any project type with philosophy-rule separation, Pure Logic engine integration, and archaeological preservation
+ * @specification: Core universal validation class with project type detection, rule execution, Pure Logic integration, and self-validation capabilities
+ * @scope: Core engine universal validation class for system-wide compliance and quality assurance
+ * @timeline: 2025-01-08
+ * @rationale: Provide universal validation capability that operates on any codebase while maintaining philosophy-rule separation and archaeological preservation
+ * @methodology: Universal validation architecture with Pure Logic engine integration, project type detection, and comprehensive rule execution framework
+ * @references: ["akao:file:core:engine:validator:universal:v1", "akao:philosophy:validation:universal:v1", "akao:philosophy:structure:isolation:v1"]
  */
 class UniversalValidator {
 private:

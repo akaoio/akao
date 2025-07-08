@@ -1,0 +1,487 @@
+id: "akao:artifact:system-cleanup:plan:v1"
+metadata:
+  specification: "Comprehensive system cleanup plan to eliminate technical debt, duplicated functionality, and naming violations across the entire Akao codebase"
+  scope: "System-wide cleanup covering all directories, files, functions, classes, and naming conventions"
+  timeline: "2025-07-08"
+  rationale: "Critical cleanup required due to accumulated technical debt from multiple coding sessions resulting in duplicated functionality, incorrect naming, and architectural inconsistencies"
+  methodology: "Systematic audit and cleanup using archaeological preservation principles with comprehensive validation and compliance enforcement"
+  references: ["CONTRIBUTING.md", "akao:artifact:architectural-reformation:plan:v1"]
+
+# Architecture research and conflict analysis
+architecture_research:
+  existing_components:
+    duplicate_functions:
+      - "Multiple validation implementations across different modules"
+      - "Redundant parser implementations"
+      - "Duplicate CLI interface components"
+      - "Multiple runtime implementations"
+      - "Overlapping compliance validators"
+    
+    naming_violations:
+      - "Files with underscores in names"
+      - "Directories with version numbers"
+      - "Grammatically incorrect plural/singular usage"
+      - "Files containing function names instead of versions"
+      - "Mixed naming conventions across modules"
+    
+    architectural_inconsistencies:
+      - "Philosophy-rule separation violations"
+      - "Missing akao namespace identifiers"
+      - "Incomplete metadata headers"
+      - "Missing @doc fields for code components"
+      - "Inconsistent directory structure"
+  
+  conflict_analysis:
+    critical_issues:
+      - "Multiple implementations of same functionality"
+      - "Naming convention violations throughout system"
+      - "Missing mandatory metadata fields"
+      - "Architectural standard violations"
+      - "Build system inconsistencies"
+    
+    functionality_overlaps:
+      - "Universal validation vs compliance validation"
+      - "Multiple parser implementations"
+      - "Redundant CLI command handling"
+      - "Duplicate runtime environments"
+      - "Overlapping test frameworks"
+    
+    integration_impacts:
+      - "Build system requires cleanup"
+      - "Main.cpp needs simplification"
+      - "CMakeLists.txt needs updating"
+      - "Directory structure reorganization needed"
+      - "Namespace consolidation required"
+  
+  implementation_strategy:
+    cleanup_phases:
+      - "Phase 1: Audit and inventory all violations"
+      - "Phase 2: Remove duplicate implementations"
+      - "Phase 3: Fix naming convention violations"
+      - "Phase 4: Add missing metadata and documentation"
+      - "Phase 5: Validate and test cleaned system"
+    
+    preservation_approach:
+      - "Archaeological documentation of all changes"
+      - "Backup of removed components for reference"
+      - "Systematic validation at each step"
+      - "Compliance verification throughout process"
+
+# Five-phase cleanup strategy
+phases:
+  - id: "akao:artifact:system-cleanup:phase-1:v1"
+    metadata:
+      specification: "Comprehensive system audit to identify all violations, duplications, and inconsistencies"
+      scope: "Complete codebase analysis including all directories, files, functions, and classes"
+      timeline: "2025-07-08 to 2025-07-09"
+      rationale: "Establish complete inventory of issues before beginning cleanup to ensure systematic approach"
+      methodology: "Automated scanning combined with manual review using Akao compliance standards"
+      references: ["CONTRIBUTING.md"]
+    
+    steps:
+      - id: "akao:artifact:system-cleanup:phase-1:step-1:v1"
+        metadata:
+          specification: "Scan all files and directories for naming convention violations"
+          scope: "All files and directories in the project for compliance with kebab-case and grammar rules"
+          timeline: "2025-07-08"
+          rationale: "Identify all naming violations to create systematic correction plan"
+          methodology: "Automated scanning with regex patterns and manual grammar verification"
+          references: ["CONTRIBUTING.md#naming-conventions"]
+        
+        inputs: ["All project files and directories"]
+        outputs: ["naming_violations_report.yaml", "correction_mapping.yaml"]
+        validation:
+          success_criteria:
+            - "Complete inventory of all naming violations"
+            - "Categorization by violation type"
+            - "Correction mapping for each violation"
+          test_requirements:
+            - "Verify all files scanned"
+            - "Validate grammar compliance rules"
+            - "Confirm correction mappings are valid"
+      
+      - id: "akao:artifact:system-cleanup:phase-1:step-2:v1"
+        metadata:
+          specification: "Identify all duplicate functionality and overlapping implementations"
+          scope: "All source code files for duplicate functions, classes, and implementations"
+          timeline: "2025-07-08"
+          rationale: "Eliminate redundant code to reduce maintenance burden and improve system coherence"
+          methodology: "Code analysis with function signature comparison and semantic analysis"
+          references: ["akao:philosophy:rule:governance:v1"]
+        
+        inputs: ["All .cpp and .hpp files", "naming_violations_report.yaml"]
+        outputs: ["duplicate_functionality_report.yaml", "consolidation_plan.yaml"]
+        validation:
+          success_criteria:
+            - "All duplicate implementations identified"
+            - "Consolidation strategy defined"
+            - "Dependencies mapped for safe removal"
+          test_requirements:
+            - "Verify no false positives in duplicate detection"
+            - "Validate consolidation plan feasibility"
+            - "Confirm dependency analysis completeness"
+      
+      - id: "akao:artifact:system-cleanup:phase-1:step-3:v1"
+        metadata:
+          specification: "Audit all components for missing akao namespace identifiers and metadata"
+          scope: "All source files, directories, functions, and classes for compliance with identification standards"
+          timeline: "2025-07-08"
+          rationale: "Ensure complete archaeological preservation and systematic governance compliance"
+          methodology: "Metadata extraction and validation against mandatory field requirements"
+          references: ["CONTRIBUTING.md#mandatory-metadata-requirements"]
+        
+        inputs: ["All source files", "duplicate_functionality_report.yaml"]
+        outputs: ["metadata_compliance_report.yaml", "missing_documentation_list.yaml"]
+        validation:
+          success_criteria:
+            - "Complete metadata compliance audit"
+            - "All missing @doc fields identified"
+            - "Directory _.yaml file status documented"
+          test_requirements:
+            - "Verify all components checked"
+            - "Validate metadata field completeness"
+            - "Confirm documentation requirements"
+
+  - id: "akao:artifact:system-cleanup:phase-2:v1"
+    metadata:
+      specification: "Remove all duplicate implementations and consolidate overlapping functionality"
+      scope: "Systematic removal of redundant code while preserving essential functionality"
+      timeline: "2025-07-09 to 2025-07-10"
+      rationale: "Eliminate code duplication to improve maintainability and reduce system complexity"
+      methodology: "Careful removal with dependency analysis and functionality preservation"
+      references: ["duplicate_functionality_report.yaml"]
+    
+    steps:
+      - id: "akao:artifact:system-cleanup:phase-2:step-1:v1"
+        metadata:
+          specification: "Remove duplicate CLI interface implementations"
+          scope: "Consolidate multiple CLI command parsers and executors into single implementation"
+          timeline: "2025-07-09"
+          rationale: "Multiple CLI implementations create confusion and maintenance overhead"
+          methodology: "Keep most complete implementation and remove duplicates"
+          references: ["interfaces/cli/", "main.cpp"]
+        
+        inputs: ["interfaces/cli/", "main.cpp", "consolidation_plan.yaml"]
+        outputs: ["cleaned_cli_interface/", "removed_cli_duplicates.yaml"]
+        validation:
+          success_criteria:
+            - "Single CLI implementation remains"
+            - "All functionality preserved"
+            - "Build system updated"
+          test_requirements:
+            - "CLI commands still functional"
+            - "No broken dependencies"
+            - "Build succeeds"
+      
+      - id: "akao:artifact:system-cleanup:phase-2:step-2:v1"
+        metadata:
+          specification: "Consolidate parser implementations and remove redundant parsers"
+          scope: "Remove duplicate universal parser and AST generator implementations"
+          timeline: "2025-07-09"
+          rationale: "Multiple parser implementations create inconsistency and maintenance burden"
+          methodology: "Preserve existing working parser and remove incomplete duplicates"
+          references: ["core/engine/parser/"]
+        
+        inputs: ["core/engine/parser/", "consolidation_plan.yaml"]
+        outputs: ["cleaned_parser_module/", "removed_parser_duplicates.yaml"]
+        validation:
+          success_criteria:
+            - "Single parser implementation remains"
+            - "YAML parsing functionality preserved"
+            - "No broken includes"
+          test_requirements:
+            - "Parser functionality verified"
+            - "Build system compatibility"
+            - "No missing dependencies"
+      
+      - id: "akao:artifact:system-cleanup:phase-2:step-3:v1"
+        metadata:
+          specification: "Remove duplicate validation and compliance implementations"
+          scope: "Consolidate multiple validator classes and compliance checkers"
+          timeline: "2025-07-09"
+          rationale: "Multiple validation implementations create inconsistent behavior"
+          methodology: "Merge functionality into single comprehensive validator"
+          references: ["core/engine/validator/", "core/engine/compliance/"]
+        
+        inputs: ["core/engine/validator/", "core/engine/compliance/", "consolidation_plan.yaml"]
+        outputs: ["unified_validation_system/", "removed_validation_duplicates.yaml"]
+        validation:
+          success_criteria:
+            - "Single validation framework"
+            - "All validation rules preserved"
+            - "Compliance checking functional"
+          test_requirements:
+            - "Validation tests pass"
+            - "Compliance reports generated"
+            - "No functionality loss"
+
+  - id: "akao:artifact:system-cleanup:phase-3:v1"
+    metadata:
+      specification: "Fix all naming convention violations throughout the system"
+      scope: "Rename all files and directories to comply with Akao naming standards"
+      timeline: "2025-07-10 to 2025-07-11"
+      rationale: "Consistent naming is essential for archaeological preservation and system governance"
+      methodology: "Systematic renaming with dependency tracking and build system updates"
+      references: ["naming_violations_report.yaml", "CONTRIBUTING.md#naming-conventions"]
+    
+    steps:
+      - id: "akao:artifact:system-cleanup:phase-3:step-1:v1"
+        metadata:
+          specification: "Fix all file naming violations"
+          scope: "Rename files to follow {function-folder}/{version}.{ext} pattern"
+          timeline: "2025-07-10"
+          rationale: "File names must follow strict version-only pattern for archaeological preservation"
+          methodology: "Systematic renaming with include path updates and build system modifications"
+          references: ["correction_mapping.yaml"]
+        
+        inputs: ["naming_violations_report.yaml", "All source files"]
+        outputs: ["renamed_files_mapping.yaml", "updated_include_paths.yaml"]
+        validation:
+          success_criteria:
+            - "All files follow naming pattern"
+            - "No underscores in file names"
+            - "Version-only naming enforced"
+          test_requirements:
+            - "Build system compiles"
+            - "All includes resolved"
+            - "No broken references"
+      
+      - id: "akao:artifact:system-cleanup:phase-3:step-2:v1"
+        metadata:
+          specification: "Fix all directory naming violations"
+          scope: "Rename directories to comply with grammar rules and kebab-case"
+          timeline: "2025-07-10"
+          rationale: "Directory names must follow strict grammar and naming conventions"
+          methodology: "Systematic directory renaming with path updates throughout system"
+          references: ["CONTRIBUTING.md#directory-naming-standards"]
+        
+        inputs: ["naming_violations_report.yaml", "All directories"]
+        outputs: ["renamed_directories_mapping.yaml", "updated_directory_paths.yaml"]
+        validation:
+          success_criteria:
+            - "All directories follow grammar rules"
+            - "Singular/plural usage correct"
+            - "No version numbers in directory names"
+          test_requirements:
+            - "All paths resolve correctly"
+            - "Build system updated"
+            - "No broken directory references"
+      
+      - id: "akao:artifact:system-cleanup:phase-3:step-3:v1"
+        metadata:
+          specification: "Update all build system references and dependencies"
+          scope: "Update CMakeLists.txt, Makefile, and all build references"
+          timeline: "2025-07-10"
+          rationale: "Build system must reflect new file and directory structure"
+          methodology: "Systematic update of all build configuration files"
+          references: ["renamed_files_mapping.yaml", "renamed_directories_mapping.yaml"]
+        
+        inputs: ["CMakeLists.txt", "Makefile", "All build files"]
+        outputs: ["updated_build_system/", "build_verification_report.yaml"]
+        validation:
+          success_criteria:
+            - "Build system compiles successfully"
+            - "All targets build correctly"
+            - "No missing file references"
+          test_requirements:
+            - "Full build succeeds"
+            - "All executables created"
+            - "No compilation errors"
+
+  - id: "akao:artifact:system-cleanup:phase-4:v1"
+    metadata:
+      specification: "Add all missing metadata and documentation to achieve full compliance"
+      scope: "Add akao namespace IDs and complete metadata to all components"
+      timeline: "2025-07-11 to 2025-07-12"
+      rationale: "Complete metadata is mandatory for archaeological preservation and systematic governance"
+      methodology: "Systematic addition of metadata headers following Akao standards"
+      references: ["metadata_compliance_report.yaml", "CONTRIBUTING.md#mandatory-metadata-requirements"]
+    
+    steps:
+      - id: "akao:artifact:system-cleanup:phase-4:step-1:v1"
+        metadata:
+          specification: "Add akao namespace IDs to all functions and classes"
+          scope: "All functions and classes missing @id documentation"
+          timeline: "2025-07-11"
+          rationale: "Every component must have unique akao namespace identifier"
+          methodology: "Systematic ID assignment following namespace pattern"
+          references: ["missing_documentation_list.yaml"]
+        
+        inputs: ["All source files", "missing_documentation_list.yaml"]
+        outputs: ["added_namespace_ids.yaml", "id_registry.yaml"]
+        validation:
+          success_criteria:
+            - "All functions have @id documentation"
+            - "All classes have @id documentation"
+            - "No duplicate IDs assigned"
+          test_requirements:
+            - "ID uniqueness verified"
+            - "Namespace pattern compliance"
+            - "Documentation completeness"
+      
+      - id: "akao:artifact:system-cleanup:phase-4:step-2:v1"
+        metadata:
+          specification: "Add complete metadata headers to all components"
+          scope: "Add all 8 mandatory metadata fields to every component"
+          timeline: "2025-07-11"
+          rationale: "Complete metadata is required for archaeological preservation"
+          methodology: "Systematic metadata addition following field requirements"
+          references: ["CONTRIBUTING.md#universal-metadata-fields"]
+        
+        inputs: ["All components with IDs", "metadata_compliance_report.yaml"]
+        outputs: ["complete_metadata_headers.yaml", "metadata_verification_report.yaml"]
+        validation:
+          success_criteria:
+            - "All 8 metadata fields present"
+            - "@doc field added to all code components"
+            - "Metadata quality standards met"
+          test_requirements:
+            - "Metadata field completeness"
+            - "@doc field word count compliance"
+            - "Reference validity verification"
+      
+      - id: "akao:artifact:system-cleanup:phase-4:step-3:v1"
+        metadata:
+          specification: "Add _.yaml identification files to all directories"
+          scope: "Create directory identification files for all directories missing them"
+          timeline: "2025-07-11"
+          rationale: "Every directory must have identification for systematic governance"
+          methodology: "Systematic creation of directory metadata files"
+          references: ["CONTRIBUTING.md#directory-identification"]
+        
+        inputs: ["All directories", "metadata_compliance_report.yaml"]
+        outputs: ["directory_identification_files/", "directory_metadata_report.yaml"]
+        validation:
+          success_criteria:
+            - "All directories have _.yaml files"
+            - "Complete directory metadata"
+            - "Proper directory categorization"
+          test_requirements:
+            - "Directory metadata completeness"
+            - "Identification file validity"
+            - "Metadata field compliance"
+
+  - id: "akao:artifact:system-cleanup:phase-5:v1"
+    metadata:
+      specification: "Comprehensive validation and testing of cleaned system"
+      scope: "Complete system validation to ensure cleanup success and functionality preservation"
+      timeline: "2025-07-12 to 2025-07-13"
+      rationale: "Verify that cleanup achieved goals without breaking functionality"
+      methodology: "Multi-level validation including build, functionality, and compliance testing"
+      references: ["All previous phase outputs"]
+    
+    steps:
+      - id: "akao:artifact:system-cleanup:phase-5:step-1:v1"
+        metadata:
+          specification: "Validate complete system compliance with Akao standards"
+          scope: "Comprehensive compliance check against all Akao requirements"
+          timeline: "2025-07-12"
+          rationale: "Ensure cleanup achieved full compliance with all standards"
+          methodology: "Automated compliance validation with manual verification"
+          references: ["CONTRIBUTING.md", "All cleanup outputs"]
+        
+        inputs: ["Cleaned system", "All compliance reports"]
+        outputs: ["final_compliance_report.yaml", "compliance_verification.yaml"]
+        validation:
+          success_criteria:
+            - "100% naming convention compliance"
+            - "Complete metadata coverage"
+            - "No duplicate functionality"
+          test_requirements:
+            - "Automated compliance tests pass"
+            - "Manual verification complete"
+            - "All standards met"
+      
+      - id: "akao:artifact:system-cleanup:phase-5:step-2:v1"
+        metadata:
+          specification: "Comprehensive functionality testing of cleaned system"
+          scope: "Test all major system functionality to ensure no regression"
+          timeline: "2025-07-12"
+          rationale: "Verify that cleanup preserved all essential functionality"
+          methodology: "Comprehensive testing of CLI, validation, parsing, and core functionality"
+          references: ["Original functionality requirements"]
+        
+        inputs: ["Cleaned system", "Test specifications"]
+        outputs: ["functionality_test_report.yaml", "regression_analysis.yaml"]
+        validation:
+          success_criteria:
+            - "All core functionality working"
+            - "CLI commands functional"
+            - "Build system operational"
+          test_requirements:
+            - "Comprehensive test suite passes"
+            - "No functionality regression"
+            - "Performance maintained"
+      
+      - id: "akao:artifact:system-cleanup:phase-5:step-3:v1"
+        metadata:
+          specification: "Generate comprehensive cleanup documentation and archaeological record"
+          scope: "Document all changes made during cleanup for future reference"
+          timeline: "2025-07-12"
+          rationale: "Provide complete archaeological record of cleanup process"
+          methodology: "Comprehensive documentation generation with change tracking"
+          references: ["All phase outputs", "Archaeological preservation principles"]
+        
+        inputs: ["All cleanup outputs", "Change tracking data"]
+        outputs: ["cleanup_archaeological_record.md", "system_cleanup_summary.yaml"]
+        validation:
+          success_criteria:
+            - "Complete change documentation"
+            - "Archaeological record complete"
+            - "Future reference materials ready"
+          test_requirements:
+            - "Documentation completeness"
+            - "Change tracking accuracy"
+            - "Archaeological preservation standards met"
+
+# Success criteria for entire cleanup
+success_criteria:
+  naming_compliance:
+    - "100% file naming compliance with {function-folder}/{version}.{ext} pattern"
+    - "100% directory naming compliance with grammar rules"
+    - "No underscores in any file or directory names"
+    - "All compound names grammatically correct"
+    - "Singular/plural usage correct throughout system"
+  
+  functionality_consolidation:
+    - "No duplicate implementations remaining"
+    - "Single CLI interface implementation"
+    - "Unified validation framework"
+    - "Consolidated parser implementation"
+    - "All functionality preserved"
+  
+  metadata_compliance:
+    - "All components have akao namespace IDs"
+    - "All 8 metadata fields present on every component"
+    - "@doc field on all code components"
+    - "All directories have _.yaml identification"
+    - "Complete archaeological preservation"
+  
+  system_integrity:
+    - "Build system compiles without errors"
+    - "All functionality tests pass"
+    - "No broken dependencies"
+    - "Performance maintained or improved"
+    - "Complete compliance validation passes"
+
+# Archaeological preservation
+archaeological_record:
+  removed_components:
+    - "List of all removed duplicate files"
+    - "Functionality consolidation mapping"
+    - "Rationale for each removal decision"
+  
+  renamed_components:
+    - "Complete mapping of old to new names"
+    - "Dependency update tracking"
+    - "Build system modification record"
+  
+  added_components:
+    - "All new metadata headers"
+    - "Directory identification files"
+    - "Documentation additions"
+  
+  process_documentation:
+    - "Step-by-step cleanup process"
+    - "Decision rationale for each change"
+    - "Validation results at each phase"

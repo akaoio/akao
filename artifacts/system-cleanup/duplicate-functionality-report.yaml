@@ -1,0 +1,207 @@
+id: "akao:artifact:system-cleanup:duplicate-functionality-report:v1"
+metadata:
+  specification: "Comprehensive analysis of duplicate functionality and overlapping implementations in the Akao codebase"
+  scope: "All source code files for duplicate functions, classes, and implementations"
+  timeline: "2025-07-08"
+  rationale: "Eliminate redundant code to reduce maintenance burden and improve system coherence"
+  methodology: "Code analysis with function signature comparison and semantic analysis"
+  references: ["akao:philosophy:rule:governance:v1"]
+
+# Duplicate validation implementations
+validation_duplicates:
+  universal_validator_implementations:
+    - file: "core/engine/validator/universal/v1.cpp"
+      description: "Main universal validator implementation"
+      status: "KEEP - Primary implementation"
+      
+    - file: "core/engine/validator/universal-framework/v1.cpp"
+      description: "Duplicate universal validation framework"
+      status: "REMOVE - Redundant with universal validator"
+      
+    - file: "core/engine/compliance_validator.cpp"
+      description: "Compliance-specific validator"
+      status: "MERGE - Integrate into universal validator"
+      
+    - file: "tests/unit/universal_validator_test.cpp"
+      description: "Test for universal validator"
+      status: "KEEP - Required for testing"
+      
+    - file: "tests/compliance/self_validation_test.cpp"
+      description: "Self-validation test (violates universal validation principle)"
+      status: "REMOVE - Conflicts with universal validation philosophy"
+
+# Duplicate CLI implementations
+cli_duplicates:
+  command_interface_implementations:
+    - file: "interfaces/cli/command_interface.hpp"
+      description: "Main CLI command interface"
+      status: "KEEP - Primary interface"
+      
+    - file: "tests/cli/cli_command_tests.cpp"
+      description: "CLI command tests"
+      status: "KEEP - Required for testing"
+      
+    - file: "main.cpp"
+      description: "Contains CLI handling logic"
+      status: "REFACTOR - Should use interfaces/cli/ implementation"
+
+# Duplicate parser implementations
+parser_duplicates:
+  yaml_parser_implementations:
+    - file: "core/engine/parser/yaml/parser/v1.cpp"
+      description: "Main YAML parser implementation"
+      status: "KEEP - Primary parser"
+      
+    - file: "tests/yaml_parser_validation.cpp"
+      description: "YAML parser validation tests"
+      status: "KEEP - Required for testing"
+      
+    - file: "debug_yaml.cpp"
+      description: "Debug YAML parsing functionality"
+      status: "REMOVE - Development artifact, not production code"
+
+# Duplicate test runner implementations
+test_runner_duplicates:
+  test_execution_implementations:
+    - file: "tests/test_runner.cpp"
+      description: "General test runner"
+      status: "KEEP - Primary test runner"
+      
+    - file: "tests/integration_test_runner.cpp"
+      description: "Integration-specific test runner"
+      status: "MERGE - Integrate into main test runner"
+      
+    - file: "tests/integration/integration_test_suite.cpp"
+      description: "Integration test suite"
+      status: "KEEP - Test suite implementation"
+      
+    - file: "tests/performance/performance_test_runner.cpp"
+      description: "Performance-specific test runner"
+      status: "MERGE - Integrate into main test runner"
+      
+    - file: "tests/transformation/transformation_test_runner.cpp"
+      description: "Transformation-specific test runner"
+      status: "MERGE - Integrate into main test runner"
+
+# Duplicate rule handling implementations
+rule_handling_duplicates:
+  rule_management_implementations:
+    - file: "core/rule/loader/rule_loader.cpp"
+      description: "Rule loading functionality"
+      status: "KEEP - Primary rule loader"
+      
+    - file: "core/rule/registry/rule_registry.cpp"
+      description: "Rule registry management"
+      status: "KEEP - Different functionality (registry vs loader)"
+      
+    - file: "core/rule/executor/rule_executor.cpp"
+      description: "Rule execution functionality"
+      status: "KEEP - Different functionality (execution vs loading)"
+
+# Duplicate artifact management implementations
+artifact_duplicates:
+  artifact_management_implementations:
+    - file: "core/engine/artifacts/artifacts_manager.hpp"
+      description: "Artifacts management system"
+      status: "KEEP - Primary artifacts manager"
+      
+    - file: "core/engine/artifacts/archaeological_miner.cpp"
+      description: "Archaeological data mining"
+      status: "KEEP - Different functionality (mining vs management)"
+
+# Duplicate compliance implementations
+compliance_duplicates:
+  compliance_checking_implementations:
+    - file: "core/engine/compliance/automated_compliance_system.cpp"
+      description: "Automated compliance checking"
+      status: "KEEP - Primary compliance system"
+      
+    - file: "core/engine/compliance_validator.cpp"
+      description: "Compliance validation"
+      status: "MERGE - Integrate into automated compliance system"
+      
+    - file: "core/engine/compliance/enforcement_engine.hpp"
+      description: "Compliance enforcement"
+      status: "KEEP - Different functionality (enforcement vs checking)"
+
+# Duplicate runtime implementations
+runtime_duplicates:
+  runtime_system_implementations:
+    - file: "core/engine/runtime/control/v1.cpp"
+      description: "Runtime control system"
+      status: "KEEP - Primary runtime control"
+      
+    - file: "core/engine/runtime/lazy_loader/v1.cpp"
+      description: "Lazy loading system"
+      status: "KEEP - Different functionality (lazy loading vs control)"
+
+# Files to remove (duplicates and development artifacts)
+files_to_remove:
+  duplicate_implementations:
+    - "core/engine/validator/universal-framework/v1.cpp"
+    - "core/engine/validator/universal-framework/v1.hpp"
+    - "tests/compliance/self_validation_test.cpp"
+    - "tests/compliance/self_validation_test.hpp"
+    - "debug_yaml.cpp"
+    
+  development_artifacts:
+    - "build_error_log.txt"
+    - "tests/unit/debug_test"
+    - "tests/unit/debug_test.cpp"
+    - "tests/unit/debug_test2"
+    - "tests/unit/debug_test2.cpp"
+    - "tests/unit/string_test"
+    - "tests/unit/string_test.cpp"
+    - "tests/unit/three_char_test"
+    - "tests/unit/three_char_test.cpp"
+    - "tests/unit/unicode_test"
+    - "tests/unit/unicode_test.cpp"
+    - "tests/unit/pure_logic_language_tests"
+    - "yaml_parser_test"
+
+# Files to merge/refactor
+files_to_merge:
+  test_runners:
+    target: "tests/test_runner.cpp"
+    merge_sources:
+      - "tests/integration_test_runner.cpp"
+      - "tests/performance/performance_test_runner.cpp"
+      - "tests/transformation/transformation_test_runner.cpp"
+    
+  compliance_systems:
+    target: "core/engine/compliance/automated_compliance_system.cpp"
+    merge_sources:
+      - "core/engine/compliance_validator.cpp"
+
+# Consolidation strategy
+consolidation_strategy:
+  phase_1: "Remove obvious duplicates and development artifacts"
+  phase_2: "Merge related functionality into primary implementations"
+  phase_3: "Update build system to remove references to deleted files"
+  phase_4: "Update include statements and dependencies"
+  phase_5: "Validate that all functionality is preserved"
+
+# Impact analysis
+impact_analysis:
+  build_system_updates_required:
+    - "CMakeLists.txt - Remove deleted file targets"
+    - "Makefile - Update build rules"
+    - "Test configurations - Update test file references"
+    
+  include_statement_updates:
+    - "All files including removed headers need updates"
+    - "Test files referencing removed test files need updates"
+    - "Main.cpp needs refactoring to use proper CLI interface"
+    
+  functionality_preservation:
+    - "All essential functionality must be preserved in consolidated files"
+    - "Test coverage must be maintained"
+    - "No regression in system capabilities"
+
+# Summary statistics
+consolidation_summary:
+  files_to_remove: 15
+  files_to_merge: 5
+  major_refactoring_required: 2
+  build_system_updates: "Extensive"
+  risk_level: "MEDIUM"

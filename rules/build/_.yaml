@@ -1,0 +1,8 @@
+id: "akao:directory:rules:build:v1"
+metadata:
+  specification: "Build rules directory containing configuration modes, environment switching, and build-related governance rules for systematic build management"
+  scope: "Build rules collection for build system governance and configuration management"
+  timeline: "2025-01-08"
+  rationale: "Centralized location for build-related rules that govern configuration and environment management"
+  methodology: "Build rules architecture with configuration modes, environment switching, and build governance"
+  references: ["akao:directory:rules:build:configuration-modes:v1", "akao:directory:rules:build:environment-switching:v1", "akao:philosophy:build:duality:v1"]

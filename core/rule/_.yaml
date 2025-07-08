@@ -1,0 +1,8 @@
+id: "akao:directory:core:rule:v1"
+metadata:
+  specification: "Core rule engine directory containing rule execution, loading, and registry components for systematic rule management and enforcement"
+  scope: "Core engine rule management subsystem for rule lifecycle and execution control"
+  timeline: "2025-01-08"
+  rationale: "Centralized rule engine components for systematic rule processing and governance enforcement"
+  methodology: "Modular rule engine architecture with executor, loader, and registry components for comprehensive rule management"
+  references: ["akao:directory:core:engine:v1", "akao:directory:rules:system:v1", "akao:directory:rulesets:system:v1"]
