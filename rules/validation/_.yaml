@@ -1,8 +1,0 @@
-id: "akao:directory:rules:validation:v1"
-metadata:
-  specification: "Validation rules directory containing cross-project validation, rule verification, and validation governance rules for systematic validation management"
-  scope: "Validation rules collection for validation system governance and verification management"
-  timeline: "2025-01-08"
-  rationale: "Centralized location for validation-related rules that govern cross-project validation and rule verification"
-  methodology: "Validation rules architecture with cross-project validation, rule verification, and validation governance"
-  references: ["akao:directory:rules:validation:cross-project:v1", "akao:directory:rules:validation:rule-verification:v1", "akao:philosophy:validation:universal:v1"]

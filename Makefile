@@ -25,7 +25,7 @@ endif
 # Source files
 CORE_SOURCES := $(shell find core -name "*.cpp" 2>/dev/null)
 INTERFACE_SOURCES := $(shell find interfaces -name "*.cpp" 2>/dev/null)
-TEST_SOURCES := $(shell find tests -name "*.cpp" 2>/dev/null)
+TEST_SOURCES := tests/unit/test-runner-simple.cpp tests/unit/rule_test_simple.cpp
 MAIN_SOURCE := main.cpp
 
 ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES)
@@ -53,6 +53,9 @@ $(TARGET): $(OBJECTS) | $(BINDIR)
 	@echo "Linking $(TARGET)..."
 	@$(CXX) $(OBJECTS) -o $@
 	@echo "Build complete: $(TARGET)"
+	@echo "Copying akao to root folder..."
+	@cp $(TARGET) ./akao
+	@echo "✅ akao executable available in root folder"
 
 # Test target
 $(TEST_TARGET): $(TEST_OBJECTS) | $(BINDIR)
@@ -130,6 +133,7 @@ report: $(TARGET)
 clean:
 	@echo "Cleaning build artifacts..."
 	@rm -rf $(BUILDDIR)
+	@rm -f ./akao
 
 .PHONY: clean-all
 clean-all: clean

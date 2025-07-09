@@ -1,0 +1,26 @@
+id: "akao:directory:core:engine:runtime:lazy_loader:v1"
+metadata:
+  specification: "Lazy loader directory containing lazy loading system for runtime components with deferred initialization"
+  scope: "Core engine runtime lazy loader subsystem"
+  timeline: "2025-07-09"
+  rationale: "Provide lazy loading system for runtime components with deferred initialization for performance optimization"
+  methodology: "Lazy loading with deferred initialization and resource management"
+  references: ["akao:file:core:engine:runtime:lazy_loader:v1", "akao:class:core:engine:runtime:lazy_loader:lazy_loader:v1"]
+
+purpose: "Lazy loading system for runtime components"
+contents:
+  - "v1.hpp: Lazy loader interface"
+  - "v1.cpp: Lazy loader implementation"
+  - "Deferred initialization algorithms"
+  - "Resource management and optimization"
+
+navigation:
+  parent: "akao:directory:core:engine:runtime:v1"
+  children: []
+  related: ["akao:directory:core:engine:runtime:control:v1"]
+
+governance:
+  access_level: "core"
+  stability: "stable"
+  version: "v1"
+  maintenance_status: "active"

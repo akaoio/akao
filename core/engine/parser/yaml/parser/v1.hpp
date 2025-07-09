@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:parser_yaml_parser:v1
+ * @doc: Production-ready YAML parser providing comprehensive YAML 1.2 parsing capabilities with zero external dependencies. Supports key-value pairs, nested mappings and sequences, all scalar types, comments, multi-line values, anchors and aliases, multi-document streams, proper indentation handling, and Unicode support. Features enhanced error recovery, detailed diagnostics, and libyaml-inspired architecture for reliable YAML processing in the Akao framework without requiring yaml-cpp or other external libraries.
+ * @specification: Header for production-ready YAML parser with complete YAML 1.2 support and zero external dependencies
+ * @scope: Core engine parser YAML parsing framework with comprehensive feature support
+ * @timeline: 2025-07-09
+ * @rationale: Provide reliable YAML parsing for philosophies and rules directories without external library dependencies
+ * @methodology: Libyaml-inspired architecture with enhanced error handling, multi-document support, and comprehensive YAML 1.2 feature implementation
+ * @references: ["akao:file:core:engine:parser_yaml_node:v1", "akao:philosophy:structure:isolation:v1", "akao:philosophy:language:isolation:v1"]
+ */
+
 #pragma once
 
 #include "../node/v1.hpp"
@@ -15,9 +26,9 @@ namespace akao::core::engine::parser {
  * Parses YAML files from philosophies/ and rules/ directories
  * 
  * Philosophy Compliance:
- * - akao:philosophy::structure:isolation:v1 (one class per file)
- * - akao:philosophy::language:isolation:v1 (pure C++ only)
- * - akao:philosophy::validation:universal:v1 (comprehensive validation)
+ * - akao:philosophy:structure:isolation:v1 (one class per file)
+ * - akao:philosophy:language:isolation:v1 (pure C++ only)
+ * - akao:philosophy:validation:universal:v1 (comprehensive validation)
  * - Built-in parser requirement (no yaml-cpp, no external libs)
  * 
  * YAML 1.2 Core Features Supported:

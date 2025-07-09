@@ -54,7 +54,7 @@ public:
 
 private:
     
-    core::engine::validator::UniversalValidator validator_;
+    core::engine::validation::UniversalValidator validator_;
 };
 
 /**

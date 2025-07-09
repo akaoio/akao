@@ -1,40 +1,5 @@
-# Build artifacts (only root build directory, not source modules)
-/build/
-*.o
-*.a
-*.so
-*.exe
-
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-
-# IDE files
-.vscode/settings.json
-.idea/
-*.swp
-*.swo
-*~
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Log files
+# Test .gitignore
+.git/
+build/
 *.log
-
-# Test artifacts
-test_results/
-coverage/
-
-# Generated documentation
-docs/generated/
-
-# Package files
-*.tar.gz
-*.zip
-
-# Local development
-.akao/
-compliance-report.yaml
+temp/

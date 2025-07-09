@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:parser_yaml_validator:v1
+ * @doc: Production-ready YAML schema validator providing comprehensive validation capabilities for YAML documents with schema support and AKAO-specific validation rules. Features basic type checking, standard YAML validation, strict schema compliance, and specialized AKAO philosophy/rule validation. Supports validation levels from basic to AKAO-specific, schema rule management, error reporting with severity levels, and libyaml-inspired validation patterns for reliable YAML document verification in the Akao framework.
+ * @specification: Header for YAML schema validator with comprehensive validation levels and AKAO-specific rule support
+ * @scope: Core engine parser YAML validation framework with schema compliance and error reporting
+ * @timeline: 2025-07-09
+ * @rationale: Provide comprehensive YAML validation for philosophy and rule documents with schema compliance verification
+ * @methodology: Multi-level validation system with schema rules, AKAO-specific validators, and detailed error reporting
+ * @references: ["akao:file:core:engine:parser_yaml_node:v1", "akao:philosophy:validation:universal:v1", "akao:philosophy:structure:isolation:v1"]
+ */
+
 #pragma once
 
 #include "../node/v1.hpp"
@@ -14,9 +25,9 @@ namespace akao::core::engine::parser {
  * Inspired by libyaml validation patterns and best practices
  * 
  * Philosophy Compliance:
- * - akao:philosophy::structure:isolation:v1 (one class per file)
- * - akao:philosophy::language:isolation:v1 (pure C++ only)
- * - akao:philosophy::validation:universal:v1 (comprehensive validation)
+ * - akao:philosophy:structure:isolation:v1 (one class per file)
+ * - akao:philosophy:language:isolation:v1 (pure C++ only)
+ * - akao:philosophy:validation:universal:v1 (comprehensive validation)
  */
 class YamlValidator {
 public:

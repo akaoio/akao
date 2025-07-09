@@ -1,8 +1,0 @@
-id: "akao:directory:philosophies:system:v1"
-metadata:
-  specification: "System philosophies directory containing abstract principles and conceptual frameworks for build, validation, structure, rule governance, language, and measurement domains"
-  scope: "Core philosophical abstractions collection for system-wide conceptual guidance and principle definition"
-  timeline: "2025-01-08"
-  rationale: "Centralized location for all abstract philosophical principles that guide system design and architectural decisions"
-  methodology: "Categorical organization by conceptual domain with hierarchical subdirectory structure maintaining philosophy-rule separation"
-  references: ["akao:directory:rules:system:v1", "akao:directory:rulesets:system:v1", "akao:file:philosophies:index:v1"]

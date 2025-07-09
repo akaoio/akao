@@ -1,0 +1,12 @@
+# id: akao:rule:remediation:auto_fix_suggestions:v1
+# name: Auto-Fix Suggestions Generator
+# description: Generate actionable suggestions for common violations
+# category: remediation
+# severity: info
+# @phases: ["remediation"]
+
+# Remediation phase - provides auto-fix suggestions for violations
+# This rule processes previous phase results and generates actionable fixes
+forall $file in filesystem.get_cpp_files("."): 
+    cpp.count_classes(filesystem.read_file($file)) <= 1 ||
+    cpp.suggest_class_split(filesystem.read_file($file)) != ""

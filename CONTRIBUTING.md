@@ -217,6 +217,39 @@ mkdir -p artifacts/feature-description
 touch artifacts/feature-description/{plan.yaml,checklist.md,quality.yaml}
 ```
 
+### 1.0. Test and Example File Organization (MANDATORY)
+
+**Development Test Files:**
+- **ALL** test files created during development MUST go in `artifacts/` directory
+- **NO** development test files allowed in `examples/` directory
+- `examples/` is reserved ONLY for exhibition-quality demonstration files
+
+**File Placement Rules:**
+```bash
+✅ Correct Development Test Placement:
+artifacts/godel-development/test-undecidability.a           # Development test
+artifacts/parser-fixes/test-multiline.a                    # Development test
+artifacts/feature-branch/unit-test-simple.a                # Development test
+artifacts/debugging/test-consistency.a                     # Development test
+
+✅ Correct Exhibition Placement:
+examples/godel-exhibition.a                                # Final exhibition piece
+
+❌ Wrong Placement:
+examples/test-undecidability.a                            # NO tests in examples/
+examples/debug-parser.a                                   # NO debug files in examples/
+examples/simple-test.a                                    # NO development tests in examples/
+```
+
+**Directory Purposes:**
+- **`artifacts/`**: Development artifacts, test files, debugging scripts, temporary files
+- **`examples/`**: Polished, exhibition-quality demonstrations for public display
+
+**Enforcement:**
+- Development test files in `examples/` = validation error
+- Multiple similar examples = consolidation required
+- `examples/` must contain ONLY final, polished demonstration files
+
 ### 1.1. Architecture Research (MANDATORY)
 Before creating any plan.yaml, conduct comprehensive system analysis:
 
@@ -451,3 +484,269 @@ docs-generator/     → doc-generator/ or docs/generator/
 - All names must pass English grammar checker
 - Dictionary verification required for compound words
 - Consistency across similar components mandatory
+
+## Folder Structure and File Organization
+
+### **Strict Folder/File Segregation Rules**
+
+**MANDATORY: No mixing of files and folders at the same level**
+
+**Prohibited Mixing:**
+- ❌ Files and folders CANNOT coexist at the same directory level
+- ❌ Folders and files CANNOT be siblings in the same directory
+- ❌ Exception: System/repo configuration files in root folder only
+
+**Parent-Child Hierarchy Rules:**
+- ❌ Children/components/parts folders CANNOT exist at the same level as their parent folders
+- ❌ Parent and child components MUST maintain strict hierarchical relationship
+- ❌ NO sibling relationships between logically related parent-child components
+
+**Allowed Root-Level Configuration Files:**
+```
+✅ Permitted in root folder only:
+README.md
+LICENSE
+.gitignore
+.gitattributes
+Makefile
+Makefile
+package.json
+CONTRIBUTING.md
+CHANGELOG.md
+```
+
+**Special System Manifest File:**
+- **ONLY** `_.yaml` is the system's special manifest file
+- `_.yaml` can exist independently in any directory
+- `_.yaml` serves as directory identification and metadata
+
+### **Folder Content Rules**
+
+**Every folder MUST contain EXACTLY ONE of these two patterns:**
+
+#### **Pattern 1: Container Folder (Subdirectories Only)**
+```
+folder/
+├── _.yaml              # ONLY allowed file
+├── subfolder1/
+├── subfolder2/
+└── subfolder3/
+```
+
+**Rules:**
+- Contains ONLY subdirectories
+- May contain ONLY `_.yaml` file (optional)
+- NO other files allowed
+- NO version files (v1.cpp, v1.hpp, etc.)
+
+#### **Pattern 2: Implementation Folder (Version Files Only)**
+```
+folder/
+├── v1.cpp              # Implementation file
+├── v1.hpp              # Header file
+├── v2.cpp              # Optional newer version
+└── v2.hpp              # Optional newer version
+```
+
+**Rules:**
+- Contains ONLY versioned implementation files
+- NO `_.yaml` file allowed
+- NO subdirectories allowed
+- ONLY `v{number}.{ext}` files permitted
+
+### **Examples of Correct Structure:**
+
+```
+✅ Correct Structure:
+core/                           # Container folder
+├── _.yaml                      # System manifest
+├── engine/                     # Container folder
+│   ├── _.yaml                  # Directory identification
+│   ├── validator/              # Implementation folder
+│   │   ├── v1.cpp             # Implementation
+│   │   └── v1.hpp             # Header
+│   └── parser/                # Container folder
+│       ├── _.yaml             # Directory identification
+│       ├── lexer/             # Implementation folder
+│       │   ├── v1.cpp         # Implementation
+│       │   └── v1.hpp         # Header
+│       └── syntax/            # Implementation folder
+│           ├── v1.cpp         # Implementation
+│           └── v1.hpp         # Header
+└── filesystem/                # Container folder
+    ├── _.yaml                 # Directory identification
+    └── scanner/               # Implementation folder
+        ├── v1.cpp             # Implementation
+        └── v1.hpp             # Header
+```
+
+### **Examples of Incorrect Structure:**
+
+```
+❌ Incorrect Structure:
+core/                          # WRONG: mixing files and folders
+├── _.yaml                     # File
+├── validator.cpp              # WRONG: File at same level as folders
+├── engine/                    # Folder
+└── parser/                    # Folder
+
+engine/                        # WRONG: mixing implementation and containers
+├── _.yaml                     # WRONG: _.yaml in implementation folder
+├── v1.cpp                     # Implementation file
+├── v1.hpp                     # Header file
+└── validator/                 # WRONG: Subfolder in implementation folder
+
+❌ Parent-Child Hierarchy Violations:
+core/
+├── _.yaml
+├── engine/                    # Parent component
+├── engine-validator/          # WRONG: Child component at same level as parent
+├── engine-parser/             # WRONG: Child component at same level as parent
+└── engine-config/             # WRONG: Child component at same level as parent
+
+parser/
+├── _.yaml
+├── lexer/                     # WRONG: Should be inside parser/, not alongside
+├── syntax/                    # WRONG: Should be inside parser/, not alongside
+└── grammar/                   # WRONG: Should be inside parser/, not alongside
+```
+
+**Correct Parent-Child Structure:**
+```
+✅ Proper Hierarchy:
+core/
+├── _.yaml
+└── engine/                    # Parent component
+    ├── _.yaml
+    ├── validator/             # Child component inside parent
+    ├── parser/                # Child component inside parent
+    └── config/                # Child component inside parent
+
+parser/                        # Parent component
+├── _.yaml
+├── lexer/                     # Child component inside parent
+├── syntax/                    # Child component inside parent
+└── grammar/                   # Child component inside parent
+```
+
+## .akao/rules/ Directory Structure
+
+### **Rule Organization Requirements**
+
+**MANDATORY Structure:**
+```
+.akao/
+└── rules/
+    ├── enabled/               # Active rules
+    │   ├── structure/
+    │   │   ├── one-class-per-file.a
+    │   │   └── file-organization.a
+    │   ├── interface/
+    │   │   └── command-parity.a
+    │   └── language/
+    │       └── cpp-standards.a
+    └── disabled/              # Inactive rules
+        ├── experimental/
+        │   └── new-feature.a
+        └── deprecated/
+            └── old-rule.a
+```
+
+**Rule Activation/Deactivation:**
+- **Enable rule**: Move from `disabled/` to `enabled/`
+- **Disable rule**: Move from `enabled/` to `disabled/`
+- **NEVER modify rule content to enable/disable**
+- **NEVER use configuration flags in .yaml/.json/.a files**
+
+**Rule File Requirements:**
+- All rule files use `.a` extension (Akao Pure Logic format)
+- Rule files contain executable logic expressions
+- Rule metadata stored as comments within `.a` files
+- Rule organization by category (structure/, interface/, language/, etc.)
+
+### **Akao Pure Logic Format (.a)**
+
+**Definition:**
+- `.a` files contain Akao Pure Logic expressions
+- Akao Pure Logic is the domain-specific language for rule definition
+- Provides concise, mathematical notation for logical expressions
+- Alternative to verbose YAML syntax for rule logic
+
+**File Structure:**
+```
+# Rule metadata (comments)
+# id: rule_namespace:rule_name
+# name: Human-readable name
+# description: Rule description
+# category: rule_category
+# severity: error|warning|info
+
+# Rule logic (Akao Pure Logic expression)
+forall $variable in domain_expression: condition_expression
+```
+
+**Management Operations:**
+```bash
+# Enable a rule
+mv .akao/rules/disabled/category/rule.a .akao/rules/enabled/category/rule.a
+
+# Disable a rule  
+mv .akao/rules/enabled/category/rule.a .akao/rules/disabled/category/rule.a
+
+# NEVER modify rule content for activation:
+❌ WRONG: Edit rule.a to add "enabled: true"
+❌ WRONG: Use configuration files to control rule status
+✅ CORRECT: Use file system operations (mv) to control rule status
+```
+
+**Validation Requirements:**
+- All `.a` files must parse correctly as Akao Pure Logic
+- Rule activation status determined by file location only
+- Rule logic must be deterministic and reproducible
+- Rule metadata must follow comment conventions
+- Rule categories must align with system architecture
+
+## Validation and Enforcement
+
+### **Structure Validation Rules**
+
+**Folder Structure Compliance:**
+- **Mixed content detection** = validation error
+- **Missing `_.yaml` in container folders** = validation error (except root)
+- **Present `_.yaml` in implementation folders** = validation error
+- **Files alongside folders** (except root config files) = validation error
+- **Empty folders** without `_.yaml` or version files = validation error
+- **Parent-child components at same level** = validation error
+- **Child components outside parent hierarchy** = validation error
+
+**Rule System Compliance:**
+- **Rules outside enabled/disabled structure** = validation error
+- **Configuration-based enable/disable** = validation error
+- **Invalid .a format syntax** = parsing error
+- **Missing rule metadata** = validation error
+
+### **Enforcement Mechanisms**
+
+**Pre-commit Validation:**
+```bash
+# Structure validation
+akao validate --structure --strict
+akao validate --rules --syntax-check
+akao validate --naming --grammar-check
+
+# Rule system validation
+akao rules --validate-structure
+akao rules --check-activation-method
+```
+
+**Build System Integration:**
+- Make validates folder structure during build
+- Make targets check rule organization compliance
+- Build fails on structure violations
+- Automated `.a` format syntax validation
+
+**CI/CD Pipeline Checks:**
+- GitHub Actions validate entire repository structure
+- Automated grammar checking for all names
+- Rule activation method verification
+- Comprehensive compliance reporting

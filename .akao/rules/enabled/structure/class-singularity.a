@@ -1,0 +1,10 @@
+# id: akao:rule:structure:class_singularity:v1
+# name: Class Singularity Theorem
+# description: Universal quantification over files implies unique class existence
+# category: structure
+# severity: error
+# @phases: ["compliance"]
+
+# Mathematical constraint: For all files, there exists exactly one class
+forall $file in filesystem.get_cpp_files("."): 
+    cpp.count_classes(filesystem.read_file($file)) <= 1

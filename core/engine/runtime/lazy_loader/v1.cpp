@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:runtime_lazy_loader_impl:v1
+ * @doc: Lazy loading system implementation for dynamic component management providing comprehensive lazy loading capabilities for philosophies, rules, and rulesets to avoid runtime restarts during component modifications. Features hot-reload support, efficient memory usage through on-demand loading, cache management with expiration, file change detection, and loading statistics. Implements template-based component loading with type safety, cache hit/miss tracking, and automatic hot-reload scanning for development workflow optimization in the Akao framework.
+ * @specification: Implementation for lazy loading system with dynamic component management and hot-reload capabilities
+ * @scope: Core engine runtime lazy loading framework implementation with cache management and file change detection
+ * @timeline: 2025-07-09
+ * @rationale: Provide lazy loading capabilities implementation to avoid runtime restarts and enable efficient component management
+ * @methodology: Template-based lazy loading implementation with cache management, hot-reload support, and file change detection
+ * @references: ["akao:file:core:engine:runtime_lazy_loader:v1", "akao:file:core:engine:runtime_control:v1"]
+ */
+
 #include "v1.hpp"
 #include <iostream>
 #include <filesystem>

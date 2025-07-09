@@ -7,6 +7,6 @@ metadata:
   methodology: "Modular engine architecture with independent subsystems and standardized interfaces"
   references: 
     - "akao:file:core:engine:metadata_standards:v1"
-    - "akao:file:core:engine:compliance_validator:v1"
+    - "akao:file:core:engine:compliance:v1"
     - "akao:directory:core:engine:semantic:v1"
-    - "akao:directory:core:engine:validator:v1"
+    - "akao:directory:core:engine:validation:v1"

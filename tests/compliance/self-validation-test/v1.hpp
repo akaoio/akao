@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "../../core/engine/validator/universal/v1.hpp"
+#include "../../core/engine/validation/universal/v1.hpp"
 #include <string>
 #include <vector>
 
@@ -53,7 +53,7 @@ public:
     TestResult testUniversalValidation();
     
 private:
-    std::unique_ptr<akao::core::engine::validator::UniversalValidator> validator_;
+    std::unique_ptr<akao::core::engine::validation::UniversalValidator> validator_;
     std::string akao_root_path_;
     
     // Helper methods

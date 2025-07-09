@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:parser_yaml_parser_impl:v1
+ * @doc: Production-ready YAML parser implementation providing comprehensive YAML 1.2 parsing capabilities with zero external dependencies. Supports key-value pairs, nested mappings and sequences, all scalar types, comments, multi-line values, anchors and aliases, multi-document streams, proper indentation handling, and Unicode support. Features enhanced error recovery, detailed diagnostics, and libyaml-inspired architecture for reliable YAML processing in the Akao framework without requiring yaml-cpp or other external libraries.
+ * @specification: Implementation for production-ready YAML parser with complete YAML 1.2 support and zero external dependencies
+ * @scope: Core engine parser YAML parsing framework implementation with comprehensive feature support
+ * @timeline: 2025-07-09
+ * @rationale: Provide reliable YAML parsing for philosophies and rules directories without external library dependencies
+ * @methodology: Libyaml-inspired architecture implementation with enhanced error handling, multi-document support, and comprehensive YAML 1.2 feature implementation
+ * @references: ["akao:file:core:engine:parser_yaml_parser:v1", "akao:file:core:engine:parser_yaml_node:v1"]
+ */
+
 #include "v1.hpp"
 #include <sstream>
 #include <algorithm>

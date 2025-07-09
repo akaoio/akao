@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:parser_yaml_node_impl:v1
+ * @doc: Enhanced YAML node implementation providing comprehensive data structure for YAML document parsing and manipulation. Supports all YAML 1.2 scalar types including strings, integers, floats, booleans, and null values, plus complex structures like sequences and mappings. Features anchor and alias support, source location tracking, memory-efficient operations, and zero-dependency implementation for reliable YAML processing in the Akao framework.
+ * @specification: Implementation for enhanced YAML node system with complete YAML 1.2 support and memory-efficient operations
+ * @scope: Core engine parser YAML node representation and manipulation framework implementation
+ * @timeline: 2025-07-09
+ * @rationale: Provide comprehensive YAML data structure representation for universal parser with zero external dependencies
+ * @methodology: Variant-based type system implementation with shared pointer management and source location tracking for robust YAML processing
+ * @references: ["akao:file:core:engine:parser_yaml_node:v1", "akao:file:core:engine:parser_yaml_parser:v1"]
+ */
+
 #include "v1.hpp"
 #include <sstream>
 #include <stdexcept>

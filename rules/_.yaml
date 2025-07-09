@@ -1,8 +1,0 @@
-id: "akao:directory:rules:system:v1"
-metadata:
-  specification: "System rules directory containing executable logic components for validation, structure, language, measurement, and rule management"
-  scope: "Core rules collection for system-wide governance and validation enforcement"
-  timeline: "2025-01-08"
-  rationale: "Centralized location for all executable rule logic that governs system behavior and compliance"
-  methodology: "Categorical organization by functional domain with hierarchical subdirectory structure"
-  references: ["akao:directory:philosophies:system:v1", "akao:directory:rulesets:system:v1", "akao:file:rules:index:v1"]

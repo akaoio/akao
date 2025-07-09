@@ -1,0 +1,14 @@
+# id: akao:rule:structure:core_structure_exclusivity:v1
+# name: Core Structure Exclusivity Principle
+# description: Core structural directories should follow folder/file exclusivity
+# category: structure
+# severity: error
+# @phases: ["enforcement"]
+
+# Check specific core directories only (not recursive)
+forall $dir in ["./core", "./tests", "./examples", "./builders"]: 
+    filesystem.is_directory($dir) == false ||
+    ((collection.count(filesystem.list_subdirs($dir)) > 0 && 
+      collection.count(filesystem.get_files($dir)) == 0) ||
+     (collection.count(filesystem.list_subdirs($dir)) == 0 && 
+      collection.count(filesystem.get_files($dir)) > 0))

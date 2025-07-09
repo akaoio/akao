@@ -1,8 +1,0 @@
-id: "akao:directory:interfaces:cli:v1"
-metadata:
-  specification: "CLI interface directory containing command-line interface components, parsers, executors, and formatters for Akao Universal Standards command-line interaction"
-  scope: "CLI interface implementation for command-line interaction and automation"
-  timeline: "2025-01-08"
-  rationale: "Provide command-line interface capabilities for Akao Universal Standards interaction and automation"
-  methodology: "CLI architecture with command parsing, execution, and formatting for universal command-line accessibility"
-  references: ["akao:file:interfaces:cli:command_interface", "akao:directory:interfaces:cli:command:v1", "akao:directory:interfaces:cli:executor:v1"]

@@ -1,0 +1,8 @@
+# AST Node definitions for runtime engine
+# Contains abstract syntax tree node types and operations
+
+category: runtime
+component: ast
+description: "Abstract Syntax Tree node definitions for runtime processing"
+dependencies: []
+version: "1.0"

@@ -1,0 +1,26 @@
+id: "akao:directory:core:engine:logic:meta:v1"
+metadata:
+  specification: "Meta-logic engine directory containing meta-logical reasoning capabilities and logic system introspection"
+  scope: "Core engine logic meta subsystem"
+  timeline: "2025-07-09"
+  rationale: "Provide meta-logical reasoning capabilities for logic system introspection and meta-reasoning"
+  methodology: "Meta-logical reasoning with system introspection and meta-level evaluation"
+  references: ["akao:file:core:engine:logic:meta:v1", "akao:class:core:engine:logic:meta:meta_logic_engine:v1"]
+
+purpose: "Meta-logical reasoning and logic system introspection"
+contents:
+  - "v1.hpp: Meta-logic engine interface"
+  - "v1.cpp: Meta-logic engine implementation"
+  - "Meta-logical reasoning algorithms"
+  - "Logic system introspection capabilities"
+
+navigation:
+  parent: "akao:directory:core:engine:logic:v1"
+  children: []
+  related: ["akao:directory:core:engine:logic:formal:v1", "akao:directory:core:engine:logic:incompleteness:v1"]
+
+governance:
+  access_level: "core"
+  stability: "stable"
+  version: "v1"
+  maintenance_status: "active"

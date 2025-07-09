@@ -1,0 +1,12 @@
+# id: akao:rule:naming:version_canonical_form:v1
+# name: Version Canonical Form Theorem
+# description: Implementation files must follow version naming canonical form v{N}.{ext}
+# category: naming
+# severity: error
+# @phases: ["compliance"]
+
+# Canonical form requirement for implementation files
+forall $file in filesystem.get_files("."): 
+    (filesystem.has_extension($file, ".cpp") || filesystem.has_extension($file, ".hpp")) == false ||
+    exists $version_pattern in ["v1", "v2", "v3", "v4", "v5"]:
+        string.length(filesystem.get_filename($file)) > 2

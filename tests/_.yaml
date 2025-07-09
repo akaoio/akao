@@ -14,7 +14,7 @@ metadata:
     - "akao:directory:tests:unit:v1"
     - "akao:directory:tests:compliance:v1"
     - "akao:directory:tests:production:v1"
-    - "akao:file:core:engine:compliance_validator:v1"
+    - "akao:file:core:engine:compliance:v1"
     - "akao:artifact:architectural-reformation:phase-3:step-4:integration-requirements:v1"
 
 # Component Structure

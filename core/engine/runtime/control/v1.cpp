@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:runtime_control_impl:v1
+ * @doc: Dynamic management system implementation for runtime control providing comprehensive enable/disable capabilities for philosophies, rules, and rulesets with lazy loading and user control interface. Features component state management, bulk operations for rulesets, dependency validation, hot-reload capabilities, and user control interface. Implements thread-safe operations with mutex protection, dependency mapping, and cascade disable functionality for maintaining system consistency during runtime component management in the Akao framework.
+ * @specification: Implementation for dynamic runtime control system with component management and dependency validation
+ * @scope: Core engine runtime control framework implementation with state management and hot-reload capabilities
+ * @timeline: 2025-07-09
+ * @rationale: Provide dynamic runtime control for philosophy, rule, and ruleset management with dependency validation
+ * @methodology: Thread-safe component state management implementation with dependency tracking and hot-reload capabilities
+ * @references: ["akao:file:core:engine:runtime_control:v1", "akao:file:core:engine:runtime_ast_nodes:v1"]
+ */
+
 #include "v1.hpp"
 #include <iostream>
 #include <algorithm>

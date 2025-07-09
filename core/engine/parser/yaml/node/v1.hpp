@@ -1,3 +1,14 @@
+/**
+ * @id: akao:file:core:engine:parser_yaml_node:v1
+ * @doc: Enhanced YAML node representation providing comprehensive data structure for YAML document parsing and manipulation. Supports all YAML 1.2 scalar types including strings, integers, floats, booleans, and null values, plus complex structures like sequences and mappings. Features anchor and alias support, source location tracking, memory-efficient operations, and zero-dependency implementation for reliable YAML processing in the Akao framework.
+ * @specification: Header for enhanced YAML node system with complete YAML 1.2 support and memory-efficient operations
+ * @scope: Core engine parser YAML node representation and manipulation framework
+ * @timeline: 2025-07-09
+ * @rationale: Provide comprehensive YAML data structure representation for universal parser with zero external dependencies
+ * @methodology: Variant-based type system with shared pointer management and source location tracking for robust YAML processing
+ * @references: ["akao:file:core:engine:parser_yaml_parser:v1", "akao:philosophy:structure:isolation:v1", "akao:philosophy:language:isolation:v1"]
+ */
+
 #pragma once
 
 #include <string>
@@ -16,9 +27,9 @@ namespace akao::core::engine::parser {
  * Supports nested structures, arrays, and all YAML 1.2 scalar types
  * 
  * Philosophy Compliance:
- * - akao:philosophy::structure:isolation:v1 (one class per file)
- * - akao:philosophy::language:isolation:v1 (pure C++ only)
- * - akao:philosophy::validation:universal:v1 (comprehensive validation)
+ * - akao:philosophy:structure:isolation:v1 (one class per file)
+ * - akao:philosophy:language:isolation:v1 (pure C++ only)
+ * - akao:philosophy:validation:universal:v1 (comprehensive validation)
  * 
  * Enhanced Features:
  * - Float/double support

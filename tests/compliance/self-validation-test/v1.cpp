@@ -17,7 +17,7 @@ SelfValidationTest::SelfValidationTest()
     : akao_root_path_(std::filesystem::current_path().string()) {
     
     // Initialize the universal validator
-    validator_ = std::make_unique<akao::core::engine::validator::UniversalValidator>();
+    validator_ = std::make_unique<akao::core::engine::validation::UniversalValidator>();
     validator_->initialize();
 }
 

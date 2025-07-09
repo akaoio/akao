@@ -1,0 +1,26 @@
+id: "akao:directory:core:filesystem:watcher:v1"
+metadata:
+  specification: "Filesystem watcher directory containing file watching system for monitoring filesystem changes"
+  scope: "Core filesystem watching subsystem"
+  timeline: "2025-07-09"
+  rationale: "Provide file watching system for monitoring filesystem changes and triggering validation events"
+  methodology: "Filesystem monitoring with change detection and event triggering"
+  references: ["akao:file:core:filesystem:watcher:v1", "akao:class:core:filesystem:watcher:file_watcher:v1"]
+
+purpose: "File watching system for monitoring filesystem changes"
+contents:
+  - "v1.hpp: File watcher interface"
+  - "v1.cpp: File watcher implementation"
+  - "Filesystem monitoring algorithms"
+  - "Change detection and event triggering"
+
+navigation:
+  parent: "akao:directory:core:filesystem:v1"
+  children: []
+  related: ["akao:directory:core:filesystem:scanner:v1", "akao:directory:core:filesystem:enforcer:v1"]
+
+governance:
+  access_level: "core"
+  stability: "stable"
+  version: "v1"
+  maintenance_status: "active"

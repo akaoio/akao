@@ -1,8 +1,0 @@
-id: "akao:directory:interfaces:system:v1"
-metadata:
-  specification: "System interfaces directory containing API, CLI, and external interface components for Akao Universal Standards interaction and integration"
-  scope: "System interfaces collection for external interaction and integration capabilities"
-  timeline: "2025-01-08"
-  rationale: "Centralized location for system interfaces that provide external interaction and integration capabilities"
-  methodology: "Interface architecture with API, CLI, and external integration support for universal accessibility"
-  references: ["akao:directory:interfaces:cli:v1", "akao:directory:interfaces:api:v1", "akao:philosophy:build:duality:v1"]

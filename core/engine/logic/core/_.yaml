@@ -1,0 +1,26 @@
+id: "akao:directory:core:engine:logic:pure:v1"
+metadata:
+  specification: "Pure logic engine directory containing domain-agnostic logical evaluation system with zero hardcoded knowledge"
+  scope: "Core engine logic pure subsystem"
+  timeline: "2025-07-09"
+  rationale: "Provide pure logical evaluation system without domain-specific knowledge for universal applicability"
+  methodology: "Domain-agnostic logical evaluation with runtime configuration and context management"
+  references: ["akao:file:core:engine:logic:pure:v1", "akao:class:core:engine:logic:pure:pure_logic_engine:v1"]
+
+purpose: "Pure logical evaluation system without domain knowledge"
+contents:
+  - "v1.hpp: Pure logic engine interface"
+  - "v1.cpp: Pure logic engine implementation"
+  - "Domain-agnostic logical evaluation algorithms"
+  - "Runtime configuration and context management"
+
+navigation:
+  parent: "akao:directory:core:engine:logic:v1"
+  children: []
+  related: ["akao:directory:core:engine:logic:formal:v1", "akao:directory:core:engine:logic:builtin:v1"]
+
+governance:
+  access_level: "core"
+  stability: "stable"
+  version: "v1"
+  maintenance_status: "active"

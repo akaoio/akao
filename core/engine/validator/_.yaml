@@ -1,8 +1,28 @@
 id: "akao:directory:core:engine:validator:v1"
 metadata:
-  specification: "Core engine validator directory containing universal validation framework components for system-wide compliance and quality assurance"
-  scope: "Core engine validation subsystem for universal validation framework implementation"
-  timeline: "2025-01-08"
-  rationale: "Centralized validation engine components for universal validation capability across any codebase including Akao"
-  methodology: "Universal validation architecture with modular validator components and comprehensive validation framework"
-  references: ["akao:directory:core:engine:v1", "akao:class:core:engine:universal_validator:v1", "akao:philosophy:validation:universal:v1"]
+  specification: "Unified validation system directory combining universal validation, compliance checking, and metadata standards validation into single cohesive framework"
+  scope: "Core engine unified validation subsystem"
+  timeline: "2025-07-09"
+  rationale: "Eliminate architectural duplication by combining all validation concerns into a single unified system"
+  methodology: "Unified validation architecture with pluggable validation strategies and standardized result reporting"
+  references: ["akao:file:core:engine:validator:v1", "akao:class:core:engine:validator:unified_validator:v1"]
+
+purpose: "Unified validation system for universal validation, compliance checking, and metadata standards"
+contents:
+  - "v1.hpp: Unified validator interface and types"
+  - "v1.cpp: Unified validator implementation"
+  - "Universal validation algorithms"
+  - "Compliance checking system"
+  - "Metadata standards validation"
+  - "Namespace validation and parsing"
+
+navigation:
+  parent: "akao:directory:core:engine:v1"
+  children: []
+  related: []
+
+governance:
+  access_level: "core"
+  stability: "stable"
+  version: "v1"
+  maintenance_status: "active"
