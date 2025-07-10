@@ -68,19 +68,19 @@
 
 ## PHASE 2: CORE NODES (Weeks 3-4)
 
-### **Step 2.1: Filesystem Scanner Node** ⏳
-- [ ] Create `nodes/builtin/file/v1.hpp`
-- [ ] Create `nodes/builtin/file/v1.cpp`
-- [ ] Adapt legacy `core/filesystem/scanner/v1.hpp` for node architecture
-- [ ] Implement FilesystemScannerNode using legacy scanner
-- [ ] Preserve existing performance optimizations
-- [ ] Create unit tests `tests/unit/nodes/builtin/file/`
-- [ ] Test scanning akao project directory
-- [ ] Test pattern filtering compatibility
-- [ ] Test recursive scanning performance
-- [ ] **Build and test passes**: `make run-tests`
+### **Step 2.1: Filesystem Scanner Node** ✅
+- [x] Create `nodes/builtin/file/v1.hpp`
+- [x] Create `nodes/builtin/file/v1.cpp`
+- [x] Adapt legacy `core/filesystem/scanner/v1.hpp` for node architecture
+- [x] Implement FilesystemScannerNode using legacy scanner
+- [x] Preserve existing performance optimizations
+- [x] Create unit tests `tests/unit/nodes/builtin/file/`
+- [x] Test scanning akao project directory
+- [x] Test pattern filtering compatibility
+- [x] Test recursive scanning performance
+- [x] **Build and test passes**: `make run-tests`
 - [ ] **Register node in registry**
-- [ ] **Commit**: "Adapt legacy filesystem scanner for node architecture"
+- [x] **Commit**: "Adapt legacy filesystem scanner for node architecture"
 
 ### **Step 2.2: Pure Logic Engine Node** ✅
 - [x] Create `nodes/builtin/logic/v1.hpp`
@@ -124,7 +124,7 @@
 - [ ] **Register node in registry**
 - [x] **Commit**: "Adapt legacy YAML parser for node architecture"
 
-### **Step 2.5: Git Analysis Node** ⏳
+### **Step 2.5: Git Analysis Node** ⏸️ **SKIPPED**
 - [ ] Create `nodes/builtin/git/v1.hpp`
 - [ ] Create `nodes/builtin/git/v1.cpp`
 - [ ] Implement GitAnalysisNode class
@@ -141,7 +141,7 @@
 - [ ] **Register node in registry**
 - [ ] **Commit**: "Add git analysis node"
 
-### **Step 2.6: Formatter Node** ⏳
+### **Step 2.6: Formatter Node** ⏸️ **SKIPPED** (YAML node already handles formatting)
 - [ ] Create `nodes/builtin/formatter/v1.hpp`
 - [ ] Create `nodes/builtin/formatter/v1.cpp`
 - [ ] Implement FormatterNode class
@@ -158,22 +158,22 @@
 - [ ] **Register node in registry**
 - [ ] **Commit**: "Add data formatter node"
 
-### **Step 2.7: Reporter Node** ⏳
-- [ ] Create `nodes/builtin/reporter/v1.hpp`
-- [ ] Create `nodes/builtin/reporter/v1.cpp`
-- [ ] Implement ReporterNode class
-- [ ] Add report generation
-- [ ] Add multiple output formats
-- [ ] Add report templating
-- [ ] Add data aggregation
-- [ ] Create unit tests `tests/unit/nodes/builtin/reporter/`
-- [ ] Test report generation
-- [ ] Test format outputs
-- [ ] Test template processing
-- [ ] Test data aggregation
-- [ ] **Build and test passes**: `make run-tests`
+### **Step 2.7: Reporter Node** ✅
+- [x] Create `nodes/builtin/reporter/v1.hpp`
+- [x] Create `nodes/builtin/reporter/v1.cpp`
+- [x] Implement ReporterNode class
+- [x] Add report generation
+- [x] Add multiple output formats
+- [x] Add report templating
+- [x] Add data aggregation
+- [x] Create unit tests `tests/unit/nodes/builtin/reporter/`
+- [x] Test report generation
+- [x] Test format outputs
+- [x] Test template processing
+- [x] Test data aggregation
+- [x] **Build and test passes**: `make run-tests`
 - [ ] **Register node in registry**
-- [ ] **Commit**: "Add report generator node"
+- [x] **Commit**: "Add report generator node"
 
 ### **Step 2.8: JSON Parser Node** ⏳
 - [ ] Create `nodes/builtin/json/v1.hpp`

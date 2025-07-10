@@ -17,6 +17,7 @@ namespace akao { namespace tests {
 void runFilesystemScannerTests();
 void runAkaoLogicExecutorTests();
 void runYamlProcessorTests();
+void runReporterTests();
 }}
 
 int main() {
@@ -55,6 +56,16 @@ int main() {
     } catch (const std::exception& e) {
         testsFailed++;
         std::cout << "✗ YAML Processor Node tests FAILED: " << e.what() << "\n\n";
+    }
+    
+    try {
+        std::cout << "Running Reporter Node tests...\n";
+        akao::tests::runReporterTests();
+        testsPassed++;
+        std::cout << "✓ Reporter Node tests PASSED\n\n";
+    } catch (const std::exception& e) {
+        testsFailed++;
+        std::cout << "✗ Reporter Node tests FAILED: " << e.what() << "\n\n";
     }
     
     std::cout << "===============================================\n";
