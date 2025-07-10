@@ -84,22 +84,22 @@
 - [x] **Register node in registry**
 - [x] **Commit**: "Add filesystem scanner node"
 
-### **Step 2.2: C++ Analyzer Node** ⏳
-- [ ] Create `nodes/external/cpp/v1.hpp`
-- [ ] Create `nodes/external/cpp/v1.cpp`
-- [ ] Implement CppAnalyzerNode class
-- [ ] Add class counting functionality
-- [ ] Add function analysis
-- [ ] Add complexity metrics
-- [ ] Add include dependency analysis
-- [ ] Create unit tests `tests/unit/nodes/external/cpp/`
-- [ ] Test analysis of real akao C++ files
-- [ ] Test one-class-per-file rule
-- [ ] Test C++ standard compliance
-- [ ] Test header/source pairing
-- [ ] **Build and test passes**: `make run-tests`
-- [ ] **Register node in registry**
-- [ ] **Commit**: "Add C++ analyzer node"
+### **Step 2.2: C++ Analyzer Node** ✅
+- [x] Create `nodes/external/cpp/v1.hpp`
+- [x] Create `nodes/external/cpp/v1.cpp`
+- [x] Implement CppAnalyzerNode class
+- [x] Add class counting functionality
+- [x] Add function analysis
+- [x] Add complexity metrics
+- [x] Add include dependency analysis
+- [x] Create unit tests `tests/unit/nodes/external/cpp/`
+- [x] Test analysis of real akao C++ files
+- [x] Test one-class-per-file rule
+- [x] Test C++ standard compliance
+- [x] Test header/source pairing
+- [x] **Build and test passes**: `make run-tests`
+- [x] **Register node in registry**
+- [x] **Commit**: "Add C++ analyzer node"
 
 ### **Step 2.3: .a Format v2 Executor Node** ⏳
 - [ ] Create `nodes/builtin/logic/v1.hpp`
