@@ -9,7 +9,7 @@ This plan transforms Akao from hardcoded workflows to a fully configurable node-
 2. **Incremental Evolution**: Each phase builds on the previous with working tests
 3. **Testable Progress**: Every step produces executable artifacts with verifiable results
 4. **Performance First**: C++ core with multi-language node support
-5. **Philosophy Integration**: .a format and self-validation remain central
+5. **Philosophy Integration**: .a format and validation remain central
 
 ---
 

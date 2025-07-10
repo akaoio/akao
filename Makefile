@@ -101,10 +101,10 @@ test: $(TARGET)
 	@$(TARGET) --version
 	@echo "Test complete"
 
-.PHONY: self-validate
-self-validate: $(TARGET)
-	@echo "Running Akao self-validation..."
-	@$(TARGET) self-validate
+.PHONY: validate
+validate: $(TARGET)
+	@echo "Running Akao validation..."
+	@$(TARGET) validate
 
 .PHONY: validate-project
 validate-project: $(TARGET)
@@ -167,7 +167,7 @@ dev-setup:
 	@echo "Development environment ready"
 
 .PHONY: dev-validate
-dev-validate: debug self-validate validate-project
+dev-validate: debug validate validate-project
 
 .PHONY: dev-clean
 dev-clean: clean-all
@@ -211,7 +211,7 @@ help:
 	@echo "  install                 - Install Akao system-wide"
 	@echo "  uninstall               - Remove Akao from system"
 	@echo "  test                    - Run basic tests"
-	@echo "  self-validate           - Run Akao self-validation via CLI"
+	@echo "  validate                - Run Akao validation via CLI"
 	@echo "  validate-project        - Validate current project via CLI"
 	@echo "  check                   - Run comprehensive checks"
 	@echo "  fix                     - Auto-fix violations"
@@ -231,7 +231,7 @@ help:
 	@echo "  make debug                   # Build in debug mode"
 	@echo "  make run-tests               # Build and run comprehensive tests"
 	@echo "  make test                    # Run basic functionality test"
-	@echo "  make self-validate           # Validate Akao via CLI"
+	@echo "  make validate                # Validate Akao via CLI"
 	@echo "  make install                 # Install system-wide"
 	@echo ""
 	@echo "Philosophy compliance: akao:philosophy:build:duality:v1"

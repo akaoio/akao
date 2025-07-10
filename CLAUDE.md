@@ -25,14 +25,13 @@ make tests                  # Build test suite
 ### Testing
 ```bash
 make run-tests              # Run all tests
-make self-validate          # Run self-validation
-make validate-project       # Validate current project
+make validate               # Run validation
 ```
 
 ### Validation
 ```bash
 ./build/bin/akao validate .     # Validate current project
-make self-validate              # Self-validation via Make
+make validate              # Validation via Make
 make validate-project           # Validate project via Make
 ```
 
@@ -55,10 +54,9 @@ No specific linting commands are configured. The project uses C++17 standards wi
 1. **Zero External Dependencies**: Uses only C++ standard library
 2. **Philosophy-Driven Architecture**: All code must align with philosophical foundations
 3. **Universal Validation**: Can validate any codebase regardless of language
-4. **Self-Validating**: Framework validates itself against its own rules
-5. **Pure Logic Engine**: Core engine has no hardcoded domain knowledge
-6. **Rule-Driven Validation**: Uses .akao/rules/ directory structure with enabled/disabled organization
-7. **Strict Folder Hierarchy**: No mixing of files and folders, parent-child relationships enforced
+4. **Pure Logic Engine**: Core engine has no hardcoded domain knowledge
+5. **Rule-Driven Validation**: Uses .akao/rules/ directory structure with enabled/disabled organization
+6. **Strict Folder Hierarchy**: No mixing of files and folders, parent-child relationships enforced
 
 ### Main Components
 
@@ -91,7 +89,7 @@ No specific linting commands are configured. The project uses C++17 standards wi
 - **Unit Tests**: Individual component testing (`tests/unit/`)
 - **Integration Tests**: System-level testing (`tests/integration/`)
 - **CLI Tests**: Command-line interface testing (`tests/cli/`)
-- **Compliance Tests**: Self-validation testing (`tests/compliance/`)
+- **Compliance Tests**: Validation testing (`tests/compliance/`)
 - **Performance Tests**: Benchmarking and performance validation (`tests/performance/`)
 
 ### File Organization
@@ -137,7 +135,7 @@ examples/debug-*.a          # NO debug files in examples/
 2. **Testing**: Place development tests in `artifacts/`, not `examples/`
 3. **Build**: Use `make all` (Make is the only build system)
 4. **Test**: Run `make run-tests` to ensure all tests pass
-5. **Validate**: Run `make self-validate` to check compliance
+5. **Validate**: Run `make validate` to check compliance
 6. **Metadata**: Ensure all files have proper metadata headers
 
 ## CLI Usage
@@ -192,7 +190,7 @@ mv .akao/rules/enabled/category/rule.a .akao/rules/disabled/category/rule.a
 - The project implements a "Universal Validation Framework" that can validate any codebase
 - All code follows strict philosophical principles defined in the project
 - The Pure Logic Engine is designed to be completely domain-agnostic
-- Self-validation is a core requirement - the framework must validate itself
+- Validation is a core requirement - the framework must validate itself
 - **IMPORTANT**: Follow CONTRIBUTING.md for complete guidelines on folder structure, naming conventions, and metadata requirements
 
 ## Folder Structure Rules

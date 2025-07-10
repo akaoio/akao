@@ -40,7 +40,7 @@ make all
 ```bash
 make all           # Build main executable
 make run-tests     # Build and run all tests
-make self-validate # Self-validation check
+make validate # Validation check
 ```
 
 ## Testing

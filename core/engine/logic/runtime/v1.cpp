@@ -997,7 +997,7 @@ std::vector<Value> PureLogicEngine::executeAllRuleTests(const std::string& rule_
     std::vector<Value> results;
     
     try {
-        // Execute self-validation
+        // Execute validation
         bool self_valid = executeRuleSelfValidation(rule_file);
         results.push_back(Value(self_valid));
         

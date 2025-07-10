@@ -224,13 +224,21 @@ touch artifacts/feature-description/{plan.yaml,checklist.md,quality.yaml}
 - **NO** development test files allowed in `examples/` directory
 - `examples/` is reserved ONLY for exhibition-quality demonstration files
 
+**AI Agent Development Guidelines:**
+- **Artifacts should be NOTES/THOUGHTS only**: No full code implementations
+- **Artifacts maximum 120 lines per file**: Keep artifacts concise and focused
+- **Direct codebase development**: AI agents should code directly into the main codebase
+- **Branch-based development**: Each feature uses a separate branch for isolated development
+- **Commit after each step**: Immediate commit after completing each development step
+- **No large artifacts**: Avoid creating extensive code artifacts that duplicate main codebase
+
 **File Placement Rules:**
 ```bash
-✅ Correct Development Test Placement:
-artifacts/godel-development/test-undecidability.a           # Development test
-artifacts/parser-fixes/test-multiline.a                    # Development test
-artifacts/feature-branch/unit-test-simple.a                # Development test
-artifacts/debugging/test-consistency.a                     # Development test
+✅ Correct Development Artifact Placement:
+artifacts/godel-development/thought-process.md              # Development notes (< 120 lines)
+artifacts/parser-fixes/approach-analysis.md                # Analysis notes (< 120 lines)
+artifacts/feature-branch/step-checklist.md                 # Planning notes (< 120 lines)
+artifacts/debugging/issue-investigation.md                  # Debug notes (< 120 lines)
 
 ✅ Correct Exhibition Placement:
 examples/godel-exhibition.a                                # Final exhibition piece
@@ -238,15 +246,26 @@ examples/godel-exhibition.a                                # Final exhibition pi
 ❌ Wrong Placement:
 examples/test-undecidability.a                            # NO tests in examples/
 examples/debug-parser.a                                   # NO debug files in examples/
-examples/simple-test.a                                    # NO development tests in examples/
+artifacts/feature-branch/full-implementation.cpp           # NO full code in artifacts/
+artifacts/parser-fixes/complete-solution.hpp               # NO complete implementations in artifacts/
 ```
 
 **Directory Purposes:**
-- **`artifacts/`**: Development artifacts, test files, debugging scripts, temporary files
+- **`artifacts/`**: Development thinking notes, analysis, planning documents (notes only, max 120 lines)
 - **`examples/`**: Polished, exhibition-quality demonstrations for public display
+- **Main codebase**: Direct implementation of all actual code
+
+**AI Agent Development Workflow:**
+1. **Create branch**: `git checkout -b feature-name`
+2. **Plan in artifacts**: Write brief planning notes in `artifacts/feature-name/`
+3. **Code directly**: Implement directly into main codebase directories
+4. **Commit immediately**: `git commit` after each completed step
+5. **Keep artifacts minimal**: Only thinking notes, not code implementations
 
 **Enforcement:**
 - Development test files in `examples/` = validation error
+- Code implementations in `artifacts/` = validation error
+- Artifacts exceeding 120 lines = validation error
 - Multiple similar examples = consolidation required
 - `examples/` must contain ONLY final, polished demonstration files
 

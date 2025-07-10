@@ -81,13 +81,13 @@ CLICommandTests::TestResult CLICommandTests::testValidateCommand() {
         }
         result.details.push_back("✓ Basic validation works");
         
-        // Test self-validation
+        // Test validation
         exec_result = validate_cmd_->execute(context, {"--self"});
         if (!exec_result.success) {
-            result.error_message = "Self-validation failed: " + exec_result.error_message;
+            result.error_message = "Validation failed: " + exec_result.error_message;
             return result;
         }
-        result.details.push_back("✓ Self-validation works");
+        result.details.push_back("✓ Validation works");
         
         // Test with tracing
         exec_result = validate_cmd_->execute(context, {"--trace", "."});

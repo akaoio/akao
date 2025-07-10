@@ -143,7 +143,7 @@ akao run build     # Build execution (equivalent: npm run build)
 1. **Philosophy-Rule Audit**: Comprehensive assessment and elimination of non-functional components
 2. **Semantic Mapping**: Establish formal logic translation mechanisms
 3. **Ruleset Reorganization**: Restructure from language-based to architecture-based categorization
-4. **Validation Unification**: Eliminate self-validate concept and implement universal validation
+4. **Validation Unification**: Eliminate validate concept and implement universal validation
 
 ### 4.2 Phase 2: Governance Implementation
 
