@@ -1,0 +1,8 @@
+id: "akao:directory:core:foundation:types:v1"
+metadata:
+  specification: "Core data structures for node-based workflow system"
+  scope: "Foundation data types subsystem"
+  timeline: "2025-07-10"
+  rationale: "Provide type-safe data exchange and result handling for workflows"
+  methodology: "Universal containers with variant storage and metadata support"
+  references: ["akao:directory:core:foundation:types:value:v1", "akao:directory:core:foundation:types:result:v1"]

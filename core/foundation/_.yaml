@@ -1,0 +1,8 @@
+id: "akao:directory:core:foundation:v1"
+metadata:
+  specification: "Core primitives and interfaces for node-based architecture"
+  scope: "Foundation subsystem of core engine"
+  timeline: "2025-07-10"
+  rationale: "Establish fundamental building blocks for workflow node system"
+  methodology: "Modular design with interfaces and universal data types"
+  references: ["akao:directory:core:foundation:types:v1", "akao:directory:core:foundation:interfaces:v1"]

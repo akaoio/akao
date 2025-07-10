@@ -1,0 +1,8 @@
+id: "akao:directory:core:foundation:types:value:v1"
+metadata:
+  specification: "Universal data exchange value type for node-based workflows"
+  scope: "Core foundation data types subsystem"
+  timeline: "2025-07-10"
+  rationale: "Enable type-safe data flow between nodes in workflow system"
+  methodology: "Variant-based universal value container with metadata support"
+  references: ["akao:class:core:foundation:types:nodevalue:v1"]

@@ -1,0 +1,8 @@
+id: "akao:directory:core:foundation:types:result:v1"
+metadata:
+  specification: "Execution result container for node workflow operations"
+  scope: "Core foundation data types subsystem"
+  timeline: "2025-07-10"
+  rationale: "Standardize execution results across all workflow nodes"
+  methodology: "Result container with status, data, and error information"
+  references: ["akao:class:core:foundation:types:executionresult:v1"]

@@ -1,12 +1,8 @@
 id: "akao:directory:core:v1"
 metadata:
-  specification: "Core system directory containing fundamental Akao engine components and subsystems"
-  scope: "All core functionality including engine, filesystem, rule management, and tracing systems"
-  timeline: "2025-07-08"
-  rationale: "Central location for core system functionality separate from interfaces, languages, and build tools"
-  methodology: "Hierarchical organization with subsystem separation and clear architectural boundaries"
-  references: 
-    - "akao:directory:core:engine:v1"
-    - "akao:directory:core:filesystem:v1"
-    - "akao:directory:core:rule:v1"
-    - "akao:directory:core:trace:v1"
+  specification: "Core engine with zero external dependencies"
+  scope: "Central processing engine for node-based workflows"
+  timeline: "2025-07-10"
+  rationale: "Provide high-performance workflow execution with C++ standard library only"
+  methodology: "Modular architecture with foundation types and execution engines"
+  references: ["akao:directory:core:foundation:v1", "akao:directory:core:engine:v1"]
