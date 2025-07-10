@@ -68,21 +68,21 @@
 
 ## PHASE 2: CORE NODES (Weeks 3-4)
 
-### **Step 2.1: Filesystem Scanner Node** ⏳
-- [ ] Create `nodes/builtin/file/v1.hpp`
-- [ ] Create `nodes/builtin/file/v1.cpp`
-- [ ] Implement FilesystemScannerNode class
-- [ ] Add recursive directory scanning
-- [ ] Add pattern matching support
-- [ ] Add file metadata extraction
-- [ ] Create unit tests `tests/unit/nodes/builtin/file/`
-- [ ] Test scanning akao project directory
-- [ ] Test pattern filtering (*.cpp, *.hpp)
-- [ ] Test recursive vs non-recursive
-- [ ] Test large directory handling
-- [ ] **Build and test passes**: `make run-tests`
-- [ ] **Register node in registry**
-- [ ] **Commit**: "Add filesystem scanner node"
+### **Step 2.1: Filesystem Scanner Node** ✅
+- [x] Create `nodes/builtin/file/v1.hpp`
+- [x] Create `nodes/builtin/file/v1.cpp`
+- [x] Implement FilesystemScannerNode class
+- [x] Add recursive directory scanning
+- [x] Add pattern matching support
+- [x] Add file metadata extraction
+- [x] Create unit tests `tests/unit/nodes/builtin/file/`
+- [x] Test scanning akao project directory
+- [x] Test pattern filtering (*.cpp, *.hpp)
+- [x] Test recursive vs non-recursive
+- [x] Test large directory handling
+- [x] **Build and test passes**: `make run-tests`
+- [x] **Register node in registry**
+- [x] **Commit**: "Add filesystem scanner node"
 
 ### **Step 2.2: C++ Analyzer Node** ⏳
 - [ ] Create `nodes/external/cpp/v1.hpp`
