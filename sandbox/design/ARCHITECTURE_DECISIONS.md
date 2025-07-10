@@ -16,17 +16,16 @@
 - `nodes/external/`: Any language/dependencies allowed
 
 ### **2. Philosophy-Driven Architecture**
-**Decision**: Maintain .a format and validation as central principles
+**Decision**: Build completely new .a format v2 and workflow-based validation system
 **Rationale**:
-- Preserves akao's unique philosophical foundation
-- Maintains backward compatibility
-- Enables validation capability
-- Supports universal validation approach
+- Create next-generation philosophical foundation
+- Universal validation through workflows
+- Break free from legacy constraints
 
 **Implementation**:
-- `.a` format parser remains in core
-- Validation workflows built-in
-- Philosophy compliance validation
+- `.a` format v2 parser with enhanced capabilities
+- All validation through workflow definitions
+- Philosophy compliance as workflow nodes
 
 ### **3. Modular Node-Based Design**
 **Decision**: Transform monolithic system into composable node ecosystem
@@ -159,19 +158,19 @@ workflow:
 - Phase 4: Multi-language support
 - Phase 5: Integration and polish
 
-### **Backward Compatibility**
-**Decision**: 100% compatibility with existing .akao rules
+### **No Backward Compatibility**
+**Decision**: Complete system rewrite - deprecate .akao/rules entirely, replace with .akao/workflows
 **Rationale**:
-- Protects existing investments
-- Enables gradual adoption
-- Reduces migration friction
-- Maintains user trust
+- Freedom to design optimal architecture
+- Remove legacy technical debt
+- Enable revolutionary improvements
+- Clean slate for innovation
 
 **Implementation**:
-- Existing rule formats supported
-- Same validation results
-- Compatible file structures
-- Seamless rule execution
+- Complete deprecation of .akao/rules/
+- All validation through .akao/workflows/
+- New .a format v2 with enhanced capabilities
+- Migration tools for legacy systems
 
 ### **Performance Requirements**
 **Decision**: 2x performance improvement target
@@ -328,8 +327,8 @@ public:
 ### **Technical Metrics**
 - Zero external dependencies in core
 - 100% test coverage for core components
-- 2x performance improvement
-- 100% backward compatibility
+- 10x performance improvement (no legacy constraints)
+- Revolutionary new architecture
 
 ### **Architectural Metrics**
 - Modular component design

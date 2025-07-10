@@ -1,15 +1,25 @@
 # 🔄 PHASE EXECUTION CHECKLIST
 
+## PREPARE
+- [ ] Create dirs: artifacts/revolution/phase-1/step-1/
+- [ ] Move all current codebase from the root folder to legacy/
+- [ ] Collect useful parts of legacy/ and take note to artifacts/revolution/useful-legacy-parts.md (max 120 lines)
+
 ## PHASE 1: FOUNDATION (Weeks 1-2)
 
 ### **Step 1.1: Core Data Types** ⏳
-- [ ] Create `core/foundation/data-types/node-value/v1.hpp`
-- [ ] Create `core/foundation/data-types/node-value/v1.cpp`
+- [ ] Create `core/foundation/types/value/v1.hpp`
+- [ ] Create `core/foundation/types/value/v1.cpp`
 - [ ] Implement NodeValue class with variant support
 - [ ] Add type conversion methods (asString, asNumber, etc.)
 - [ ] Add binary data support
 - [ ] Add metadata support
-- [ ] Create unit tests `tests/unit/core/foundation/data-types/node-value/`
+- [ ] Create `core/foundation/types/result/v1.hpp`
+- [ ] Create `core/foundation/types/result/v1.cpp`
+- [ ] Implement ExecutionResult class
+- [ ] Add result status and error handling
+- [ ] Create unit tests `tests/unit/core/foundation/types/value/`
+- [ ] Create unit tests `tests/unit/core/foundation/types/result/`
 - [ ] Test type conversions (20+ test cases)
 - [ ] Test binary data handling
 - [ ] Test metadata operations
@@ -18,14 +28,14 @@
 - [ ] **Commit**: "Add NodeValue universal data type"
 
 ### **Step 1.2: Node Interface** ⏳
-- [ ] Create `core/foundation/interfaces/node-interface/v1.hpp`
-- [ ] Create `core/foundation/interfaces/node-interface/v1.cpp`
+- [ ] Create `core/foundation/interfaces/inode/v1.hpp`
+- [ ] Create `core/foundation/interfaces/inode/v1.cpp`
 - [ ] Define INode interface (getNodeId, execute, validate)
 - [ ] Define NodeContext class
 - [ ] Define ExecutionResult class
 - [ ] Define NodeDefinition class
 - [ ] Create mock node implementation for testing
-- [ ] Create unit tests `tests/unit/core/foundation/interfaces/node-interface/`
+- [ ] Create unit tests `tests/unit/core/foundation/interfaces/inode/`
 - [ ] Test interface compliance
 - [ ] Test execution context
 - [ ] Test result handling
@@ -33,13 +43,13 @@
 - [ ] **Commit**: "Add INode interface definition"
 
 ### **Step 1.3: Node Registry** ⏳
-- [ ] Create `core/engine/orchestrator/node-registry/v1.hpp`
-- [ ] Create `core/engine/orchestrator/node-registry/v1.cpp`
+- [ ] Create `core/engine/orchestrator/registry/v1.hpp`
+- [ ] Create `core/engine/orchestrator/registry/v1.cpp`
 - [ ] Implement NodeRegistry class
 - [ ] Add node registration methods
 - [ ] Add node discovery methods
 - [ ] Add node retrieval methods
-- [ ] Create unit tests `tests/unit/core/engine/orchestrator/node-registry/`
+- [ ] Create unit tests `tests/unit/core/engine/orchestrator/registry/`
 - [ ] Test node registration (10+ mock nodes)
 - [ ] Test node discovery
 - [ ] Test node retrieval
@@ -59,13 +69,13 @@
 ## PHASE 2: CORE NODES (Weeks 3-4)
 
 ### **Step 2.1: Filesystem Scanner Node** ⏳
-- [ ] Create `nodes/builtin/input/filesystem-scanner/v1.hpp`
-- [ ] Create `nodes/builtin/input/filesystem-scanner/v1.cpp`
+- [ ] Create `nodes/builtin/input/filesystem/v1.hpp`
+- [ ] Create `nodes/builtin/input/filesystem/v1.cpp`
 - [ ] Implement FilesystemScannerNode class
 - [ ] Add recursive directory scanning
 - [ ] Add pattern matching support
 - [ ] Add file metadata extraction
-- [ ] Create unit tests `tests/unit/nodes/builtin/input/filesystem-scanner/`
+- [ ] Create unit tests `tests/unit/nodes/builtin/input/filesystem/`
 - [ ] Test scanning akao project directory
 - [ ] Test pattern filtering (*.cpp, *.hpp)
 - [ ] Test recursive vs non-recursive
@@ -75,14 +85,14 @@
 - [ ] **Commit**: "Add filesystem scanner node"
 
 ### **Step 2.2: C++ Analyzer Node** ⏳
-- [ ] Create `nodes/builtin/processing/cpp-analyzer/v1.hpp`
-- [ ] Create `nodes/builtin/processing/cpp-analyzer/v1.cpp`
+- [ ] Create `nodes/builtin/processing/cpp/v1.hpp`
+- [ ] Create `nodes/builtin/processing/cpp/v1.cpp`
 - [ ] Implement CppAnalyzerNode class
 - [ ] Add class counting functionality
 - [ ] Add function analysis
 - [ ] Add complexity metrics
 - [ ] Add include dependency analysis
-- [ ] Create unit tests `tests/unit/nodes/builtin/processing/cpp-analyzer/`
+- [ ] Create unit tests `tests/unit/nodes/builtin/processing/cpp/`
 - [ ] Test analysis of real akao C++ files
 - [ ] Test one-class-per-file rule
 - [ ] Test C++ standard compliance
@@ -91,22 +101,22 @@
 - [ ] **Register node in registry**
 - [ ] **Commit**: "Add C++ analyzer node"
 
-### **Step 2.3: Rule Executor Node** ⏳
-- [ ] Create `nodes/builtin/processing/rule-executor/v1.hpp`
-- [ ] Create `nodes/builtin/processing/rule-executor/v1.cpp`
-- [ ] Implement RuleExecutorNode class
-- [ ] Integrate existing akao logic engine
-- [ ] Add .a format rule execution
-- [ ] Add rule result formatting
-- [ ] Add error handling for rule failures
-- [ ] Create unit tests `tests/unit/nodes/builtin/processing/rule-executor/`
-- [ ] Test execution of existing .akao rules
-- [ ] Test .a format parsing and execution
-- [ ] Test rule violation detection
-- [ ] Test rule result reporting
+### **Step 2.3: .a Format v2 Executor Node** ⏳
+- [ ] Create `nodes/builtin/processing/akao/v1.hpp`
+- [ ] Create `nodes/builtin/processing/akao/v1.cpp`
+- [ ] Implement AkaoExecutorNode class
+- [ ] Build completely new .a format v2 parser
+- [ ] Add enhanced .a format v2 execution
+- [ ] Add modern result formatting
+- [ ] Add comprehensive error handling
+- [ ] Create unit tests `tests/unit/nodes/builtin/processing/akao/`
+- [ ] Test execution of .a format v2 expressions
+- [ ] Test enhanced parsing and execution
+- [ ] Test advanced logic capabilities
+- [ ] Test performance improvements
 - [ ] **Build and test passes**: `make run-tests`
 - [ ] **Register node in registry**
-- [ ] **Commit**: "Add rule executor node"
+- [ ] **Commit**: "Add .a format v2 executor node"
 
 ### **Step 2.4: Validator Node** ⏳
 - [ ] Create `nodes/builtin/processing/validator/v1.hpp`
@@ -136,14 +146,14 @@
 ## PHASE 3: WORKFLOW ENGINE (Weeks 5-6)
 
 ### **Step 3.1: Workflow Parser** ⏳
-- [ ] Create `core/engine/orchestrator/workflow-engine/v1.hpp`
-- [ ] Create `core/engine/orchestrator/workflow-engine/v1.cpp`
+- [ ] Create `core/engine/orchestrator/workflow/v1.hpp`
+- [ ] Create `core/engine/orchestrator/workflow/v1.cpp`
 - [ ] Implement WorkflowDefinition class
 - [ ] Implement WorkflowParser class
 - [ ] Add YAML workflow parsing
 - [ ] Add node connection parsing
 - [ ] Add parameter substitution
-- [ ] Create unit tests `tests/unit/core/engine/orchestrator/workflow-engine/`
+- [ ] Create unit tests `tests/unit/core/engine/orchestrator/workflow/`
 - [ ] Test parsing sample workflows
 - [ ] Test node validation
 - [ ] Test connection validation
@@ -165,19 +175,30 @@
 - [ ] **Build and test passes**: `make run-tests`
 - [ ] **Commit**: "Add workflow execution engine"
 
-### **Step 3.3: Built-in Workflows** ⏳
-- [ ] Create `workflows/validation/cpp-validation.yaml`
-- [ ] Create `workflows/validation/universal-validation.yaml`
-- [ ] Create `workflows/examples/hello-world.yaml`
-- [ ] Create `workflows/examples/data-pipeline.yaml`
-- [ ] Add workflow schema validation
+### **Step 3.3: Revolutionary Workflows** ⏳
+- [ ] Create `.akao/workflows/validation/cpp.yaml`
+- [ ] Create `.akao/workflows/validation/universal.yaml`
+- [ ] Create `.akao/workflows/validation/security.yaml`
+- [ ] Create `.akao/workflows/validation/naming.yaml`
+- [ ] Create `.akao/workflows/validation/structure.yaml`
+- [ ] Create `.akao/workflows/validation/metadata.yaml`
+- [ ] Create `.akao/workflows/analysis/metrics.yaml`
+- [ ] Create `.akao/workflows/analysis/architecture.yaml`
+- [ ] Create `.akao/workflows/analysis/debt.yaml`
+- [ ] Create `.akao/workflows/automation/pipeline.yaml`
+- [ ] Create `.akao/workflows/automation/testing.yaml`
+- [ ] Create `.akao/workflows/automation/documentation.yaml`
+- [ ] Create `.akao/workflows/examples/simple.yaml`
+- [ ] Create `.akao/workflows/examples/pipeline.yaml`
+- [ ] Create `.akao/workflows/examples/polyglot.yaml`
+- [ ] Add comprehensive workflow schema validation
 - [ ] Create integration tests `tests/integration/workflows/`
-- [ ] Test C++ validation workflow
-- [ ] Test universal validation workflow
+- [ ] Test all validation workflows
+- [ ] Test philosophy compliance workflows
 - [ ] Test example workflows
-- [ ] Verify same results as existing system
+- [ ] Verify revolutionary improvements over legacy
 - [ ] **Build and test passes**: `make run-tests`
-- [ ] **Commit**: "Add built-in validation workflows"
+- [ ] **Commit**: "Add revolutionary workflow system"
 
 **Phase 3 Completion Criteria:**
 - [ ] Workflow parsing and execution working
@@ -191,13 +212,13 @@
 ## PHASE 4: MULTI-LANGUAGE SUPPORT (Weeks 7-8)
 
 ### **Step 4.1: Process Manager** ⏳
-- [ ] Create `core/engine/runtime/process-manager/v1.hpp`
-- [ ] Create `core/engine/runtime/process-manager/v1.cpp`
+- [ ] Create `core/engine/runtime/python/v1.hpp`
+- [ ] Create `core/engine/runtime/python/v1.cpp`
 - [ ] Implement ProcessManager class
 - [ ] Add process spawning and management
 - [ ] Add inter-process communication
 - [ ] Add process monitoring and cleanup
-- [ ] Create unit tests `tests/unit/core/engine/runtime/process-manager/`
+- [ ] Create unit tests `tests/unit/core/engine/runtime/python/`
 - [ ] Test process spawning
 - [ ] Test IPC communication
 - [ ] Test process cleanup
@@ -206,13 +227,13 @@
 - [ ] **Commit**: "Add multi-language process manager"
 
 ### **Step 4.2: Python Node Support** ⏳
-- [ ] Create `core/engine/runtime/python-executor/v1.hpp`
-- [ ] Create `core/engine/runtime/python-executor/v1.cpp`
+- [ ] Create `core/engine/runtime/python/v1.hpp`
+- [ ] Create `core/engine/runtime/python/v1.cpp`
 - [ ] Implement PythonExecutor class
 - [ ] Add Python process integration
 - [ ] Add data serialization/deserialization
 - [ ] Create sample Python node `nodes/external/python/sample-analyzer/`
-- [ ] Create unit tests `tests/unit/core/engine/runtime/python-executor/`
+- [ ] Create unit tests `tests/unit/core/engine/runtime/python/`
 - [ ] Test Python node execution
 - [ ] Test data exchange
 - [ ] Test error handling
@@ -220,13 +241,13 @@
 - [ ] **Commit**: "Add Python node support"
 
 ### **Step 4.3: JavaScript Node Support** ⏳
-- [ ] Create `core/engine/runtime/javascript-executor/v1.hpp`
-- [ ] Create `core/engine/runtime/javascript-executor/v1.cpp`
+- [ ] Create `core/engine/runtime/javascript/v1.hpp`
+- [ ] Create `core/engine/runtime/javascript/v1.cpp`
 - [ ] Implement JavaScriptExecutor class
 - [ ] Add Node.js process integration
 - [ ] Add JSON data exchange
 - [ ] Create sample JavaScript node `nodes/external/javascript/sample-formatter/`
-- [ ] Create unit tests `tests/unit/core/engine/runtime/javascript-executor/`
+- [ ] Create unit tests `tests/unit/core/engine/runtime/javascript/`
 - [ ] Test JavaScript node execution
 - [ ] Test data exchange
 - [ ] Test error handling
@@ -264,7 +285,7 @@
 - [ ] Optimize process management
 - [ ] Create performance benchmarks
 - [ ] Test performance improvements
-- [ ] Verify 2x speed improvement target
+- [ ] Verify 10x speed improvement target
 - [ ] **Build and test passes**: `make run-tests`
 - [ ] **Commit**: "Optimize workflow execution performance"
 
@@ -293,15 +314,16 @@
 ### **Technical Metrics**
 - [ ] **Compilation**: Zero errors across all platforms
 - [ ] **Testing**: 100% test pass rate
-- [ ] **Performance**: 2x faster than original system
-- [ ] **Compatibility**: 100% backward compatibility
-- [ ] **Coverage**: 90%+ code coverage
+- [ ] **Performance**: 10x faster than legacy systems
+- [ ] **Innovation**: Revolutionary new architecture
+- [ ] **Coverage**: 95%+ code coverage
 
 ### **Functional Metrics**
-- [ ] **Node Types**: 10+ built-in nodes
-- [ ] **Languages**: 3+ supported languages
-- [ ] **Workflows**: 5+ example workflows
-- [ ] **Validation**: All existing rules work
+- [ ] **Node Types**: 20+ built-in nodes
+- [ ] **Languages**: 5+ supported languages
+- [ ] **Workflows**: 15+ example workflows
+- [ ] **Validation**: Complete workflow-based validation system
+- [ ] **Philosophy**: Advanced philosophy compliance workflows
 
 ### **Quality Metrics**
 - [ ] **Documentation**: Complete user/developer guides

@@ -2,154 +2,32 @@
 
 ## 🎯 CORE VISION
 
-Transform akao from a monolithic validation framework into a modular, node-based workflow system while maintaining:
+Completely rebuild akao as a revolutionary node-based workflow system with:
 - **Zero External Dependencies**: C++ standard library only for core
-- **Philosophy-Driven Architecture**: .a format and validation central
-- **Universal Validation**: Language-agnostic validation capability
-- **Native C++ Performance**: Core nodes implemented in C++
-- **Multi-Language Extensibility**: Community nodes in any language
+- **Next-Gen Philosophy Architecture**: .a format v2 with enhanced capabilities
+- **Universal Workflow System**: Everything is a workflow (validation, analysis, automation)
+- **Extreme Performance**: 10x faster than legacy systems
+- **Multi-Language Ecosystem**: Community-driven node marketplace
 
 ## 📊 STRATEGIC APPROACH
 
 ### **Key Principles**
-1. **Incremental Evolution**: Each phase builds working system
-2. **Backward Compatibility**: Existing .akao rules continue working
-3. **Performance First**: Core remains C++ for maximum performance
-4. **Extensibility**: Community can add nodes in any language
+1. **Revolutionary Rebuild**: Complete system rewrite for optimal architecture
+2. **No Legacy Constraints**: Freedom to design perfect system
+3. **Performance First**: 10x faster than any legacy system
+4. **Extensibility**: Community-driven node ecosystem
 5. **Step-by-Step Validation**: Each step must compile and pass tests
+6. **Clean Development**: All artifacts in artifacts/{mission-name}/{phase}/{step}/
 
 ### **Development Method**
 - **Direct Codebase Development**: Code directly into main codebase
-- **Branch-Based Evolution**: Each phase uses separate branch
+- **Branch-Based Evolution**: Each phase uses separate artifact folder for taking notes (artifacts/{mission-name}/{phase}/{step}/*.md)
 - **Immediate Commits**: Commit after each working step
 - **Minimal Artifacts**: Only thinking notes, not code implementations
 - **120-Line Artifact Limit**: Keep artifacts concise and focused
 
-## 🏗️ FUTURE DIRECTORY STRUCTURE
-
-```
-akao/
-├── 🏛️ core/                     # CORE ENGINE (C++ Only, Zero Dependencies)
-│   ├── foundation/               # Core primitives and interfaces
-│   │   ├── interfaces/           # Standard node interfaces
-│   │   │   ├── node-interface/   # INode definition
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   └── _.yaml
-│   │   ├── data-types/          # Core data structures
-│   │   │   ├── node-value/      # Universal data exchange
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   ├── execution-result/ # Execution results
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   └── _.yaml
-│   │   └── _.yaml
-│   ├── engine/                  # Core execution engines
-│   │   ├── orchestrator/        # Workflow orchestration
-│   │   │   ├── workflow-engine/ # Main workflow executor
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   ├── node-registry/   # Node discovery system
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   └── _.yaml
-│   │   ├── parser/              # Language parsers (KEEP EXISTING)
-│   │   │   ├── a/               # .a format parser
-│   │   │   ├── yaml/            # YAML parser
-│   │   │   └── _.yaml
-│   │   ├── logic/               # Logic processing (KEEP EXISTING)
-│   │   │   ├── runtime/         # Pure logic engine
-│   │   │   └── _.yaml
-│   │   ├── runtime/             # Node execution runtime
-│   │   │   ├── cpp-executor/    # C++ node executor
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   ├── process-manager/ # Multi-language process management
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   └── _.yaml
-│   │   └── _.yaml
-│   └── _.yaml
-├── 🧩 nodes/                    # NODE ECOSYSTEM (Modular Components)
-│   ├── builtin/                 # Built-in C++ nodes (Zero Dependencies)
-│   │   ├── input/               # Input acquisition nodes
-│   │   │   ├── filesystem-scanner/
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   ├── git-scanner/
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   └── _.yaml
-│   │   ├── processing/          # Core processing nodes
-│   │   │   ├── cpp-analyzer/    # C++ code analysis
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   ├── rule-executor/   # Rule execution engine
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   ├── validator/       # Universal validation
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   └── _.yaml
-│   │   ├── output/              # Output generation nodes
-│   │   │   ├── formatter/       # Data formatting
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   ├── reporter/        # Report generation
-│   │   │   │   ├── v1.hpp/.cpp
-│   │   │   │   └── _.yaml
-│   │   │   └── _.yaml
-│   │   └── _.yaml
-│   ├── external/                # Multi-language community nodes
-│   │   ├── python/              # Python-based nodes
-│   │   │   ├── data-science/    # Data analysis, ML
-│   │   │   ├── web-scraping/    # Web scraping tools
-│   │   │   └── _.yaml
-│   │   ├── javascript/          # JavaScript-based nodes
-│   │   │   ├── frontend-testing/ # Frontend testing tools
-│   │   │   ├── api-testing/     # API testing
-│   │   │   └── _.yaml
-│   │   ├── rust/                # Rust-based nodes
-│   │   │   ├── performance-analysis/ # Performance-critical
-│   │   │   ├── crypto-operations/ # Cryptographic ops
-│   │   │   └── _.yaml
-│   │   └── _.yaml
-│   └── _.yaml
-├── 📋 workflows/                # WORKFLOW DEFINITIONS
-│   ├── validation/              # Validation workflows
-│   │   ├── cpp-validation.yaml  # C++ validation pipeline
-│   │   ├── universal-validation.yaml # Universal validation
-│   │   └── security-validation.yaml # Security checks
-│   ├── analysis/                # Analysis workflows
-│   │   ├── code-metrics.yaml    # Code quality metrics
-│   │   ├── architecture-analysis.yaml # Architecture analysis
-│   │   └── technical-debt.yaml  # Technical debt analysis
-│   ├── automation/              # Automation workflows
-│   │   ├── ci-pipeline.yaml     # CI/CD automation
-│   │   ├── testing.yaml         # Automated testing
-│   │   └── documentation.yaml   # Doc generation
-│   └── examples/                # Example workflows
-│       ├── hello-world.yaml     # Simple example
-│       ├── data-pipeline.yaml   # Data processing
-│       └── multi-language.yaml  # Multi-language processing
-├── 🔧 tools/                    # DEVELOPMENT TOOLS
-│   ├── node-generator/          # Node scaffolding
-│   ├── workflow-validator/      # Workflow validation
-│   └── migration-tools/         # Migration utilities
-├── 📦 packages/                 # DISTRIBUTION PACKAGES
-│   ├── core/                    # Core engine package
-│   ├── standard-nodes/          # Standard node library
-│   └── community-nodes/         # Community contributions
-├── .akao/                       # PROJECT CONFIGURATION (KEEP EXISTING)
-│   ├── settings.yaml            # System settings
-│   ├── rules/                   # Rules directory
-│   │   ├── enabled/
-│   │   └── disabled/
-│   └── cache/                   # System cache
-├── main.cpp                     # SIMPLIFIED MAIN (workflow dispatcher)
-└── Makefile                     # Build system
-```
+## FINAL FOLDER STRUCTURE
+Please read [THE FINAL TREE](./FINAL_TREE.md)
 
 ## 🔄 EVOLUTION PHASES
 
@@ -157,20 +35,20 @@ akao/
 **Goal**: Establish core node infrastructure
 
 #### **Step 1.1: Core Data Types**
-- **Target**: `core/foundation/data-types/node-value/v1.hpp`
+- **Target**: `core/foundation/types/value/v1.hpp`
 - **Implementation**: Universal data exchange system (inspired by N8N's item-based processing)
 - **Features**: Batch processing support, binary data handling, metadata support
 - **Test**: Basic type conversion and validation, batch data processing
 - **Commit**: "Add NodeValue universal data type"
 
 #### **Step 1.2: Node Interface**
-- **Target**: `core/foundation/interfaces/node-interface/v1.hpp`
+- **Target**: `core/foundation/interfaces/interface/v1.hpp`
 - **Implementation**: Standard INode interface
 - **Test**: Mock node implementation
 - **Commit**: "Add INode interface definition"
 
 #### **Step 1.3: Node Registry**
-- **Target**: `core/engine/orchestrator/node-registry/v1.hpp`
+- **Target**: `core/engine/orchestrator/registry/v1.hpp`
 - **Implementation**: Node discovery and registration
 - **Test**: Register and retrieve nodes
 - **Commit**: "Add node registry system"
@@ -179,19 +57,19 @@ akao/
 **Goal**: Convert existing components to nodes
 
 #### **Step 2.1: Filesystem Scanner Node**
-- **Target**: `nodes/builtin/input/filesystem-scanner/v1.hpp`
+- **Target**: `nodes/builtin/input/filesystem/v1.hpp`
 - **Implementation**: Convert existing filesystem scanning
 - **Test**: Scan akao project files
 - **Commit**: "Add filesystem scanner node"
 
 #### **Step 2.2: C++ Analyzer Node**
-- **Target**: `nodes/builtin/processing/cpp-analyzer/v1.hpp`
+- **Target**: `nodes/builtin/processing/cpp/v1.hpp`
 - **Implementation**: Convert existing C++ analysis
 - **Test**: Analyze real C++ files
 - **Commit**: "Add C++ analyzer node"
 
 #### **Step 2.3: Rule Executor Node**
-- **Target**: `nodes/builtin/processing/rule-executor/v1.hpp`
+- **Target**: `nodes/builtin/processing/akao/v1.hpp`
 - **Implementation**: Convert existing rule execution
 - **Test**: Execute .a format rules
 - **Commit**: "Add rule executor node"
@@ -206,7 +84,7 @@ akao/
 **Goal**: Implement workflow execution system
 
 #### **Step 3.1: Workflow Parser**
-- **Target**: `core/engine/orchestrator/workflow-engine/v1.hpp`
+- **Target**: `core/engine/orchestrator/workflow/v1.hpp`
 - **Implementation**: Parse YAML workflow definitions
 - **Test**: Parse sample workflows
 - **Commit**: "Add workflow definition parser"
@@ -218,7 +96,7 @@ akao/
 - **Commit**: "Add workflow execution engine"
 
 #### **Step 3.3: Built-in Workflows**
-- **Target**: `workflows/validation/cpp-validation.yaml`
+- **Target**: `workflows/validation/cpp.yaml`
 - **Implementation**: Create essential workflows
 - **Test**: Execute C++ validation workflow
 - **Commit**: "Add built-in validation workflows"
@@ -227,7 +105,7 @@ akao/
 **Goal**: Enable multi-language node development
 
 #### **Step 4.1: Process Manager**
-- **Target**: `core/engine/runtime/process-manager/v1.hpp`
+- **Target**: `core/engine/runtime/python/v1.hpp`
 - **Implementation**: Multi-language process management
 - **Test**: Execute external process
 - **Commit**: "Add multi-language process manager"
@@ -270,7 +148,6 @@ akao/
 ### **Each Step Must:**
 1. **Compile Successfully**: Zero compilation errors
 2. **Pass All Tests**: 100% test success rate
-3. **Maintain Compatibility**: Existing .akao rules work
 4. **Real Data Processing**: No mock/fake data in tests
 5. **Immediate Commit**: Commit working code immediately
 
@@ -281,13 +158,13 @@ akao/
 4. **Documentation**: Clear usage examples
 
 ### **Final System Must:**
-- ✅ Execute workflows 2x faster than sequential processing
-- ✅ Support 3+ programming languages for nodes
-- ✅ Maintain 100% backward compatibility
-- ✅ Enable community node development
-- ✅ Validate using node-based workflows
-- ✅ Provide N8N-inspired usability while maintaining C++ core performance
-- ✅ Support batch data processing for efficient large-scale operations
+- ✅ Execute workflows 10x faster than legacy systems
+- ✅ Support 5+ programming languages for nodes
+- ✅ Enable thriving community node marketplace
+- ✅ Replace all legacy validation with workflows
+- ✅ Provide revolutionary user experience
+- ✅ Support massive-scale data processing
+- ✅ Zero legacy technical debt
 
 ## 🛠️ DEVELOPMENT GUIDELINES
 
