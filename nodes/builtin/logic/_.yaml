@@ -1,8 +1,0 @@
-id: "akao:directory:nodes:builtin:logic:v1"
-metadata:
-  specification: ".a format executor node using legacy Pure Logic Engine with 47+ built-in functions"
-  scope: "Builtin logic execution node"
-  timeline: "2025-07-10"
-  rationale: "Adapt proven legacy Pure Logic Engine for node-based workflows"
-  methodology: "Adapter pattern leveraging existing zero-domain logic engine"
-  references: ["akao:class:nodes:builtin:logic:v1", "akao:file:core:engine:logic_pure:v1"]
