@@ -1,0 +1,8 @@
+id: "akao:directory:core:engine:orchestrator:v1"
+metadata:
+  specification: "Workflow orchestration components for node-based execution"
+  scope: "Core engine orchestrator subsystem"
+  timeline: "2025-07-10"
+  rationale: "Provide workflow management, node registry, and execution coordination"
+  methodology: "Orchestrator pattern with registry and workflow management"
+  references: ["akao:directory:core:engine:orchestrator:registry:v1", "akao:directory:core:engine:orchestrator:workflow:v1"]

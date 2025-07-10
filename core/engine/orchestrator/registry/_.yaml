@@ -1,0 +1,8 @@
+id: "akao:directory:core:engine:orchestrator:registry:v1"
+metadata:
+  specification: "Node discovery and registration system for workflow orchestration"
+  scope: "Core engine orchestrator subsystem"
+  timeline: "2025-07-10"
+  rationale: "Enable dynamic node discovery and management in workflow system"
+  methodology: "Registry pattern with thread-safe node management"
+  references: ["akao:class:core:engine:orchestrator:registry:v1"]

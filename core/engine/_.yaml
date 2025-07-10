@@ -1,0 +1,8 @@
+id: "akao:directory:core:engine:v1"
+metadata:
+  specification: "Core execution engines for node-based workflow system"
+  scope: "Core engine subsystem"
+  timeline: "2025-07-10"
+  rationale: "Provide orchestration, runtime, and execution capabilities"
+  methodology: "Engine components with orchestrator and runtime support"
+  references: ["akao:directory:core:engine:orchestrator:v1", "akao:directory:core:engine:runtime:v1"]
