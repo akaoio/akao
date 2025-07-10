@@ -82,19 +82,19 @@
 - [ ] **Register node in registry**
 - [ ] **Commit**: "Adapt legacy filesystem scanner for node architecture"
 
-### **Step 2.2: Pure Logic Engine Node** ⏳
-- [ ] Create `nodes/builtin/logic/v1.hpp`
-- [ ] Create `nodes/builtin/logic/v1.cpp`
-- [ ] Adapt legacy `core/engine/logic/runtime/v1.hpp` for node architecture
-- [ ] Implement AkaoLogicExecutorNode using legacy Pure Logic Engine
-- [ ] Preserve 47+ built-in functions and capabilities
-- [ ] Create unit tests `tests/unit/nodes/builtin/logic/`
-- [ ] Test .a format expression execution
-- [ ] Test built-in function library
-- [ ] Test variable scoping and context management
-- [ ] **Build and test passes**: `make run-tests`
+### **Step 2.2: Pure Logic Engine Node** ✅
+- [x] Create `nodes/builtin/logic/v1.hpp`
+- [x] Create `nodes/builtin/logic/v1.cpp`
+- [x] Adapt legacy `core/engine/logic/runtime/v1.hpp` for node architecture
+- [x] Implement AkaoLogicExecutorNode using legacy Pure Logic Engine
+- [x] Preserve 47+ built-in functions and capabilities
+- [x] Create unit tests `tests/unit/nodes/builtin/logic/`
+- [x] Test .a format expression execution
+- [x] Test built-in function library
+- [x] Test variable scoping and context management
+- [x] **Build and test passes**: `make run-tests`
 - [ ] **Register node in registry**
-- [ ] **Commit**: "Adapt legacy Pure Logic Engine for node architecture"
+- [x] **Commit**: "Adapt legacy Pure Logic Engine for node architecture"
 
 ### **Step 2.3: Universal Validator Node** ⏳
 - [ ] Create `nodes/builtin/validator/v1.hpp`
@@ -110,19 +110,19 @@
 - [ ] **Register node in registry**
 - [ ] **Commit**: "Adapt legacy Unified Validator for node architecture"
 
-### **Step 2.4: YAML Parser Node** ⏳
-- [ ] Create `nodes/builtin/yaml/v1.hpp`
-- [ ] Create `nodes/builtin/yaml/v1.cpp`
-- [ ] Adapt legacy `core/engine/parser/yaml/parser/v1.hpp` for node architecture
-- [ ] Implement YAMLParserNode using legacy YAML parser
-- [ ] Preserve zero dependencies and full YAML 1.2 support
-- [ ] Create unit tests `tests/unit/nodes/builtin/yaml/`
-- [ ] Test YAML parsing and generation
-- [ ] Test error handling and diagnostics
-- [ ] Test performance with large files
-- [ ] **Build and test passes**: `make run-tests`
+### **Step 2.4: YAML Parser Node** ✅
+- [x] Create `nodes/builtin/yaml/v1.hpp`
+- [x] Create `nodes/builtin/yaml/v1.cpp`
+- [x] Adapt legacy `core/engine/parser/yaml/parser/v1.hpp` for node architecture
+- [x] Implement YAMLParserNode using legacy YAML parser
+- [x] Preserve zero dependencies and full YAML 1.2 support
+- [x] Create unit tests `tests/unit/nodes/builtin/yaml/`
+- [x] Test YAML parsing and generation
+- [x] Test error handling and diagnostics
+- [x] Test performance with large files
+- [x] **Build and test passes**: `make run-tests`
 - [ ] **Register node in registry**
-- [ ] **Commit**: "Adapt legacy YAML parser for node architecture"
+- [x] **Commit**: "Adapt legacy YAML parser for node architecture"
 
 ### **Step 2.5: Git Analysis Node** ⏳
 - [ ] Create `nodes/builtin/git/v1.hpp`

@@ -19,6 +19,9 @@ using namespace akao::nodes::builtin;
 using namespace akao::foundation::interfaces;
 using namespace akao::foundation::types;
 
+namespace akao {
+namespace tests {
+
 void testNodeInfo() {
     std::cout << "Testing node info..." << std::endl;
     
@@ -356,23 +359,21 @@ void testErrorHandling() {
     std::cout << "Error handling test passed!" << std::endl;
 }
 
-int main() {
+// Export test runner function for main test runner
+void runFilesystemScannerTests() {
     std::cout << "Running Clean Filesystem Scanner Node unit tests..." << std::endl;
     
-    try {
-        testNodeInfo();
-        testParameterValidation();
-        testStaticUtilityMethods();
-        testBasicScanning();
-        testContentAnalysis();
-        testCppFileFiltering();
-        testExtensionFiltering();
-        testErrorHandling();
-        
-        std::cout << "All Clean Filesystem Scanner tests passed!" << std::endl;
-        return 0;
-    } catch (const std::exception& e) {
-        std::cerr << "Test failed: " << e.what() << std::endl;
-        return 1;
-    }
+    testNodeInfo();
+    testParameterValidation();
+    testStaticUtilityMethods();
+    testBasicScanning();
+    testContentAnalysis();
+    testCppFileFiltering();
+    testExtensionFiltering();
+    testErrorHandling();
+    
+    std::cout << "All Clean Filesystem Scanner tests passed!" << std::endl;
 }
+
+} // namespace tests
+} // namespace akao

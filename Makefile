@@ -25,11 +25,12 @@ endif
 # Source files
 CORE_SOURCES := $(shell find core -name "*.cpp" 2>/dev/null)
 INTERFACE_SOURCES := $(shell find interfaces -name "*.cpp" 2>/dev/null)
-TEST_SOURCES := tests/unit/test-runner-simple.cpp tests/unit/rule_test_simple.cpp
+NODE_SOURCES := $(shell find nodes -name "*.cpp" 2>/dev/null)
+TEST_SOURCES := tests/unit/test-runner.cpp tests/unit/nodes/builtin/file/v1.cpp tests/unit/nodes/builtin/logic/v1.cpp tests/unit/nodes/builtin/yaml/v1.cpp
 MAIN_SOURCE := main.cpp
 
-ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES)
-TEST_ALL_SOURCES := $(TEST_SOURCES) $(CORE_SOURCES) $(INTERFACE_SOURCES)
+ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES) $(NODE_SOURCES)
+TEST_ALL_SOURCES := $(TEST_SOURCES) $(CORE_SOURCES) $(INTERFACE_SOURCES) $(NODE_SOURCES)
 OBJECTS := $(ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
 TEST_OBJECTS := $(TEST_ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
 
@@ -48,6 +49,12 @@ $(BUILDSUBDIR)/%.o: %.cpp | $(BUILDSUBDIR)
 	@echo "Compiling $<..."
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Test object files (with AKAO_TEST_SUITE define)
+$(BUILDSUBDIR)/tests/%.o: tests/%.cpp | $(BUILDSUBDIR)
+	@mkdir -p $(dir $@)
+	@echo "Compiling $<..."
+	@$(CXX) $(CXXFLAGS) -DAKAO_TEST_SUITE -c $< -o $@
+
 # Main target
 $(TARGET): $(OBJECTS) | $(BINDIR)
 	@echo "Linking $(TARGET)..."
@@ -60,7 +67,7 @@ $(TARGET): $(OBJECTS) | $(BINDIR)
 # Test target
 $(TEST_TARGET): $(TEST_OBJECTS) | $(BINDIR)
 	@echo "Linking $(TEST_TARGET)..."
-	@$(CXX) $(filter-out $(BUILDSUBDIR)/main.o, $(TEST_OBJECTS)) -o $@
+	@$(CXX) -DAKAO_TEST_SUITE $(filter-out $(BUILDSUBDIR)/main.o, $(TEST_OBJECTS)) -o $@
 	@echo "Test build complete: $(TEST_TARGET)"
 
 # Build modes

@@ -1,5 +1,5 @@
 # ========================================
-# GÖDEL INCOMPLETENESS THEOREMS - ULTIMATE DEMONSTRATION
+# GODEL INCOMPLETENESS THEOREMS - ULTIMATE DEMONSTRATION
 # ========================================
 # The definitive exhibition of Gödel's profound insights through
 # Akao Pure Logic: demonstrating the eternal dance between the
@@ -34,7 +34,7 @@ forall inductive_base in [0]:
                 math.multiply(inductive_step, universal_closure) >= inductive_step
 
 # ========================================
-# PART II: DECIDABLE GÖDEL ENCODING OPERATIONS
+# PART II: DECIDABLE GODEL ENCODING OPERATIONS
 # ========================================
 
 # Formula Encoding - These operations are decidable
@@ -107,7 +107,7 @@ forall artificial_intelligence in [1, 2, 3, 4, 5]:
 # ========================================
 
 # Supreme Mathematical Validation - All decidable
-string.length("GÖDEL") == 5 &&
+string.length("GODEL") == 5 &&
 math.add(1, 1) == 2 &&
 peano.is_zero(0) &&
 collection.count([1, 2, 3]) == 3 &&
@@ -143,7 +143,7 @@ forall ultimate_truth in [1, 2, 3, 4, 5]:
 # - This is the essence of Gödel's theorems
 
 # ========================================
-# GÖDEL'S ETERNAL LEGACY: INCOMPLETENESS INCARNATE
+# GODEL'S ETERNAL LEGACY: INCOMPLETENESS INCARNATE
 # ========================================
 # 
 # Through Akao Pure Logic, we witness the sublime truth:
