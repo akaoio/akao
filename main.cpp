@@ -11,6 +11,7 @@
 
 #include "core/foundation/types/value/v1.hpp"
 #include "core/foundation/types/result/v1.hpp"
+#include "core/engine/orchestrator/registry/v1.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -40,12 +41,37 @@ void testCoreTypes() {
     std::cout << "Core types test completed successfully!" << std::endl;
 }
 
+void testNodeRegistry() {
+    std::cout << "Testing node registry and self-registration..." << std::endl;
+    
+    auto& registry = akao::engine::orchestrator::NodeRegistry::getInstance();
+    
+    auto allNodes = registry.getAllNodes();
+    std::cout << "Auto-registered nodes: " << allNodes.size() << std::endl;
+    
+    for (const auto& nodeId : allNodes) {
+        auto nodeInfo = registry.getNodeInfo(nodeId);
+        if (nodeInfo) {
+            std::cout << "  - " << nodeInfo->getNodeType() << " (" << nodeInfo->getNodeId() << ")" << std::endl;
+        }
+    }
+    
+    auto typeStats = registry.getTypeStatistics();
+    std::cout << "Available node types: " << typeStats.size() << std::endl;
+    for (const auto& [type, count] : typeStats) {
+        std::cout << "  - " << type << ": " << count << " nodes" << std::endl;
+    }
+    
+    std::cout << "Node registry test completed successfully!" << std::endl;
+}
+
 void printUsage(const std::string& programName) {
     std::cout << "Akao Node-Based Workflow System" << std::endl;
     std::cout << "Usage: " << programName << " [command] [options]" << std::endl;
     std::cout << std::endl;
     std::cout << "Commands:" << std::endl;
     std::cout << "  test        Run core type tests" << std::endl;
+    std::cout << "  registry    Test node registry and self-registration" << std::endl;
     std::cout << "  version     Show version information" << std::endl;
     std::cout << "  help        Show this help message" << std::endl;
     std::cout << std::endl;
@@ -68,6 +94,14 @@ int main(int argc, char* argv[]) {
             return 0;
         } catch (const std::exception& e) {
             std::cerr << "Test failed: " << e.what() << std::endl;
+            return 1;
+        }
+    } else if (command == "registry") {
+        try {
+            testNodeRegistry();
+            return 0;
+        } catch (const std::exception& e) {
+            std::cerr << "Registry test failed: " << e.what() << std::endl;
             return 1;
         }
     } else if (command == "version" || command == "--version") {

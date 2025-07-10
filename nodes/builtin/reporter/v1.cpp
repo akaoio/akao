@@ -10,6 +10,7 @@
  */
 
 #include "v1.hpp"
+#include "core/engine/orchestrator/registry/registrar.hpp"
 #include <algorithm>
 #include <numeric>
 #include <iomanip>
@@ -773,3 +774,6 @@ ReportGenerator ReporterNode::nodeValueToReport(const foundation::types::NodeVal
 } // namespace builtin
 } // namespace nodes
 } // namespace akao
+
+// Register this node automatically
+REGISTER_NODE(akao::nodes::builtin::ReporterNode);

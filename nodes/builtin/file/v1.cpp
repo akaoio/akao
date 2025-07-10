@@ -10,6 +10,7 @@
  */
 
 #include "v1.hpp"
+#include "core/engine/orchestrator/registry/registrar.hpp"
 #include <fstream>
 #include <sstream>
 #include <regex>
@@ -578,3 +579,6 @@ std::string FilesystemScannerNode::getRelativePath(const std::string& fullPath, 
 } // namespace builtin
 } // namespace nodes
 } // namespace akao
+
+// Register this node automatically
+REGISTER_NODE(akao::nodes::builtin::FilesystemScannerNode);

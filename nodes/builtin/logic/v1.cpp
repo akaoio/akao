@@ -10,6 +10,7 @@
  */
 
 #include "v1.hpp"
+#include "core/engine/orchestrator/registry/registrar.hpp"
 #include <algorithm>
 #include <cctype>
 #include <sstream>
@@ -2074,3 +2075,6 @@ bool AkaoLogicExecutorNode::isValidExpression(const std::string& expression) {
 } // namespace builtin
 } // namespace nodes
 } // namespace akao
+
+// Register this node automatically
+REGISTER_NODE(akao::nodes::builtin::AkaoLogicExecutorNode);

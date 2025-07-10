@@ -10,6 +10,7 @@
  */
 
 #include "v1.hpp"
+#include "core/engine/orchestrator/registry/registrar.hpp"
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
@@ -709,3 +710,6 @@ std::shared_ptr<YamlNode> YamlProcessorNode::nodeValueToYamlNode(const foundatio
 } // namespace builtin
 } // namespace nodes
 } // namespace akao
+
+// Register this node automatically
+REGISTER_NODE(akao::nodes::builtin::YamlProcessorNode);
