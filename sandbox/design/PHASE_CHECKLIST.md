@@ -68,71 +68,61 @@
 
 ## PHASE 2: CORE NODES (Weeks 3-4)
 
-### **Step 2.1: Filesystem Scanner Node** ✅
-- [x] Create `nodes/builtin/file/v1.hpp`
-- [x] Create `nodes/builtin/file/v1.cpp`
-- [x] Implement FilesystemScannerNode class
-- [x] Add recursive directory scanning
-- [x] Add pattern matching support
-- [x] Add file metadata extraction
-- [x] Create unit tests `tests/unit/nodes/builtin/file/`
-- [x] Test scanning akao project directory
-- [x] Test pattern filtering (*.cpp, *.hpp)
-- [x] Test recursive vs non-recursive
-- [x] Test large directory handling
-- [x] **Build and test passes**: `make run-tests`
-- [x] **Register node in registry**
-- [x] **Commit**: "Add filesystem scanner node"
+### **Step 2.1: Filesystem Scanner Node** ⏳
+- [ ] Create `nodes/builtin/file/v1.hpp`
+- [ ] Create `nodes/builtin/file/v1.cpp`
+- [ ] Adapt legacy `core/filesystem/scanner/v1.hpp` for node architecture
+- [ ] Implement FilesystemScannerNode using legacy scanner
+- [ ] Preserve existing performance optimizations
+- [ ] Create unit tests `tests/unit/nodes/builtin/file/`
+- [ ] Test scanning akao project directory
+- [ ] Test pattern filtering compatibility
+- [ ] Test recursive scanning performance
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register node in registry**
+- [ ] **Commit**: "Adapt legacy filesystem scanner for node architecture"
 
-### **Step 2.2: C++ Analyzer Node** ✅
-- [x] Create `nodes/external/cpp/v1.hpp`
-- [x] Create `nodes/external/cpp/v1.cpp`
-- [x] Implement CppAnalyzerNode class
-- [x] Add class counting functionality
-- [x] Add function analysis
-- [x] Add complexity metrics
-- [x] Add include dependency analysis
-- [x] Create unit tests `tests/unit/nodes/external/cpp/`
-- [x] Test analysis of real akao C++ files
-- [x] Test one-class-per-file rule
-- [x] Test C++ standard compliance
-- [x] Test header/source pairing
-- [x] **Build and test passes**: `make run-tests`
-- [x] **Register node in registry**
-- [x] **Commit**: "Add C++ analyzer node"
-
-### **Step 2.3: .a Format v2 Executor Node** ⏳
+### **Step 2.2: Pure Logic Engine Node** ⏳
 - [ ] Create `nodes/builtin/logic/v1.hpp`
 - [ ] Create `nodes/builtin/logic/v1.cpp`
-- [ ] Implement AkaoExecutorNode class
-- [ ] Build completely new .a format v2 parser
-- [ ] Add enhanced .a format v2 execution
-- [ ] Add modern result formatting
-- [ ] Add comprehensive error handling
+- [ ] Adapt legacy `core/engine/logic/runtime/v1.hpp` for node architecture
+- [ ] Implement AkaoLogicExecutorNode using legacy Pure Logic Engine
+- [ ] Preserve 47+ built-in functions and capabilities
 - [ ] Create unit tests `tests/unit/nodes/builtin/logic/`
-- [ ] Test execution of .a format v2 expressions
-- [ ] Test enhanced parsing and execution
-- [ ] Test advanced logic capabilities
-- [ ] Test performance improvements
+- [ ] Test .a format expression execution
+- [ ] Test built-in function library
+- [ ] Test variable scoping and context management
 - [ ] **Build and test passes**: `make run-tests`
 - [ ] **Register node in registry**
-- [ ] **Commit**: "Add .a format v2 executor node"
+- [ ] **Commit**: "Adapt legacy Pure Logic Engine for node architecture"
 
-### **Step 2.4: Validator Node** ⏳
+### **Step 2.3: Universal Validator Node** ⏳
 - [ ] Create `nodes/builtin/validator/v1.hpp`
 - [ ] Create `nodes/builtin/validator/v1.cpp`
-- [ ] Implement ValidatorNode class
-- [ ] Convert existing validator logic
-- [ ] Add universal validation support
-- [ ] Add validation result aggregation
+- [ ] Adapt legacy `core/engine/validator/v1.hpp` for node architecture
+- [ ] Implement ValidatorNode using legacy Unified Validator
+- [ ] Preserve rule-driven validation and .akao/rules integration
 - [ ] Create unit tests `tests/unit/nodes/builtin/validator/`
 - [ ] Test validation of akao project
-- [ ] Test same results as existing validator
-- [ ] Test validation performance
-- [ ] Test validation error handling
+- [ ] Test multiple validation modes
+- [ ] Test violation tracking and reporting
 - [ ] **Build and test passes**: `make run-tests`
 - [ ] **Register node in registry**
-- [ ] **Commit**: "Add universal validator node"
+- [ ] **Commit**: "Adapt legacy Unified Validator for node architecture"
+
+### **Step 2.4: YAML Parser Node** ⏳
+- [ ] Create `nodes/builtin/yaml/v1.hpp`
+- [ ] Create `nodes/builtin/yaml/v1.cpp`
+- [ ] Adapt legacy `core/engine/parser/yaml/parser/v1.hpp` for node architecture
+- [ ] Implement YAMLParserNode using legacy YAML parser
+- [ ] Preserve zero dependencies and full YAML 1.2 support
+- [ ] Create unit tests `tests/unit/nodes/builtin/yaml/`
+- [ ] Test YAML parsing and generation
+- [ ] Test error handling and diagnostics
+- [ ] Test performance with large files
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register node in registry**
+- [ ] **Commit**: "Adapt legacy YAML parser for node architecture"
 
 ### **Step 2.5: Git Analysis Node** ⏳
 - [ ] Create `nodes/builtin/git/v1.hpp`
@@ -185,24 +175,7 @@
 - [ ] **Register node in registry**
 - [ ] **Commit**: "Add report generator node"
 
-### **Step 2.8: YAML Parser Node** ⏳
-- [ ] Create `nodes/builtin/yaml/v1.hpp`
-- [ ] Create `nodes/builtin/yaml/v1.cpp`
-- [ ] Implement YAMLParserNode class
-- [ ] Add YAML parsing capabilities
-- [ ] Add YAML stringification
-- [ ] Add YAML validation
-- [ ] Add error handling for malformed YAML
-- [ ] Create unit tests `tests/unit/nodes/builtin/yaml/`
-- [ ] Test YAML parsing
-- [ ] Test YAML generation
-- [ ] Test error handling
-- [ ] Test performance with large files
-- [ ] **Build and test passes**: `make run-tests`
-- [ ] **Register node in registry**
-- [ ] **Commit**: "Add YAML parser node"
-
-### **Step 2.9: JSON Parser Node** ⏳
+### **Step 2.8: JSON Parser Node** ⏳
 - [ ] Create `nodes/builtin/json/v1.hpp`
 - [ ] Create `nodes/builtin/json/v1.cpp`
 - [ ] Implement JSONParserNode class

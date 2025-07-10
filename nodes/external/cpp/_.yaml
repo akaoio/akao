@@ -1,8 +1,0 @@
-id: "akao:directory:nodes:external:cpp:v1"
-metadata:
-  specification: "C++ source code analyzer node for advanced static analysis and compliance checking"
-  scope: "External C++ analysis node"
-  timeline: "2025-07-10"
-  rationale: "Provide comprehensive C++ code analysis for validation workflows and architectural compliance"
-  methodology: "Advanced static analysis with zero external dependencies using custom C++ parsing"
-  references: ["akao:class:nodes:external:cpp:v1"]

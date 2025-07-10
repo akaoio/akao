@@ -1,8 +1,0 @@
-id: "akao:directory:nodes:builtin:file:v1"
-metadata:
-  specification: "Filesystem scanner node for file discovery and metadata extraction"
-  scope: "Builtin filesystem operations node"
-  timeline: "2025-07-10"
-  rationale: "Provide comprehensive filesystem scanning capabilities for workflow system"
-  methodology: "High-performance file scanning with pattern matching and metadata extraction"
-  references: ["akao:class:nodes:builtin:file:v1"]
