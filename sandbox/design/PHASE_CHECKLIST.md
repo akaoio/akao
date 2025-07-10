@@ -69,13 +69,13 @@
 ## PHASE 2: CORE NODES (Weeks 3-4)
 
 ### **Step 2.1: Filesystem Scanner Node** ⏳
-- [ ] Create `nodes/builtin/input/filesystem/v1.hpp`
-- [ ] Create `nodes/builtin/input/filesystem/v1.cpp`
+- [ ] Create `nodes/builtin/file/v1.hpp`
+- [ ] Create `nodes/builtin/file/v1.cpp`
 - [ ] Implement FilesystemScannerNode class
 - [ ] Add recursive directory scanning
 - [ ] Add pattern matching support
 - [ ] Add file metadata extraction
-- [ ] Create unit tests `tests/unit/nodes/builtin/input/filesystem/`
+- [ ] Create unit tests `tests/unit/nodes/builtin/file/`
 - [ ] Test scanning akao project directory
 - [ ] Test pattern filtering (*.cpp, *.hpp)
 - [ ] Test recursive vs non-recursive
@@ -85,14 +85,14 @@
 - [ ] **Commit**: "Add filesystem scanner node"
 
 ### **Step 2.2: C++ Analyzer Node** ⏳
-- [ ] Create `nodes/builtin/processing/cpp/v1.hpp`
-- [ ] Create `nodes/builtin/processing/cpp/v1.cpp`
+- [ ] Create `nodes/external/cpp/v1.hpp`
+- [ ] Create `nodes/external/cpp/v1.cpp`
 - [ ] Implement CppAnalyzerNode class
 - [ ] Add class counting functionality
 - [ ] Add function analysis
 - [ ] Add complexity metrics
 - [ ] Add include dependency analysis
-- [ ] Create unit tests `tests/unit/nodes/builtin/processing/cpp/`
+- [ ] Create unit tests `tests/unit/nodes/external/cpp/`
 - [ ] Test analysis of real akao C++ files
 - [ ] Test one-class-per-file rule
 - [ ] Test C++ standard compliance
@@ -102,14 +102,14 @@
 - [ ] **Commit**: "Add C++ analyzer node"
 
 ### **Step 2.3: .a Format v2 Executor Node** ⏳
-- [ ] Create `nodes/builtin/processing/akao/v1.hpp`
-- [ ] Create `nodes/builtin/processing/akao/v1.cpp`
+- [ ] Create `nodes/builtin/logic/v1.hpp`
+- [ ] Create `nodes/builtin/logic/v1.cpp`
 - [ ] Implement AkaoExecutorNode class
 - [ ] Build completely new .a format v2 parser
 - [ ] Add enhanced .a format v2 execution
 - [ ] Add modern result formatting
 - [ ] Add comprehensive error handling
-- [ ] Create unit tests `tests/unit/nodes/builtin/processing/akao/`
+- [ ] Create unit tests `tests/unit/nodes/builtin/logic/`
 - [ ] Test execution of .a format v2 expressions
 - [ ] Test enhanced parsing and execution
 - [ ] Test advanced logic capabilities
@@ -119,13 +119,13 @@
 - [ ] **Commit**: "Add .a format v2 executor node"
 
 ### **Step 2.4: Validator Node** ⏳
-- [ ] Create `nodes/builtin/processing/validator/v1.hpp`
-- [ ] Create `nodes/builtin/processing/validator/v1.cpp`
+- [ ] Create `nodes/builtin/validator/v1.hpp`
+- [ ] Create `nodes/builtin/validator/v1.cpp`
 - [ ] Implement ValidatorNode class
 - [ ] Convert existing validator logic
 - [ ] Add universal validation support
 - [ ] Add validation result aggregation
-- [ ] Create unit tests `tests/unit/nodes/builtin/processing/validator/`
+- [ ] Create unit tests `tests/unit/nodes/builtin/validator/`
 - [ ] Test validation of akao project
 - [ ] Test same results as existing validator
 - [ ] Test validation performance
@@ -134,12 +134,98 @@
 - [ ] **Register node in registry**
 - [ ] **Commit**: "Add universal validator node"
 
+### **Step 2.5: Git Analysis Node** ⏳
+- [ ] Create `nodes/builtin/git/v1.hpp`
+- [ ] Create `nodes/builtin/git/v1.cpp`
+- [ ] Implement GitAnalysisNode class
+- [ ] Add git repository scanning
+- [ ] Add commit history analysis
+- [ ] Add branch analysis
+- [ ] Add change detection
+- [ ] Create unit tests `tests/unit/nodes/builtin/git/`
+- [ ] Test git repository analysis
+- [ ] Test commit history parsing
+- [ ] Test branch detection
+- [ ] Test change tracking
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register node in registry**
+- [ ] **Commit**: "Add git analysis node"
+
+### **Step 2.6: Formatter Node** ⏳
+- [ ] Create `nodes/builtin/formatter/v1.hpp`
+- [ ] Create `nodes/builtin/formatter/v1.cpp`
+- [ ] Implement FormatterNode class
+- [ ] Add JSON formatting support
+- [ ] Add YAML formatting support
+- [ ] Add XML formatting support
+- [ ] Add custom format templates
+- [ ] Create unit tests `tests/unit/nodes/builtin/formatter/`
+- [ ] Test data formatting
+- [ ] Test format conversion
+- [ ] Test template processing
+- [ ] Test output validation
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register node in registry**
+- [ ] **Commit**: "Add data formatter node"
+
+### **Step 2.7: Reporter Node** ⏳
+- [ ] Create `nodes/builtin/reporter/v1.hpp`
+- [ ] Create `nodes/builtin/reporter/v1.cpp`
+- [ ] Implement ReporterNode class
+- [ ] Add report generation
+- [ ] Add multiple output formats
+- [ ] Add report templating
+- [ ] Add data aggregation
+- [ ] Create unit tests `tests/unit/nodes/builtin/reporter/`
+- [ ] Test report generation
+- [ ] Test format outputs
+- [ ] Test template processing
+- [ ] Test data aggregation
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register node in registry**
+- [ ] **Commit**: "Add report generator node"
+
+### **Step 2.8: YAML Parser Node** ⏳
+- [ ] Create `nodes/builtin/yaml/v1.hpp`
+- [ ] Create `nodes/builtin/yaml/v1.cpp`
+- [ ] Implement YAMLParserNode class
+- [ ] Add YAML parsing capabilities
+- [ ] Add YAML stringification
+- [ ] Add YAML validation
+- [ ] Add error handling for malformed YAML
+- [ ] Create unit tests `tests/unit/nodes/builtin/yaml/`
+- [ ] Test YAML parsing
+- [ ] Test YAML generation
+- [ ] Test error handling
+- [ ] Test performance with large files
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register node in registry**
+- [ ] **Commit**: "Add YAML parser node"
+
+### **Step 2.9: JSON Parser Node** ⏳
+- [ ] Create `nodes/builtin/json/v1.hpp`
+- [ ] Create `nodes/builtin/json/v1.cpp`
+- [ ] Implement JSONParserNode class
+- [ ] Add JSON parsing capabilities
+- [ ] Add JSON stringification
+- [ ] Add JSON validation
+- [ ] Add error handling for malformed JSON
+- [ ] Create unit tests `tests/unit/nodes/builtin/json/`
+- [ ] Test JSON parsing
+- [ ] Test JSON generation
+- [ ] Test error handling
+- [ ] Test performance with large files
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register node in registry**
+- [ ] **Commit**: "Add JSON parser node"
+
 **Phase 2 Completion Criteria:**
-- [ ] All core nodes implemented and tested
+- [ ] All core built-in nodes implemented and tested (9 nodes total)
 - [ ] All nodes registered in registry
 - [ ] Existing functionality preserved
 - [ ] Node-based architecture working
 - [ ] Performance maintained or improved
+- [ ] File, Git, Logic, Validator, Formatter, Reporter, YAML, JSON nodes operational
 
 ---
 
@@ -227,12 +313,12 @@
 - [ ] **Commit**: "Add multi-language process manager"
 
 ### **Step 4.2: Python Node Support** ⏳
-- [ ] Create `core/engine/runtime/python/v1.hpp`
-- [ ] Create `core/engine/runtime/python/v1.cpp`
+- [ ] Extend `core/engine/runtime/python/v1.hpp`
+- [ ] Extend `core/engine/runtime/python/v1.cpp`
 - [ ] Implement PythonExecutor class
 - [ ] Add Python process integration
 - [ ] Add data serialization/deserialization
-- [ ] Create sample Python node `nodes/external/python/sample-analyzer/`
+- [ ] Create sample Python node `nodes/external/science/sample-analyzer/`
 - [ ] Create unit tests `tests/unit/core/engine/runtime/python/`
 - [ ] Test Python node execution
 - [ ] Test data exchange
@@ -246,7 +332,7 @@
 - [ ] Implement JavaScriptExecutor class
 - [ ] Add Node.js process integration
 - [ ] Add JSON data exchange
-- [ ] Create sample JavaScript node `nodes/external/javascript/sample-formatter/`
+- [ ] Create sample JavaScript node `nodes/external/frontend/sample-formatter/`
 - [ ] Create unit tests `tests/unit/core/engine/runtime/javascript/`
 - [ ] Test JavaScript node execution
 - [ ] Test data exchange
@@ -319,8 +405,8 @@
 - [ ] **Coverage**: 95%+ code coverage
 
 ### **Functional Metrics**
-- [ ] **Node Types**: 20+ built-in nodes
-- [ ] **Languages**: 5+ supported languages
+- [ ] **Node Types**: 9+ built-in nodes, 10+ external nodes
+- [ ] **Languages**: 5+ supported languages (C++, Python, JavaScript, etc.)
 - [ ] **Workflows**: 15+ example workflows
 - [ ] **Validation**: Complete workflow-based validation system
 - [ ] **Philosophy**: Advanced philosophy compliance workflows

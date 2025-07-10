@@ -42,7 +42,7 @@ Please read [THE FINAL TREE](./FINAL_TREE.md)
 - **Commit**: "Add NodeValue universal data type"
 
 #### **Step 1.2: Node Interface**
-- **Target**: `core/foundation/interfaces/interface/v1.hpp`
+- **Target**: `core/foundation/interfaces/inode/v1.hpp`
 - **Implementation**: Standard INode interface
 - **Test**: Mock node implementation
 - **Commit**: "Add INode interface definition"
@@ -57,28 +57,58 @@ Please read [THE FINAL TREE](./FINAL_TREE.md)
 **Goal**: Convert existing components to nodes
 
 #### **Step 2.1: Filesystem Scanner Node**
-- **Target**: `nodes/builtin/input/filesystem/v1.hpp`
+- **Target**: `nodes/builtin/file/v1.hpp`
 - **Implementation**: Convert existing filesystem scanning
 - **Test**: Scan akao project files
 - **Commit**: "Add filesystem scanner node"
 
 #### **Step 2.2: C++ Analyzer Node**
-- **Target**: `nodes/builtin/processing/cpp/v1.hpp`
+- **Target**: `nodes/external/cpp/v1.hpp`
 - **Implementation**: Convert existing C++ analysis
 - **Test**: Analyze real C++ files
 - **Commit**: "Add C++ analyzer node"
 
-#### **Step 2.3: Rule Executor Node**
-- **Target**: `nodes/builtin/processing/akao/v1.hpp`
-- **Implementation**: Convert existing rule execution
-- **Test**: Execute .a format rules
-- **Commit**: "Add rule executor node"
+#### **Step 2.3: Logic Executor Node**
+- **Target**: `nodes/builtin/logic/v1.hpp`
+- **Implementation**: Convert existing .a format execution
+- **Test**: Execute .a format expressions
+- **Commit**: "Add logic executor node"
 
 #### **Step 2.4: Validator Node**
-- **Target**: `nodes/builtin/processing/validator/v1.hpp`
+- **Target**: `nodes/builtin/validator/v1.hpp`
 - **Implementation**: Convert existing validator
 - **Test**: Validate akao project
 - **Commit**: "Add universal validator node"
+
+#### **Step 2.5: Git Analysis Node**
+- **Target**: `nodes/builtin/git/v1.hpp`
+- **Implementation**: Git repository analysis and operations
+- **Test**: Analyze git repository
+- **Commit**: "Add git analysis node"
+
+#### **Step 2.6: YAML Parser Node**
+- **Target**: `nodes/builtin/yaml/v1.hpp`
+- **Implementation**: YAML parsing and stringification
+- **Test**: Parse and generate YAML files
+- **Commit**: "Add YAML parser node"
+
+#### **Step 2.7: JSON Parser Node**
+- **Target**: `nodes/builtin/json/v1.hpp`
+- **Implementation**: JSON parsing and stringification
+- **Test**: Parse and generate JSON files
+- **Commit**: "Add JSON parser node"
+
+#### **Step 2.8: Formatter Node**
+- **Target**: `nodes/builtin/formatter/v1.hpp`
+- **Implementation**: Data formatting and transformation
+- **Test**: Format various data types
+- **Commit**: "Add data formatter node"
+
+#### **Step 2.9: Reporter Node**
+- **Target**: `nodes/builtin/reporter/v1.hpp`
+- **Implementation**: Report generation and aggregation
+- **Test**: Generate validation reports
+- **Commit**: "Add report generator node"
 
 ### **PHASE 3: WORKFLOW ENGINE (Weeks 5-6)**
 **Goal**: Implement workflow execution system
@@ -96,7 +126,7 @@ Please read [THE FINAL TREE](./FINAL_TREE.md)
 - **Commit**: "Add workflow execution engine"
 
 #### **Step 3.3: Built-in Workflows**
-- **Target**: `workflows/validation/cpp.yaml`
+- **Target**: `.akao/workflows/validation/cpp.yaml`
 - **Implementation**: Create essential workflows
 - **Test**: Execute C++ validation workflow
 - **Commit**: "Add built-in validation workflows"
@@ -111,13 +141,13 @@ Please read [THE FINAL TREE](./FINAL_TREE.md)
 - **Commit**: "Add multi-language process manager"
 
 #### **Step 4.2: Python Node Support**
-- **Target**: `nodes/external/python/` + runtime support
+- **Target**: `nodes/external/science/` + runtime support
 - **Implementation**: Python node executor
 - **Test**: Execute Python node
 - **Commit**: "Add Python node support"
 
 #### **Step 4.3: JavaScript Node Support**
-- **Target**: `nodes/external/javascript/` + runtime support
+- **Target**: `nodes/external/frontend/` + runtime support
 - **Implementation**: JavaScript node executor
 - **Test**: Execute JavaScript node
 - **Commit**: "Add JavaScript node support"
@@ -148,7 +178,7 @@ Please read [THE FINAL TREE](./FINAL_TREE.md)
 ### **Each Step Must:**
 1. **Compile Successfully**: Zero compilation errors
 2. **Pass All Tests**: 100% test success rate
-4. **Real Data Processing**: No mock/fake data in tests
+4. **Real Data Processing**: No mock/fake data in tests or code
 5. **Immediate Commit**: Commit working code immediately
 
 ### **Each Phase Must:**

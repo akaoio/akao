@@ -27,13 +27,6 @@ akao/
 │   │   │   │   ├── v1.hpp/.cpp
 │   │   │   │   └── _.yaml
 │   │   │   └── _.yaml
-│   │   ├── parser/              # Language parsers (KEEP EXISTING)
-│   │   │   ├── a/               # .a format parser
-│   │   │   ├── yaml/            # YAML parser
-│   │   │   └── _.yaml
-│   │   ├── logic/               # Logic processing (KEEP EXISTING)
-│   │   │   ├── runtime/         # Pure logic engine
-│   │   │   └── _.yaml
 │   │   ├── runtime/             # Node execution runtime
 │   │   │   ├── executor/        # C++ node executor
 │   │   │   │   ├── v1.hpp/.cpp
@@ -50,6 +43,12 @@ akao/
 ├── 🧩 nodes/                    # NODE ECOSYSTEM (Modular Components)
 │   ├── builtin/                 # Built-in C++ nodes (Zero Dependencies)
 │   │   ├── file/                # Filesystem
+│   │   │   ├── v1.hpp/.cpp
+│   │   │   └── _.yaml
+│   │   ├── yaml/                # YAML parser/stringifier
+│   │   │   ├── v1.hpp/.cpp
+│   │   │   └── _.yaml
+│   │   ├── json/                # JSON parser/stringifier
 │   │   │   ├── v1.hpp/.cpp
 │   │   │   └── _.yaml
 │   │   ├── git/
@@ -108,5 +107,7 @@ akao/
 │           ├── pipeline.yaml        # Data processing
 │           └── polyglot.yaml        # Multi-language processing
 ├── main.cpp                     # SIMPLIFIED MAIN (workflow dispatcher)
-└── Makefile                     # Build system
+├── Makefile                     # Build system
+└── examples/
+   └── godel-exhibition.a            # Godel Exhibition (to prove that Akao Pure Logic language works)
 ```
