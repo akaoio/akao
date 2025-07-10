@@ -1,0 +1,8 @@
+id: "akao:directory:core:foundation:interfaces:inode:v1"
+metadata:
+  specification: "Standard node interface for workflow node ecosystem"
+  scope: "Core foundation interfaces subsystem"
+  timeline: "2025-07-10"
+  rationale: "Define standard contract for all workflow nodes"
+  methodology: "Abstract interface with execution context and result handling"
+  references: ["akao:class:core:foundation:interfaces:inode:v1"]
