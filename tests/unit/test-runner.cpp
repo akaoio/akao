@@ -18,6 +18,7 @@ void runFilesystemScannerTests();
 void runAkaoLogicExecutorTests();
 void runYamlProcessorTests();
 void runReporterTests();
+void runWorkflowTests();
 }}
 
 int main() {
@@ -66,6 +67,16 @@ int main() {
     } catch (const std::exception& e) {
         testsFailed++;
         std::cout << "✗ Reporter Node tests FAILED: " << e.what() << "\n\n";
+    }
+    
+    try {
+        std::cout << "Running Workflow System tests...\n";
+        akao::tests::runWorkflowTests();
+        testsPassed++;
+        std::cout << "✓ Workflow System tests PASSED\n\n";
+    } catch (const std::exception& e) {
+        testsFailed++;
+        std::cout << "✗ Workflow System tests FAILED: " << e.what() << "\n\n";
     }
     
     std::cout << "===============================================\n";

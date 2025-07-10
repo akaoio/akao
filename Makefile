@@ -26,7 +26,7 @@ endif
 CORE_SOURCES := $(shell find core -name "*.cpp" 2>/dev/null)
 INTERFACE_SOURCES := $(shell find interfaces -name "*.cpp" 2>/dev/null)
 NODE_SOURCES := $(shell find nodes -name "*.cpp" 2>/dev/null)
-TEST_SOURCES := tests/unit/test-runner.cpp tests/unit/nodes/builtin/file/v1.cpp tests/unit/nodes/builtin/logic/v1.cpp tests/unit/nodes/builtin/yaml/v1.cpp tests/unit/nodes/builtin/reporter/v1.cpp
+TEST_SOURCES := tests/unit/test-runner.cpp tests/unit/nodes/builtin/file/v1.cpp tests/unit/nodes/builtin/logic/v1.cpp tests/unit/nodes/builtin/yaml/v1.cpp tests/unit/nodes/builtin/reporter/v1.cpp tests/unit/core/engine/orchestrator/workflow/v1.cpp
 MAIN_SOURCE := main.cpp
 
 ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES) $(NODE_SOURCES)

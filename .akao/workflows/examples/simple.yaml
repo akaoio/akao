@@ -1,0 +1,65 @@
+id: "simple-demo-workflow"
+name: "Simple Demonstration Workflow"
+description: "Basic workflow demonstrating node-based architecture capabilities"
+version: "1.0.0"
+
+nodes:
+  - id: "scan-files"
+    type: "file-scanner"
+    description: "Scan project files"
+    enabled: true
+    parameters:
+      directory: "."
+      pattern: "*.{cpp,hpp,yaml,md}"
+      recursive: true
+      max_depth: 3
+    timeout: 3000
+    retry_count: 1
+
+  - id: "parse-yaml"
+    type: "yaml-processor"
+    description: "Process YAML configuration"
+    enabled: true
+    depends_on: ["scan-files"]
+    parameters:
+      validate_schema: false
+      extract_metadata: true
+    timeout: 2000
+    retry_count: 1
+
+  - id: "generate-summary"
+    type: "reporter"
+    description: "Generate project summary"
+    enabled: true
+    depends_on: ["parse-yaml"]
+    parameters:
+      format: "markdown"
+      output_file: "project-summary.md"
+      include_file_count: true
+      include_size_stats: true
+    timeout: 2000
+    retry_count: 0
+
+connections:
+  - from_node: "scan-files"
+    from_output: "files"
+    to_node: "parse-yaml"
+    to_input: "input_files"
+    transform_expression: "filter(extension == '.yaml')"
+
+  - from_node: "parse-yaml"
+    from_output: "processed_data"
+    to_node: "generate-summary"
+    to_input: "report_data"
+
+default_parameters:
+  max_files: 1000
+  output_format: "markdown"
+
+input_schema:
+  target_directory: "string"
+
+output_schema:
+  summary_generated: "boolean"
+  files_processed: "integer"
+  report_location: "string"
