@@ -6,10 +6,10 @@
  * @timeline: 2025-07-09
  * @rationale: Provide unified CLI interface with .akao/rules lazy loading and consolidated validation system
  * @methodology: CLI interface with unified validation system and rule management
- * @references: ["akao:file:core:engine:validator:unified:v1", "akao:file:core:engine:logic:core:v1"]
+ * @references: ["akao:file:core:engine:validator:unified:v1", "akao:file:core:engine:logic:runtime:v1"]
  */
 
-#include "core/engine/logic/core/v1.hpp"
+#include "core/engine/logic/runtime/v1.hpp"
 #include "core/engine/validator/v1.hpp"
 #include <iostream>
 #include <filesystem>
@@ -264,7 +264,7 @@ int initializeRulesDirectory(bool verbose) {
             std::cout << "  .akao/rules/enabled/    - Enabled rules" << std::endl;
             std::cout << "  .akao/rules/disabled/   - Disabled rules" << std::endl;
             std::cout << "  .akao/rules/examples/   - Example rules" << std::endl;
-            std::cout << "  .akao/rules/config.yaml - Rules configuration" << std::endl;
+            std::cout << "  .akao/settings.yaml - Akao settings configuration" << std::endl;
             return 0;
         } else {
             std::cerr << "❌ Failed to initialize .akao/rules directory" << std::endl;

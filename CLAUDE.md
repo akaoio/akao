@@ -42,7 +42,7 @@ No specific linting commands are configured. The project uses C++17 standards wi
 ## Architecture Overview
 
 ### Core Structure
-- **Pure Logic Engine**: Domain-agnostic runtime interpreter for logical expressions (`core/engine/logic/core/`)
+- **Pure Logic Engine**: Domain-agnostic runtime interpreter for logical expressions (`core/engine/logic/runtime/`)
 - **Unified Validator**: System for validating code against rules and philosophies (`core/engine/validator/`)
 - **YAML Parser**: Internal YAML parsing implementation (`core/engine/parser/yaml/`)
 - **Akao Pure Logic Parser**: Parser for .a format files (`core/engine/logic/components/parser/akao/`)
@@ -62,7 +62,7 @@ No specific linting commands are configured. The project uses C++17 standards wi
 
 ### Main Components
 
-#### Pure Logic Engine (`core/engine/logic/core/`)
+#### Pure Logic Engine (`core/engine/logic/runtime/`)
 - Domain-agnostic runtime interpreter
 - YAML syntax support for logical expressions
 - Built-in function registry (47+ functions)

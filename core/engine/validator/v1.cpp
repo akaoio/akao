@@ -1024,14 +1024,17 @@ bool UnifiedValidator::initializeRulesDirectory() {
         std::filesystem::create_directories(rules_dir + "/disabled");
         std::filesystem::create_directories(rules_dir + "/examples");
         
-        // Create config.yaml
-        std::ofstream config_file(rules_dir + "/config.yaml");
-        config_file << "# Akao Rules Configuration\n";
-        config_file << "version: 1.0\n";
-        config_file << "rules_directory: " << rules_dir << "\n";
-        config_file << "enable_lazy_loading: true\n";
-        config_file << "enable_parallel_execution: false\n";
-        config_file.close();
+        // Create settings.yaml (extract project root from rules directory)
+        std::filesystem::path rules_path(rules_dir);
+        std::string project_root = rules_path.parent_path().parent_path().string();
+        std::string settings_path = project_root + "/.akao/settings.yaml";
+        std::ofstream settings_file(settings_path);
+        settings_file << "# Akao Settings Configuration\n";
+        settings_file << "version: 1.0\n";
+        settings_file << "rules_directory: " << rules_dir << "\n";
+        settings_file << "enable_lazy_loading: true\n";
+        settings_file << "enable_parallel_execution: false\n";
+        settings_file.close();
         
         return true;
     } catch (const std::exception& e) {
@@ -1787,8 +1790,9 @@ bool UnifiedValidatorFactory::initializeRulesDirectory(const std::string& projec
 
 bool UnifiedValidatorFactory::validateRulesDirectory(const std::string& project_root) {
     std::string rules_path = project_root + "/.akao/rules";
+    std::string settings_path = project_root + "/.akao/settings.yaml";
     return std::filesystem::exists(rules_path) && 
-           std::filesystem::exists(rules_path + "/config.yaml");
+           std::filesystem::exists(settings_path);
 }
 
 // Log export functionality implementation

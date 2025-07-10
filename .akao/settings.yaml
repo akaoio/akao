@@ -1,0 +1,5 @@
+# Akao Settings Configuration
+version: 1.0
+rules_directory: ./.akao/rules
+enable_lazy_loading: true
+enable_parallel_execution: false

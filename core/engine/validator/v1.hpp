@@ -20,7 +20,7 @@
 #include <optional>
 #include <chrono>
 #include <filesystem>
-#include "../logic/core/v1.hpp"
+#include "../logic/runtime/v1.hpp"
 #include "../runtime/lazy_loader/v1.hpp"
 
 namespace akao::core::engine::validator {

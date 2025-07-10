@@ -9,8 +9,8 @@
  * @references: ["akao:file:core:engine:logic_parser_akao:v1", "akao:file:core:engine:logic_core:v1"]
  */
 
-#include "../../../core/engine/logic/core/v1.hpp"
-#include "../../../core/engine/logic/components/parser/akao/v1.hpp"
+#include "../../../core/engine/logic/runtime/v1.hpp"
+#include "../../../core/engine/parser/a/v1.hpp"
 #include <iostream>
 #include <cassert>
 #include <string>

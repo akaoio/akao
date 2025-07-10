@@ -16,7 +16,6 @@
 #include <memory>
 #include <map>
 #include <variant>
-#include "../../../../parser/yaml/node/v1.hpp"
 
 namespace akao::core::engine::logic::parser {
 
@@ -70,8 +69,6 @@ public:
         return it != attributes.end() ? it->second : "";
     }
     
-    // Convert to YAML node for execution
-    std::unique_ptr<akao::core::engine::parser::YamlNode> toYamlNode() const;
     
     // Debug output
     std::string toString(int indent = 0) const;
@@ -298,11 +295,6 @@ public:
     // Parse .a format code into AST
     static std::unique_ptr<ASTNode> parseToAST(const std::string& akao_code);
     
-    // Parse .a format code into YAML for execution
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> parse(const std::string& akao_code);
-    
-    // Convert .a format to YAML string
-    static std::string convertToYaml(const std::string& akao_code);
     
     // Validate .a format code
     static bool validate(const std::string& akao_code, std::vector<std::string>& errors);
@@ -310,40 +302,11 @@ public:
     // Check if file is .a format
     static bool isValidAkaoFile(const std::string& filename);
     
-    // Execute .a format code directly
-    static std::string execute(const std::string& akao_code);
     
 private:
     static std::unique_ptr<ASTNode> parseWithErrorHandling(const std::string& akao_code);
     static void printAST(const ASTNode* node, int indent = 0);
 };
 
-// =============================================================================
-// AST to YAML Converter
-// =============================================================================
-
-class ASTToYamlConverter {
-public:
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convert(const ASTNode* ast);
-    
-private:
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertNode(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertProgram(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertStatement(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertExpression(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertBinaryOp(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertUnaryOp(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertFunctionCall(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertQuantifier(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertConditional(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertVariable(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertLiteral(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertCollection(const ASTNode* node);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> convertObject(const ASTNode* node);
-    
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> createScalarNode(const std::string& value);
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> createMappingNode();
-    static std::unique_ptr<akao::core::engine::parser::YamlNode> createSequenceNode();
-};
 
 } // namespace akao::core::engine::logic::parser
