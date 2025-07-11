@@ -1,0 +1,16 @@
+id: "akao:directory:core:engine:orchestrator:process:v1"
+name: "Process Management System"
+description: "External node process lifecycle management with spawning, monitoring, resource limits, and health tracking"
+version: "1.0.0"
+type: "implementation"
+scope: "Core engine orchestrator process management"
+timeline: "2025-07-11"
+rationale: "Enable robust external node process management for true core-node independence"
+methodology: "Process spawning with resource monitoring and lifecycle management"
+references: 
+  - "akao:directory:core:engine:orchestrator:v1"
+  - "akao:class:core:engine:orchestrator:process:manager:v1"
+  - "akao:class:core:engine:orchestrator:process:monitor:v1"
+components:
+  - v1.hpp
+  - v1.cpp

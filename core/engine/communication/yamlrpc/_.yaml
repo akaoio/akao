@@ -1,0 +1,16 @@
+id: "akao:directory:core:engine:communication:yamlrpc:v1"
+name: "YAML-RPC Protocol Implementation"
+description: "YAML-RPC protocol implementation for core-node communication with Unix Domain Sockets transport"
+version: "1.0.0"
+type: "implementation"
+scope: "Core engine YAML-RPC protocol implementation"
+timeline: "2025-07-11"
+rationale: "Enable structured communication between core and external nodes via YAML-RPC protocol"
+methodology: "Message-based RPC protocol using YAML serialization over Unix Domain Sockets"
+references: 
+  - "akao:directory:core:engine:communication:v1"
+  - "akao:class:core:engine:communication:yamlrpc:client:v1"
+  - "akao:class:core:engine:communication:yamlrpc:server:v1"
+components:
+  - v1.hpp
+  - v1.cpp

@@ -1,9 +1,6 @@
-# Akao Universal Validation Framework Makefile
-# Implements philosophy: akao:philosophy:build:duality:v1 - Multiple build systems
-
 # Variables
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -I. -Icore
+CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -I. -Icore -I.akao
 DEBUGFLAGS := -g -O0 -DDEBUG
 RELEASEFLAGS := -O3 -DNDEBUG
 SRCDIR := .
@@ -25,8 +22,8 @@ endif
 # Source files
 CORE_SOURCES := $(shell find core -name "*.cpp" 2>/dev/null)
 INTERFACE_SOURCES := $(shell find interfaces -name "*.cpp" 2>/dev/null)
-NODE_SOURCES := $(shell find nodes -name "*.cpp" 2>/dev/null)
-TEST_SOURCES := tests/unit/test-runner.cpp tests/unit/nodes/builtin/file/v1.cpp tests/unit/nodes/builtin/logic/v1.cpp tests/unit/nodes/builtin/yaml/v1.cpp tests/unit/nodes/builtin/reporter/v1.cpp tests/unit/core/engine/orchestrator/workflow/v1.cpp
+NODE_SOURCES := $(shell find .akao/nodes -name "*.cpp" 2>/dev/null)
+TEST_SOURCES := tests/unit/test-runner.cpp tests/unit/core/engine/orchestrator/workflow/v1.cpp
 MAIN_SOURCE := main.cpp
 
 ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES) $(NODE_SOURCES)

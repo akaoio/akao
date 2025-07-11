@@ -1,0 +1,14 @@
+id: "akao:directory:core:engine:communication:v1"
+name: "Communication Infrastructure"
+description: "Core communication infrastructure for protocol-based node communication"
+version: "1.0.0"
+type: "container"
+scope: "Core engine communication capabilities"
+timeline: "2025-07-11"
+rationale: "Enable protocol-based communication between core and external nodes"
+methodology: "Modular communication protocols with pluggable transports"
+references: 
+  - "akao:directory:core:engine:v1"
+  - "akao:directory:core:engine:communication:yamlrpc:v1"
+components:
+  - yamlrpc/

@@ -1,8 +1,0 @@
-id: "akao:directory:nodes:builtin:logic:v1"
-metadata:
-  specification: "Clean .a format executor node inspired by legacy Pure Logic Engine"
-  scope: "Builtin logic execution node"
-  timeline: "2025-07-10"
-  rationale: "Provide powerful logical expression evaluation for node-based workflows"
-  methodology: "Clean implementation learning from legacy Pure Logic Engine architecture"
-  references: ["akao:class:nodes:builtin:logic:v1"]

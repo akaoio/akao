@@ -1,9 +1,0 @@
-# id: akao:rule:metadata:simple_id_check:v1
-# name: Simple ID Check
-# description: Check if current file has @id metadata
-# category: metadata
-# severity: error
-# @phases: ["compliance"]
-
-# Simple check for @id in current file (no forall loop)
-string.contains($file_content, "@id")

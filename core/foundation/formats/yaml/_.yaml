@@ -1,0 +1,16 @@
+id: "akao:directory:core:foundation:formats:yaml:v1"
+name: "YAML Infrastructure"
+description: "Minimal YAML parsing infrastructure for core communication protocol and configuration support"
+version: "1.0.0"
+type: "implementation"
+scope: "Core YAML parsing infrastructure only"
+timeline: "2025-07-11"
+rationale: "Essential YAML support for YAML-RPC protocol and core configuration"
+methodology: "Minimal feature set - protocol communication and config parsing only"
+references: 
+  - "akao:directory:core:foundation:formats:v1"
+  - "akao:class:core:foundation:formats:yaml:parser:v1"
+  - "akao:class:core:foundation:formats:yaml:node:v1"
+components:
+  - v1.hpp
+  - v1.cpp

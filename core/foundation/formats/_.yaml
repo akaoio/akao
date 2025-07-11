@@ -1,0 +1,14 @@
+id: "akao:directory:core:foundation:formats:v1"
+name: "Format Processing Infrastructure"
+description: "Core format processing infrastructure for communication protocols and data serialization"
+version: "1.0.0"
+type: "container"
+scope: "Foundation format processing capabilities"
+timeline: "2025-07-11"
+rationale: "Centralized format processing infrastructure for core-node communication"
+methodology: "Minimal infrastructure components for protocol support"
+references: 
+  - "akao:directory:core:foundation:v1"
+  - "akao:directory:core:foundation:formats:yaml:v1"
+components:
+  - yaml/

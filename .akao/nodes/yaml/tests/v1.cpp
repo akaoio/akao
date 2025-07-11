@@ -9,7 +9,7 @@
  * @references: ["akao:class:nodes:builtin:yaml:v1"]
  */
 
-#include ".akao/nodes/yaml/v1.hpp"
+#include "../v1.hpp"
 #include <iostream>
 #include <cassert>
 #include <string>

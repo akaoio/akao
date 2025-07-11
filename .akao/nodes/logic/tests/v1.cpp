@@ -9,7 +9,7 @@
  * @references: ["akao:class:nodes:builtin:logic:v1"]
  */
 
-#include ".akao/nodes/logic/v1.hpp"
+#include "../v1.hpp"
 #include <iostream>
 #include <cassert>
 #include <string>

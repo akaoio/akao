@@ -1,8 +1,0 @@
-id: "akao:directory:nodes:builtin:file:v1"
-metadata:
-  specification: "Clean filesystem scanner node inspired by legacy scanner but standalone"
-  scope: "Builtin filesystem scanning node"
-  timeline: "2025-07-10"
-  rationale: "Provide comprehensive filesystem scanning for node-based workflows"
-  methodology: "Clean implementation learning from legacy scanner architecture"
-  references: ["akao:class:nodes:builtin:file:v1"]

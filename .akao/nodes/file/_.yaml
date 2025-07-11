@@ -1,0 +1,72 @@
+id: "akao:node:filesystem:scanner:v1"
+name: "Filesystem Scanner"
+version: "1.0.0"
+description: "Scans and analyzes filesystem structures with comprehensive file analysis capabilities"
+
+runtime:
+  type: "executable"
+  command: "./file-scanner"
+  args: []
+  working_dir: ""
+  env: {}
+
+communication:
+  protocol: "yamlrpc"
+  version: "1.0"
+  socket_path: "/tmp/akao-node-file.sock"
+  methods: ["info", "validate", "execute", "health", "shutdown"]
+
+inputs:
+  - name: "path"
+    type: "string"
+    required: true
+    description: "Directory path to scan"
+  - name: "recursive"
+    type: "boolean"
+    default: false
+    description: "Scan subdirectories recursively"
+  - name: "extensions"
+    type: "array"
+    description: "File extensions to include (e.g., ['.cpp', '.hpp'])"
+  - name: "include_hidden"
+    type: "boolean"
+    default: false
+    description: "Include hidden files and directories"
+  - name: "max_depth"
+    type: "integer"
+    default: 10
+    description: "Maximum directory depth for recursive scanning"
+  - name: "content_analysis"
+    type: "boolean"
+    default: false
+    description: "Perform content analysis on text files"
+
+outputs:
+  - name: "files"
+    type: "array"
+    description: "List of discovered files with metadata"
+  - name: "directories"
+    type: "array"
+    description: "List of discovered directories"
+  - name: "statistics"
+    type: "object"
+    description: "Scanning statistics and metrics"
+  - name: "analysis"
+    type: "object"
+    description: "Content analysis results (if enabled)"
+
+resources:
+  memory: "128MB"
+  cpu: "100m"
+  timeout_seconds: 60
+  max_instances: 1
+
+dependencies:
+  system: []
+  nodes: []
+
+metadata:
+  category: "filesystem"
+  tags: ["scanner", "files", "analysis"]
+  maintainer: "akao-core"
+  license: "internal"

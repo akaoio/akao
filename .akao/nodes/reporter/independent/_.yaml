@@ -1,0 +1,60 @@
+id: "akao:node:reporter:generator:v1"
+name: "Report Generator"
+version: "1.0.0"
+description: "Generates reports in multiple formats (Markdown, HTML, JSON, YAML)"
+
+runtime:
+  type: "executable"
+  command: "./report-generator"
+  args: []
+  working_dir: ""
+  env: {}
+
+communication:
+  protocol: "yamlrpc"
+  version: "1.0"
+  socket_path: "/tmp/akao-node-reporter.sock"
+  methods: ["info", "validate", "execute", "health", "shutdown"]
+
+inputs:
+  - name: "data"
+    type: "object"
+    required: true
+    description: "Data to include in the report"
+  - name: "format"
+    type: "string"
+    default: "markdown"
+    description: "Output format (markdown, html, json, yaml, text)"
+  - name: "title"
+    type: "string"
+    description: "Report title"
+  - name: "sections"
+    type: "array"
+    description: "Report sections with titles and content"
+
+outputs:
+  - name: "report"
+    type: "string"
+    description: "Generated report content"
+  - name: "format"
+    type: "string"
+    description: "Output format used"
+  - name: "metadata"
+    type: "object"
+    description: "Report metadata (generation time, stats, etc.)"
+
+resources:
+  memory: "128MB"
+  cpu: "100m"
+  timeout_seconds: 30
+  max_instances: 2
+
+dependencies:
+  system: []
+  nodes: []
+
+metadata:
+  category: "reporting"
+  tags: ["generator", "formats", "analysis"]
+  maintainer: "akao-core"
+  license: "internal"

@@ -10,7 +10,7 @@
  */
 
 #include "v1.hpp"
-#include "nodes/builtin/yaml/v1.hpp"
+#include "core/foundation/formats/yaml/v1.hpp"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -411,8 +411,8 @@ std::shared_ptr<WorkflowDefinition> WorkflowParser::parseYAML(const std::string&
     clearErrors();
     
     try {
-        // Use our YAML node to parse
-        nodes::builtin::YamlParser parser;
+        // Use our YAML infrastructure to parse
+        akao::foundation::formats::yaml::YamlParser parser;
         auto yaml_root = parser.parse(yaml_content);
         
         if (!yaml_root || !yaml_root->isMapping()) {

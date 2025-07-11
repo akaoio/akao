@@ -9,7 +9,7 @@
  * @references: ["akao:class:nodes:builtin:reporter:v1"]
  */
 
-#include ".akao/nodes/reporter/v1.hpp"
+#include "../v1.hpp"
 #include <iostream>
 #include <cassert>
 #include <string>

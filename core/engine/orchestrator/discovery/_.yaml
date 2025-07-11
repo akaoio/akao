@@ -1,0 +1,16 @@
+id: "akao:directory:core:engine:orchestrator:discovery:v1"
+name: "Node Discovery System"
+description: "Dynamic node discovery system for external node processes with manifest parsing and registry integration"
+version: "1.0.0"
+type: "implementation"
+scope: "Core engine orchestrator node discovery"
+timeline: "2025-07-11"
+rationale: "Enable dynamic discovery of external nodes replacing static registration"
+methodology: "Filesystem scanning with manifest parsing and process-based node management"
+references: 
+  - "akao:directory:core:engine:orchestrator:v1"
+  - "akao:class:core:engine:orchestrator:discovery:scanner:v1"
+  - "akao:class:core:engine:orchestrator:discovery:manifest:v1"
+components:
+  - v1.hpp
+  - v1.cpp

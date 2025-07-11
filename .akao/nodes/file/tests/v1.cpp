@@ -9,7 +9,7 @@
  * @references: ["akao:class:nodes:builtin:file:v1"]
  */
 
-#include ".akao/nodes/file/v1.hpp"
+#include "../v1.hpp"
 #include <cassert>
 #include <iostream>
 #include <filesystem>
