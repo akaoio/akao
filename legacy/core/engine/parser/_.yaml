@@ -1,8 +1,0 @@
-id: "akao:directory:core:engine:parser:v1"
-metadata:
-  specification: "Core engine parser directory containing universal parsing framework components for multi-language code analysis and AST generation"
-  scope: "Core engine parsing subsystem for universal parser implementation with zero-dependency architecture"
-  timeline: "2025-01-08"
-  rationale: "Centralized parsing engine components for universal code analysis capability across multiple programming languages"
-  methodology: "Universal parser architecture with language detection, AST generation, and semantic normalization capabilities"
-  references: ["akao:directory:core:engine:v1", "akao:directory:languages:system:v1", "akao:philosophy:build:duality:v1"]
