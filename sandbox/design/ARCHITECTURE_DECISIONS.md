@@ -143,6 +143,42 @@ workflow:
 
 ## 🚀 EVOLUTION DECISIONS
 
+### **CLI Enhancement for Node Management**
+**Decision**: Comprehensive CLI for external node lifecycle management
+**Rationale**:
+- User-friendly node installation and management
+- Support for multiple node sources (local, git, registry)
+- Node state management (enable/disable)
+- Integration with package management system
+- Seamless user experience
+
+**Implementation**:
+- `akao install <source>` - Install from local path, git repo, or registry
+- `akao uninstall <node-id>` - Remove external node with user confirmation
+- `akao enable <node-id>` - Enable disabled node
+- `akao disable <node-id>` - Disable active node
+- `akao list-nodes` - List all available nodes with status
+- `akao node-info <node-id>` - Show detailed node information
+- `akao search <query>` - Search available nodes
+- `akao update <node-id>` - Update external node to latest version
+
+### **Security Framework**
+**Decision**: Security-first approach with comprehensive threat mitigation
+**Rationale**:
+- Protect against malicious external nodes
+- Ensure system integrity and stability
+- Enable trusted community ecosystem
+- Compliance with security best practices
+- Support for enterprise deployments
+
+**Implementation**:
+- Process isolation using Linux namespaces and cgroups
+- Capability-based permissions (filesystem, network, system)
+- Package signature verification and trusted sources
+- Security audit logging and monitoring
+- Resource limits and quotas per node
+- Runtime integrity checking and violation detection
+
 ### **Incremental Migration Strategy**
 **Decision**: Phase-based evolution with working system at each phase
 **Rationale**:
@@ -173,34 +209,91 @@ workflow:
 - Migration tools for legacy systems
 
 ### **Performance Requirements**
-**Decision**: 2x performance improvement target
+**Decision**: 10x performance improvement target with external node support
 **Rationale**:
-- Justifies architecture change
-- Enables parallel execution
-- Improves user experience
-- Supports larger codebases
+- Justifies complete architecture transformation
+- Enables parallel execution at scale
+- Improves user experience dramatically
+- Supports massive codebases and workflows
+- Maintains performance despite external node overhead
 
 **Implementation**:
-- Parallel node execution
-- Optimized data flow
-- Efficient process management
-- Performance monitoring
+- Parallel node execution with dependency management
+- Optimized data flow with streaming support
+- Efficient process management with connection pooling
+- Performance monitoring and profiling
+- Lazy loading and caching for external nodes
+- Communication protocol optimization
 
 ## 🧩 NODE ECOSYSTEM DECISIONS
 
-### **Built-in vs External Nodes**
-**Decision**: C++ built-in nodes, any language for external nodes
+### **External Node Architecture**
+**Decision**: Complete sandboxing with process isolation for external nodes
 **Rationale**:
-- Core performance maintained
-- Community flexibility
-- Language-specific optimizations
-- Ecosystem growth enablement
+- Security: Prevent malicious nodes from compromising system
+- Stability: Isolate node failures from core system
+- Language Independence: Support any programming language
+- Resource Management: Control CPU, memory, and network usage
+- Zero Core Dependencies: External nodes cannot access core libraries
 
 **Implementation**:
-- `nodes/builtin/`: C++ standard library only
-- `nodes/external/`: Any language/framework
-- Standard interfaces for all
-- Process isolation for external nodes
+- Process-based execution for all external nodes
+- JSON-RPC 2.0 communication protocol over Unix sockets
+- Resource limits (CPU, memory, file descriptors, network)
+- Filesystem isolation using chroot/containers
+- Permission system with capability-based security
+- Process lifecycle management with health monitoring
+
+### **Package Management System**
+**Decision**: Comprehensive package management for external nodes
+**Rationale**:
+- Easy installation and distribution of external nodes
+- Version management and compatibility checking
+- Dependency resolution and conflict detection
+- Community ecosystem enablement
+- Trust and security verification
+
+**Implementation**:
+- Node packages in `.akao` archive format (ZIP-based)
+- Package manifest with metadata, dependencies, and permissions
+- CLI commands: `install`, `uninstall`, `enable`, `disable`, `list-nodes`
+- Package registry support with signature verification
+- Dependency resolution with version constraints
+- Package caching and offline installation
+
+### **Node Communication Protocol**
+**Decision**: Language-agnostic communication via JSON-RPC 2.0
+**Rationale**:
+- Universal protocol supported by all programming languages
+- Stateless request/response model for reliability
+- Structured error handling and debugging
+- Streaming support for large data transfers
+- Performance optimization through connection reuse
+
+**Implementation**:
+- JSON-RPC 2.0 over Unix Domain Sockets
+- Standard message types: `node.info`, `node.validate`, `node.execute`
+- Binary data support through base64 encoding
+- Connection pooling and multiplexing
+- Timeout handling and retry logic
+- Protocol versioning for backward compatibility
+
+### **Built-in vs External Nodes**
+**Decision**: C++ built-in nodes, any language for external nodes with complete sandboxing
+**Rationale**:
+- Core performance maintained through built-in nodes
+- Community flexibility through external node ecosystem
+- Language-specific optimizations without core dependencies
+- Ecosystem growth enablement through package management
+- Security through process isolation and sandboxing
+
+**Implementation**:
+- `nodes/builtin/`: C++ standard library only, compiled into main executable
+- `.akao/nodes/external/`: Any language/framework, process-isolated
+- Standard interfaces for all nodes through communication protocol
+- Process isolation for external nodes with resource limits
+- Package management system for external node distribution
+- Security framework with permissions and trust verification
 
 ### **Node Interface Design**
 **Decision**: Simple, functional interface design
@@ -337,15 +430,23 @@ public:
 - Hierarchical organization
 
 ### **Ecosystem Metrics**
-- 10+ built-in nodes
-- 3+ supported languages
+- 8+ built-in nodes (core functionality)
+- 5+ supported languages (C++, Python, JavaScript, Go, Shell)
+- 100+ external node support capacity
 - Community contribution framework
 - Extensible architecture
+- Package management system
+- Security framework with sandboxing
+- External node marketplace readiness
 
 ### **Quality Metrics**
-- Comprehensive documentation
-- Automated validation
-- Continuous integration
+- Comprehensive documentation (user and developer guides)
+- Automated validation (built-in and external nodes)
+- Continuous integration with external node testing
 - Professional code standards
+- Security audit compliance
+- Performance benchmarking
+- External node development tutorials
+- Package creation and distribution guides
 
 These architectural decisions provide a solid foundation for the akao evolution while maintaining its core principles and enabling future growth.

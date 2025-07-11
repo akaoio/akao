@@ -7,7 +7,9 @@ Completely rebuild akao as a revolutionary node-based workflow system with:
 - **Next-Gen Philosophy Architecture**: .a format v2 with enhanced capabilities
 - **Universal Workflow System**: Everything is a workflow (validation, analysis, automation)
 - **Extreme Performance**: 10x faster than legacy systems
-- **Multi-Language Ecosystem**: Community-driven node marketplace
+- **Multi-Language Ecosystem**: Community-driven node marketplace with package management
+- **Complete Sandboxing**: Process isolation and security framework
+- **Runtime Management**: Dynamic node installation and lifecycle management
 
 ## 📊 STRATEGIC APPROACH
 
@@ -15,9 +17,12 @@ Completely rebuild akao as a revolutionary node-based workflow system with:
 1. **Revolutionary Rebuild**: Complete system rewrite for optimal architecture
 2. **No Legacy Constraints**: Freedom to design perfect system
 3. **Performance First**: 10x faster than any legacy system
-4. **Extensibility**: Community-driven node ecosystem
-5. **Step-by-Step Validation**: Each step must compile and pass tests
-6. **Clean Development**: All artifacts in artifacts/{mission-name}/{phase}/{step}/
+4. **Extensibility**: Community-driven node ecosystem with external node support
+5. **Security First**: Complete sandboxing and security framework
+6. **Step-by-Step Validation**: Each step must compile and pass tests
+7. **Clean Development**: All artifacts in artifacts/{mission-name}/{phase}/{step}/
+8. **Language Agnostic**: Support any programming language for external nodes
+9. **Zero Core Dependencies**: External nodes completely isolated from core
 
 ### **Development Method**
 - **Direct Codebase Development**: Code directly into main codebase
@@ -27,7 +32,7 @@ Completely rebuild akao as a revolutionary node-based workflow system with:
 - **120-Line Artifact Limit**: Keep artifacts concise and focused
 
 ## FINAL FOLDER STRUCTURE
-Please read [THE FINAL TREE](./FINAL_TREE.md)
+Please read [THE FINAL TREE](./FINAL_TREE.md) - Updated for external node ecosystem
 
 ## 🔄 EVOLUTION PHASES
 
@@ -131,70 +136,110 @@ Please read [THE FINAL TREE](./FINAL_TREE.md)
 - **Test**: Execute C++ validation workflow
 - **Commit**: "Add built-in validation workflows"
 
-### **PHASE 4: MULTI-LANGUAGE SUPPORT (Weeks 7-8)**
-**Goal**: Enable multi-language node development
+### **PHASE 4: EXTERNAL NODE FOUNDATION (Weeks 7-10)**
+**Goal**: Enable external node ecosystem with complete sandboxing
 
-#### **Step 4.1: Process Manager**
-- **Target**: `core/engine/runtime/python/v1.hpp`
-- **Implementation**: Multi-language process management
-- **Test**: Execute external process
-- **Commit**: "Add multi-language process manager"
+#### **Step 4.1: Complete Missing Built-in Nodes**
+- **Target**: `nodes/builtin/validator/v1.hpp`, `nodes/builtin/json/v1.hpp`
+- **Implementation**: Finish Universal Validator and JSON Parser nodes
+- **Test**: Validate akao project, parse JSON data
+- **Commit**: "Complete critical built-in nodes for external communication"
 
-#### **Step 4.2: Python Node Support**
-- **Target**: `nodes/external/science/` + runtime support
-- **Implementation**: Python node executor
-- **Test**: Execute Python node
-- **Commit**: "Add Python node support"
+#### **Step 4.2: CLI Framework Enhancement**
+- **Target**: `main.cpp` with comprehensive command framework
+- **Implementation**: Node management commands (install, uninstall, enable, disable, list, info, search)
+- **Test**: CLI command parsing and execution
+- **Commit**: "Add comprehensive CLI for node management"
 
-#### **Step 4.3: JavaScript Node Support**
-- **Target**: `nodes/external/frontend/` + runtime support
-- **Implementation**: JavaScript node executor
-- **Test**: Execute JavaScript node
-- **Commit**: "Add JavaScript node support"
+#### **Step 4.3: External Node Communication Protocol**
+- **Target**: `core/engine/orchestrator/bridge/external.hpp`
+- **Implementation**: JSON-RPC 2.0 over Unix sockets, external node bridge
+- **Test**: Communication with mock external node
+- **Commit**: "Implement external node communication protocol"
 
-### **PHASE 5: INTEGRATION & POLISH (Weeks 9-10)**
-**Goal**: Complete system integration and optimization
+#### **Step 4.4: Process Management System**
+- **Target**: `core/engine/orchestrator/process/manager.hpp`
+- **Implementation**: Process lifecycle management, resource limits, health monitoring
+- **Test**: Spawn, monitor, and cleanup external processes
+- **Commit**: "Add process management system for external nodes"
 
-#### **Step 5.1: End-to-End Validation**
-- **Target**: Complete system test
-- **Implementation**: Multi-language workflow
-- **Test**: Execute complex validation workflow
-- **Commit**: "Complete end-to-end validation"
+### **PHASE 5: EXTERNAL NODE ECOSYSTEM (Weeks 11-15)**
+**Goal**: Complete external node ecosystem with security and package management
 
-#### **Step 5.2: Performance Optimization**
-- **Target**: Core engine optimization
-- **Implementation**: Performance improvements
-- **Test**: Benchmark against original system
-- **Commit**: "Optimize workflow execution performance"
+#### **Step 5.1: Package Management System**
+- **Target**: `core/engine/orchestrator/package/manager.hpp`
+- **Implementation**: Package format (.akao archives), installation/management, dependency resolution
+- **Test**: Install, uninstall, and manage external node packages
+- **Commit**: "Implement comprehensive package management system"
 
-#### **Step 5.3: Documentation & Examples**
-- **Target**: Complete documentation
-- **Implementation**: User guides and examples
-- **Test**: Documentation validation
-- **Commit**: "Add comprehensive documentation"
+#### **Step 5.2: Security and Sandboxing Framework**
+- **Target**: `core/security/sandbox/isolator.hpp`
+- **Implementation**: Process isolation, permission system, resource limits, trust verification
+- **Test**: Secure external node execution with resource constraints
+- **Commit**: "Add security framework with process sandboxing"
+
+#### **Step 5.3: Dynamic Loading and Registry Enhancement**
+- **Target**: Enhanced `core/engine/orchestrator/registry/v2.hpp`
+- **Implementation**: Runtime node loading, external node discovery, state management
+- **Test**: Dynamic loading and unloading of external nodes
+- **Commit**: "Enhance registry for external node lifecycle management"
+
+#### **Step 5.4: Example External Nodes**
+- **Target**: `.akao/nodes/external/examples/`
+- **Implementation**: Python, JavaScript, Go, Shell script example nodes
+- **Test**: Execute multi-language external node workflow
+- **Commit**: "Add example external nodes in multiple languages"
+
+#### **Step 5.5: Integration and Testing**
+- **Target**: Complete integration test suite
+- **Implementation**: External node integration tests, security tests, performance benchmarks
+- **Test**: End-to-end external node ecosystem validation
+- **Commit**: "Complete external node ecosystem integration"
+
+### **PHASE 6: PRODUCTION READINESS (Weeks 16)**
+**Goal**: Finalize system for production deployment
+
+#### **Step 6.1: Performance Optimization**
+- **Target**: Communication protocol optimization
+- **Implementation**: Connection pooling, caching, preloading, streaming optimizations
+- **Test**: Benchmark external node performance overhead
+- **Commit**: "Optimize external node communication performance"
+
+#### **Step 6.2: Documentation and Polish**
+- **Target**: Complete documentation suite
+- **Implementation**: External node development guide, security documentation, user guides
+- **Test**: Documentation validation and user testing
+- **Commit**: "Add comprehensive external node documentation"
 
 ## ✅ SUCCESS CRITERIA
 
 ### **Each Step Must:**
 1. **Compile Successfully**: Zero compilation errors
 2. **Pass All Tests**: 100% test success rate
-4. **Real Data Processing**: No mock/fake data in tests or code
-5. **Immediate Commit**: Commit working code immediately
+3. **Real Data Processing**: No mock/fake data in tests or code
+4. **Immediate Commit**: Commit working code immediately
+5. **Security Compliant**: All external node features must be secure by default
 
 ### **Each Phase Must:**
 1. **Build on Previous**: Use components from previous phases
 2. **Demonstrate Value**: Show measurable improvement
 3. **Working System**: Fully functional at phase end
 4. **Documentation**: Clear usage examples
+5. **Backward Compatible**: Existing functionality preserved
 
 ### **Final System Must:**
 - ✅ Execute workflows 10x faster than legacy systems
-- ✅ Support 5+ programming languages for nodes
-- ✅ Enable thriving community node marketplace
+- ✅ Support 5+ programming languages for external nodes
+- ✅ Enable thriving community node marketplace with package management
 - ✅ Replace all legacy validation with workflows
 - ✅ Provide revolutionary user experience
 - ✅ Support massive-scale data processing
 - ✅ Zero legacy technical debt
+- ✅ **NEW**: Complete external node sandboxing and security
+- ✅ **NEW**: Runtime node installation and management
+- ✅ **NEW**: Package management system with dependency resolution
+- ✅ **NEW**: External node execution overhead < 10ms
+- ✅ **NEW**: Support for 100+ external nodes simultaneously
 
 ## 🛠️ DEVELOPMENT GUIDELINES
 

@@ -257,103 +257,205 @@
 
 ---
 
-## PHASE 4: MULTI-LANGUAGE SUPPORT (Weeks 7-8)
+## PHASE 4: EXTERNAL NODE FOUNDATION (Weeks 7-10)
 
-### **Step 4.1: Process Manager** ⏳
-- [ ] Create `core/engine/runtime/python/v1.hpp`
-- [ ] Create `core/engine/runtime/python/v1.cpp`
+### **Step 4.1: Complete Missing Built-in Nodes** ⏳
+- [ ] Create `nodes/builtin/validator/v1.hpp`
+- [ ] Create `nodes/builtin/validator/v1.cpp`
+- [ ] Adapt legacy `core/engine/validator/v1.hpp` for node architecture
+- [ ] Implement ValidatorNode using legacy Unified Validator
+- [ ] Create `nodes/builtin/json/v1.hpp`
+- [ ] Create `nodes/builtin/json/v1.cpp`
+- [ ] Implement JSONParserNode class with parsing and stringification
+- [ ] Create unit tests `tests/unit/nodes/builtin/validator/`
+- [ ] Create unit tests `tests/unit/nodes/builtin/json/`
+- [ ] Test validator node with akao project validation
+- [ ] Test JSON parsing and generation
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Register both nodes in registry**
+- [ ] **Commit**: "Complete critical built-in nodes for external communication"
+
+### **Step 4.2: CLI Framework Enhancement** ⏳
+- [ ] Completely overhaul `main.cpp` with proper command framework
+- [ ] Add `akao install <source>` command (local path, git repo, registry)
+- [ ] Add `akao uninstall <node-id>` command with user confirmation
+- [ ] Add `akao enable <node-id>` command
+- [ ] Add `akao disable <node-id>` command
+- [ ] Add `akao list-nodes` command with status display
+- [ ] Add `akao node-info <node-id>` command
+- [ ] Add `akao search <query>` command
+- [ ] Add `akao update <node-id>` command
+- [ ] Create command parsing infrastructure
+- [ ] Create unit tests `tests/unit/cli/`
+- [ ] Test all CLI commands
+- [ ] Test command parsing and validation
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Commit**: "Add comprehensive CLI for node management"
+
+### **Step 4.3: External Node Communication Protocol** ⏳
+- [ ] Create `core/engine/orchestrator/bridge/external/v1.hpp`
+- [ ] Create `core/engine/orchestrator/bridge/external/v1.cpp`
+- [ ] Implement JSON-RPC 2.0 protocol over Unix Domain Sockets
+- [ ] Add message types: `node.info`, `node.validate`, `node.execute`, `node.health`
+- [ ] Implement ExternalNodeBridge class
+- [ ] Add protocol translation between INode interface and JSON-RPC
+- [ ] Add timeout handling and error recovery
+- [ ] Create unit tests `tests/unit/core/engine/orchestrator/bridge/`
+- [ ] Test communication with mock external node
+- [ ] Test protocol message serialization/deserialization
+- [ ] Test error handling and timeout scenarios
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Commit**: "Implement external node communication protocol"
+
+### **Step 4.4: Process Management System** ⏳
+- [ ] Create `core/engine/orchestrator/process/manager/v1.hpp`
+- [ ] Create `core/engine/orchestrator/process/manager/v1.cpp`
 - [ ] Implement ProcessManager class
-- [ ] Add process spawning and management
-- [ ] Add inter-process communication
-- [ ] Add process monitoring and cleanup
-- [ ] Create unit tests `tests/unit/core/engine/runtime/python/`
-- [ ] Test process spawning
-- [ ] Test IPC communication
-- [ ] Test process cleanup
-- [ ] Test error handling
+- [ ] Add process spawning and lifecycle management
+- [ ] Add process health monitoring and restart capabilities
+- [ ] Add resource limits (CPU, memory, file descriptors)
+- [ ] Add graceful shutdown handling
+- [ ] Add process isolation and cleanup
+- [ ] Create unit tests `tests/unit/core/engine/orchestrator/process/`
+- [ ] Test process spawning and management
+- [ ] Test resource limits and monitoring
+- [ ] Test process cleanup and error handling
 - [ ] **Build and test passes**: `make run-tests`
-- [ ] **Commit**: "Add multi-language process manager"
-
-### **Step 4.2: Python Node Support** ⏳
-- [ ] Extend `core/engine/runtime/python/v1.hpp`
-- [ ] Extend `core/engine/runtime/python/v1.cpp`
-- [ ] Implement PythonExecutor class
-- [ ] Add Python process integration
-- [ ] Add data serialization/deserialization
-- [ ] Create sample Python node `nodes/external/science/sample-analyzer/`
-- [ ] Create unit tests `tests/unit/core/engine/runtime/python/`
-- [ ] Test Python node execution
-- [ ] Test data exchange
-- [ ] Test error handling
-- [ ] **Build and test passes**: `make run-tests`
-- [ ] **Commit**: "Add Python node support"
-
-### **Step 4.3: JavaScript Node Support** ⏳
-- [ ] Create `core/engine/runtime/javascript/v1.hpp`
-- [ ] Create `core/engine/runtime/javascript/v1.cpp`
-- [ ] Implement JavaScriptExecutor class
-- [ ] Add Node.js process integration
-- [ ] Add JSON data exchange
-- [ ] Create sample JavaScript node `nodes/external/frontend/sample-formatter/`
-- [ ] Create unit tests `tests/unit/core/engine/runtime/javascript/`
-- [ ] Test JavaScript node execution
-- [ ] Test data exchange
-- [ ] Test error handling
-- [ ] **Build and test passes**: `make run-tests`
-- [ ] **Commit**: "Add JavaScript node support"
+- [ ] **Commit**: "Add process management system for external nodes"
 
 **Phase 4 Completion Criteria:**
-- [ ] Multi-language node execution working
-- [ ] Process management robust
-- [ ] Data exchange functioning
-- [ ] Python and JavaScript nodes operational
-- [ ] Error handling comprehensive
+- [ ] Critical built-in nodes completed (Validator, JSON Parser)
+- [ ] Comprehensive CLI for node management
+- [ ] External node communication protocol operational
+- [ ] Process management system robust
+- [ ] Foundation ready for external node ecosystem
 
 ---
 
-## PHASE 5: INTEGRATION & POLISH (Weeks 9-10)
+## PHASE 5: EXTERNAL NODE ECOSYSTEM (Weeks 11-15)
 
-### **Step 5.1: End-to-End Validation** ⏳
-- [ ] Create comprehensive integration test
-- [ ] Create multi-language workflow
-- [ ] Test complete validation pipeline
-- [ ] Test performance benchmarks
-- [ ] Create integration tests `tests/integration/end-to-end/`
-- [ ] Test full system workflow
-- [ ] Test multi-language node interaction
-- [ ] Test error recovery
-- [ ] Test performance vs original system
+### **Step 5.1: Package Management System** ⏳
+- [ ] Create `core/engine/orchestrator/package/manager/v1.hpp`
+- [ ] Create `core/engine/orchestrator/package/manager/v1.cpp`
+- [ ] Implement PackageManager class
+- [ ] Define `.akao` package format (ZIP-based archives)
+- [ ] Add package installation and uninstallation
+- [ ] Add dependency resolution with version constraints
+- [ ] Add package verification and signature checking
+- [ ] Create `.akao/nodes/` directory structure
+- [ ] Create unit tests `tests/unit/core/engine/orchestrator/package/`
+- [ ] Test package installation and management
+- [ ] Test dependency resolution
+- [ ] Test package verification
 - [ ] **Build and test passes**: `make run-tests`
-- [ ] **Commit**: "Complete end-to-end validation"
+- [ ] **Commit**: "Implement comprehensive package management system"
 
-### **Step 5.2: Performance Optimization** ⏳
-- [ ] Profile workflow execution
-- [ ] Optimize node communication
-- [ ] Optimize data serialization
-- [ ] Optimize process management
+### **Step 5.2: Security and Sandboxing Framework** ⏳
+- [ ] Create `core/security/sandbox/isolator/v1.hpp`
+- [ ] Create `core/security/sandbox/isolator/v1.cpp`
+- [ ] Implement ProcessIsolator class using Linux namespaces/cgroups
+- [ ] Create `core/security/permissions/manager/v1.hpp`
+- [ ] Create `core/security/permissions/manager/v1.cpp`
+- [ ] Implement permission system (filesystem, network, system)
+- [ ] Add resource limits and quotas per external node
+- [ ] Create `core/security/trust/verifier/v1.hpp`
+- [ ] Create `core/security/trust/verifier/v1.cpp`
+- [ ] Implement package signature verification
+- [ ] Create unit tests `tests/unit/core/security/`
+- [ ] Test process isolation and resource limits
+- [ ] Test permission system and capability checking
+- [ ] Test trust verification and security audit
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Commit**: "Add security framework with process sandboxing"
+
+### **Step 5.3: Dynamic Loading and Registry Enhancement** ⏳
+- [ ] Create `core/engine/orchestrator/registry/v2.hpp`
+- [ ] Create `core/engine/orchestrator/registry/v2.cpp`
+- [ ] Enhance NodeRegistry with external node support
+- [ ] Create `core/engine/orchestrator/loader/dynamic/v1.hpp`
+- [ ] Create `core/engine/orchestrator/loader/dynamic/v1.cpp`
+- [ ] Implement DynamicLoader for runtime node loading
+- [ ] Create `core/engine/orchestrator/state/manager/v1.hpp`
+- [ ] Create `core/engine/orchestrator/state/manager/v1.cpp`
+- [ ] Implement node state management (enabled/disabled)
+- [ ] Add node discovery and scanning capabilities
+- [ ] Create unit tests `tests/unit/core/engine/orchestrator/registry/`
+- [ ] Test dynamic loading and unloading of external nodes
+- [ ] Test node state management
+- [ ] Test node discovery and metadata handling
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Commit**: "Enhance registry for external node lifecycle management"
+
+### **Step 5.4: Example External Nodes** ⏳
+- [ ] Create `nodes/external/examples/python/` with sample Python node
+- [ ] Create `nodes/external/examples/javascript/` with sample JavaScript node
+- [ ] Create `nodes/external/examples/go/` with sample Go node
+- [ ] Create `nodes/external/examples/shell/` with sample shell script node
+- [ ] Each example node implements JSON-RPC 2.0 protocol
+- [ ] Create node manifests (`_.yaml`) for each example
+- [ ] Create package creation scripts
+- [ ] Create unit tests `tests/unit/nodes/external/examples/`
+- [ ] Test each example node execution
+- [ ] Test multi-language workflow execution
+- [ ] Test external node communication protocol
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Commit**: "Add example external nodes in multiple languages"
+
+### **Step 5.5: Integration and Testing** ⏳
+- [ ] Create comprehensive integration test suite
+- [ ] Create `tests/integration/external-nodes/`
+- [ ] Test end-to-end external node workflow
+- [ ] Test package installation and management
+- [ ] Test security and sandboxing
+- [ ] Test performance benchmarks with external nodes
+- [ ] Test error handling and recovery
 - [ ] Create performance benchmarks
-- [ ] Test performance improvements
-- [ ] Verify 10x speed improvement target
+- [ ] Verify external node execution overhead < 10ms
+- [ ] Test support for 100+ external nodes
 - [ ] **Build and test passes**: `make run-tests`
-- [ ] **Commit**: "Optimize workflow execution performance"
-
-### **Step 5.3: Documentation & Examples** ⏳
-- [ ] Create user documentation
-- [ ] Create developer guides
-- [ ] Create node development tutorial
-- [ ] Create workflow examples
-- [ ] Create API documentation
-- [ ] Update README.md
-- [ ] Create migration guide
-- [ ] **All documentation complete**
-- [ ] **Commit**: "Add comprehensive documentation"
+- [ ] **Commit**: "Complete external node ecosystem integration"
 
 **Phase 5 Completion Criteria:**
-- [ ] Complete system integration
-- [ ] Performance targets met
-- [ ] Documentation complete
-- [ ] Migration path clear
-- [ ] System ready for production
+- [ ] Package management system operational
+- [ ] Security framework with sandboxing implemented
+- [ ] Dynamic loading and registry enhancement complete
+- [ ] Example external nodes in multiple languages working
+- [ ] Integration testing comprehensive
+- [ ] Performance targets met for external nodes
+
+---
+
+## PHASE 6: PRODUCTION READINESS (Week 16)
+
+### **Step 6.1: Performance Optimization** ⏳
+- [ ] Optimize external node communication protocol
+- [ ] Implement connection pooling and reuse
+- [ ] Add caching for node metadata and capabilities
+- [ ] Implement lazy loading and preloading strategies
+- [ ] Add streaming support for large data transfers
+- [ ] Create comprehensive performance benchmarks
+- [ ] Profile and optimize critical paths
+- [ ] Test performance vs original system (10x target)
+- [ ] **Build and test passes**: `make run-tests`
+- [ ] **Commit**: "Optimize external node communication performance"
+
+### **Step 6.2: Documentation and Polish** ⏳
+- [ ] Create external node development guide
+- [ ] Create package creation tutorial
+- [ ] Create security best practices documentation
+- [ ] Create troubleshooting guide
+- [ ] Create API documentation for external nodes
+- [ ] Update README.md with external node features
+- [ ] Create migration guide from internal to external nodes
+- [ ] Create user guides for CLI commands
+- [ ] **All documentation complete**
+- [ ] **Commit**: "Add comprehensive external node documentation"
+
+**Phase 6 Completion Criteria:**
+- [ ] Performance optimization complete
+- [ ] Documentation comprehensive
+- [ ] System ready for production deployment
+- [ ] External node ecosystem fully operational
 
 ---
 
@@ -365,13 +467,18 @@
 - [ ] **Performance**: 10x faster than legacy systems
 - [ ] **Innovation**: Revolutionary new architecture
 - [ ] **Coverage**: 95%+ code coverage
+- [ ] **External Node Overhead**: < 10ms execution overhead
+- [ ] **Scalability**: Support for 100+ external nodes
 
 ### **Functional Metrics**
-- [ ] **Node Types**: 9+ built-in nodes, 10+ external nodes
-- [ ] **Languages**: 5+ supported languages (C++, Python, JavaScript, etc.)
-- [ ] **Workflows**: 15+ example workflows
+- [ ] **Built-in Nodes**: 8+ built-in nodes (File, YAML, JSON, Logic, Validator, Reporter, Git, Formatter)
+- [ ] **External Nodes**: Support for unlimited external nodes
+- [ ] **Languages**: 5+ supported languages (C++, Python, JavaScript, Go, Shell)
+- [ ] **Workflows**: 15+ example workflows including external node workflows
 - [ ] **Validation**: Complete workflow-based validation system
 - [ ] **Philosophy**: Advanced philosophy compliance workflows
+- [ ] **Package Management**: Complete package installation and management
+- [ ] **Security**: Process sandboxing and permission system
 
 ### **Quality Metrics**
 - [ ] **Documentation**: Complete user/developer guides
@@ -379,6 +486,8 @@
 - [ ] **Error Handling**: Comprehensive error recovery
 - [ ] **Logging**: Detailed execution logging
 - [ ] **Monitoring**: Performance monitoring
+- [ ] **Security Documentation**: Security best practices and guides
+- [ ] **External Node Guides**: Development and packaging tutorials
 
 ### **Readiness Criteria**
 - [ ] **Production Ready**: Can replace existing system
@@ -386,6 +495,9 @@
 - [ ] **Extensible**: Easy to add new nodes
 - [ ] **Maintainable**: Clear codebase structure
 - [ ] **Documented**: Complete documentation
+- [ ] **Secure**: Comprehensive security framework
+- [ ] **Ecosystem Ready**: External node marketplace support
+- [ ] **Package Management**: Complete package lifecycle support
 
 ---
 
