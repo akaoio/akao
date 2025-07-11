@@ -8,5 +8,5 @@
 # Canonical form requirement for implementation files
 forall $file in filesystem.get_files("."): 
     (filesystem.has_extension($file, ".cpp") || filesystem.has_extension($file, ".hpp")) == false ||
-    exists $version_pattern in ["v1", "v2", "v3", "v4", "v5"]:
+    exists $version_pattern in ["v1", "v1", "v3", "v4", "v5"]:
         string.length(filesystem.get_filename($file)) > 2

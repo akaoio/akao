@@ -369,8 +369,8 @@
 - [ ] **Commit**: "Add security framework with process sandboxing"
 
 ### **Step 5.3: Dynamic Loading and Registry Enhancement** ⏳
-- [ ] Create `core/engine/orchestrator/registry/v2.hpp`
-- [ ] Create `core/engine/orchestrator/registry/v2.cpp`
+- [ ] Create `core/engine/orchestrator/registry/v1.hpp`
+- [ ] Create `core/engine/orchestrator/registry/v1.cpp`
 - [ ] Enhance NodeRegistry with external node support
 - [ ] Create `core/engine/orchestrator/loader/dynamic/v1.hpp`
 - [ ] Create `core/engine/orchestrator/loader/dynamic/v1.cpp`

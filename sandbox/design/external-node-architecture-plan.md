@@ -37,26 +37,26 @@ This document outlines a comprehensive plan to transform the Akao workflow orche
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Akao Workflow Orchestrator                   │
 ├─────────────────────────────────────────────────────────────────┤
-│                      Node Registry                             │
-│  ┌─────────────────┐  │  ┌─────────────────────────────────────┐ │
-│  │   Built-in      │  │  │         External Node              │ │
-│  │    Nodes        │  │  │         Management                 │ │
-│  │                 │  │  │                                    │ │
-│  │ • File Scanner  │  │  │ • Package Manager                  │ │
-│  │ • YAML Proc     │  │  │ • Dynamic Loader                   │ │
-│  │ • Logic Exec    │  │  │ • Security Sandbox                 │ │
-│  │ • Reporter      │  │  │ • Process Manager                  │ │
-│  └─────────────────┘  │  └─────────────────────────────────────┘ │
+│                      Node Registry                              │
+│  ┌─────────────────┐  │  ┌─────────────────────────────────────┐│
+│  │   Built-in      │  │  │         External Node               ││
+│  │    Nodes        │  │  │         Management                  ││
+│  │                 │  │  │                                     ││
+│  │ • File Scanner  │  │  │ • Package Manager                   ││
+│  │ • YAML Proc     │  │  │ • Dynamic Loader                    ││
+│  │ • Logic Exec    │  │  │ • Security Sandbox                  ││
+│  │ • Reporter      │  │  │ • Process Manager                   ││
+│  └─────────────────┘  │  └─────────────────────────────────────┘│
 ├─────────────────────────────────────────────────────────────────┤
-│                     Communication Layer                        │
-│  ┌─────────────────┐  │  ┌─────────────────────────────────────┐ │
-│  │   In-Process    │  │  │      Inter-Process                 │ │
-│  │ Communication   │  │  │     Communication                  │ │
-│  │                 │  │  │                                    │ │
-│  │ • Direct Calls  │  │  │ • JSON/MessagePack Protocol        │ │
-│  │ • Shared Memory │  │  │ • Named Pipes / Unix Sockets      │ │
-│  │ • C++ Interface │  │  │ • Process Lifecycle Management     │ │
-│  └─────────────────┘  │  └─────────────────────────────────────┘ │
+│                     Communication Layer                         │
+│  ┌─────────────────┐  │  ┌─────────────────────────────────────┐│
+│  │   In-Process    │  │  │      Inter-Process                  ││
+│  │ Communication   │  │  │     Communication                   ││
+│  │                 │  │  │                                     ││
+│  │ • Direct Calls  │  │  │ • JSON/MessagePack Protocol         ││
+│  │ • Shared Memory │  │  │ • Named Pipes / Unix Sockets        ││
+│  │ • C++ Interface │  │  │ • Process Lifecycle Management      ││
+│  └─────────────────┘  │  └─────────────────────────────────────┘│
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -219,7 +219,7 @@ This document outlines a comprehensive plan to transform the Akao workflow orche
 **Goal**: Implement runtime node loading and management
 
 #### 5.1 Enhanced Registry System
-- **File**: `core/engine/orchestrator/registry/v2.hpp`
+- **File**: `core/engine/orchestrator/registry/v1.hpp`
 - **New Features**:
   - Runtime node loading/unloading
   - Node state persistence

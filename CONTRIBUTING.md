@@ -93,8 +93,8 @@ metadata:
 - Maximum version name: 20 characters
 
 **Grammar Rules:**
-- Use **singular** for single entities: `validator/`, `parser/`, `config/`
-- Use **plural** for collections: `tests/`, `docs/`, `rules/`
+- Use **singular** for single entities: `validator/`, `parser/`
+- Use **plural** for collections: `tests/`, `docs/`, `rules/`, `settings/`
 - Compound words must be grammatically correct: `rule-validator` (not `rules-validator`)
 - Adjective-noun order: `syntax-parser` (not `parser-syntax`)
 
@@ -102,7 +102,7 @@ metadata:
 ```
 validator/v1.cpp             # Singular - handles one validation
 parser/v1.hpp                # Singular - one parser instance  
-tester/v2.cpp                # Singular - one test runner
+tester/v1.cpp                # Singular - one test runner
 config/v1.yaml               # Singular - one configuration
 rule/v1.md                   # Singular - one rule definition
 ```
@@ -111,9 +111,9 @@ rule/v1.md                   # Singular - one rule definition
 ```
 ✅ Good (Correct Grammar):
 validator/v1.cpp             # Singular - one validator
-parser/v2.hpp                # Singular - one parser
+parser/v1.hpp                # Singular - one parser
 rule-validator/v1.cpp        # Compound: rule (singular) + validator (singular)
-syntax-parser/v2.hpp         # Adjective + noun (correct order)
+syntax-parser/v1.hpp         # Adjective + noun (correct order)
 
 ✅ Collections (Plural when appropriate):
 tests/runner/v1.cpp          # Plural directory for collection
@@ -122,9 +122,9 @@ rules/loader/v1.cpp          # Plural directory for collection
 
 ❌ Bad (Incorrect Grammar):
 validators/v1.cpp            # Wrong: file should be singular
-parsers/v2.hpp               # Wrong: unnecessary plural
+parsers/v1.hpp               # Wrong: unnecessary plural
 rules-validator/v1.cpp       # Wrong: rules (plural) + validator (singular)
-parser-syntax/v2.hpp         # Wrong: noun + adjective (wrong order)
+parser-syntax/v1.hpp         # Wrong: noun + adjective (wrong order)
 rule-validators/v1.cpp       # Wrong: mixed singular-plural
 test-runner/v1.cpp           # Questionable: prefer tester/v1.cpp
 ```
@@ -186,8 +186,6 @@ validator/                   # Single word preferred
 ├── _.yaml       # Special file, underscore allowed
 ├── v1.cpp
 ├── v1.hpp
-├── v2.cpp
-├── v2.hpp
 └── README.md           # Special file, uppercase allowed
 ```
 
@@ -563,8 +561,6 @@ folder/
 folder/
 ├── v1.cpp              # Implementation file
 ├── v1.hpp              # Header file
-├── v2.cpp              # Optional newer version
-└── v2.hpp              # Optional newer version
 ```
 
 **Rules:**

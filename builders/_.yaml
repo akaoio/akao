@@ -1,8 +1,0 @@
-id: "akao:directory:builders:system:v1"
-metadata:
-  specification: "System builders directory containing build system implementations, CMake builders, and Akao build engine components for universal build support"
-  scope: "System builders collection for build system integration and automation"
-  timeline: "2025-01-08"
-  rationale: "Centralized location for build system components that provide universal build support and integration"
-  methodology: "Builder architecture with CMake integration, Akao build engine, and universal build system support"
-  references: ["akao:file:builders:akao:build_engine", "akao:directory:builders:cmake:v1", "akao:philosophy:build:duality:v1"]

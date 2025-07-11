@@ -16,14 +16,14 @@
 - `nodes/external/`: Any language/dependencies allowed
 
 ### **2. Philosophy-Driven Architecture**
-**Decision**: Build completely new .a format v2 and workflow-based validation system
+**Decision**: Build completely new .a format v1 and workflow-based validation system
 **Rationale**:
 - Create next-generation philosophical foundation
 - Universal validation through workflows
 - Break free from legacy constraints
 
 **Implementation**:
-- `.a` format v2 parser with enhanced capabilities
+- `.a` format v1 parser with enhanced capabilities
 - All validation through workflow definitions
 - Philosophy compliance as workflow nodes
 
@@ -205,7 +205,7 @@ workflow:
 **Implementation**:
 - Complete deprecation of .akao/rules/
 - All validation through .akao/workflows/
-- New .a format v2 with enhanced capabilities
+- New .a format v1 with enhanced capabilities
 - Migration tools for legacy systems
 
 ### **Performance Requirements**

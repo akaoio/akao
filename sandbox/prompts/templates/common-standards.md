@@ -11,7 +11,7 @@ akao:[type]:[category]:[subcategory]:[name]:[version]
 
 ## 📁 Naming Conventions
 ### Files: `{function-folder}/{version}.{ext}`
-- Version-only naming: `v1.cpp`, `v2.hpp`
+- Version-only naming: `v1.cpp`, `v1.hpp`
 - kebab-case, no underscores, max 2 words
 
 ### Directories: `{domain}/{subdomain}/{function}/`

@@ -4,7 +4,7 @@
 
 Completely rebuild akao as a revolutionary node-based workflow system with:
 - **Zero External Dependencies**: C++ standard library only for core
-- **Next-Gen Philosophy Architecture**: .a format v2 with enhanced capabilities
+- **Next-Gen Philosophy Architecture**: .a format v1 with enhanced capabilities
 - **Universal Workflow System**: Everything is a workflow (validation, analysis, automation)
 - **Extreme Performance**: 10x faster than legacy systems
 - **Multi-Language Ecosystem**: Community-driven node marketplace with package management
@@ -26,9 +26,9 @@ Completely rebuild akao as a revolutionary node-based workflow system with:
 
 ### **Development Method**
 - **Direct Codebase Development**: Code directly into main codebase
-- **Branch-Based Evolution**: Each phase uses separate artifact folder for taking notes (artifacts/{mission-name}/{phase}/{step}/*.md)
+- **Branch-Based Evolution**: Each phase uses separate artifact folder for taking notes (artifacts/{mission-name}/{phase}/{step}/*.md).
 - **Immediate Commits**: Commit after each working step
-- **Minimal Artifacts**: Only thinking notes, not code implementations
+- **Minimal Artifacts**: Only thinking notes, not code implementations. Don't forget to take notes (keep them short) to store your thoughts. They are very useful in many cases (to help recalling what we need to do and stay on the track).
 - **120-Line Artifact Limit**: Keep artifacts concise and focused
 
 ## FINAL FOLDER STRUCTURE
@@ -179,7 +179,7 @@ Please read [THE FINAL TREE](./FINAL_TREE.md) - Updated for external node ecosys
 - **Commit**: "Add security framework with process sandboxing"
 
 #### **Step 5.3: Dynamic Loading and Registry Enhancement**
-- **Target**: Enhanced `core/engine/orchestrator/registry/v2.hpp`
+- **Target**: Enhanced `core/engine/orchestrator/registry/v1.hpp`
 - **Implementation**: Runtime node loading, external node discovery, state management
 - **Test**: Dynamic loading and unloading of external nodes
 - **Commit**: "Enhance registry for external node lifecycle management"

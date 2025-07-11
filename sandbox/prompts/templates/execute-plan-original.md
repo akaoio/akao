@@ -160,7 +160,7 @@ project_types:
     conventions: ["AST generation", "semantic analysis"]
   
   build_system:
-    patterns: ["builders/", "cmake/", "make/"]
+    patterns: ["make/"]
     conventions: ["compilation", "dependency management"]
   
   any_other_type: # Agent adapts to ANY project
