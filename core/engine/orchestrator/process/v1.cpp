@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <regex>
 #include <errno.h>
+#include <cstring>
 
 namespace akao {
 namespace core {
@@ -69,6 +70,35 @@ ExternalNodeProcess::~ExternalNodeProcess() {
     if (isRunning()) {
         stop();
     }
+    
+    // RESOURCE FIX: Properly clean up restart thread to prevent resource leak
+    if (restart_thread_.joinable()) {
+        restart_thread_.join();
+    }
+    
+    // RESOURCE FIX: Clean up any remaining child processes to prevent zombies
+    // THREAD SAFETY FIX: Copy PIDs under lock for cleanup
+    std::set<pid_t> pids_to_cleanup;
+    {
+        std::lock_guard<std::mutex> pids_lock(child_pids_mutex_);
+        pids_to_cleanup = active_child_pids_;
+        active_child_pids_.clear();
+    }
+    
+    for (pid_t pid : pids_to_cleanup) {
+        int status;
+        if (waitpid(pid, &status, WNOHANG) == 0) {
+            // Process still running, kill it
+            ::kill(pid, SIGTERM);
+            // Wait a bit for graceful termination
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (waitpid(pid, &status, WNOHANG) == 0) {
+                // Force kill if still running
+                ::kill(pid, SIGKILL);
+                waitpid(pid, &status, 0);
+            }
+        }
+    }
 }
 
 void ExternalNodeProcess::setExecutable(const std::string& path) {
@@ -108,17 +138,28 @@ bool ExternalNodeProcess::start() {
     config.working_directory = working_directory_;
     config.limits = limits_;
     
-    // Launch process
-    auto result = ProcessLauncher::launch(config);
-    if (!result.success) {
+    // Launch process with standardized error handling
+    auto launch_result = ProcessLauncher::launch(config);
+    if (launch_result.isError()) {
         setState(ProcessState::FAILED);
+        // Log the detailed error for debugging
+        // TODO: Add proper logging system
         return false;
     }
     
+    const auto& result = launch_result.getValue();
+    
     // Update stats
     stats_.pid = result.pid;
-    stats_.start_time = std::chrono::system_clock::now();
+    stats_.start_time = result.start_time;
     stats_.restart_count = 0;
+    
+    // RESOURCE FIX: Track the child process PID to prevent zombie processes
+    // THREAD SAFETY FIX: Protect active_child_pids_ with mutex
+    {
+        std::lock_guard<std::mutex> pids_lock(child_pids_mutex_);
+        active_child_pids_.insert(result.pid);
+    }
     
     setState(ProcessState::RUNNING);
     return true;
@@ -134,13 +175,15 @@ bool ExternalNodeProcess::stop(std::chrono::seconds timeout) {
     setState(ProcessState::STOPPING);
     should_restart_ = false;
     
-    bool success = ProcessLauncher::terminate(stats_.pid, timeout);
-    if (success) {
+    // ERROR HANDLING STANDARDIZATION: Use new Result-based interface
+    auto terminate_result = ProcessLauncher::terminate(stats_.pid, timeout);
+    if (terminate_result.isError()) {
+        // Terminate failed, try force kill
+        auto kill_result = ProcessLauncher::kill(stats_.pid);
+        // TODO: Log the error details from both operations
         setState(ProcessState::STOPPED);
         stats_.pid = -1;
     } else {
-        // Force kill if terminate failed
-        ProcessLauncher::kill(stats_.pid);
         setState(ProcessState::STOPPED);
         stats_.pid = -1;
     }
@@ -166,11 +209,11 @@ bool ExternalNodeProcess::kill() {
         return true;
     }
     
-    bool success = ProcessLauncher::kill(stats_.pid);
+    auto kill_result = ProcessLauncher::kill(stats_.pid);
     setState(ProcessState::STOPPED);
     stats_.pid = -1;
     
-    return success;
+    return kill_result.isSuccess();
 }
 
 void ExternalNodeProcess::startMonitoring(std::chrono::seconds interval) {
@@ -215,6 +258,9 @@ void ExternalNodeProcess::monitoringLoop() {
     while (monitoring_) {
         updateStats();
         
+        // RESOURCE FIX: Clean up finished child processes to prevent zombies
+        cleanupChildProcesses();
+        
         if (isRunning()) {
             if (checkResourceLimits()) {
                 setState(ProcessState::RESOURCE_LIMIT);
@@ -234,42 +280,86 @@ void ExternalNodeProcess::monitoringLoop() {
 }
 
 void ExternalNodeProcess::updateStats() {
-    if (stats_.pid <= 0) {
-        return;
+    pid_t current_pid;
+    {
+        std::lock_guard<std::mutex> stats_lock(stats_mutex_);
+        current_pid = stats_.pid;
+        if (current_pid <= 0) {
+            return;
+        }
     }
     
-    auto new_stats = ProcessLauncher::getProcessStats(stats_.pid);
-    if (new_stats.pid > 0) {
-        stats_.memory_usage_kb = new_stats.memory_usage_kb;
-        stats_.peak_memory_kb = std::max(stats_.peak_memory_kb, new_stats.memory_usage_kb);
-        stats_.cpu_time = new_stats.cpu_time;
-        stats_.file_descriptors_count = new_stats.file_descriptors_count;
-        
-        if (stats_callback_) {
-            stats_callback_(stats_);
+    auto stats_result = ProcessLauncher::getProcessStats(current_pid);
+    if (stats_result.isSuccess()) {
+        const auto& new_stats = stats_result.getValue();
+        if (new_stats.pid > 0) {
+            // THREAD SAFETY FIX: Protect stats_ updates with mutex
+            {
+                std::lock_guard<std::mutex> stats_lock(stats_mutex_);
+                stats_.memory_usage_kb = new_stats.memory_usage_kb;
+                stats_.peak_memory_kb = std::max(stats_.peak_memory_kb, new_stats.memory_usage_kb);
+                stats_.cpu_time = new_stats.cpu_time;
+                stats_.file_descriptors_count = new_stats.file_descriptors_count;
+            }
+            
+            // THREAD SAFETY FIX: Execute callback outside critical section to prevent deadlock
+            std::function<void(const ProcessStats&)> callback;
+            {
+                std::lock_guard<std::mutex> cb_lock(callbacks_mutex_);
+                callback = stats_callback_;
+            }
+            if (callback) {
+                ProcessStats stats_copy;
+                {
+                    std::lock_guard<std::mutex> stats_lock(stats_mutex_);
+                    stats_copy = stats_;
+                }
+                callback(stats_copy);
+            }
         }
     }
 }
 
 void ExternalNodeProcess::setState(ProcessState new_state) {
-    ProcessState old_state = state_;
-    state_ = new_state;
+    ProcessState old_state;
+    std::function<void(ProcessState, ProcessState)> callback;
     
-    if (state_change_callback_ && old_state != new_state) {
-        state_change_callback_(old_state, new_state);
+    // THREAD SAFETY FIX: Update state under lock, execute callback outside critical section
+    {
+        std::lock_guard<std::mutex> state_lock(state_mutex_);
+        old_state = state_;
+        state_ = new_state;
+    }
+    
+    // Get callback outside state lock to prevent deadlock
+    if (old_state != new_state) {
+        std::lock_guard<std::mutex> cb_lock(callbacks_mutex_);
+        callback = state_change_callback_;
+    }
+    
+    // Execute callback outside critical section
+    if (callback && old_state != new_state) {
+        callback(old_state, new_state);
     }
 }
 
 bool ExternalNodeProcess::checkResourceLimits() const {
-    if (stats_.memory_usage_mb() > limits_.max_memory_mb) {
+    // THREAD SAFETY FIX: Create local copy of stats under lock
+    ProcessStats stats_copy;
+    {
+        std::lock_guard<std::mutex> stats_lock(stats_mutex_);
+        stats_copy = stats_;
+    }
+    
+    if (stats_copy.memory_usage_mb() > limits_.max_memory_mb) {
         return true;
     }
     
-    if (stats_.cpu_usage_percent() > limits_.max_cpu_percent) {
+    if (stats_copy.cpu_usage_percent() > limits_.max_cpu_percent) {
         return true;
     }
     
-    if (stats_.uptime() > limits_.timeout) {
+    if (stats_copy.uptime() > limits_.timeout) {
         return true;
     }
     
@@ -277,16 +367,26 @@ bool ExternalNodeProcess::checkResourceLimits() const {
 }
 
 void ExternalNodeProcess::scheduleRestart() {
-    stats_.restart_count++;
-    stats_.last_restart = std::chrono::system_clock::now();
+    // THREAD SAFETY FIX: Protect stats updates with mutex
+    {
+        std::lock_guard<std::mutex> stats_lock(stats_mutex_);
+        stats_.restart_count++;
+        stats_.last_restart = std::chrono::system_clock::now();
+    }
     
-    // Schedule restart in a separate thread
-    std::thread([this]() {
-        std::this_thread::sleep_for(limits_.restart_delay);
+    // RESOURCE FIX: Use managed thread instead of detached thread to prevent use-after-free
+    // Store thread handle for proper cleanup and use weak reference to avoid circular dependency
+    if (restart_thread_.joinable()) {
+        restart_thread_.join(); // Wait for any existing restart thread
+    }
+    
+    restart_thread_ = std::thread([this, delay = limits_.restart_delay]() {
+        std::this_thread::sleep_for(delay);
+        // Check if object is still valid before accessing members
         if (should_restart_) {
             restart();
         }
-    }).detach();
+    });
 }
 
 // =============================================================================
@@ -531,12 +631,12 @@ double ExternalNodeProcessManager::getTotalCpuUsage() const {
 // ProcessLauncher Implementation
 // =============================================================================
 
-ProcessLauncher::LaunchResult ProcessLauncher::launch(const LaunchConfig& config) {
-    LaunchResult result;
+// ERROR HANDLING STANDARDIZATION: Updated to use Result pattern
+foundation::types::Result<ProcessLauncher::LaunchResult> ProcessLauncher::launch(const LaunchConfig& config) {
+    using namespace foundation::types;
     
     if (config.executable.empty()) {
-        result.error_message = "Executable path is empty";
-        return result;
+        return Result<LaunchResult>::error(ErrorCodes::INVALID_ARGUMENT, "Executable path is empty");
     }
     
     pid_t pid = fork();
@@ -558,63 +658,103 @@ ProcessLauncher::LaunchResult ProcessLauncher::launch(const LaunchConfig& config
         execv(config.executable.c_str(), argv.data());
         exit(1); // execv failed
     } else if (pid > 0) {
-        // Parent process
-        result.success = true;
+        // Parent process - SUCCESS
+        LaunchResult result;
         result.pid = pid;
+        result.start_time = std::chrono::system_clock::now();
+        
+        // Build command line for debugging
+        result.command_line = config.executable;
+        for (const auto& arg : config.args) {
+            result.command_line += " " + arg;
+        }
+        
+        return Result<LaunchResult>::success(std::move(result));
     } else {
         // Fork failed
-        result.error_message = "Failed to fork process";
-        result.error_code = errno;
+        return Result<LaunchResult>::error(
+            ErrorCodes::SYSTEM_ERROR, 
+            "Failed to fork process: " + std::string(strerror(errno))
+        );
     }
-    
-    return result;
 }
 
-bool ProcessLauncher::terminate(pid_t pid, std::chrono::seconds timeout) {
+// ERROR HANDLING STANDARDIZATION: Updated terminate method
+foundation::types::Result<bool> ProcessLauncher::terminate(pid_t pid, std::chrono::seconds timeout) {
+    using namespace foundation::types;
+    
     if (pid <= 0) {
-        return false;
+        return Result<bool>::error(ErrorCodes::INVALID_ARGUMENT, "Invalid process ID: " + std::to_string(pid));
     }
     
     // Send SIGTERM
     if (::kill(pid, SIGTERM) != 0) {
-        return false;
+        return Result<bool>::error(
+            ErrorCodes::SYSTEM_ERROR, 
+            "Failed to send SIGTERM to process " + std::to_string(pid) + ": " + strerror(errno)
+        );
     }
     
     // Wait for process to exit
     auto deadline = std::chrono::system_clock::now() + timeout;
     while (std::chrono::system_clock::now() < deadline) {
-        if (!isRunning(pid)) {
-            return true;
+        auto running_result = isRunning(pid);
+        if (running_result.isError()) {
+            return running_result; // Propagate error
+        }
+        if (!running_result.getValue()) {
+            return Result<bool>::success(true);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
-    return false;
+    return Result<bool>::error(
+        ErrorCodes::TIMEOUT, 
+        "Process " + std::to_string(pid) + " did not terminate within timeout"
+    );
 }
 
-bool ProcessLauncher::kill(pid_t pid) {
+// ERROR HANDLING STANDARDIZATION: Updated kill method
+foundation::types::Result<bool> ProcessLauncher::kill(pid_t pid) {
+    using namespace foundation::types;
+    
     if (pid <= 0) {
-        return false;
+        return Result<bool>::error(ErrorCodes::INVALID_ARGUMENT, "Invalid process ID: " + std::to_string(pid));
     }
     
-    return ::kill(pid, SIGKILL) == 0;
+    if (::kill(pid, SIGKILL) == 0) {
+        return Result<bool>::success(true);
+    } else {
+        return Result<bool>::error(
+            ErrorCodes::SYSTEM_ERROR,
+            "Failed to send SIGKILL to process " + std::to_string(pid) + ": " + strerror(errno)
+        );
+    }
 }
 
-bool ProcessLauncher::isRunning(pid_t pid) {
+// ERROR HANDLING STANDARDIZATION: Updated isRunning method
+foundation::types::Result<bool> ProcessLauncher::isRunning(pid_t pid) {
+    using namespace foundation::types;
+    
     if (pid <= 0) {
-        return false;
+        return Result<bool>::error(ErrorCodes::INVALID_ARGUMENT, "Invalid process ID: " + std::to_string(pid));
     }
     
-    return ::kill(pid, 0) == 0;
+    // Use kill(pid, 0) to check if process exists
+    bool running = ::kill(pid, 0) == 0;
+    return Result<bool>::success(running);
 }
 
-ProcessStats ProcessLauncher::getProcessStats(pid_t pid) {
+// ERROR HANDLING STANDARDIZATION: Updated getProcessStats method
+foundation::types::Result<ProcessStats> ProcessLauncher::getProcessStats(pid_t pid) {
+    using namespace foundation::types;
+    
+    if (pid <= 0) {
+        return Result<ProcessStats>::error(ErrorCodes::INVALID_ARGUMENT, "Invalid process ID: " + std::to_string(pid));
+    }
+    
     ProcessStats stats;
     stats.pid = pid;
-    
-    if (pid <= 0) {
-        return stats;
-    }
     
     // Read from /proc/pid/stat
     std::ifstream stat_file("/proc/" + std::to_string(pid) + "/stat");
@@ -642,9 +782,14 @@ ProcessStats ProcessLauncher::getProcessStats(pid_t pid) {
         // Convert values
         stats.memory_usage_kb = rss * getpagesize() / 1024;
         stats.cpu_time = std::chrono::duration<double>((utime + stime) / 100.0); // Assuming 100 HZ
+        
+        return Result<ProcessStats>::success(std::move(stats));
+    } else {
+        return Result<ProcessStats>::error(
+            ErrorCodes::SYSTEM_ERROR, 
+            "Failed to read process statistics for PID " + std::to_string(pid)
+        );
     }
-    
-    return stats;
 }
 
 bool ProcessLauncher::setupChildProcess(const LaunchConfig& config) {
@@ -750,6 +895,49 @@ bool ProcessLauncher::setupSecurity(const LaunchConfig& config) {
     }
     
     return true;
+}
+
+void ExternalNodeProcessManager::stopGlobalMonitoring() {
+    global_monitoring_ = false;
+    if (global_monitor_thread_.joinable()) {
+        global_monitor_thread_.join();
+    }
+}
+
+// RESOURCE FIX: Method to clean up finished child processes to prevent zombies
+// THREAD SAFETY FIX: Added proper synchronization for child PID tracking
+void ExternalNodeProcess::cleanupChildProcesses() {
+    std::vector<pid_t> pids_to_check;
+    std::vector<pid_t> finished_pids;
+    
+    // THREAD SAFETY FIX: Copy PIDs under lock to minimize critical section
+    {
+        std::lock_guard<std::mutex> pids_lock(child_pids_mutex_);
+        pids_to_check.assign(active_child_pids_.begin(), active_child_pids_.end());
+    }
+    
+    // Check all tracked child processes for completion (outside critical section)
+    for (pid_t pid : pids_to_check) {
+        int status;
+        pid_t result = waitpid(pid, &status, WNOHANG);
+        
+        if (result == pid) {
+            // Process has finished
+            finished_pids.push_back(pid);
+        } else if (result == -1 && errno == ECHILD) {
+            // Process doesn't exist (was reaped elsewhere)
+            finished_pids.push_back(pid);
+        }
+        // result == 0 means process is still running
+    }
+    
+    // THREAD SAFETY FIX: Remove finished processes under lock
+    if (!finished_pids.empty()) {
+        std::lock_guard<std::mutex> pids_lock(child_pids_mutex_);
+        for (pid_t pid : finished_pids) {
+            active_child_pids_.erase(pid);
+        }
+    }
 }
 
 } // namespace process

@@ -1,0 +1,56 @@
+id: "akao:node:yaml:processor:v1"
+name: "YAML Processor"
+version: "1.0.0"
+description: "Parses and generates YAML with comprehensive YAML 1.2 support"
+
+runtime:
+  type: "executable"
+  command: "./yaml-processor"
+  args: []
+  working_dir: ""
+  env: {}
+
+communication:
+  protocol: "yamlrpc"
+  version: "1.0"
+  socket_path: "/tmp/akao-node-yaml.sock"
+  methods: ["info", "validate", "execute", "health", "shutdown"]
+
+inputs:
+  - name: "operation"
+    type: "string"
+    required: true
+    description: "Operation to perform (parse, generate, validate)"
+  - name: "content"
+    type: "string"
+    description: "YAML content to process"
+  - name: "data"
+    type: "object"
+    description: "Data to convert to YAML"
+
+outputs:
+  - name: "result"
+    type: "any"
+    description: "Processed result (parsed data or generated YAML)"
+  - name: "valid"
+    type: "boolean"
+    description: "Whether the YAML is valid"
+  - name: "errors"
+    type: "array"
+    description: "Any parsing or validation errors"
+
+resources:
+  memory: "128MB"
+  cpu: "100m"
+  timeout_seconds: 30
+  max_instances: 2
+
+dependencies:
+  system: []
+  nodes: []
+
+metadata:
+  category: "parsing"
+  tags: ["yaml", "processor", "validation"]
+  maintainer: "akao-core"
+  license: "internal"

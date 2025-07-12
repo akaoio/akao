@@ -1,58 +1,143 @@
-# Sandbox Directory
+# 🎯 AKAO CURRENT SYSTEM OVERVIEW
 
-## Purpose
+**Current Reality**: **C++ node-based workflow orchestrator** with hardcore separation architecture
 
-The sandbox directory serves as an unrestricted development environment for experimental code, prototypes, and non-production assets that exist outside the formal system architecture.
+---
 
-## Scope
+## 📋 **System Architecture**
 
-This directory contains:
-- Experimental implementations and proof-of-concepts
-- Temporary development artifacts
-- Research and exploration code
-- Third-party integrations testing
-- Development utilities and scripts
-- Non-production prototypes
+### **✅ What Akao IS:**
+- **C++ Workflow Orchestrator Platform** 
+- **Core**: Pure orchestrator managing process lifecycle (NO business logic)
+- **Nodes**: Independent processes communicating via YAML-RPC protocol
+- **Architecture**: Complete core-node independence with Unix Domain Socket communication
+- **Discovery**: Manifest-based automatic node registration
 
-## Validation Policy
+### **❌ What Akao is NOT:**
+- ~~Validation system~~ (LEGACY - moved to `legacy-do-not-read/`)
+- ~~Philosophy engine~~ (LEGACY - moved to `legacy-do-not-read/`)
+- ~~Rule-based processor~~ (LEGACY - moved to `legacy-do-not-read/`)
+- ~~Tracing system~~ (LEGACY - moved to `legacy-do-not-read/`)
 
-**No Validation Required**: Contents of this directory are explicitly excluded from:
-- System validation processes (`akao validate`)
-- Quality assurance checks
-- Compliance requirements
-- Production deployment pipelines
-- Formal code review processes
+---
 
-## Usage Guidelines
+## 🏗️ **Current Implementation**
 
-### Permitted Activities
-- Rapid prototyping and experimentation
-- Algorithm testing and validation
-- Integration research with external libraries
-- Development tool creation
-- Learning and educational exercises
+### **Core Orchestrator** (`core/`)
+```
+core/
+├── foundation/formats/yaml/     # YAML infrastructure for protocol
+├── engine/communication/yamlrpc/ # YAML-RPC protocol implementation  
+├── engine/orchestrator/process/ # External node process management
+└── engine/orchestrator/discovery/ # Manifest-based node discovery
+```
 
-### Restrictions
-- **No Production Dependencies**: Production code must not depend on sandbox contents
-- **No Critical Logic**: Business-critical functionality should not reside here
-- **Temporary Nature**: Consider sandbox contents as ephemeral
+### **Independent Nodes** (`.akao/nodes/`)
+```
+.akao/nodes/
+├── file/                       # File scanner (filesystem analysis)
+├── logic/                      # Logic executor (.a format expressions)
+├── reporter/                   # Report generator (multi-format)
+└── yaml/                       # YAML processor (parsing/generation)
+```
 
-## Organization
+### **Communication Architecture**
+```
+User → CLI → Core Orchestrator → Node Process
+              ↓ YAML-RPC ↓
+         Unix Domain Socket
+```
 
-While no formal structure is enforced, consider organizing by:
-- `experiments/` - Research and proof-of-concept code
-- `prototypes/` - Early-stage implementations
-- `tools/` - Development utilities
-- `temp/` - Temporary files and quick tests
+---
 
-## Migration Path
+## 🧪 **System Status**
 
-When sandbox code matures and proves valuable:
-1. Refactor according to system standards
-2. Move to appropriate production directories
-3. Apply formal validation processes
-4. Update documentation and tests
+### **✅ COMPLETED (100% Functional)**
+- **Hardcore separation architecture** - Complete core-node independence
+- **YAML-RPC protocol** - Full protocol implementation with Unix Domain Sockets
+- **Node discovery system** - Manifest-based automatic registration  
+- **Process management** - External node lifecycle management
+- **Independent nodes** - All 4 nodes (file, logic, reporter, yaml) as separate processes
+- **System integration tests** - Comprehensive test suite proving system works
 
-## Warning
+### **🚧 IN PROGRESS**
+- **CLI implementation** - User interface for the orchestrator
 
-⚠️ **Development Use Only**: Contents are not guaranteed to be functional, secure, or maintained. Use at your own discretion.
+---
+
+## 📁 **Directory Structure**
+
+### **Active Development** 
+```
+akao/
+├── core/                       # ✅ Core orchestrator (infrastructure only)
+├── .akao/nodes/                # ✅ Independent node processes  
+├── test/                       # ✅ System integration tests
+└── sandbox/                    # 📋 Current documentation
+    ├── cli/                    # 🚧 CLI design (if recreated)
+    ├── hardcore/               # ✅ Architecture documentation
+    └── legacy-do-not-read/     # 🗑️ Legacy content (DO NOT READ)
+```
+
+### **Legacy Content (DO NOT READ)**
+```
+sandbox/legacy-do-not-read/
+├── design/                     # Old validation system designs
+├── prompts/                    # Legacy development prompts  
+├── thoughts/                   # Legacy architectural thoughts
+└── README.md                   # Legacy project overview
+```
+
+---
+
+## 🎯 **Current Focus**
+
+### **System Reality Check**
+- **NOT** a validation system ❌
+- **NOT** a philosophy engine ❌  
+- **NOT** a rule processor ❌
+- **IS** a C++ workflow orchestrator ✅
+- **IS** a node-based processing platform ✅
+- **IS** a hardcore separation architecture ✅
+
+### **Commands Context**
+```bash
+# These are SYSTEM HEALTH checks, NOT legacy validation:
+akao status         # Core orchestrator health status
+akao validate       # System configuration health check  
+akao test          # System integration tests
+
+# These are WORKFLOW operations:
+akao list --node          # List available processing nodes
+akao run --node file      # Execute file scanner node
+akao run --workflow build # Execute build workflow
+```
+
+---
+
+## 📋 **Documentation Status**
+
+### **✅ Updated for Current System**
+- **CONTRIBUTING.md** - Rewritten for C++ orchestrator development
+- **sandbox/hardcore/** - Architecture documentation (correct)
+- **test/** - Integration tests proving system works
+- **.akao/nodes/*/_.yaml** - Node manifests (correct)
+
+### **🗑️ Moved to Legacy**
+- **validation system references** → `legacy-do-not-read/`
+- **philosophy content** → `legacy-do-not-read/`
+- **rule/ruleset content** → `legacy-do-not-read/`
+- **tracing system references** → `legacy-do-not-read/`
+
+---
+
+## 🚀 **Next Steps**
+
+1. **CLI Implementation** - Create user interface for the orchestrator
+2. **Workflow Management** - Advanced workflow definition and execution  
+3. **External Node Support** - Installation and management of third-party nodes
+4. **Performance Optimization** - Connection pooling and resource management
+
+---
+
+**🎯 Reality: Akao is a C++ node-based workflow orchestrator with complete core-node independence!**

@@ -21,6 +21,7 @@
 #include <functional>
 #include <chrono>
 #include <set>
+#include <shared_mutex>
 
 namespace akao {
 namespace core {
@@ -88,7 +89,17 @@ struct WorkflowContext {
     std::map<std::string, foundation::types::NodeValue> inputs;
     std::map<std::string, foundation::types::NodeValue> outputs;
     
-    WorkflowContext() : start_time(std::chrono::system_clock::now()) {}
+    // THREAD SAFETY FIX: Add mutex for concurrent access during parallel execution
+    mutable std::unique_ptr<std::shared_mutex> context_mutex;
+    
+    WorkflowContext() : start_time(std::chrono::system_clock::now()), 
+                       context_mutex(std::make_unique<std::shared_mutex>()) {}
+    
+    // Make non-copyable but movable
+    WorkflowContext(const WorkflowContext&) = delete;
+    WorkflowContext& operator=(const WorkflowContext&) = delete;
+    WorkflowContext(WorkflowContext&&) = default;
+    WorkflowContext& operator=(WorkflowContext&&) = default;
 };
 
 /**
@@ -294,6 +305,13 @@ private:
     std::string substituteStringParameters(const std::string& template_str,
                                           const WorkflowContext& context);
     
+    // Node registry integration
+    std::shared_ptr<foundation::interfaces::INode> getNodeFromRegistry(const std::string& node_id);
+    foundation::types::NodeValue createNodeValueFromInputs(
+        const std::map<std::string, foundation::types::NodeValue>& inputs);
+    foundation::types::ExecutionResult applyOutputTransformation(
+        const foundation::types::ExecutionResult& result, const std::string& transform_expr);
+    
     // Error handling and recovery
     bool shouldRetryNode(const WorkflowNode& node, int attempt_count);
     void handleNodeError(const std::string& node_id, const std::string& error_message,
@@ -301,6 +319,7 @@ private:
 
     // Execution state
     mutable ExecutionStatus current_status_;
+    mutable std::mutex status_mutex_;  // THREAD SAFETY FIX: Protect execution status
     std::chrono::milliseconds default_timeout_{30000};
     bool parallel_execution_enabled_{false};
     int max_retry_attempts_{3};

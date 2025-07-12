@@ -22,7 +22,7 @@ nodes:
     enabled: true
     depends_on: ["scan-files"]
     parameters:
-      validate_schema: false
+      check_schema: false
       extract_metadata: true
     timeout: 2000
     retry_count: 1

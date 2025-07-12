@@ -12,6 +12,7 @@
 #pragma once
 
 #include "core/engine/orchestrator/discovery/v1.hpp"
+#include "core/foundation/types/result_util.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -22,6 +23,7 @@
 #include <atomic>
 #include <functional>
 #include <future>
+#include <set>
 
 namespace akao {
 namespace core {
@@ -102,6 +104,15 @@ private:
     std::atomic<bool> monitoring_;
     std::chrono::seconds monitor_interval_;
     
+    // Resource management - ADDED FOR LEAK PREVENTION
+    std::thread restart_thread_;           // Managed restart thread (replaces detached thread)
+    std::set<pid_t> active_child_pids_;    // Track child processes to prevent zombies
+    
+    // THREAD SAFETY FIXES - Additional mutexes for fine-grained locking
+    mutable std::mutex stats_mutex_;       // Protects stats_ from race conditions
+    mutable std::mutex child_pids_mutex_;  // Protects active_child_pids_ from concurrent access
+    mutable std::mutex callbacks_mutex_;   // Protects callback execution
+    
     // Callbacks
     std::function<void(ProcessState, ProcessState)> state_change_callback_;
     std::function<void(const ProcessStats&)> stats_callback_;
@@ -156,6 +167,9 @@ private:
     ProcessStats getSystemStats(pid_t pid);
     bool isProcessAlive(pid_t pid);
     void cleanupProcess();
+    
+    // Resource management
+    void cleanupChildProcesses();     // Clean up finished child processes to prevent zombies
 };
 
 /**
@@ -277,18 +291,19 @@ public:
         bool capture_output = false;
     };
     
+    // ERROR HANDLING STANDARDIZATION: Launch result with proper error context
     struct LaunchResult {
-        bool success = false;
         pid_t pid = -1;
-        std::string error_message;
-        int error_code = 0;
+        std::string command_line; // For debugging
+        std::chrono::system_clock::time_point start_time;
     };
     
-    static LaunchResult launch(const LaunchConfig& config);
-    static bool terminate(pid_t pid, std::chrono::seconds timeout = std::chrono::seconds(10));
-    static bool kill(pid_t pid);
-    static bool isRunning(pid_t pid);
-    static ProcessStats getProcessStats(pid_t pid);
+    // Updated to use standardized Result pattern
+    static foundation::types::Result<LaunchResult> launch(const LaunchConfig& config);
+    static foundation::types::Result<bool> terminate(pid_t pid, std::chrono::seconds timeout = std::chrono::seconds(10));
+    static foundation::types::Result<bool> kill(pid_t pid);
+    static foundation::types::Result<bool> isRunning(pid_t pid);
+    static foundation::types::Result<ProcessStats> getProcessStats(pid_t pid);
     
 private:
     static bool setupChildProcess(const LaunchConfig& config);

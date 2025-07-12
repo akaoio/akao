@@ -1,0 +1,50 @@
+id: "akao:node:logic:executor:v1"
+name: "Logic Executor"
+version: "1.0.0"
+description: "Executes .a format logical expressions with comprehensive built-in functions"
+
+runtime:
+  type: "executable"
+  command: "./independent/logic-executor"
+  args: []
+  working_dir: ""
+  env: {}
+
+communication:
+  protocol: "yamlrpc"
+  version: "1.0"
+  socket_path: "/tmp/akao-node-logic.sock"
+  methods: ["info", "validate", "execute", "health", "shutdown"]
+
+inputs:
+  - name: "expression"
+    type: "string"
+    required: true
+    description: "The .a format logical expression to evaluate"
+  - name: "variables"
+    type: "object"
+    description: "Variable bindings for the expression"
+
+outputs:
+  - name: "result"
+    type: "boolean"
+    description: "The evaluation result of the expression"
+  - name: "value"
+    type: "any"
+    description: "The computed value (for non-boolean expressions)"
+
+resources:
+  memory: "256MB"
+  cpu: "200m"
+  timeout_seconds: 30
+  max_instances: 2
+
+dependencies:
+  system: []
+  nodes: []
+
+metadata:
+  category: "logic"
+  tags: ["executor", "evaluation", "expressions"]
+  maintainer: "akao-core"
+  license: "internal"

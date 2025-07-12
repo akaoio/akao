@@ -19,6 +19,10 @@
 #include <signal.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <errno.h>
+#include <sys/resource.h>
+#include <chrono>
+#include <thread>
 
 namespace akao {
 namespace core {
@@ -580,13 +584,46 @@ bool NodeRegistry::startNodeProcess(DiscoveredNode& node) {
     }
     
     std::string command = node.manifest->getExecutablePath();
+    if (command.empty()) {
+        return false;
+    }
     
-    // Simple process spawning (in production, use proper process management)
+    // SECURITY: Validate executable path to prevent command injection
+    if (!validateExecutablePath(command)) {
+        return false;
+    }
+    
+    // SECURITY: Check if executable is safe to run
+    if (!isExecutableSafe(command)) {
+        return false;
+    }
+    
     pid_t pid = fork();
     if (pid == 0) {
-        // Child process
-        execl(command.c_str(), command.c_str(), nullptr);
-        exit(1);
+        // Child process - implement secure execution
+        
+        // SECURITY: Set resource limits to prevent resource exhaustion
+        struct rlimit limit;
+        limit.rlim_cur = 128 * 1024 * 1024; // 128MB memory limit
+        limit.rlim_max = 128 * 1024 * 1024;
+        if (setrlimit(RLIMIT_AS, &limit) != 0) {
+            _exit(126); // Exit if resource limits cannot be set
+        }
+        
+        // SECURITY: Set CPU time limit to prevent runaway processes
+        limit.rlim_cur = 30; // 30 seconds CPU time
+        limit.rlim_max = 30;
+        setrlimit(RLIMIT_CPU, &limit);
+        
+        // SECURITY: Create new session to prevent signal propagation
+        setsid();
+        
+        // SECURITY: Use execv with validated arguments (safer than execl)
+        const char* argv[] = {command.c_str(), nullptr};
+        execv(command.c_str(), const_cast<char* const*>(argv));
+        
+        // If execv fails, exit immediately with specific error code
+        _exit(127);
     } else if (pid > 0) {
         // Parent process
         node.process_id = pid;
@@ -595,6 +632,7 @@ bool NodeRegistry::startNodeProcess(DiscoveredNode& node) {
         return true;
     }
     
+    // Fork failed
     return false;
 }
 
@@ -603,26 +641,52 @@ bool NodeRegistry::stopNodeProcess(DiscoveredNode& node) {
         return false;
     }
     
-    // Send SIGTERM, then SIGKILL if necessary
-    if (kill(node.process_id, SIGTERM) == 0) {
-        // Wait for process to exit
+    // Send SIGTERM first for graceful shutdown
+    if (kill(node.process_id, SIGTERM) != 0) {
+        // Process already dead or permission denied
+        node.is_running = false;
+        node.process_id = -1;
+        return errno == ESRCH; // Return true if process was already dead
+    }
+    
+    // Wait for graceful termination with timeout
+    const int timeout_seconds = 5;
+    const int check_interval_ms = 100;
+    int total_wait_ms = 0;
+    
+    while (total_wait_ms < timeout_seconds * 1000) {
         int status;
-        if (waitpid(node.process_id, &status, WNOHANG) == node.process_id) {
+        pid_t result = waitpid(node.process_id, &status, WNOHANG);
+        
+        if (result == node.process_id) {
+            // Process exited gracefully
+            node.is_running = false;
+            node.process_id = -1;
+            return true;
+        } else if (result == -1) {
+            // Process no longer exists
             node.is_running = false;
             node.process_id = -1;
             return true;
         }
         
-        // If still running, force kill
-        sleep(2);
-        if (kill(node.process_id, SIGKILL) == 0) {
-            waitpid(node.process_id, &status, 0);
+        // Process still running, wait a bit more
+        std::this_thread::sleep_for(std::chrono::milliseconds(check_interval_ms));
+        total_wait_ms += check_interval_ms;
+    }
+    
+    // Timeout reached, force kill
+    if (kill(node.process_id, SIGKILL) == 0) {
+        // Wait for force kill to complete (should be immediate)
+        int status;
+        if (waitpid(node.process_id, &status, 0) == node.process_id) {
             node.is_running = false;
             node.process_id = -1;
             return true;
         }
     }
     
+    // If we get here, something went wrong
     return false;
 }
 
@@ -634,6 +698,77 @@ DiscoveredNode* NodeRegistry::getMutableNode(const std::string& node_id) {
 
 std::string NodeRegistry::generateSocketPath(const std::string& node_id) {
     return "/tmp/akao-node-" + node_id + ".sock";
+}
+
+bool NodeRegistry::validateExecutablePath(const std::string& path) const {
+    if (path.empty()) {
+        return false;
+    }
+    
+    // SECURITY: Prevent path traversal attacks
+    if (path.find("..") != std::string::npos) {
+        return false;
+    }
+    
+    // SECURITY: Must be absolute path for predictability
+    if (path[0] != '/') {
+        return false;
+    }
+    
+    // SECURITY: Reject paths with dangerous characters
+    const std::string dangerous_chars = ";|&$`<>";
+    if (path.find_first_of(dangerous_chars) != std::string::npos) {
+        return false;
+    }
+    
+    // SECURITY: Must exist and be a regular file
+    struct stat file_stat;
+    if (stat(path.c_str(), &file_stat) != 0) {
+        return false;
+    }
+    
+    if (!S_ISREG(file_stat.st_mode)) {
+        return false;
+    }
+    
+    return true;
+}
+
+bool NodeRegistry::isExecutableSafe(const std::string& path) const {
+    struct stat file_stat;
+    if (stat(path.c_str(), &file_stat) != 0) {
+        return false;
+    }
+    
+    // SECURITY: Must be executable by owner
+    if (!(file_stat.st_mode & S_IXUSR)) {
+        return false;
+    }
+    
+    // SECURITY: Should not be world-writable
+    if (file_stat.st_mode & S_IWOTH) {
+        return false;
+    }
+    
+    // SECURITY: Should not be setuid/setgid for external nodes
+    if (file_stat.st_mode & (S_ISUID | S_ISGID)) {
+        return false;
+    }
+    
+    // SECURITY: Verify file is not too large (prevent resource exhaustion)
+    const off_t max_executable_size = 100 * 1024 * 1024; // 100MB
+    if (file_stat.st_size > max_executable_size) {
+        return false;
+    }
+    
+    return true;
+}
+
+void NodeRegistry::stopHealthMonitoring() {
+    monitoring_ = false;
+    if (health_thread_.joinable()) {
+        health_thread_.join();
+    }
 }
 
 } // namespace discovery

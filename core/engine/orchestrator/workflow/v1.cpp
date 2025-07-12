@@ -19,6 +19,7 @@
 #include <regex>
 #include <future>
 #include <thread>
+#include <cctype>
 
 namespace akao {
 namespace core {
@@ -774,11 +775,14 @@ WorkflowExecutionResult WorkflowExecutor::execute(const WorkflowDefinition& work
     WorkflowExecutionResult result;
     auto start_time = std::chrono::steady_clock::now();
     
-    // Initialize execution status
-    current_status_.total_nodes = workflow.getNodeCount();
-    current_status_.completed_nodes = 0;
-    current_status_.is_running = true;
-    current_status_.elapsed_time = std::chrono::duration<double>(0);
+    // THREAD SAFETY FIX: Initialize execution status under lock
+    {
+        std::lock_guard<std::mutex> status_lock(status_mutex_);
+        current_status_.total_nodes = workflow.getNodeCount();
+        current_status_.completed_nodes = 0;
+        current_status_.is_running = true;
+        current_status_.elapsed_time = std::chrono::duration<double>(0);
+    }
     
     try {
         // Validate workflow
@@ -795,10 +799,17 @@ WorkflowExecutionResult WorkflowExecutor::execute(const WorkflowDefinition& work
             return result;
         }
         
-        // Create mutable context
-        WorkflowContext mutable_context = context;
-        mutable_context.workflow_id = workflow.getId();
-        mutable_context.start_time = std::chrono::system_clock::now();
+        // THREAD SAFETY FIX: Create mutable context copy manually (can't copy due to mutex)
+        WorkflowContext mutable_context;
+        {
+            std::shared_lock<std::shared_mutex> context_lock(*context.context_mutex);
+            mutable_context.workflow_id = workflow.getId();
+            mutable_context.execution_id = context.execution_id;
+            mutable_context.start_time = std::chrono::system_clock::now();
+            mutable_context.variables = context.variables;
+            mutable_context.inputs = context.inputs;
+            mutable_context.outputs = context.outputs;
+        }
         
         // Choose execution strategy
         if (parallel_execution_enabled_) {
@@ -817,8 +828,12 @@ WorkflowExecutionResult WorkflowExecutor::execute(const WorkflowDefinition& work
     auto end_time = std::chrono::steady_clock::now();
     result.execution_time = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     
-    current_status_.is_running = false;
-    current_status_.elapsed_time = result.execution_time;
+    // THREAD SAFETY FIX: Update final status under lock
+    {
+        std::lock_guard<std::mutex> status_lock(status_mutex_);
+        current_status_.is_running = false;
+        current_status_.elapsed_time = result.execution_time;
+    }
     
     return result;
 }
@@ -837,16 +852,53 @@ void WorkflowExecutor::registerTransformFunction(const std::string& name,
 }
 
 WorkflowExecutor::ExecutionStatus WorkflowExecutor::getExecutionStatus() const {
+    // THREAD SAFETY FIX: Return copy under lock
+    std::lock_guard<std::mutex> status_lock(status_mutex_);
     return current_status_;
 }
 
 foundation::types::ExecutionResult WorkflowExecutor::executeNode(const WorkflowNode& node, 
                                                                 const WorkflowContext& context) {
-    // Simplified implementation - just return success
-    auto inputs = prepareNodeInputs(node, context);
-    
-    // For now, return a mock successful result
-    return foundation::types::ExecutionResult::success(foundation::types::NodeValue("Node executed successfully"));
+    try {
+        // Prepare inputs for node execution
+        auto inputs = prepareNodeInputs(node, context);
+        
+        // Convert inputs to NodeValue format
+        foundation::types::NodeValue node_input = createNodeValueFromInputs(inputs);
+        
+        // Get node from registry
+        auto node_instance = getNodeFromRegistry(node.id);
+        if (!node_instance) {
+            return foundation::types::ExecutionResult::error(
+                "Node not found in registry: " + node.id
+            );
+        }
+        
+        // Create execution context
+        foundation::interfaces::NodeContext exec_context(node.id, node_input);
+        exec_context.setWorkflowId(context.workflow_id);
+        exec_context.setExecutionId(context.execution_id);
+        exec_context.setNodeId(node.id);
+        
+        // Create node parameters from inputs
+        foundation::interfaces::NodeParameters node_params;
+        for (const auto& [name, value] : inputs) {
+            node_params.setParameter(name, value);
+        }
+        
+        // Execute the node
+        auto result = node_instance->execute(exec_context, node_params);
+        
+        // Note: Output transformations would be applied here if defined in node schema
+        // For now, return result as-is since output_transform is not part of WorkflowNode
+        
+        return result;
+        
+    } catch (const std::exception& e) {
+        return foundation::types::ExecutionResult::error(
+            "Node execution failed: " + std::string(e.what())
+        );
+    }
 }
 
 std::map<std::string, foundation::types::NodeValue> WorkflowExecutor::prepareNodeInputs(
@@ -865,13 +917,37 @@ std::map<std::string, foundation::types::NodeValue> WorkflowExecutor::prepareNod
 void WorkflowExecutor::updateContextWithOutputs(WorkflowContext& context, const std::string& node_id,
                                                const foundation::types::ExecutionResult& result) {
     if (result.isSuccess()) {
+        // THREAD SAFETY FIX: Protect context outputs with write lock
+        std::unique_lock<std::shared_mutex> context_lock(*context.context_mutex);
         context.outputs[node_id] = result.getData();
     }
 }
 
 foundation::types::NodeValue WorkflowExecutor::substituteParameters(const foundation::types::NodeValue& value,
                                                                    const WorkflowContext& context) {
-    // Simple implementation - return value as-is for now
+    if (value.isString()) {
+        // Substitute string parameters using template substitution
+        std::string substituted = substituteStringParameters(value.asString(), context);
+        return foundation::types::NodeValue(substituted);
+    } else if (value.isObject()) {
+        // Recursively substitute parameters in objects
+        auto obj = value.asObject();
+        std::map<std::string, foundation::types::NodeValue> substituted_obj;
+        for (const auto& [key, val] : obj) {
+            substituted_obj[key] = substituteParameters(val, context);
+        }
+        return foundation::types::NodeValue(substituted_obj);
+    } else if (value.isArray()) {
+        // Recursively substitute parameters in arrays
+        auto arr = value.asArray();
+        std::vector<foundation::types::NodeValue> substituted_arr;
+        for (const auto& item : arr) {
+            substituted_arr.push_back(substituteParameters(item, context));
+        }
+        return foundation::types::NodeValue(substituted_arr);
+    }
+    
+    // For other types (numbers, booleans, null), return as-is
     return value;
 }
 
@@ -901,7 +977,38 @@ std::string WorkflowExecutor::substituteStringParameters(const std::string& temp
 
 foundation::types::NodeValue WorkflowExecutor::applyTransformation(const std::string& transform_expr,
                                                                  const foundation::types::NodeValue& input) {
-    // Simple transformation - return input as-is for now
+    if (transform_expr.empty()) {
+        return input;
+    }
+    
+    // Apply registered transformation functions
+    auto it = transform_functions_.find(transform_expr);
+    if (it != transform_functions_.end()) {
+        try {
+            return it->second(input);
+        } catch (const std::exception& e) {
+            // If transformation fails, log error and return original input
+            // In production, this should be logged properly
+            return input;
+        }
+    }
+    
+    // Built-in transformations
+    if (transform_expr == "identity") {
+        return input;
+    } else if (transform_expr == "to_string") {
+        return foundation::types::NodeValue(input.toString());
+    } else if (transform_expr == "to_upper" && input.isString()) {
+        std::string str = input.asString();
+        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+        return foundation::types::NodeValue(str);
+    } else if (transform_expr == "to_lower" && input.isString()) {
+        std::string str = input.asString();
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        return foundation::types::NodeValue(str);
+    }
+    
+    // Unknown transformation - return input unchanged
     return input;
 }
 
@@ -964,7 +1071,11 @@ WorkflowExecutionResult WorkflowExecutor::executeSequential(const WorkflowDefini
             continue;
         }
         
-        current_status_.current_node = node_id;
+        // THREAD SAFETY FIX: Update current node under lock
+        {
+            std::lock_guard<std::mutex> status_lock(status_mutex_);
+            current_status_.current_node = node_id;
+        }
         
         // Execute with retry logic
         foundation::types::ExecutionResult node_result;
@@ -1003,7 +1114,11 @@ WorkflowExecutionResult WorkflowExecutor::executeSequential(const WorkflowDefini
             }
         }
         
-        current_status_.completed_nodes++;
+        // THREAD SAFETY FIX: Update status under lock (sequential execution)
+        {
+            std::lock_guard<std::mutex> status_lock(status_mutex_);
+            current_status_.completed_nodes++;
+        }
     }
     
     result.success = true;
@@ -1027,9 +1142,22 @@ WorkflowExecutionResult WorkflowExecutor::executeParallel(const WorkflowDefiniti
                 continue;
             }
             
-            // Launch async execution
-            auto future = std::async(std::launch::async, [this, node, &context]() {
-                return std::make_pair(node->id, executeNode(*node, context));
+            // THREAD SAFETY FIX: Create node-specific context copy to avoid race conditions
+            // Copy necessary context data under read lock
+            WorkflowContext node_context;
+            {
+                std::shared_lock<std::shared_mutex> context_lock(*context.context_mutex);
+                node_context.workflow_id = context.workflow_id;
+                node_context.execution_id = context.execution_id;
+                node_context.start_time = context.start_time;
+                node_context.variables = context.variables;
+                node_context.inputs = context.inputs;
+                // Note: outputs will be merged back after execution
+            }
+            
+            // Launch async execution with node-specific context (move to avoid copy)
+            auto future = std::async(std::launch::async, [this, node, node_context = std::move(node_context)]() mutable {
+                return std::make_pair(node->id, executeNode(*node, node_context));
             });
             futures.push_back(std::move(future));
         }
@@ -1047,7 +1175,12 @@ WorkflowExecutionResult WorkflowExecutor::executeParallel(const WorkflowDefiniti
             } else {
                 updateContextWithOutputs(context, node_id, node_result);
                 completed_nodes.insert(node_id);
-                current_status_.completed_nodes++;
+                
+                // THREAD SAFETY FIX: Update status under lock
+                {
+                    std::lock_guard<std::mutex> status_lock(status_mutex_);
+                    current_status_.completed_nodes++;
+                }
             }
         }
     }
@@ -1242,6 +1375,83 @@ namespace workflow_utils {
         }
         
         return oss.str();
+    }
+}
+
+// =============================================================================
+// WorkflowExecutor Helper Methods Implementation
+// =============================================================================
+
+std::shared_ptr<foundation::interfaces::INode> WorkflowExecutor::getNodeFromRegistry(const std::string& node_id) {
+    if (!registry_) {
+        return nullptr;
+    }
+    
+    // Note: The current registry returns DiscoveredNode but we need INode
+    // This would require a proper adapter or factory to convert DiscoveredNode to INode
+    // For now, return nullptr to indicate missing implementation
+    // TODO: Implement node factory that converts DiscoveredNode to INode wrapper
+    return nullptr;
+}
+
+foundation::types::NodeValue WorkflowExecutor::createNodeValueFromInputs(
+    const std::map<std::string, foundation::types::NodeValue>& inputs) {
+    
+    if (inputs.empty()) {
+        return foundation::types::NodeValue();
+    }
+    
+    // If there's only one input named "input" or "data", use it directly
+    if (inputs.size() == 1) {
+        const auto& first_input = inputs.begin();
+        if (first_input->first == "input" || first_input->first == "data") {
+            return first_input->second;
+        }
+    }
+    
+    // Otherwise, create a mapping of all inputs
+    std::map<std::string, foundation::types::NodeValue> input_map;
+    for (const auto& [name, value] : inputs) {
+        input_map[name] = value;
+    }
+    
+    return foundation::types::NodeValue(input_map);
+}
+
+foundation::types::ExecutionResult WorkflowExecutor::applyOutputTransformation(
+    const foundation::types::ExecutionResult& result, const std::string& transform_expr) {
+    
+    if (transform_expr.empty() || !result.isSuccess()) {
+        return result;
+    }
+    
+    try {
+        // Apply transformation using registered transform functions
+        auto it = transform_functions_.find(transform_expr);
+        if (it != transform_functions_.end()) {
+            auto transformed_data = it->second(result.getData());
+            return foundation::types::ExecutionResult::success(transformed_data);
+        }
+        
+        // If no registered function, try basic transformations
+        if (transform_expr == "identity") {
+            return result;
+        } else if (transform_expr == "to_string") {
+            auto string_data = foundation::types::NodeValue(result.getData().toString());
+            return foundation::types::ExecutionResult::success(string_data);
+        } else if (transform_expr == "to_json") {
+            // Convert to JSON representation
+            auto json_data = foundation::types::NodeValue(result.getData().toString());
+            return foundation::types::ExecutionResult::success(json_data);
+        }
+        
+        // Unknown transformation - return original result with warning
+        return result;
+        
+    } catch (const std::exception& e) {
+        return foundation::types::ExecutionResult::error(
+            "Transformation failed: " + std::string(e.what())
+        );
     }
 }
 

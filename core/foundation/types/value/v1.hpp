@@ -107,6 +107,13 @@ public:
     int64_t toInteger() const;
     double toDouble() const;
     bool toBoolean() const;
+    
+    // Safe accessors (ERROR HANDLING STANDARDIZATION)
+    // These methods return default values instead of throwing exceptions
+    std::string asStringOr(const std::string& defaultValue = "") const;
+    int64_t asIntegerOr(int64_t defaultValue = 0) const;
+    double asDoubleOr(double defaultValue = 0.0) const;
+    bool asBooleanOr(bool defaultValue = false) const;
 
     // Metadata operations
     void setMetadata(const std::string& key, const NodeValue& value);

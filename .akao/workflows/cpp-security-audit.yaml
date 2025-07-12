@@ -1,0 +1,188 @@
+id: "akao:workflow:security:cpp-audit:v1"
+name: "C++ Security Audit Pipeline"
+description: "Complex workflow for comprehensive C++ codebase security analysis with vulnerability detection, dependency checking, and automated remediation"
+version: "1.0.0"
+
+inputs:
+  - name: "source_directory"
+    type: "string"
+    description: "Root directory of C++ project to audit"
+    required: true
+  - name: "severity_threshold"
+    type: "string"
+    enum: ["low", "medium", "high", "critical"]
+    default: "medium"
+  - name: "output_format"
+    type: "array"
+    items: ["json", "xml", "markdown", "sarif"]
+    default: ["json", "markdown"]
+
+stages:
+  - name: "file_discovery"
+    node: "akao:node:filesystem:scanner:v1"
+    inputs:
+      directory: "${inputs.source_directory}"
+      patterns: ["**/*.cpp", "**/*.hpp", "**/*.h", "**/Makefile", "**/CMakeLists.txt"]
+      exclude: ["**/test/**", "**/tests/**", "**/build/**", "**/vendor/**"]
+    outputs:
+      - name: "source_files"
+        path: "$.discovered_files"
+      - name: "build_files"
+        path: "$.build_configs"
+
+  - name: "static_analysis"
+    node: "akao:node:logic:executor:v1"
+    depends_on: ["file_discovery"]
+    parallel: true
+    inputs:
+      expression: |
+        security_patterns = [
+          "strcpy|strcat|sprintf|gets|scanf",  // Buffer overflow risks
+          "system\\(|exec|popen",              // Command injection
+          "malloc|free|delete|new",            // Memory management
+          "memcpy|memmove|memset",             // Memory operations
+          "rand\\(\\)|srand\\(",               // Weak randomness
+          "#include\\s*<[^>]*\\.h>",           // Legacy C headers
+          "goto\\s+\\w+",                     // Goto statements
+          "reinterpret_cast|const_cast"        // Dangerous casts
+        ]
+        
+        vulnerabilities = []
+        for file in source_files:
+          content = read_file(file.path)
+          for pattern in security_patterns:
+            matches = regex_find_all(pattern, content)
+            for match in matches:
+              vulnerabilities.append({
+                "file": file.path,
+                "line": match.line,
+                "pattern": pattern,
+                "severity": calculate_severity(pattern, match.context),
+                "description": get_vulnerability_description(pattern),
+                "remediation": get_remediation_advice(pattern)
+              })
+        
+        return {
+          "total_files_scanned": len(source_files),
+          "vulnerabilities": vulnerabilities,
+          "high_severity_count": count_by_severity(vulnerabilities, "high"),
+          "critical_count": count_by_severity(vulnerabilities, "critical")
+        }
+    outputs:
+      - name: "security_issues"
+        path: "$.vulnerabilities"
+      - name: "scan_summary"
+        path: "$"
+
+  - name: "dependency_analysis"
+    node: "akao:node:filesystem:scanner:v1"
+    depends_on: ["file_discovery"]
+    inputs:
+      directory: "${inputs.source_directory}"
+      patterns: ["**/package.json", "**/requirements.txt", "**/Cargo.toml", "**/*.cmake"]
+      deep_scan: true
+    outputs:
+      - name: "dependencies"
+        path: "$.dependencies"
+
+  - name: "vulnerability_correlation"
+    node: "akao:node:logic:executor:v1"
+    depends_on: ["static_analysis", "dependency_analysis"]
+    inputs:
+      expression: |
+        // Cross-reference vulnerabilities with dependency usage
+        correlated_issues = []
+        for vuln in security_issues:
+          related_deps = find_related_dependencies(vuln.file, dependencies)
+          risk_score = calculate_composite_risk(vuln, related_deps)
+          
+          correlated_issues.append({
+            "vulnerability": vuln,
+            "related_dependencies": related_deps,
+            "composite_risk_score": risk_score,
+            "attack_vectors": identify_attack_vectors(vuln, related_deps),
+            "business_impact": assess_business_impact(vuln, risk_score)
+          })
+        
+        // Generate remediation priority matrix
+        priority_matrix = prioritize_remediation(correlated_issues, severity_threshold)
+        
+        return {
+          "correlated_vulnerabilities": correlated_issues,
+          "remediation_priority": priority_matrix,
+          "critical_path_analysis": find_critical_paths(correlated_issues),
+          "automated_fixes_available": count_auto_fixable(correlated_issues)
+        }
+    outputs:
+      - name: "risk_analysis"
+        path: "$"
+
+  - name: "report_generation"
+    node: "akao:node:reporter:generator:v1"
+    depends_on: ["vulnerability_correlation"]
+    parallel_formats: true
+    inputs:
+      data: "${stages.vulnerability_correlation.outputs.risk_analysis}"
+      formats: "${inputs.output_format}"
+      template_config:
+        executive_summary: true
+        technical_details: true
+        remediation_roadmap: true
+        compliance_mapping: ["CWE", "OWASP", "SANS"]
+        charts: ["severity_distribution", "risk_timeline", "remediation_cost"]
+    outputs:
+      - name: "security_reports"
+        path: "$.generated_reports"
+
+  - name: "automated_remediation"
+    node: "akao:node:logic:executor:v1"
+    depends_on: ["vulnerability_correlation"]
+    condition: "${stages.vulnerability_correlation.outputs.risk_analysis.automated_fixes_available > 0}"
+    inputs:
+      expression: |
+        remediation_results = []
+        
+        for issue in risk_analysis.correlated_vulnerabilities:
+          if is_auto_fixable(issue.vulnerability):
+            fix_result = apply_automated_fix(issue)
+            if fix_result.success:
+              remediation_results.append({
+                "issue_id": issue.vulnerability.id,
+                "fix_applied": fix_result.fix_type,
+                "validation_status": validate_fix(fix_result),
+                "before_after_diff": fix_result.diff
+              })
+        
+        return {
+          "fixes_applied": len(remediation_results),
+          "remediation_details": remediation_results,
+          "remaining_manual_fixes": count_manual_fixes_needed(risk_analysis)
+        }
+    outputs:
+      - name: "remediation_results"
+        path: "$"
+
+outputs:
+  - name: "audit_summary"
+    source: "vulnerability_correlation"
+    path: "$.risk_analysis"
+  - name: "security_reports"
+    source: "report_generation"
+    path: "$.security_reports"
+  - name: "automated_fixes"
+    source: "automated_remediation"
+    path: "$.remediation_results"
+    optional: true
+
+error_handling:
+  retry_failed_stages: 2
+  continue_on_non_critical_errors: true
+  rollback_automated_changes_on_failure: true
+
+metadata:
+  estimated_duration: "15-45 minutes"
+  resource_requirements:
+    cpu_intensive_stages: ["static_analysis", "vulnerability_correlation"]
+    memory_requirements: "2GB minimum, 8GB recommended"
+  compliance_standards: ["OWASP ASVS", "CWE Top 25", "SANS Top 25"]
+  audit_trail: true

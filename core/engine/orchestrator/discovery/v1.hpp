@@ -293,6 +293,10 @@ private:
     // Utilities
     std::string generateSocketPath(const std::string& node_id);
     DiscoveredNode* getMutableNode(const std::string& node_id);
+    
+    // Security validation methods
+    bool validateExecutablePath(const std::string& path) const;
+    bool isExecutableSafe(const std::string& path) const;
 };
 
 } // namespace discovery

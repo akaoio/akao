@@ -297,6 +297,35 @@ bool NodeValue::operator!=(const NodeValue& other) const {
     return !(*this == other);
 }
 
+// ERROR HANDLING STANDARDIZATION: Safe accessors that don't throw exceptions
+std::string NodeValue::asStringOr(const std::string& defaultValue) const {
+    if (isString()) {
+        return std::get<std::string>(value_);
+    }
+    return defaultValue;
+}
+
+int64_t NodeValue::asIntegerOr(int64_t defaultValue) const {
+    if (isInteger()) {
+        return std::get<int64_t>(value_);
+    }
+    return defaultValue;
+}
+
+double NodeValue::asDoubleOr(double defaultValue) const {
+    if (isDouble()) {
+        return std::get<double>(value_);
+    }
+    return defaultValue;
+}
+
+bool NodeValue::asBooleanOr(bool defaultValue) const {
+    if (isBoolean()) {
+        return std::get<bool>(value_);
+    }
+    return defaultValue;
+}
+
 } // namespace types
 } // namespace foundation
 } // namespace akao

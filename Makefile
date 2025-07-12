@@ -20,21 +20,51 @@ else
 endif
 
 # Source files
-CORE_SOURCES := $(shell find core -name "*.cpp" 2>/dev/null)
+CORE_SOURCES := $(shell find core -name "*.cpp" -not -path "*/application/cli/*" 2>/dev/null)
+CLI_SOURCES := $(shell find core/application/cli -name "*.cpp" 2>/dev/null)
 INTERFACE_SOURCES := $(shell find interfaces -name "*.cpp" 2>/dev/null)
 NODE_SOURCES := $(shell find .akao/nodes -name "*.cpp" 2>/dev/null)
 TEST_SOURCES := tests/unit/test-runner.cpp tests/unit/core/engine/orchestrator/workflow/v1.cpp
 MAIN_SOURCE := main.cpp
+CLI_MAIN := core/application/cli/main.cpp
 
 ALL_SOURCES := $(MAIN_SOURCE) $(CORE_SOURCES) $(INTERFACE_SOURCES) $(NODE_SOURCES)
+CLI_ALL_SOURCES := $(CLI_MAIN) $(CORE_SOURCES) $(filter-out $(CLI_MAIN),$(CLI_SOURCES))
 TEST_ALL_SOURCES := $(TEST_SOURCES) $(CORE_SOURCES) $(INTERFACE_SOURCES) $(NODE_SOURCES)
 OBJECTS := $(ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
+CLI_OBJECTS := $(CLI_ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
 TEST_OBJECTS := $(TEST_ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
+CLI_TARGET := $(BINDIR)/akao-cli
 
 # Default target
-.PHONY: all tests
+.PHONY: all tests cli cli-clean
 all: $(TARGET)
 tests: $(TEST_TARGET)
+
+# CLI targets
+cli: $(CLI_TARGET)
+
+# Test core server target
+TEST_SERVER_TARGET := $(BINDIR)/test-core-server
+TEST_SERVER_SOURCES := test-core-server.cpp
+TEST_SERVER_ALL_SOURCES := $(TEST_SERVER_SOURCES) $(CORE_SOURCES)
+TEST_SERVER_OBJECTS := $(TEST_SERVER_ALL_SOURCES:%.cpp=$(BUILDSUBDIR)/%.o)
+
+test-server: $(TEST_SERVER_TARGET)
+
+$(TEST_SERVER_TARGET): $(TEST_SERVER_OBJECTS) | $(BINDIR)
+	@echo "Linking test core server..."
+	@$(CXX) $(TEST_SERVER_OBJECTS) -o $@
+	@echo "✅ Test core server build complete: $(TEST_SERVER_TARGET)"
+
+$(CLI_TARGET): $(CLI_OBJECTS) | $(BINDIR)
+	@echo "Linking CLI..."
+	@$(CXX) $(CLI_OBJECTS) -o $@
+	@echo "✅ CLI build complete: $(CLI_TARGET)"
+
+cli-clean:
+	@echo "Cleaning CLI objects..."
+	@rm -f $(CLI_OBJECTS) $(CLI_TARGET)
 
 # Create directories
 $(BUILDSUBDIR) $(BINDIR):
