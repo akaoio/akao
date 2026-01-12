@@ -7,7 +7,7 @@ import styles from "./styles.css.js"
 export const template = html`
     ${styles}
     <layout-main>
-        <section id="item">
+        <main id="item">
             <div id="image" style="grid-area: image;">image</div>
             <header style="grid-area: header;"><ui-context data-key="item.name" /></header>
             <main style="grid-area: main;">
@@ -18,7 +18,7 @@ export const template = html`
             <footer style="grid-area: footer;">
                 <ui-button><ui-context data-key="dictionary.addToCart" /></ui-button>
             </footer>
-        </section>
+        </main>
     </layout-main>
 `
 export default template
