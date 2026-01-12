@@ -1,6 +1,6 @@
 import template, { item } from "./template.js"
 import { Access, setWallet } from "/core/Access.js"
-import { render } from "/core/UI.js"
+import { html, render } from "/core/UI.js"
 
 export class WALLETS extends HTMLElement {
     constructor() {
@@ -63,23 +63,25 @@ export class WALLETS extends HTMLElement {
 
     async create() {
         if (this.wallets.children.length >= this.total) return
-        const fragment = document.createDocumentFragment()
-        const currentId = this.id
+        const templates = []
         for (let id = this.wallets.children.length; id < this.total; id++) {
-            const el = render(item)
-            const radio = el.querySelector('input[type="radio"]')
-            const label = el.querySelector("label")
-            radio.id = `i${id}`
-            radio.value = id
-            if (id === currentId) radio.setAttribute("checked", true)
-            label.setAttribute("for", `i${id}`)
+            const seed = await globalThis.sea.work(Access.get("id"), id)
             const select = () => this.select({ id })
-            label.addEventListener("click", select)
-            this.subscriptions.push(() => label.removeEventListener("click", select))
-            el.querySelector("ui-identicon").dataset.seed = await globalThis.sea.work(Access.get("id"), id)
-            fragment.appendChild(el)
+            templates.push(html`
+                <span class="item">
+                    <input id="i${id}" type="radio" name="wallet" value="${id}" ${id === this.id ? "checked" : ""} />
+                    <label
+                        for="i${id}"
+                        ${({ element }) => {
+                            element.addEventListener("click", select)
+                            this.subscriptions.push(() => element.removeEventListener("click", select))
+                        }}>
+                        <ui-identicon data-size="7" data-seed="${seed}" />
+                    </label>
+                </span>
+            `)
         }
-        this.wallets.appendChild(fragment)
+        render(templates, this.wallets)
     }
 
     remove() {

@@ -31,9 +31,8 @@ Progress.set({
 let root = document.getElementById("root")
 if (!root) {
     // Create root element for app ui
-    root = document.createElement("div")
+    root = document.createElement("div", { id: "root" })
     document.body.appendChild(root)
-    root.setAttribute("id", "root")
 }
 
 async function render(state = {}) {

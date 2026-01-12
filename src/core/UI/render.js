@@ -29,86 +29,6 @@ function getNodesFromContainer(container, shouldClone = true) {
 }
 
 /**
- * UI.render() - Render template object to DOM and optionally mount to container
- *
- * This function receives TemplateResult from html() and:
- * 1. Convert HTML string to DOM
- * 2. Find markers (<!--__mark:i-->) using TreeWalker
- * 3. Replace markers with corresponding values
- * 4. Process nested templates recursively
- * 5. Mount to container if provided, always return rendered nodes
- *
- * @param {TemplateResult|Node|string|Array} template - Template to render
- * @param {HTMLElement|ShadowRoot} [container] - Container to mount DOM (optional)
- * @returns {DocumentFragment|Node} - Always returns rendered nodes
- *
- * @example
- * // Render to container and get nodes
- * const nodes = render(template, document.body)
- *
- * @example
- * // Get rendered nodes without container
- * const nodes = render(html`<div>Hello ${name}</div>`)
- * someElement.appendChild(nodes)
- *
- * @example
- * // Nested templates
- * const inner = html`<span>World</span>`
- * const outer = html`<div>Hello ${inner}</div>`
- * const nodes = render(outer, shadowRoot)
- */
-export function render(template, container) {
-    // Check if container was provided by user
-    const hasRealContainer = container && container.nodeType
-
-    // Create temp container if none provided
-    if (!hasRealContainer) container = document.createElement("template")
-
-    /**
-     * STEP 1: Handle different input types
-     */
-
-    // If it's a TemplateResult from html()
-    if (template?._isTemplateResult) {
-        // If container is <template>, render to .content
-        const target = container.nodeName === "TEMPLATE" ? container.content : container
-        renderTemplateResult(template, target)
-
-        // If user provided a real container, nodes are already appended - return container
-        // If temp container, extract and return nodes
-        if (hasRealContainer) return container
-
-        return getNodesFromContainer(container, false)
-    }
-
-    // If it's a direct DOM node
-    if (template?.nodeType) {
-        const target = container.nodeName === "TEMPLATE" ? container.content : container
-        target.appendChild(template)
-        // Return the appended node or container
-        return hasRealContainer ? container : template
-    }
-
-    // If it's an array (e.g., items.map(...))
-    if (Array.isArray(template)) {
-        template.forEach((item) => render(item, container))
-        // Return container if real, otherwise extract nodes
-        if (hasRealContainer) return container
-
-        return getNodesFromContainer(container, false)
-    }
-
-    // If it's a primitive value (string, number, etc.)
-    if (container.nodeName === "TEMPLATE") container.content.textContent = String(template ?? "")
-    else container.textContent = String(template ?? "")
-
-    // Return container if real, otherwise extract nodes
-    if (hasRealContainer) return container
-
-    return getNodesFromContainer(container, false)
-}
-
-/**
  * renderTemplateResult() - Core logic to process TemplateResult
  *
  * @param {TemplateResult} templateResult - Object from html()
@@ -199,11 +119,11 @@ function renderTemplateResult(templateResult, container) {
         // Case 1: Nested TemplateResult
         if (value?._isTemplateResult) {
             // Create temporary container to render nested template
-            const temp = document.createElement("div")
-            renderTemplateResult(value, temp)
+            const $template = document.createElement("div")
+            renderTemplateResult(value, $template)
 
-            // Insert all children of temp at marker position
-            while (temp.firstChild) parent.insertBefore(temp.firstChild, node)
+            // Insert all children of $template at marker position
+            while ($template.firstChild) parent.insertBefore($template.firstChild, node)
 
             parent.removeChild(node)
             return
@@ -214,9 +134,9 @@ function renderTemplateResult(templateResult, container) {
             value.forEach((item) => {
                 // If item is TemplateResult
                 if (item?._isTemplateResult) {
-                    const temp = document.createElement("div")
-                    renderTemplateResult(item, temp)
-                    while (temp.firstChild) parent.insertBefore(temp.firstChild, node)
+                    const $template = document.createElement("div")
+                    renderTemplateResult(item, $template)
+                    while ($template.firstChild) parent.insertBefore($template.firstChild, node)
                 }
                 // If item is DOM node
                 else if (item?.nodeType) parent.insertBefore(item.cloneNode(true), node)
@@ -254,6 +174,86 @@ function renderTemplateResult(templateResult, container) {
             callback({ node: element, element })
         } else console.warn("Could not find element with attribute:", attrId, "in container:", container)
     })
+}
+
+/**
+ * UI.render() - Render template object to DOM and optionally mount to container
+ *
+ * This function receives TemplateResult from html() and:
+ * 1. Convert HTML string to DOM
+ * 2. Find markers (<!--__mark:i-->) using TreeWalker
+ * 3. Replace markers with corresponding values
+ * 4. Process nested templates recursively
+ * 5. Mount to container if provided, always return rendered nodes
+ *
+ * @param {TemplateResult|Node|string|Array} template - Template to render
+ * @param {HTMLElement|ShadowRoot} [container] - Container to mount DOM (optional)
+ * @returns {DocumentFragment|Node} - Always returns rendered nodes
+ *
+ * @example
+ * // Render to container and get nodes
+ * const nodes = render(template, document.body)
+ *
+ * @example
+ * // Get rendered nodes without container
+ * const nodes = render(html`<div>Hello ${name}</div>`)
+ * someElement.appendChild(nodes)
+ *
+ * @example
+ * // Nested templates
+ * const inner = html`<span>World</span>`
+ * const outer = html`<div>Hello ${inner}</div>`
+ * const nodes = render(outer, shadowRoot)
+ */
+export function render(template, container) {
+    // Check if container was provided by user
+    const hasRealContainer = container && container.nodeType
+
+    // Create temp container if none provided
+    if (!hasRealContainer) container = document.createElement("template")
+
+    /**
+     * STEP 1: Handle different input types
+     */
+
+    // If it's a TemplateResult from html()
+    if (template?._isTemplateResult) {
+        // If container is <template>, render to .content
+        const target = container.nodeName === "TEMPLATE" ? container.content : container
+        renderTemplateResult(template, target)
+
+        // If user provided a real container, nodes are already appended - return container
+        // If temp container, extract and return nodes
+        if (hasRealContainer) return container
+
+        return getNodesFromContainer(container, false)
+    }
+
+    // If it's a direct DOM node
+    if (template?.nodeType) {
+        const target = container.nodeName === "TEMPLATE" ? container.content : container
+        target.appendChild(template)
+        // Return the appended node or container
+        return hasRealContainer ? container : template
+    }
+
+    // If it's an array (e.g., items.map(...))
+    if (Array.isArray(template)) {
+        template.forEach((item) => render(item, container))
+        // Return container if real, otherwise extract nodes
+        if (hasRealContainer) return container
+
+        return getNodesFromContainer(container, false)
+    }
+
+    // If it's a primitive value (string, number, etc.)
+    if (container.nodeName === "TEMPLATE") container.content.textContent = String(template ?? "")
+    else container.textContent = String(template ?? "")
+
+    // Return container if real, otherwise extract nodes
+    if (hasRealContainer) return container
+
+    return getNodesFromContainer(container, false)
 }
 
 export default render

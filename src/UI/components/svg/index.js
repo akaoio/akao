@@ -1,4 +1,5 @@
 import styles from "./styles.css.js"
+import { html, render } from "/core/UI.js"
 
 export class SVG extends HTMLElement {
     constructor() {
@@ -17,7 +18,14 @@ export class SVG extends HTMLElement {
         if (svg) this.shadowRoot.removeChild(svg)
         fetch(value)
             .then((res) => res.text())
-            .then((svg) => (this.shadowRoot.innerHTML += svg))
+            .then((svg) =>
+                render(
+                    html`
+                        ${svg}
+                    `,
+                    this.shadowRoot
+                )
+            )
             .catch(console.error)
     }
 }
