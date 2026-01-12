@@ -10,6 +10,10 @@ export const styles = css`
                 "image main"
                 "image footer";
             gap: var(--space, 1rem);
+            #quantity {
+                display: flex;
+                gap: var(--space);
+            }
         }
     }
 `

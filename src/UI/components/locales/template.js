@@ -6,7 +6,7 @@ import { html } from "/core/UI.js"
 
 export const template = html`
     ${styles}
-    <ui-icon data-icon="/images/icons/translate.svg" />
+    <ui-icon data-icon="translate" />
     <ui-select data-name="locale" data-header="locales" data-selected="${Context.get("locale")?.code}" />
 `
 

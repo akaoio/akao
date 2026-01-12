@@ -16,8 +16,8 @@ export const template = html`
     <header>
         <ui-context data-key="dictionary.wallet" />
         <nav>
-            <ui-icon id="increase" data-icon="/images/icons/plus-lg.svg" />
-            <ui-icon id="decrease" data-icon="/images/icons/dash-lg.svg" />
+            <ui-icon id="increase" data-icon="plus-lg" />
+            <ui-icon id="decrease" data-icon="dash-lg" />
         </nav>
     </header>
     <div id="wallets"></div>

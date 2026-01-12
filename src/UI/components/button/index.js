@@ -10,8 +10,16 @@ export class BUTTON extends HTMLElement {
 
     connectedCallback() {
         this.shadowRoot.querySelector("button").classList = this.classList
-        if (this.dataset.left) this.shadowRoot.querySelector("#left").dataset.src = this.dataset.left
-        if (this.dataset.right) this.shadowRoot.querySelector("#right").dataset.src = this.dataset.right
+        let left = this.dataset.left
+        let right = this.dataset.right
+        if (left) {
+            if (!left.includes("/")) left = `/images/icons/${left}.svg`
+            this.shadowRoot.querySelector("#left").dataset.src = left
+        }
+        if (right) {
+            if (!right.includes("/")) right = `/images/icons/${right}.svg`
+            this.shadowRoot.querySelector("#right").dataset.src = right
+        }
     }
 }
 

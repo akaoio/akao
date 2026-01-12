@@ -8,7 +8,7 @@ export const styles = css`
         font-size: var(--text);
         line-height: 1.5;
         margin: 0;
-        padding: var(--header-height) 0 var(--footer-height) 0;
+        padding: calc(var(--header-height) + var(--space) * 2) 0 var(--footer-height) 0;
         transition: var(--speed) ease-in-out;
     }
 `

@@ -14,14 +14,21 @@ export class ICON extends HTMLElement {
 
     connectedCallback() {
         if (!this.dataset.icon) return
-        this.shadowRoot.querySelector("ui-svg").dataset.src = this.dataset.icon
+        this.render()
     }
 
     attributeChangedCallback(name, last, value) {
         if (name !== "data-icon") return
+        this.render()
+    }
+
+    render() {
+        let src = this.dataset.icon
         const svg = this.shadowRoot.querySelector("ui-svg")
-        if (value) svg.dataset.src = value
-        else delete svg.dataset.src
+        if (src) {
+            if (!src.includes("/")) src = `/images/icons/${src}.svg`
+            svg.dataset.src = src
+        } else delete svg.dataset.src
     }
 }
 

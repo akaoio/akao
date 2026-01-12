@@ -3,12 +3,12 @@ import { css } from "/core/UI.js"
 export const styles = css`
     :host {
         header {
-            min-height: var(--header-height);
             position: fixed;
             top: 0;
             width: 100%;
 
             nav {
+                max-height: var(--header-height);
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -21,7 +21,7 @@ export const styles = css`
             }
 
             .brand {
-                max-width: 10rem;
+                max-width: 8rem;
                 color: var(--color);
                 display: flex;
             }

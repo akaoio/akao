@@ -32,10 +32,9 @@ export class ACCESS extends HTMLElement {
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signin)
         )
 
-        const inputs = ["name", "displayName"]
-        inputs.forEach((item) => {
-            const el = this.form.querySelector(`input[name=${item}]`)
-            Context.on(["dictionary", item], [el, "placeholder"])
+        this.form.querySelectorAll("input").forEach((input) => {
+            Context.on(["dictionary", input.name], [input, "placeholder"])
+            this.subscriptions.push(() => Context.off(["dictionary", input.name], [input, "placeholder"]))
         })
     }
 

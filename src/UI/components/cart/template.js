@@ -6,7 +6,7 @@ import "/UI/components/modal/index.js"
 
 export const template = html`
     ${styles}
-    <ui-icon data-icon="/images/icons/bag.svg" />
+    <ui-icon data-icon="bag" />
     <ui-modal data-header="cart">Cart modal content goes here.</ui-modal>
 `
 

@@ -11,6 +11,9 @@ export class ITEM extends HTMLElement {
         render(template, this.shadowRoot)
         this.subscriptions = []
         this.render = this.render.bind(this)
+        this.increase = this.increase.bind(this)
+        this.decrease = this.decrease.bind(this)
+        this.add = this.add.bind(this)
     }
 
     connectedCallback() {
@@ -23,6 +26,21 @@ export class ITEM extends HTMLElement {
         Context.del("item")
     }
 
+    decrease() {
+        this.shadowRoot.querySelector("#quantity input").stepDown()
+    }
+
+    increase() {
+        this.shadowRoot.querySelector("#quantity input").stepUp()
+    }
+
+    add() {
+        const form = this.shadowRoot.querySelector("#item")
+        const data = Object.fromEntries(new FormData(form))
+        form.reset()
+        console.log("add to cart", data)
+    }
+
     async render() {
         const key = Context.get("params").item || globalThis.history.state?.params?.item
         const meta = await DB.get(["statics", "items", key, "meta.json"])
@@ -33,20 +51,33 @@ export class ITEM extends HTMLElement {
             description: data.description || ""
         })
         Context.set({ item: { ...meta, ...data } })
-        const attributes = meta.attributes.map(
-            (attr) => html`
-                <div>
-                    <strong><ui-context data-key="dictionary.${attr.name}" /></strong>
-                    ${attr.values.map(
-                        (value) => html`
-                            <div><ui-context data-key="dictionary.${value}" /></div>
-                        `
-                    )}
-                </div>
-            `
-        )
 
-        render(attributes, this.shadowRoot.querySelector("#attributes"))
+        if (this.shadowRoot.querySelector("#attributes").children.length == 0) {
+            const attributes = meta.attributes.map(
+                (attr) => html`
+                    <section>
+                        <header><ui-context data-key="dictionary.${attr.name}" /></header>
+                        ${attr.values.map(
+                            (value) => html`
+                                <input id="${value}" type="radio" name="${attr.name}" value="${value}" />
+                                <label for="${value}"><ui-context data-key="dictionary.${value}" /></label>
+                            `
+                        )}
+                    </section>
+                `
+            )
+            render(attributes, this.shadowRoot.querySelector("#attributes"))
+        }
+
+        this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease)
+        this.shadowRoot.querySelector("#increase").addEventListener("click", this.increase)
+        this.shadowRoot.querySelector("#add").addEventListener("click", this.add)
+
+        this.subscriptions.push(
+            () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease),
+            () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
+            () => this.shadowRoot.querySelector("#add").removeEventListener("click", this.add)
+        )
     }
 }
 
