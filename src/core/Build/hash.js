@@ -25,11 +25,8 @@ async function generateHashesRecursive(path = []) {
     for (const entry of entries) {
         const entryPath = [...path, entry]
 
-        if (await isDirectory(entryPath)) {
-            subDirs.push(entry)
-        } else if (entry.endsWith(".json") && !entry.endsWith(".hash")) {
-            jsonFiles.push(entry)
-        }
+        if (await isDirectory(entryPath)) subDirs.push(entry)
+        else if (entry.endsWith(".json") && !entry.endsWith(".hash")) jsonFiles.push(entry)
     }
 
     // First, process subdirectories recursively (deepest first)
@@ -83,9 +80,7 @@ async function generateHashesRecursive(path = []) {
  * Also creates a static hash database in statics/hashes/
  */
 export async function generateHashFiles(pathArray) {
-    if (!(await exist(pathArray))) {
-        throw new Error(`Build directory not found: ${join(pathArray)}`)
-    }
+    if (!(await exist(pathArray))) throw new Error(`Build directory not found: ${join(pathArray)}`)
 
     // Clear the hash collection
     allHashes.clear()
@@ -94,9 +89,7 @@ export async function generateHashFiles(pathArray) {
     const count = await generateHashesRecursive(pathArray)
 
     // Create static hash database - empty files named by hash value
-    for (const hash of allHashes) {
-        await write([...pathArray, "statics", "hashes", hash], "") // Empty file with hash as filename
-    }
+    for (const hash of allHashes) await write([...pathArray, "statics", "hashes", hash], "") // Empty file with hash as filename
 
     return { hashFiles: count, hashDatabase: allHashes.size }
 }

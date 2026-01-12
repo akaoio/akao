@@ -25,11 +25,10 @@ export function del(data) {
         }
     }
     // Object: delete all keys from object
-    else if (typeof data === "object") {
+    else if (typeof data === "object")
         Object.keys(data).forEach((key) => {
             const last = this.states[key]
             delete this.states[key]
             this.notify({ key, value: undefined, last })
         })
-    }
 }

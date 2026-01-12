@@ -17,10 +17,7 @@ export async function find(paths) {
     if (typeof paths === "string") paths = [paths]
 
     // Check each path in order and return first match
-    for (const path of paths) {
-        if (fs.existsSync(join(path))) {
-            return path
-        }
-    }
+    for (const path of paths) if (fs.existsSync(join(path))) return path
+
     throw new Error(`Could not find path in: ${paths.join(", ")}`)
 }

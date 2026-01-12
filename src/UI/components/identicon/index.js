@@ -14,15 +14,11 @@ export class IDENTICON extends HTMLElement {
     }
 
     attributeChangedCallback(name, last, value) {
-        if ((name === "data-seed" || name === "data-size") && last !== value) {
-            this.generateIdenticon(this.dataset.seed)
-        }
+        if ((name === "data-seed" || name === "data-size") && last !== value) this.generateIdenticon(this.dataset.seed)
     }
 
     connectedCallback() {
-        if (this.dataset.seed) {
-            this.generateIdenticon(this.dataset.seed)
-        }
+        if (this.dataset.seed) this.generateIdenticon(this.dataset.seed)
     }
 
     // Simple string hash function to generate a deterministic value
@@ -38,9 +34,7 @@ export class IDENTICON extends HTMLElement {
 
     generateIdenticon(seed) {
         // Clear previous SVG content
-        while (this.svg.firstChild) {
-            this.svg.removeChild(this.svg.firstChild)
-        }
+        while (this.svg.firstChild) this.svg.removeChild(this.svg.firstChild)
 
         if (!seed) return
         if (["", "null", "undefined"].includes(seed)) this.removeAttribute("seed")
@@ -74,14 +68,14 @@ export class IDENTICON extends HTMLElement {
         }
 
         // Create SVG elements for the entire grid with symmetry
-        for (let row = 0; row < adjustedSize; row++) {
+        for (let row = 0; row < adjustedSize; row++)
             for (let col = 0; col < adjustedSize; col++) {
                 let isFilled
 
-                if (col <= leftHalfCols) {
+                if (col <= leftHalfCols)
                     // Left half + middle column (from matrix)
                     isFilled = matrix[row][col]
-                } else {
+                else {
                     // Right half (mirrored from left)
                     const mirroredCol = adjustedSize - col - 1
                     isFilled = matrix[row][mirroredCol]
@@ -97,7 +91,6 @@ export class IDENTICON extends HTMLElement {
                     this.svg.appendChild(rect)
                 }
             }
-        }
     }
 }
 

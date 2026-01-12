@@ -54,6 +54,7 @@ export default class Thread {
                 this.parent = parentPort
                 this.parent.on("message", (data) => this.process(data))
             })
+
         // Initialize site and thread (calls init() if defined)
         Construct.Site().then(async () => {
             if (typeof this?.init === "function") await this.init()

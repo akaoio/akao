@@ -174,11 +174,9 @@ function clone(configObject) {
             if (v && v._isBigNumber === true) {
                 x.s = v.s
 
-                if (!v.c || v.e > MAX_EXP) {
-                    x.c = x.e = null
-                } else if (v.e < MIN_EXP) {
-                    x.c = [(x.e = 0)]
-                } else {
+                if (!v.c || v.e > MAX_EXP) x.c = x.e = null
+                else if (v.e < MIN_EXP) x.c = [(x.e = 0)]
+                else {
                     x.e = v.e
                     x.c = v.c.slice()
                 }
@@ -194,9 +192,8 @@ function clone(configObject) {
                 if (v === ~~v) {
                     for (e = 0, i = v; i >= 10; i /= 10, e++);
 
-                    if (e > MAX_EXP) {
-                        x.c = x.e = null
-                    } else {
+                    if (e > MAX_EXP) x.c = x.e = null
+                    else {
                         x.e = e
                         x.c = [v]
                     }
@@ -220,10 +217,9 @@ function clone(configObject) {
                 if (e < 0) e = i
                 e += +str.slice(i + 1)
                 str = str.substring(0, i)
-            } else if (e < 0) {
+            } else if (e < 0)
                 // Integer.
                 e = str.length
-            }
         } else {
             // '[BigNumber Error] Base {not a primitive number|not an integer|out of range}: {b}'
             intCheck(b, 2, ALPHABET.length, "Base")
@@ -244,19 +240,15 @@ function clone(configObject) {
                 x.s = 1 / v < 0 ? ((str = str.slice(1)), -1) : 1
 
                 // '[BigNumber Error] Number primitive has more than 15 significant digits: {n}'
-                if (BigNumber.DEBUG && str.replace(/^0\.0*|\./, "").length > 15) {
-                    throw Error(tooManyDigits + v)
-                }
-            } else {
-                x.s = str.charCodeAt(0) === 45 ? ((str = str.slice(1)), -1) : 1
-            }
+                if (BigNumber.DEBUG && str.replace(/^0\.0*|\./, "").length > 15) throw Error(tooManyDigits + v)
+            } else x.s = str.charCodeAt(0) === 45 ? ((str = str.slice(1)), -1) : 1
 
             alphabet = ALPHABET.slice(0, b)
             e = i = 0
 
             // Check that str is a valid base b number.
             // Don't use RegExp, so alphabet can contain special characters.
-            for (len = str.length; i < len; i++) {
+            for (len = str.length; i < len; i++)
                 if (alphabet.indexOf((c = str.charAt(i))) < 0) {
                     if (c == ".") {
                         // If '.' is not the first character and it has not be found before.
@@ -264,19 +256,17 @@ function clone(configObject) {
                             e = len
                             continue
                         }
-                    } else if (!caseChanged) {
-                        // Allow e.g. hexadecimal 'FF' as well as 'ff'.
+                    } else if (!caseChanged)
                         if ((str == str.toUpperCase() && (str = str.toLowerCase())) || (str == str.toLowerCase() && (str = str.toUpperCase()))) {
+                            // Allow e.g. hexadecimal 'FF' as well as 'ff'.
                             caseChanged = true
                             i = -1
                             e = 0
                             continue
                         }
-                    }
 
                     return parseNumeric(x, String(v), isNum, b)
                 }
-            }
 
             // Prevent later check for length on converted number.
             isNum = false
@@ -297,20 +287,17 @@ function clone(configObject) {
             len -= i
 
             // '[BigNumber Error] Number primitive has more than 15 significant digits: {n}'
-            if (isNum && BigNumber.DEBUG && len > 15 && (v > MAX_SAFE_INTEGER || v !== mathfloor(v))) {
-                throw Error(tooManyDigits + x.s * v)
-            }
+            if (isNum && BigNumber.DEBUG && len > 15 && (v > MAX_SAFE_INTEGER || v !== mathfloor(v))) throw Error(tooManyDigits + x.s * v)
 
             // Overflow?
-            if ((e = e - i - 1) > MAX_EXP) {
+            if ((e = e - i - 1) > MAX_EXP)
                 // Infinity.
                 x.c = x.e = null
-
-                // Underflow?
-            } else if (e < MIN_EXP) {
+            // Underflow?
+            else if (e < MIN_EXP)
                 // Zero.
                 x.c = [(x.e = 0)]
-            } else {
+            else {
                 x.e = e
                 x.c = []
 
@@ -324,22 +311,17 @@ function clone(configObject) {
                 if (i < len) {
                     if (i) x.c.push(+str.slice(0, i))
 
-                    for (len -= LOG_BASE; i < len; ) {
-                        x.c.push(+str.slice(i, (i += LOG_BASE)))
-                    }
+                    for (len -= LOG_BASE; i < len; ) x.c.push(+str.slice(i, (i += LOG_BASE)))
 
                     i = LOG_BASE - (str = str.slice(i)).length
-                } else {
-                    i -= len
-                }
+                } else i -= len
 
                 for (; i--; str += "0");
                 x.c.push(+str)
             }
-        } else {
+        } else
             // Zero.
             x.c = [(x.e = 0)]
-        }
     }
 
     // CONSTRUCTOR PROPERTIES
@@ -394,7 +376,7 @@ function clone(configObject) {
     BigNumber.config = BigNumber.set = function (obj) {
         var p, v
 
-        if (obj != null) {
+        if (obj != null)
             if (typeof obj == "object") {
                 // DECIMAL_PLACES {number} Integer, 0 to MAX inclusive.
                 // '[BigNumber Error] DECIMAL_PLACES {not a primitive number|not an integer|out of range}: {v}'
@@ -441,11 +423,8 @@ function clone(configObject) {
                         MAX_EXP = v[1]
                     } else {
                         intCheck(v, -MAX, MAX, p)
-                        if (v) {
-                            MIN_EXP = -(MAX_EXP = v < 0 ? -v : v)
-                        } else {
-                            throw Error(bignumberError + p + " cannot be zero: " + v)
-                        }
+                        if (v) MIN_EXP = -(MAX_EXP = v < 0 ? -v : v)
+                        else throw Error(bignumberError + p + " cannot be zero: " + v)
                     }
                 }
 
@@ -454,20 +433,15 @@ function clone(configObject) {
                 // '[BigNumber Error] crypto unavailable'
                 if (obj.hasOwnProperty((p = "CRYPTO"))) {
                     v = obj[p]
-                    if (v === !!v) {
-                        if (v) {
-                            if (typeof crypto != "undefined" && crypto && (crypto.getRandomValues || crypto.randomBytes)) {
-                                CRYPTO = v
-                            } else {
+                    if (v === !!v)
+                        if (v)
+                            if (typeof crypto != "undefined" && crypto && (crypto.getRandomValues || crypto.randomBytes)) CRYPTO = v
+                            else {
                                 CRYPTO = !v
                                 throw Error(bignumberError + "crypto unavailable")
                             }
-                        } else {
-                            CRYPTO = v
-                        }
-                    } else {
-                        throw Error(bignumberError + p + " not true or false: " + v)
-                    }
+                        else CRYPTO = v
+                    else throw Error(bignumberError + p + " not true or false: " + v)
                 }
 
                 // MODULO_MODE {number} Integer, 0 to 9 inclusive.
@@ -504,15 +478,11 @@ function clone(configObject) {
                     if (typeof v == "string" && !/^.?$|[+\-.\s]|(.).*\1/.test(v)) {
                         alphabetHasNormalDecimalDigits = v.slice(0, 10) == "0123456789"
                         ALPHABET = v
-                    } else {
-                        throw Error(bignumberError + p + " invalid: " + v)
-                    }
+                    } else throw Error(bignumberError + p + " invalid: " + v)
                 }
-            } else {
+            } else
                 // '[BigNumber Error] Object expected: {v}'
                 throw Error(bignumberError + "Object expected: " + obj)
-            }
-        }
 
         return {
             DECIMAL_PLACES: DECIMAL_PLACES,
@@ -572,9 +542,7 @@ function clone(configObject) {
             }
 
             // Infinity/NaN
-        } else if (c === null && e === null && (s === null || s === 1 || s === -1)) {
-            return true
-        }
+        } else if (c === null && e === null && (s === null || s === 1 || s === -1)) return true
 
         throw Error(bignumberError + "Invalid BigNumber: " + v)
     }
@@ -638,9 +606,10 @@ function clone(configObject) {
 
             k = mathceil(dp / LOG_BASE)
 
-            if (CRYPTO) {
-                // Browsers supporting crypto.getRandomValues.
+            if (CRYPTO)
                 if (crypto.getRandomValues) {
+                    // Browsers supporting crypto.getRandomValues.
+
                     a = crypto.getRandomValues(new Uint32Array((k *= 2)))
 
                     for (; i < k; ) {
@@ -681,9 +650,8 @@ function clone(configObject) {
                         // 0 <= v < 9007199254740992
                         v = (a[i] & 31) * 0x1000000000000 + a[i + 1] * 0x10000000000 + a[i + 2] * 0x100000000 + a[i + 3] * 0x1000000 + (a[i + 4] << 16) + (a[i + 5] << 8) + a[i + 6]
 
-                        if (v >= 9e15) {
-                            crypto.randomBytes(7).copy(a, i)
-                        } else {
+                        if (v >= 9e15) crypto.randomBytes(7).copy(a, i)
+                        else {
                             // 0 <= (v % 1e14) <= 99999999999999
                             c.push(v % 1e14)
                             i += 7
@@ -694,15 +662,13 @@ function clone(configObject) {
                     CRYPTO = false
                     throw Error(bignumberError + "crypto unavailable")
                 }
-            }
 
             // Use Math.random.
-            if (!CRYPTO) {
+            if (!CRYPTO)
                 for (; i < k; ) {
                     v = random53bitInt()
                     if (v < 9e15) c[i++] = v % 1e14
                 }
-            }
 
             k = c[--i]
             dp %= LOG_BASE
@@ -717,9 +683,8 @@ function clone(configObject) {
             for (; c[i] === 0; c.pop(), i--);
 
             // Zero?
-            if (i < 0) {
-                c = [(e = 0)]
-            } else {
+            if (i < 0) c = [(e = 0)]
+            else {
                 // Remove leading elements which are zero and adjust exponent accordingly.
                 for (e = -1; c[0] === 0; c.splice(0, 1), e -= LOG_BASE);
 
@@ -772,13 +737,12 @@ function clone(configObject) {
 
                 arr[0] += alphabet.indexOf(str.charAt(i++))
 
-                for (j = 0; j < arr.length; j++) {
+                for (j = 0; j < arr.length; j++)
                     if (arr[j] > baseOut - 1) {
                         if (arr[j + 1] == null) arr[j + 1] = 0
                         arr[j + 1] += (arr[j] / baseOut) | 0
                         arr[j] %= baseOut
                     }
-                }
             }
 
             return arr.reverse()
@@ -832,9 +796,8 @@ function clone(configObject) {
             if (!xc[0]) return alphabet.charAt(0)
 
             // Does str represent an integer? If so, no need for the division.
-            if (i < 0) {
-                --e
-            } else {
+            if (i < 0) --e
+            else {
                 x.c = xc
                 x.e = e
 
@@ -864,16 +827,17 @@ function clone(configObject) {
             // If the index of the rounding digit is not greater than zero, or xc represents
             // zero, then the result of the base conversion is zero or, if rounding up, a value
             // such as 0.00001.
-            if (d < 1 || !xc[0]) {
+            if (d < 1 || !xc[0])
                 // 1^-dp or 0
                 str = r ? toFixedPoint(alphabet.charAt(1), -dp, alphabet.charAt(0)) : alphabet.charAt(0)
-            } else {
+            else {
                 // Truncate xc to the required number of decimal places.
                 xc.length = d
 
                 // Round up?
-                if (r) {
+                if (r)
                     // Rounding up may mean the previous digit has to be rounded up and so on.
+
                     for (--baseOut; ++xc[--d] > baseOut; ) {
                         xc[d] = 0
 
@@ -882,7 +846,6 @@ function clone(configObject) {
                             xc = [1].concat(xc)
                         }
                     }
-                }
 
                 // Determine trailing zeros.
                 for (k = xc.length; !xc[--k]; );
@@ -929,16 +892,13 @@ function clone(configObject) {
         function compare(a, b, aL, bL) {
             var i, cmp
 
-            if (aL != bL) {
-                cmp = aL > bL ? 1 : -1
-            } else {
-                for (i = cmp = 0; i < aL; i++) {
+            if (aL != bL) cmp = aL > bL ? 1 : -1
+            else
+                for (i = cmp = 0; i < aL; i++)
                     if (a[i] != b[i]) {
                         cmp = a[i] > b[i] ? 1 : -1
                         break
                     }
-                }
-            }
 
             return cmp
         }
@@ -981,7 +941,7 @@ function clone(configObject) {
                 yc = y.c
 
             // Either NaN, Infinity or 0?
-            if (!xc || !xc[0] || !yc || !yc[0]) {
+            if (!xc || !xc[0] || !yc || !yc[0])
                 return new BigNumber(
                     // Return NaN if either NaN, or both Infinity or 0.
                     !x.s || !y.s || (xc ? yc && xc[0] == yc[0] : !yc)
@@ -991,7 +951,6 @@ function clone(configObject) {
                           ? s * 0
                           : s / 0
                 )
-            }
 
             q = new BigNumber(s)
             qc = q.c = []
@@ -1098,10 +1057,9 @@ function clone(configObject) {
                             // If n is 0, there is no need to compare yc and rem again below,
                             // so change cmp to 1 to avoid it.
                             // If n is 1, leave cmp as -1, so yc and rem are compared again.
-                            if (n == 0) {
+                            if (n == 0)
                                 // divisor < remainder, so n must be at least 1.
                                 cmp = n = 1
-                            }
 
                             // product = divisor
                             prod = yc.slice()
@@ -1115,11 +1073,12 @@ function clone(configObject) {
                         remL = rem.length
 
                         // If product was < remainder.
-                        if (cmp == -1) {
+                        if (cmp == -1)
                             // Compare divisor and new remainder.
                             // If divisor < new remainder, subtract divisor from remainder.
                             // Trial digit n too low.
                             // n is 1 too low about 5% of the time, and very rarely 2 too low.
+
                             while (compare(yc, rem, yL, remL) < 1) {
                                 n++
 
@@ -1127,7 +1086,6 @@ function clone(configObject) {
                                 subtract(rem, yL < remL ? yz : yc, remL, base)
                                 remL = rem.length
                             }
-                        }
                     } else if (cmp === 0) {
                         n++
                         rem = [0]
@@ -1137,9 +1095,8 @@ function clone(configObject) {
                     qc[i++] = n
 
                     // Update the remainder.
-                    if (rem[0]) {
-                        rem[remL++] = xc[xi] || 0
-                    } else {
+                    if (rem[0]) rem[remL++] = xc[xi] || 0
+                    else {
                         rem = [xc[xi]]
                         remL = 1
                     }
@@ -1240,9 +1197,7 @@ function clone(configObject) {
 
         for (; i < args.length; i++) {
             y = new BigNumber(args[i])
-            if (!y.s || (k = compare(x, y)) === n || (k === 0 && x.s === n)) {
-                x = y
-            }
+            if (!y.s || (k = compare(x, y)) === n || (k === 0 && x.s === n)) x = y
         }
 
         return x
@@ -1263,15 +1218,14 @@ function clone(configObject) {
         for (j = c[0]; j >= 10; j /= 10, i++);
 
         // Overflow?
-        if ((e = i + e * LOG_BASE - 1) > MAX_EXP) {
+        if ((e = i + e * LOG_BASE - 1) > MAX_EXP)
             // Infinity.
             n.c = n.e = null
-
-            // Underflow?
-        } else if (e < MIN_EXP) {
+        // Underflow?
+        else if (e < MIN_EXP)
             // Zero.
             n.c = [(n.e = 0)]
-        } else {
+        else {
             n.e = e
             n.c = c
         }
@@ -1292,9 +1246,8 @@ function clone(configObject) {
                 s = isNum ? str : str.replace(whitespaceOrPlus, "")
 
             // No exception on ±Infinity or NaN.
-            if (isInfinityOrNaN.test(s)) {
-                x.s = isNaN(s) ? null : s < 0 ? -1 : 1
-            } else {
+            if (isInfinityOrNaN.test(s)) x.s = isNaN(s) ? null : s < 0 ? -1 : 1
+            else {
                 if (!isNum) {
                     // basePrefix = /^(-?)0([xbo])(?=\w[\w.]*$)/i
                     s = s.replace(basePrefix, function (m, p1, p2) {
@@ -1314,9 +1267,7 @@ function clone(configObject) {
 
                 // '[BigNumber Error] Not a number: {n}'
                 // '[BigNumber Error] Not a base {b} number: {n}'
-                if (BigNumber.DEBUG) {
-                    throw Error(bignumberError + "Not a" + (b ? " base " + b : "") + " number: " + str)
-                }
+                if (BigNumber.DEBUG) throw Error(bignumberError + "Not a" + (b ? " base " + b : "") + " number: " + str)
 
                 // NaN
                 x.s = null
@@ -1365,7 +1316,7 @@ function clone(configObject) {
                 } else {
                     ni = mathceil((i + 1) / LOG_BASE)
 
-                    if (ni >= xc.length) {
+                    if (ni >= xc.length)
                         if (r) {
                             // Needed by sqrt.
                             for (; xc.length <= ni; xc.push(0));
@@ -1373,10 +1324,8 @@ function clone(configObject) {
                             d = 1
                             i %= LOG_BASE
                             j = i - LOG_BASE + 1
-                        } else {
-                            break out
-                        }
-                    } else {
+                        } else break out
+                    else {
                         n = k = xc[ni]
 
                         // Get the number of digits of n.
@@ -1425,10 +1374,9 @@ function clone(configObject) {
                         // 1, 0.1, 0.01, 0.001, 0.0001 etc.
                         xc[0] = pows10[(LOG_BASE - (sd % LOG_BASE)) % LOG_BASE]
                         x.e = -sd || 0
-                    } else {
+                    } else
                         // Zero.
                         xc[0] = x.e = 0
-                    }
 
                     return x
                 }
@@ -1448,9 +1396,10 @@ function clone(configObject) {
                 }
 
                 // Round up?
-                if (r) {
-                    for (;;) {
+                if (r)
+                    for (;;)
                         // If the digit to be rounded up is in the first element of xc...
+
                         if (ni == 0) {
                             // i will be the length of xc[0] before k is added.
                             for (i = 1, j = xc[0]; j >= 10; j /= 10, i++);
@@ -1470,21 +1419,15 @@ function clone(configObject) {
                             xc[ni--] = 0
                             k = 1
                         }
-                    }
-                }
 
                 // Remove trailing zeros.
                 for (i = xc.length; xc[--i] === 0; xc.pop());
             }
 
             // Overflow? Infinity.
-            if (x.e > MAX_EXP) {
-                x.c = x.e = null
-
-                // Underflow? Zero.
-            } else if (x.e < MIN_EXP) {
-                x.c = [(x.e = 0)]
-            }
+            if (x.e > MAX_EXP) x.c = x.e = null
+            // Underflow? Zero.
+            else if (x.e < MIN_EXP) x.c = [(x.e = 0)]
         }
 
         return x
@@ -1624,9 +1567,7 @@ function clone(configObject) {
         n = new BigNumber(n)
 
         // Allow NaN and ±Infinity, but not other non-integers.
-        if (n.c && !n.isInteger()) {
-            throw Error(bignumberError + "Exponent not an integer: " + valueOf(n))
-        }
+        if (n.c && !n.isInteger()) throw Error(bignumberError + "Exponent not an integer: " + valueOf(n))
 
         if (m != null) m = new BigNumber(m)
 
@@ -1671,12 +1612,11 @@ function clone(configObject) {
 
             // If n is negative return ±0, else return ±Infinity.
             return new BigNumber(nIsNeg ? 1 / k : k)
-        } else if (POW_PRECISION) {
+        } else if (POW_PRECISION)
             // Truncating each coefficient array to a length of k after each multiplication
             // equates to truncating significant digits to POW_PRECISION + [28, 41],
             // i.e. there will be a minimum of 28 guard digits retained.
             k = mathceil(POW_PRECISION / LOG_BASE + 2)
-        }
 
         if (nIsBig) {
             half = new BigNumber(0.5)
@@ -1697,9 +1637,7 @@ function clone(configObject) {
 
                 if (k) {
                     if (y.c.length > k) y.c.length = k
-                } else if (isModExp) {
-                    y = y.mod(m) //y = y.minus(div(y, m, 0, MODULO_MODE).times(m));
-                }
+                } else if (isModExp) y = y.mod(m) //y = y.minus(div(y, m, 0, MODULO_MODE).times(m));
             }
 
             if (i) {
@@ -1710,9 +1648,8 @@ function clone(configObject) {
                 n = n.times(half)
                 round(n, n.e + 1, 1)
 
-                if (n.e > 14) {
-                    nIsOdd = isOdd(n)
-                } else {
+                if (n.e > 14) nIsOdd = isOdd(n)
+                else {
                     i = +valueOf(n)
                     if (i === 0) break
                     nIsOdd = i % 2
@@ -1723,9 +1660,7 @@ function clone(configObject) {
 
             if (k) {
                 if (x.c && x.c.length > k) x.c.length = k
-            } else if (isModExp) {
-                x = x.mod(m) //x = x.minus(div(x, m, 0, MODULO_MODE).times(m));
-            }
+            } else if (isModExp) x = x.mod(m) //x = x.minus(div(x, m, 0, MODULO_MODE).times(m));
         }
 
         if (isModExp) return y
@@ -1881,8 +1816,9 @@ function clone(configObject) {
             if (!xc || !yc) return xc ? ((y.s = -b), y) : new BigNumber(yc ? x : NaN)
 
             // Either zero?
-            if (!xc[0] || !yc[0]) {
+            if (!xc[0] || !yc[0])
                 // Return y if y is non-zero, x if x is non-zero, or zero if both are zero.
+
                 return yc[0]
                     ? ((y.s = -b), y)
                     : new BigNumber(
@@ -1893,7 +1829,6 @@ function clone(configObject) {
                                 ? -0
                                 : 0
                       )
-            }
         }
 
         xe = bitFloor(xe)
@@ -1919,12 +1854,11 @@ function clone(configObject) {
             // Exponents equal. Check digit by digit.
             j = (xLTy = (a = xc.length) < (b = yc.length)) ? a : b
 
-            for (a = b = 0; b < j; b++) {
+            for (a = b = 0; b < j; b++)
                 if (xc[b] != yc[b]) {
                     xLTy = xc[b] < yc[b]
                     break
                 }
-            }
         }
 
         // x < y? Point xc to the array of the bigger number.
@@ -1999,13 +1933,9 @@ function clone(configObject) {
         y = new BigNumber(y, b)
 
         // Return NaN if x is Infinity or NaN, or y is NaN or zero.
-        if (!x.c || !y.s || (y.c && !y.c[0])) {
-            return new BigNumber(NaN)
-
-            // Return x if y is Infinity or x is zero.
-        } else if (!y.c || (x.c && !x.c[0])) {
-            return new BigNumber(x)
-        }
+        if (!x.c || !y.s || (y.c && !y.c[0])) return new BigNumber(NaN)
+        // Return x if y is Infinity or x is zero.
+        else if (!y.c || (x.c && !x.c[0])) return new BigNumber(x)
 
         if (MODULO_MODE == 9) {
             // Euclidian division: q = sign(y) * floor(x / abs(y))
@@ -2015,9 +1945,7 @@ function clone(configObject) {
             q = div(x, y, 0, 3)
             y.s = s
             q.s *= s
-        } else {
-            q = div(x, y, 0, MODULO_MODE)
-        }
+        } else q = div(x, y, 0, MODULO_MODE)
 
         y = x.minus(q.times(y))
 
@@ -2070,17 +1998,14 @@ function clone(configObject) {
         // Either NaN, ±Infinity or ±0?
         if (!xc || !yc || !xc[0] || !yc[0]) {
             // Return NaN if either is NaN, or one is 0 and the other is Infinity.
-            if (!x.s || !y.s || (xc && !xc[0] && !yc) || (yc && !yc[0] && !xc)) {
-                y.c = y.e = y.s = null
-            } else {
+            if (!x.s || !y.s || (xc && !xc[0] && !yc) || (yc && !yc[0] && !xc)) y.c = y.e = y.s = null
+            else {
                 y.s *= x.s
 
                 // Return ±Infinity if either is ±Infinity.
-                if (!xc || !yc) {
-                    y.c = y.e = null
-
-                    // Return ±0 if either is ±0.
-                } else {
+                if (!xc || !yc) y.c = y.e = null
+                // Return ±0 if either is ±0.
+                else {
                     y.c = [0]
                     y.e = 0
                 }
@@ -2127,11 +2052,8 @@ function clone(configObject) {
             zc[j] = c
         }
 
-        if (c) {
-            ++e
-        } else {
-            zc.splice(0, 1)
-        }
+        if (c) ++e
+        else zc.splice(0, 1)
 
         return normalise(y, zc, e)
     }
@@ -2327,9 +2249,7 @@ function clone(configObject) {
             half = new BigNumber("0.5")
 
         // Negative/NaN/Infinity/zero?
-        if (s !== 1 || !c || !c[0]) {
-            return new BigNumber(!s || (s < 0 && (!c || c[0])) ? NaN : c ? x : 1 / 0)
-        }
+        if (s !== 1 || !c || !c[0]) return new BigNumber(!s || (s < 0 && (!c || c[0])) ? NaN : c ? x : 1 / 0)
 
         // Initial estimate.
         s = Math.sqrt(+valueOf(x))
@@ -2342,17 +2262,14 @@ function clone(configObject) {
             s = Math.sqrt(+n)
             e = bitFloor((e + 1) / 2) - (e < 0 || e % 2)
 
-            if (s == 1 / 0) {
-                n = "5e" + e
-            } else {
+            if (s == 1 / 0) n = "5e" + e
+            else {
                 n = s.toExponential()
                 n = n.slice(0, n.indexOf("e") + 1) + e
             }
 
             r = new BigNumber(n)
-        } else {
-            r = new BigNumber(s + "")
-        }
+        } else r = new BigNumber(s + "")
 
         // Check for zero.
         // r could be zero if MIN_EXP is changed after the this value was created.
@@ -2477,19 +2394,15 @@ function clone(configObject) {
         var str,
             x = this
 
-        if (format == null) {
+        if (format == null)
             if (dp != null && rm && typeof rm == "object") {
                 format = rm
                 rm = null
             } else if (dp && typeof dp == "object") {
                 format = dp
                 dp = rm = null
-            } else {
-                format = FORMAT
-            }
-        } else if (typeof format != "object") {
-            throw Error(bignumberError + "Argument not an object: " + format)
-        }
+            } else format = FORMAT
+        else if (typeof format != "object") throw Error(bignumberError + "Argument not an object: " + format)
 
         str = x.toFixed(dp, rm)
 
@@ -2557,9 +2470,7 @@ function clone(configObject) {
             n = new BigNumber(md)
 
             // Throw if md is less than one or is not an integer, unless it is Infinity.
-            if ((!n.isInteger() && (n.c || n.s !== 1)) || n.lt(ONE)) {
-                throw Error(bignumberError + "Argument " + (n.isInteger() ? "out of range: " : "not an integer: ") + valueOf(n))
-            }
+            if ((!n.isInteger() && (n.c || n.s !== 1)) || n.lt(ONE)) throw Error(bignumberError + "Argument " + (n.isInteger() ? "out of range: " : "not an integer: ") + valueOf(n))
         }
 
         if (!xc) return new BigNumber(x)
@@ -2655,17 +2566,14 @@ function clone(configObject) {
             e = n.e
 
         // Infinity or NaN?
-        if (e === null) {
+        if (e === null)
             if (s) {
                 str = "Infinity"
                 if (s < 0) str = "-" + str
-            } else {
-                str = "NaN"
-            }
-        } else {
-            if (b == null) {
-                str = e <= TO_EXP_NEG || e >= TO_EXP_POS ? toExponential(coeffToString(n.c), e) : toFixedPoint(coeffToString(n.c), e, "0")
-            } else if (b === 10 && alphabetHasNormalDecimalDigits) {
+            } else str = "NaN"
+        else {
+            if (b == null) str = e <= TO_EXP_NEG || e >= TO_EXP_POS ? toExponential(coeffToString(n.c), e) : toFixedPoint(coeffToString(n.c), e, "0")
+            else if (b === 10 && alphabetHasNormalDecimalDigits) {
                 n = round(new BigNumber(n), DECIMAL_PLACES + e + 1, ROUNDING_MODE)
                 str = toFixedPoint(coeffToString(n.c), n.e, "0")
             } else {
@@ -2775,9 +2683,7 @@ function compare(x, y) {
  * Check that n is a primitive number, an integer, and in range, otherwise throw.
  */
 function intCheck(n, min, max, name) {
-    if (n < min || n > max || n !== mathfloor(n)) {
-        throw Error(bignumberError + (name || "Argument") + (typeof n == "number" ? (n < min || n > max ? " out of range: " : " not an integer: ") : " not a primitive number: ") + String(n))
-    }
+    if (n < min || n > max || n !== mathfloor(n)) throw Error(bignumberError + (name || "Argument") + (typeof n == "number" ? (n < min || n > max ? " out of range: " : " not an integer: ") : " not a primitive number: ") + String(n))
 }
 
 // Assumes finite n.
@@ -2807,9 +2713,7 @@ function toFixedPoint(str, e, z) {
         if (++e > len) {
             for (zs = z, e -= len; --e; zs += z);
             str += zs
-        } else if (e < len) {
-            str = str.slice(0, e) + "." + str.slice(e)
-        }
+        } else if (e < len) str = str.slice(0, e) + "." + str.slice(e)
     }
 
     return str

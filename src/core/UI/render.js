@@ -6,9 +6,7 @@ function getNodesFromContainer(container, shouldClone = true) {
     const content = container.nodeName === "TEMPLATE" ? container.content : container
 
     // If only 1 child, return that child
-    if (content.childNodes.length === 1) {
-        return shouldClone ? content.firstChild.cloneNode(true) : content.firstChild
-    }
+    if (content.childNodes.length === 1) return shouldClone ? content.firstChild.cloneNode(true) : content.firstChild
 
     // If container is ShadowRoot, create fragment with cloned children
     if (content instanceof ShadowRoot) {
@@ -20,14 +18,12 @@ function getNodesFromContainer(container, shouldClone = true) {
     }
 
     // For other containers
-    if (shouldClone) {
-        return content.cloneNode(true)
-    } else {
+    if (shouldClone) return content.cloneNode(true)
+    else {
         // Move all children to a new fragment
         const fragment = document.createDocumentFragment()
-        while (content.firstChild) {
-            fragment.appendChild(content.firstChild)
-        }
+        while (content.firstChild) fragment.appendChild(content.firstChild)
+
         return fragment
     }
 }
@@ -66,9 +62,7 @@ export function render(template, container) {
     const hasRealContainer = container && container.nodeType
 
     // Create temp container if none provided
-    if (!hasRealContainer) {
-        container = document.createElement("template")
-    }
+    if (!hasRealContainer) container = document.createElement("template")
 
     /**
      * STEP 1: Handle different input types
@@ -82,9 +76,8 @@ export function render(template, container) {
 
         // If user provided a real container, nodes are already appended - return container
         // If temp container, extract and return nodes
-        if (hasRealContainer) {
-            return container
-        }
+        if (hasRealContainer) return container
+
         return getNodesFromContainer(container, false)
     }
 
@@ -100,23 +93,18 @@ export function render(template, container) {
     if (Array.isArray(template)) {
         template.forEach((item) => render(item, container))
         // Return container if real, otherwise extract nodes
-        if (hasRealContainer) {
-            return container
-        }
+        if (hasRealContainer) return container
+
         return getNodesFromContainer(container, false)
     }
 
     // If it's a primitive value (string, number, etc.)
-    if (container.nodeName === "TEMPLATE") {
-        container.content.textContent = String(template ?? "")
-    } else {
-        container.textContent = String(template ?? "")
-    }
+    if (container.nodeName === "TEMPLATE") container.content.textContent = String(template ?? "")
+    else container.textContent = String(template ?? "")
 
     // Return container if real, otherwise extract nodes
-    if (hasRealContainer) {
-        return container
-    }
+    if (hasRealContainer) return container
+
     return getNodesFromContainer(container, false)
 }
 
@@ -199,7 +187,7 @@ function renderTemplateResult(templateResult, container) {
         if (!parent) return
 
         // Case 0: Function → call it with context parameters
-        if (typeof value === "function") {
+        if (typeof value === "function")
             value = value({
                 node, // Comment node marker
                 parent, // Parent element
@@ -207,7 +195,6 @@ function renderTemplateResult(templateResult, container) {
                 container, // Root container
                 fragment // DocumentFragment being built
             })
-        }
 
         // Case 1: Nested TemplateResult
         if (value?._isTemplateResult) {
@@ -216,9 +203,8 @@ function renderTemplateResult(templateResult, container) {
             renderTemplateResult(value, temp)
 
             // Insert all children of temp at marker position
-            while (temp.firstChild) {
-                parent.insertBefore(temp.firstChild, node)
-            }
+            while (temp.firstChild) parent.insertBefore(temp.firstChild, node)
+
             parent.removeChild(node)
             return
         }
@@ -230,18 +216,12 @@ function renderTemplateResult(templateResult, container) {
                 if (item?._isTemplateResult) {
                     const temp = document.createElement("div")
                     renderTemplateResult(item, temp)
-                    while (temp.firstChild) {
-                        parent.insertBefore(temp.firstChild, node)
-                    }
+                    while (temp.firstChild) parent.insertBefore(temp.firstChild, node)
                 }
                 // If item is DOM node
-                else if (item?.nodeType) {
-                    parent.insertBefore(item.cloneNode(true), node)
-                }
+                else if (item?.nodeType) parent.insertBefore(item.cloneNode(true), node)
                 // If item is primitive
-                else {
-                    parent.insertBefore(document.createTextNode(String(item ?? "")), node)
-                }
+                else parent.insertBefore(document.createTextNode(String(item ?? "")), node)
             })
             parent.removeChild(node)
             return
@@ -272,9 +252,7 @@ function renderTemplateResult(templateResult, container) {
             element.removeAttribute(attrId) // Clean up marker attribute
             // Call callback with element as both node and element
             callback({ node: element, element })
-        } else {
-            console.warn("Could not find element with attribute:", attrId, "in container:", container)
-        }
+        } else console.warn("Could not find element with attribute:", attrId, "in container:", container)
     })
 }
 

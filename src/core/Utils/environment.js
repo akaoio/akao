@@ -12,8 +12,6 @@ if (globalThis?.location?.origin) {
     NODE = !BROWSER
 }
 
-if (globalThis?.process?.platform?.includes("win")) {
-    WIN = true
-}
+if (globalThis?.process?.platform?.includes("win")) WIN = true
 
 export { NODE, BROWSER, WIN }

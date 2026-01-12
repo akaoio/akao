@@ -33,10 +33,18 @@ export class ITEM extends HTMLElement {
             description: data.description || ""
         })
         Context.set({ item: { ...meta, ...data } })
-        const attributes = meta.attributes.map(attr => html`<div>
-            <strong><ui-context data-key="dictionary.${attr.name}" /></strong>
-            ${attr.values.map(value => html`<div><ui-context data-key="dictionary.${value}" /></div>`)}
-        </div>`)
+        const attributes = meta.attributes.map(
+            (attr) => html`
+                <div>
+                    <strong><ui-context data-key="dictionary.${attr.name}" /></strong>
+                    ${attr.values.map(
+                        (value) => html`
+                            <div><ui-context data-key="dictionary.${value}" /></div>
+                        `
+                    )}
+                </div>
+            `
+        )
 
         render(attributes, this.shadowRoot.querySelector("#attributes"))
     }

@@ -16,7 +16,7 @@ export async function load(path) {
         const _path = join(path)
         let text
         // Browser environment - use fetch API to load files
-        if (BROWSER) {
+        if (BROWSER)
             try {
                 const response = await fetch(_path)
                 if (!response.ok) {
@@ -28,9 +28,8 @@ export async function load(path) {
                 console.error("Error loading from", _path)
                 return
             }
-        }
         // Node.js environment - use fs module for file operations
-        else if (NODE) {
+        else if (NODE)
             try {
                 if (!fs.existsSync(_path)) return console.error("Path doesn't exist", _path)
                 // Check if _path is a directory
@@ -54,7 +53,7 @@ export async function load(path) {
                 console.error("Error reading from", _path)
                 return
             }
-        }
+
         if (typeof text === "string") text = text.trim()
         let ext =
             _path
@@ -62,7 +61,7 @@ export async function load(path) {
                 ?.slice(1)
                 .toLowerCase() || ""
         // Parse JSON or YAML files
-        if (["json", "yaml", "yml"].includes(ext)) {
+        if (["json", "yaml", "yml"].includes(ext))
             try {
                 let data
                 if (ext === "json") data = JSON.parse(text)
@@ -73,7 +72,6 @@ export async function load(path) {
                 // If parsing fails, return raw text
                 return text
             }
-        }
 
         // Return raw text for other file types
         return text

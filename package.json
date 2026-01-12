@@ -27,11 +27,15 @@
   "scripts": {
     "start": "node build.js && node server.js",
     "build": "node build.js",
-    "format": "prettier --write \"src/**/*.js\""
+    "format": "prettier --write \"src/**/*.js\"",
+    "lint": "eslint \"src/**/*.js\"",
+    "lint:fix": "eslint \"src/**/*.js\" --fix"
   },
   "devDependencies": {
+    "@akaoio/gun": "github:akaoio/gun",
     "bootstrap-icons": "^1.13.1",
     "chokidar": "^3.6.0",
+    "eslint": "^9.39.2",
     "live-server": "^1.2.2",
     "prettier": "^3.7.2",
     "yaml": "^2.8.2"

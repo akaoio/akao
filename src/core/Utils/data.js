@@ -101,9 +101,7 @@ export function clone(data, seen = new WeakMap()) {
     seen.set(data, copy)
 
     Object.entries(data).forEach(([key, value]) => {
-        if (typeof value !== "function") {
-            copy[key] = clone(value, seen)
-        }
+        if (typeof value !== "function") copy[key] = clone(value, seen)
     })
 
     return copy
@@ -114,40 +112,29 @@ export function clone(data, seen = new WeakMap()) {
 export function diff(a = {}, b = {}) {
     const result = {}
 
-    for (const k in b) {
-        if (b.hasOwnProperty(k)) {
+    for (const k in b)
+        if (b.hasOwnProperty(k))
             if (Array.isArray(b[k]) && Array.isArray(a[k])) {
                 // Compare arrays
-                if (b[k].length !== a[k].length || !b[k].every((val, index) => val === a[k][index])) {
-                    result[k] = b[k]
-                }
+                if (b[k].length !== a[k].length || !b[k].every((val, index) => val === a[k][index])) result[k] = b[k]
             } else if (typeof b[k] === "object" && b[k] !== null && !Array.isArray(b[k])) {
                 // If the property is an object, perform a recursive diff
                 const nest = diff(a[k] || {}, b[k])
-                if (Object.keys(nest).length > 0) {
-                    result[k] = nest
-                }
-            } else if (b[k] !== a[k]) {
+                if (Object.keys(nest).length > 0) result[k] = nest
+            } else if (b[k] !== a[k])
                 // If the property is not an object or is different, add to result
                 result[k] = b[k]
-            }
-        }
-    }
 
     return result
 }
 
 export function merge(a, b) {
     if (typeof a !== "object" || typeof b !== "object") return
-    for (const key in b) {
-        if (b.hasOwnProperty(key)) {
-            if (typeof b[key] === "object" && b[key] !== null && !Array.isArray(b[key])) {
-                a[key] = merge(a[key] || {}, b[key])
-            } else {
-                a[key] = b[key]
-            }
-        }
-    }
+    for (const key in b)
+        if (b.hasOwnProperty(key))
+            if (typeof b[key] === "object" && b[key] !== null && !Array.isArray(b[key])) a[key] = merge(a[key] || {}, b[key])
+            else a[key] = b[key]
+
     return a
 }
 

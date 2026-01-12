@@ -13,9 +13,8 @@ export async function ensure(path) {
     }
     try {
         // Create directory recursively if it doesn't exist
-        if (!fs.existsSync(path)) {
-            fs.mkdirSync(path, { recursive: true })
-        }
+        if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true })
+
         return true
     } catch (error) {
         console.error("Error creating directory:", path, error)

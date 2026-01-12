@@ -6,6 +6,7 @@ export class NAVIGATOR extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this.subscriptions = []
     }
 
     connectedCallback() {
@@ -15,14 +16,14 @@ export class NAVIGATOR extends HTMLElement {
         const vibrate = () => {
             if ("vibrate" in navigator) navigator.vibrate(20)
         }
-        if (icon) {
+        if (icon)
             if (this.dataset.icon) icon.dataset.icon = this.dataset.icon
             else delete icon.dataset.icon
-        }
 
         label.addEventListener("click", vibrate)
+        this.subscriptions.push(() => label.removeEventListener("click", vibrate))
 
-        state.addEventListener("change", () => {
+        const active = () => {
             let i = -1
             let el = this
             while (el.tagName === "UI-NAVIGATOR") {
@@ -31,7 +32,9 @@ export class NAVIGATOR extends HTMLElement {
                 el = el.parentElement
             }
             el.style.setProperty("--active", i)
-        })
+        }
+        state.addEventListener("change", active)
+        this.subscriptions.push(() => state.removeEventListener("change", active))
 
         // Count the number of children in slot
         // Set --total for parent, and --i for each child
@@ -41,8 +44,15 @@ export class NAVIGATOR extends HTMLElement {
         this.style.setProperty("--total", total)
         children.forEach((child, i) => {
             child.style.setProperty("--i", i + 1)
-            if (child.tagName !== "UI-NAVIGATOR") child.addEventListener("click", vibrate)
+            if (child.tagName !== "UI-NAVIGATOR") {
+                child.addEventListener("click", vibrate)
+                this.subscriptions.push(() => child.removeEventListener("click", vibrate))
+            }
         })
+    }
+
+    disconnectedCallback() {
+        this.subscriptions.forEach((off) => off())
     }
 }
 

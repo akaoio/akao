@@ -11,9 +11,8 @@ export function sha256(str) {
     while (str.length % 64 !== 56) str += "\x00"
 
     // Convert to words
-    for (let i = 0; i < str.length; i++) {
-        words[i >> 2] |= str.charCodeAt(i) << (((3 - i) % 4) * 8)
-    }
+    for (let i = 0; i < str.length; i++) words[i >> 2] |= str.charCodeAt(i) << (((3 - i) % 4) * 8)
+
     words[words.length] = (strBitLength / Math.pow(2, 32)) | 0
     words[words.length] = strBitLength
 
@@ -62,12 +61,12 @@ export function sha256(str) {
 
     // Convert to hex
     let result = ""
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++)
         for (let j = 3; j >= 0; j--) {
             const b = (H[i] >> (j * 8)) & 255
             result += (b < 16 ? "0" : "") + b.toString(16)
         }
-    }
+
     return result
 }
 
@@ -118,9 +117,8 @@ export function base64ToHex(base64) {
 
 export function hexToBase64(hexStr) {
     var base64 = ""
-    for (var i = 0; i < hexStr.length; i++) {
-        base64 += !((i - 1) & 1) ? String.fromCharCode(parseInt(hexStr.substring(i - 1, i + 1), 16)) : ""
-    }
+    for (var i = 0; i < hexStr.length; i++) base64 += !((i - 1) & 1) ? String.fromCharCode(parseInt(hexStr.substring(i - 1, i + 1), 16)) : ""
+
     return btoa(base64)
 }
 
@@ -138,8 +136,7 @@ export function base64UrlToBuffer(base64url) {
     const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/") + padding
     const binary = atob(base64)
     const buffer = new Uint8Array(binary.length)
-    for (let i = 0; i < binary.length; i++) {
-        buffer[i] = binary.charCodeAt(i)
-    }
+    for (let i = 0; i < binary.length; i++) buffer[i] = binary.charCodeAt(i)
+
     return buffer
 }

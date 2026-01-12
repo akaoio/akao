@@ -9,6 +9,7 @@ export async function $put(path, value) {
             mode: "readwrite",
             operation: (store) => store.put(value, path)
         })
+
     if (NODE) {
         let current = this.data
         for (let i = 0; i < path.length - 1; i++) {

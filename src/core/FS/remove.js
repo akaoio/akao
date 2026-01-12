@@ -14,16 +14,12 @@ export async function remove(path) {
 
     path = join(path)
     try {
-        if (!fs.existsSync(path)) {
-            return true // Already doesn't exist
-        }
+        if (!fs.existsSync(path)) return true // Already doesn't exist
 
         const stats = fs.statSync(path)
-        if (stats.isDirectory()) {
-            fs.rmSync(path, { recursive: true, force: true })
-        } else {
-            fs.unlinkSync(path)
-        }
+        if (stats.isDirectory()) fs.rmSync(path, { recursive: true, force: true })
+        else fs.unlinkSync(path)
+
         return true
     } catch (error) {
         console.error("Error removing path:", path, error)

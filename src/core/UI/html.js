@@ -62,9 +62,7 @@ export function html(strings, ...values) {
 
     values.forEach((value, i) => {
         // If value is simple → embed into current string and merge with next string
-        if (!needsMarker(value)) {
-            currentString += String(value ?? "") + strings[i + 1]
-        }
+        if (!needsMarker(value)) currentString += String(value ?? "") + strings[i + 1]
         // If value is complex → save marker
         else {
             mergedStrings.push(currentString)
@@ -74,9 +72,7 @@ export function html(strings, ...values) {
     })
 
     // If no more complex values at the end, only current string remains
-    if (currentString !== undefined) {
-        mergedStrings.push(currentString)
-    }
+    if (currentString !== undefined) mergedStrings.push(currentString)
 
     // Build HTML string with markers - detect attribute vs content position
     const htmlString = mergedStrings
@@ -86,14 +82,13 @@ export function html(strings, ...values) {
             // Check if we're inside a tag (attribute position)
             const isInAttribute = /<[^>]*$/.test(str)
 
-            if (isInAttribute && typeof markerValues[i] === "function") {
+            if (isInAttribute && typeof markerValues[i] === "function")
                 // Use special attribute marker for functions in attribute position
                 // IMPORTANT: Use index i which maps to markerValues[i]
                 return result + str + `__attr_mark:${i}__`
-            } else {
+            else
                 // Use comment marker for content position
                 return result + str + `<!--__mark:${i}-->`
-            }
         }, "")
         .trim()
         .replace(/>\s+</g, "><") // Remove whitespace between tags

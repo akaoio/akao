@@ -10,9 +10,7 @@ export async function update(idb, path, value) {
             for (const [key, val] of Object.entries(currentValue)) {
                 const nestedPath = [...currentPath, key]
                 notify(idb.callbacks, nestedPath, val)
-                if (typeof val === "object" && val !== null) {
-                    await notifyNested(nestedPath, val)
-                }
+                if (typeof val === "object" && val !== null) await notifyNested(nestedPath, val)
             }
         }
         await notifyNested(path, value)

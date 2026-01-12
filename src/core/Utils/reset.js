@@ -8,7 +8,7 @@ export function reset() {
     console.log("sessionStorage has been cleared.")
 
     // Delete all databases in indexedDB
-    if ("indexedDB" in window) {
+    if ("indexedDB" in window)
         indexedDB
             .databases()
             .then((databases) => {
@@ -20,10 +20,9 @@ export function reset() {
             .catch((error) => {
                 console.error("Error accessing IndexedDB:", error)
             })
-    }
 
     // Clear all caches
-    if ("caches" in window) {
+    if ("caches" in window)
         caches.keys().then((cacheNames) => {
             cacheNames.forEach((cacheName) => {
                 caches.delete(cacheName).then(() => {
@@ -31,7 +30,6 @@ export function reset() {
                 })
             })
         })
-    }
 
     // Delete all cookies
     const cookies = document.cookie.split(";")
@@ -42,14 +40,13 @@ export function reset() {
     console.log("All cookies have been deleted.")
 
     // Unregister all Service Workers
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator)
         navigator.serviceWorker.getRegistrations().then((registrations) => {
             registrations.forEach((registration) => {
                 registration.unregister()
                 console.log(`Service Worker ${registration.scope} has been unregistered.`)
             })
         })
-    }
 
     // If using Web SQL (though it's deprecated), data needs to be manually cleared
     console.log("Web SQL data would need to be manually cleared if used.")

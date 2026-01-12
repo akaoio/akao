@@ -14,11 +14,12 @@ export function generateCerts() {
 export function signup(data, callback) {
     const { Gun, gun, user, sea } = globalThis
     const { referrer, name, username, password } = data
-    if (data.username && data.password && callback) {
+    if (data.username && data.password && callback)
         user.create(username, password, (response) => {
             if (response.err && typeof callback == "function") return callback(response)
-            if (data.authenticate) {
+            if (data.authenticate)
                 // If callback exist in user.create(), user.auth() won't fire, must auth manually
+
                 authenticate(username, password, async () => {
                     // Save name to profile
                     if (name) user.get("profile").put({ name })
@@ -51,7 +52,7 @@ export function signup(data, callback) {
 
                     const { site } = Statics
                     // Send key pair to administrator
-                    if (site?.system?.pub && site?.system?.epub) {
+                    if (site?.system?.pub && site?.system?.epub)
                         gun.user(site.system.pub)
                             .get("cert")
                             .get("message")
@@ -77,14 +78,12 @@ export function signup(data, callback) {
                                         .put({ [Gun.state()]: message }, null, { opt: { cert: cert } })
                                 }
                             })
-                    }
 
                     // Call callback function if possible
                     if (typeof callback == "function") callback(response)
                 })
-            } else if (typeof callback == "function") callback(response)
+            else if (typeof callback == "function") callback(response)
         })
-    }
 }
 
 export function authenticate(...args) {

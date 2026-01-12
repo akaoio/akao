@@ -108,9 +108,7 @@ async function hashDirectory(path, exclude = []) {
             const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name
 
             // Skip excluded files/directories
-            if (exclude.some((ex) => relPath === ex || relPath.startsWith(ex + "/"))) {
-                continue
-            }
+            if (exclude.some((ex) => relPath === ex || relPath.startsWith(ex + "/"))) continue
 
             if (entry.isDirectory()) {
                 combined += entry.name

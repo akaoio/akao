@@ -18,14 +18,13 @@ thread.init = async function () {
                 if (
                     skippables.length &&
                     skippables.some((stable) => {
-                        for (let i = 0; i < stable.length; i++) {
-                            if (stable[i] !== path[i]) return false
-                        }
+                        for (let i = 0; i < stable.length; i++) if (stable[i] !== path[i]) return false
+
                         return true
                     })
-                ) {
+                )
                     continue
-                }
+
                 const _ = [...path, "_.hash"]
                 // Get existing hash
                 let hash = await Indexes.Hashes.get(_).once()

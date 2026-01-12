@@ -10,22 +10,20 @@ export async function initDisk() {
 
 export async function loadFromDisk() {
     const fileExists = await exist(["indexed", this.name + ".json"])
-    if (fileExists) {
+    if (fileExists)
         try {
             const data = await load(["indexed", this.name + ".json"])
             if (data) this.data = data
         } catch (error) {
             console.error("Error loading from disk:", error)
         }
-    }
 }
 
 export async function saveToDisk() {
-    if (NODE) {
+    if (NODE)
         try {
             await write(["indexed", this.name + ".json"], this.data)
         } catch (error) {
             console.error("Error saving to disk:", error)
         }
-    }
 }

@@ -11,11 +11,7 @@ export async function processI18n(locales) {
         const keyName = file.replace(/\.(json|yaml|yml)$/, "")
         const translations = await load([...paths.src.i18n, file])
 
-        for (const locale of locales) {
-            if (translations?.[locale]) {
-                localeData[locale][keyName] = translations[locale]
-            }
-        }
+        for (const locale of locales) if (translations?.[locale]) localeData[locale][keyName] = translations[locale]
     }
 
     for (const locale of locales) {
