@@ -4,7 +4,8 @@ export const Indexes = {
     Statics: new IDB({ name: "Statics" }),
     Auth: new IDB({ name: "Auth" }),
     Wallet: new IDB({ name: "Wallet" }),
-    Lives: new IDB({ name: "Lives" })
+    Lives: new IDB({ name: "Lives" }),
+    Cart: new IDB({ name: "Cart" })
 }
 
 globalThis.Statics = globalThis.Statics || {}

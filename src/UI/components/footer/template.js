@@ -8,6 +8,7 @@ import "/UI/components/user/index.js"
 import "/UI/components/fiats/index.js"
 import "/UI/components/access/index.js"
 import "/UI/components/user/modal.js"
+import "/UI/components/notifications/index.js"
 import styles from "./styles.css.js"
 
 export const template = html`
@@ -27,6 +28,7 @@ export const template = html`
     </footer>
     <ui-access />
     <ui-user-modal />
+    <ui-notifications />
 `
 
 export default template

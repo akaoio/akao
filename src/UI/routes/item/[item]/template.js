@@ -17,13 +17,16 @@ export const template = html`
                 <section id="attributes"></section>
             </main>
             <footer style="grid-area: footer;">
-                <section id="quantity">
+                <fieldset id="quantity">
+                    <legend><ui-context data-key="dictionary.quantity" /></legend>
                     <ui-icon id="decrease" data-icon="dash-lg"></ui-icon>
-                    <input name="quantity" type="number" value="1" min="1" />
+                    <input name="quantity" type="number" value="1" min="1" required />
                     <ui-icon id="increase" data-icon="plus-lg"></ui-icon>
-                </section>
+                </fieldset>
                 <ui-button id="add"><ui-context data-key="dictionary.addToCart" /></ui-button>
             </footer>
+            <input type="hidden" name="item" required />
+            <input type="hidden" name="sku" required />
         </form>
     </layout-main>
 `

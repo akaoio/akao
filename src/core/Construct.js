@@ -36,6 +36,7 @@ export const Construct = {
             ...router,
             theme: getTheme(),
             fiat: getFiat(),
+            cart: await getCart(),
             referrer: globalThis.localStorage ? globalThis.localStorage.getItem("referrer") : await getReferrer()
         })
         console.log("Constructed: Context")
