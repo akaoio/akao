@@ -19,7 +19,6 @@ thread.init = async function () {
                     skippables.length &&
                     skippables.some((stable) => {
                         for (let i = 0; i < stable.length; i++) if (stable[i] !== path[i]) return false
-
                         return true
                     })
                 )

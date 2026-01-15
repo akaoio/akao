@@ -21,7 +21,9 @@ export function del(data) {
         if (parent && lastKey in parent) {
             const last = parent[lastKey]
             delete parent[lastKey]
-            this.notify({ key: data, value: undefined, last })
+            // Notify subscribers of the parent key change (not the nested path)
+            const key = keys[0] || data[0]
+            this.notify({ key: key, value: this.states[key], last })
         }
     }
     // Object: delete all keys from object

@@ -14,7 +14,9 @@ export const template = html`
         <div id="description"></div>
         <slot name="description"></slot>
     </div>
-    <div>
+    <div id="pricing">
+        <div id="sale"></div>
+        <slot name="sale"></slot>
         <div id="price"></div>
         <slot name="price"></slot>
     </div>

@@ -13,7 +13,10 @@ export const template = html`
             <header style="grid-area: header;"><ui-context data-key="item.name" /></header>
             <main style="grid-area: main;">
                 <section id="description"><ui-context data-key="item.description" /></section>
-                <section id="price"><ui-context data-key="item.price" /></section>
+                <section id="pricing">
+                    <ui-context data-key="item.sale" />
+                    <ui-context data-key="item.price" />
+                </section>
                 <section id="attributes"></section>
             </main>
             <footer style="grid-area: footer;">
@@ -25,7 +28,7 @@ export const template = html`
                 </fieldset>
                 <ui-button id="add"><ui-context data-key="dictionary.addToCart" /></ui-button>
             </footer>
-            <input type="hidden" name="item" required />
+            <input type="hidden" name="id" required />
             <input type="hidden" name="sku" required />
         </form>
     </layout-main>

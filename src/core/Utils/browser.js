@@ -10,14 +10,3 @@ export function notify({ content, callback, className, autoClose, onClose, delay
         delay
     })
 }
-
-export function prompt({ content, callback, className, autoClose, onClose, delay } = {}) {
-    events.emit("prompt", {
-        content,
-        callback,
-        className,
-        autoClose,
-        onClose,
-        delay
-    })
-}

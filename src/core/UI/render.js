@@ -33,8 +33,9 @@ function getNodesFromContainer(container, shouldClone = true) {
  *
  * @param {TemplateResult} templateResult - Object from html()
  * @param {HTMLElement|ShadowRoot} container - Container to mount
+ * @param {Object} options - Rendering options (append, prepend)
  */
-function renderTemplateResult(templateResult, container) {
+function renderTemplateResult(templateResult, container, options = {}) {
     const { html, values } = templateResult
 
     /**
@@ -71,7 +72,13 @@ function renderTemplateResult(templateResult, container) {
      * → Skip TreeWalker completely! 🚀
      */
     if (values.length === 0) {
-        container.appendChild(fragment)
+        if (options.prepend) {
+            container.prepend(fragment)
+        } else if (options.append) {
+            container.appendChild(fragment)
+        } else {
+            container.replaceChildren(fragment)
+        }
         return
     }
 
@@ -120,7 +127,7 @@ function renderTemplateResult(templateResult, container) {
         if (value?._isTemplateResult) {
             // Create temporary container to render nested template
             const $template = document.createElement("div")
-            renderTemplateResult(value, $template)
+            renderTemplateResult(value, $template, {})
 
             // Insert all children of $template at marker position
             while ($template.firstChild) parent.insertBefore($template.firstChild, node)
@@ -135,7 +142,7 @@ function renderTemplateResult(templateResult, container) {
                 // If item is TemplateResult
                 if (item?._isTemplateResult) {
                     const $template = document.createElement("div")
-                    renderTemplateResult(item, $template)
+                    renderTemplateResult(item, $template, {})
                     while ($template.firstChild) parent.insertBefore($template.firstChild, node)
                 }
                 // If item is DOM node
@@ -159,8 +166,16 @@ function renderTemplateResult(templateResult, container) {
 
     /**
      * STEP 5: Mount fragment to container
+     * Default: replace all children
+     * Options: append or prepend
      */
-    container.appendChild(fragment)
+    if (options.prepend) {
+        container.prepend(fragment)
+    } else if (options.append) {
+        container.appendChild(fragment)
+    } else {
+        container.replaceChildren(fragment)
+    }
 
     /**
      * STEP 6: Execute attribute callbacks AFTER appending to DOM
@@ -188,11 +203,22 @@ function renderTemplateResult(templateResult, container) {
  *
  * @param {TemplateResult|Node|string|Array} template - Template to render
  * @param {HTMLElement|ShadowRoot} [container] - Container to mount DOM (optional)
+ * @param {Object} [options] - Rendering options
+ * @param {boolean} [options.append] - Append to container instead of replacing
+ * @param {boolean} [options.prepend] - Prepend to container instead of replacing
  * @returns {DocumentFragment|Node} - Always returns rendered nodes
  *
  * @example
- * // Render to container and get nodes
+ * // Render to container (replaces all children by default)
  * const nodes = render(template, document.body)
+ *
+ * @example
+ * // Append to container
+ * render(template, document.body, { append: true })
+ *
+ * @example
+ * // Prepend to container
+ * render(template, document.body, { prepend: true })
  *
  * @example
  * // Get rendered nodes without container
@@ -205,7 +231,7 @@ function renderTemplateResult(templateResult, container) {
  * const outer = html`<div>Hello ${inner}</div>`
  * const nodes = render(outer, shadowRoot)
  */
-export function render(template, container) {
+export function render(template, container, options = {}) {
     // Check if container was provided by user
     const hasRealContainer = container && container.nodeType
 
@@ -220,7 +246,7 @@ export function render(template, container) {
     if (template?._isTemplateResult) {
         // If container is <template>, render to .content
         const target = container.nodeName === "TEMPLATE" ? container.content : container
-        renderTemplateResult(template, target)
+        renderTemplateResult(template, target, options)
 
         // If user provided a real container, nodes are already appended - return container
         // If temp container, extract and return nodes
@@ -232,14 +258,29 @@ export function render(template, container) {
     // If it's a direct DOM node
     if (template?.nodeType) {
         const target = container.nodeName === "TEMPLATE" ? container.content : container
-        target.appendChild(template)
+
+        if (options.prepend) {
+            target.prepend(template)
+        } else if (options.append) {
+            target.appendChild(template)
+        } else {
+            target.replaceChildren(template)
+        }
+
         // Return the appended node or container
         return hasRealContainer ? container : template
     }
 
     // If it's an array (e.g., items.map(...))
     if (Array.isArray(template)) {
-        template.forEach((item) => render(item, container))
+        // For arrays with append/prepend, we need to handle differently
+        if (!options.append && !options.prepend && hasRealContainer) {
+            // Clear container first for default replace behavior
+            const target = container.nodeName === "TEMPLATE" ? container.content : container
+            while (target.firstChild) target.removeChild(target.firstChild)
+        }
+
+        template.forEach((item) => render(item, container, { ...options, append: options.prepend ? false : options.append || true }))
         // Return container if real, otherwise extract nodes
         if (hasRealContainer) return container
 
@@ -247,8 +288,24 @@ export function render(template, container) {
     }
 
     // If it's a primitive value (string, number, etc.)
-    if (container.nodeName === "TEMPLATE") container.content.textContent = String(template ?? "")
-    else container.textContent = String(template ?? "")
+    const textContent = String(template ?? "")
+    if (container.nodeName === "TEMPLATE") {
+        if (options.prepend) {
+            container.content.prepend(document.createTextNode(textContent))
+        } else if (options.append) {
+            container.content.appendChild(document.createTextNode(textContent))
+        } else {
+            container.content.textContent = textContent
+        }
+    } else {
+        if (options.prepend) {
+            container.prepend(document.createTextNode(textContent))
+        } else if (options.append) {
+            container.appendChild(document.createTextNode(textContent))
+        } else {
+            container.textContent = textContent
+        }
+    }
 
     // Return container if real, otherwise extract nodes
     if (hasRealContainer) return container

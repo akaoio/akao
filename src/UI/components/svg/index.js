@@ -23,7 +23,8 @@ export class SVG extends HTMLElement {
                     html`
                         ${svg}
                     `,
-                    this.shadowRoot
+                    this.shadowRoot,
+                    { append: true }
                 )
             )
             .catch(console.error)

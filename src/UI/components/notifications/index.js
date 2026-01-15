@@ -19,22 +19,26 @@ export class NOTIFICATIONS extends HTMLElement {
     }
 
     connectedCallback() {
-        this.subscriptions.push(events.on("notify", ({detail}) => {
-            const key = randomKey()
-            const close = () => this.close(key)
-            const notification = html`
-                <div class="notification" data-key="${key}">
-                    <div class="content">
-                        ${detail.content}
+        this.subscriptions.push(
+            events.on("notify", ({ detail }) => {
+                const key = randomKey()
+                const close = () => this.close(key)
+                const notification = html`
+                    <div class="notification" data-key="${key}">
+                        <div class="content">${detail.content}</div>
+                        <ui-icon
+                            data-icon="x-lg"
+                            ${({ element }) => {
+                                element.addEventListener("click", close)
+                                this.subscriptions.push(() => element.removeEventListener("click", close))
+                            }} />
                     </div>
-                    <ui-icon class="close" data-icon="x" ${({element}) => {
-                        element.addEventListener("click", close)
-                        this.subscriptions.push(() => element.removeEventListener("click", close))
-                    }}/>
-                </div>`
-            render(notification, this.shadowRoot)
-            if (detail?.autoClose) setTimeout(close, detail?.delay || 5000)
-        }))
+                `
+                render(notification, this.shadowRoot, { append: true })
+                if (detail?.autoClose === false) return
+                setTimeout(close, detail?.delay || 5000)
+            })
+        )
     }
 
     disconnectedCallback() {

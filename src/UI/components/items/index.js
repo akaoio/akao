@@ -9,12 +9,14 @@ export class ITEMS extends HTMLElement {
         super()
         this.states = new States()
         this.attachShadow({ mode: "open" })
+        this.render = this.render.bind(this)
         render(template, this.shadowRoot)
     }
 
-    connectedCallback() {
-        DB.get(["statics", "items", "meta.json"]).then((data) => this.states.set(data))
-        this.states.on("pages", this.render.bind(this))
+    async connectedCallback() {
+        this.states.on("pages", this.render)
+        const data = await DB.get(["statics", "items", "meta.json"])
+        if (data) this.states.set(data)
     }
 
     async render() {

@@ -14,13 +14,15 @@ export class ITEM extends HTMLElement {
         this.render = this.render.bind(this)
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         const name = this.shadowRoot.querySelector("#name")
         const description = this.shadowRoot.querySelector("#description")
         const price = this.shadowRoot.querySelector("#price")
+        const sale = this.shadowRoot.querySelector("#sale")
         this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = `/item/${this.dataset.key}`
-        this.subscriptions.push(Context.on("locale", this.render), this.states.on("name", [name, "textContent"]), this.states.on("description", [description, "textContent"]), this.states.on("price", [price, "textContent"]))
-        DB.get(["statics", "items", this.dataset.key, "meta.json"]).then((data) => this.states.set(data))
+        this.subscriptions.push(Context.on("locale", this.render), this.states.on("name", [name, "textContent"]), this.states.on("description", [description, "textContent"]), this.states.on("price", [price, "textContent"]), this.states.on("sale", [sale, "textContent"]))
+        const data = await DB.get(["statics", "items", this.dataset.key, "meta.json"])
+        if (data) this.states.set(data)
         if (!this.states.has(["name", "price"])) this.render()
     }
 

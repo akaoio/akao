@@ -11,6 +11,7 @@ export const styles = css`
         gap: var(--space);
         padding: var(--space);
         .notification {
+            --icon: var(--icon-md);
             background: var(--background-inverted);
             border: 1px solid var(--border-inverted);
             color: var(--color-inverted);

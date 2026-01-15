@@ -1,11 +1,10 @@
 import { BROWSER } from "./Utils/environment.js"
 import States from "/core/States.js"
-import { Indexes, Statics } from "./Stores.js"
+import { Statics } from "./Stores.js"
 
 export const Context = new States({
     theme: getTheme(),
     fiat: getFiat(),
-    cart: getCart(),
     referrer: null
 })
 
@@ -45,10 +44,6 @@ export function setFiat(code) {
     const fiat = Statics.fiats?.find?.((e) => e.code == code)
     if (!fiat) return
     Context.set({ fiat })
-}
-
-export async function getCart() {
-    return await Indexes.Cart.get("cart").once() || {}
 }
 
 export function getReferrer() {

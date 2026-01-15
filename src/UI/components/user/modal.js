@@ -5,24 +5,22 @@ import "/UI/components/modal/index.js"
 import "/UI/components/signout/index.js"
 import "/UI/components/wallets/index.js"
 
-const styles = css`
-    :host {
-        ui-modal {
-            section {
-                display: flex;
-                align-items: center;
-                gap: var(--space);
-                ui-identicon {
-                    width: var(--icon-md);
-                    min-width: var(--icon-md);
+const template = html`
+    ${css`
+        :host {
+            ui-modal {
+                section {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space);
+                    ui-identicon {
+                        width: var(--icon-md);
+                        min-width: var(--icon-md);
+                    }
                 }
             }
         }
-    }
-`
-
-const template = html`
-    ${styles}
+    `}
     <ui-modal data-header="profile" class="center">
         <ui-signout slot="header" />
         <section>
