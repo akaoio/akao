@@ -17,7 +17,11 @@ export class CART extends HTMLElement {
         const button = this.shadowRoot.querySelector("ui-icon")
         this.modal = this.shadowRoot.querySelector("ui-modal")
         button.addEventListener("click", this.modal.toggleModal)
-        this.subscriptions.push(() => button.removeEventListener("click", this.modal.toggleModal), Cart.states.on("list", this.render))
+        this.subscriptions.push(
+            () => button.removeEventListener("click", this.modal.toggleModal), 
+            Cart.states.on("list", this.render),
+            Context.on("locale", this.render)
+        )
         this.render()
     }
 
