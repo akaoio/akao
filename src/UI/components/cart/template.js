@@ -12,7 +12,7 @@ export const template = html`
         <div id="total">
             <ui-context data-key="dictionary.total" />
             :
-            <span></span>
+            <ui-fiat />
         </div>
     </ui-modal>
 `

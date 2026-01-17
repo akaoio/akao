@@ -40,7 +40,7 @@ export class CART extends HTMLElement {
                 <div class="item">
                     <div><a is="ui-a" data-to="/item/${item.id}">${$item.name}</a></div>
                     <div>x${item.quantity}</div>
-                    <div>${item.total}</div>
+                    <div><ui-fiat data-amount="${item.total}" /></div>
                     <div class="actions">
                         <ui-icon
                             data-icon="dash-lg"
@@ -65,7 +65,7 @@ export class CART extends HTMLElement {
             `)
         }
         render(list, this.modal.querySelector("#items"))
-        this.modal.querySelector("#total span").textContent = `${Cart.states.get("total")}`
+        this.modal.querySelector("#total ui-fiat").dataset.amount = Cart.states.get("total")
     }
 }
 

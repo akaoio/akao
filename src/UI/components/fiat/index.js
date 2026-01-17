@@ -23,6 +23,7 @@ export class FIAT extends HTMLElement {
             Context.on("locale", this.render),
             Context.on("fiat", this.render)
         )
+        this.render()
     }
 
     disconnected() {
