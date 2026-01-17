@@ -5,6 +5,7 @@ import { log } from "./src/core/Build/logger.js"
 import { generateRoutes } from "./src/core/Build/routes.js"
 import { processI18n } from "./src/core/Build/i18n.js"
 import { generateHashFiles } from "./src/core/Build/hash.js"
+import { Forex } from "./src/core/Forex.js"
 
 // ============ Helper Functions ============
 async function copyAssets(assets) {
@@ -84,6 +85,14 @@ for (const name of itemDirs) {
 }
 
 log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} unique tags`)
+
+// Fetch forex rates
+log.info("Fetching forex rates...")
+const forex = new Forex()
+await forex.init()
+await forex.update()
+await write([...paths.build.statics, "forex.json"], forex.rates)
+log.ok("Saved forex rates")
 
 // Build static files (YAML → JSON)
 log.info("Building static files...")

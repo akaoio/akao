@@ -16,6 +16,7 @@
   name: Русский
 - code: ar
   name: العربية
+  dir: rtl
 - code: hi
   name: हिन्दी
 - code: pt
@@ -28,8 +29,10 @@
   name: ไทย
 - code: he
   name: עברית
+  dir: rtl
 - code: ur
   name: اردو
+  dir: rtl
 - code: zh-TW
   name: 繁體中文
 - code: no

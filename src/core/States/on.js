@@ -1,7 +1,7 @@
 /**
  * Subscribe to state changes.
  * Supports global subscriptions or path-specific subscriptions.
- * @param {...*} args - Variable arguments: [key], callback function, [target, property], boolean for immediate call
+ * @param {...*} args - Variable arguments: [key], callback function, [target, property, ...nestedProps], boolean for immediate call
  * @returns {Function} Unsubscribe function
  */
 export function on(...args) {
@@ -10,8 +10,8 @@ export function on(...args) {
     const key = typeof first === "string" || Array.isArray(first) ? first : null
     // Extract callback function from arguments
     const cb = rest.find((arg) => typeof arg === "function") || (typeof first === "function" ? first : null)
-    // Extract property assignment target [object, propertyName]
-    const arr = rest.find((arg) => Array.isArray(arg) && arg.length === 2)
+    // Extract property assignment target [object, propertyName, ...nestedProps]
+    const arr = rest.find((arg) => Array.isArray(arg) && arg.length >= 2)
     const sub = cb || arr
     // Check if immediate call is requested
     const call = rest.find((arg) => typeof arg === "boolean")
@@ -30,7 +30,16 @@ export function on(...args) {
         // Get current value for the key/path
         const value = Array.isArray(key) ? key.reduce((acc, k) => acc && acc[k], this.states) : this.states[key]
         // If subscriber is property assignment target, set initial value
-        if (Array.isArray(sub)) sub.reduce((acc, k) => (typeof acc[k] === "object" ? acc[k] : (acc[k] = value)))
+        if (Array.isArray(sub)) {
+            // Support nested property assignment: [obj, "prop1", "prop2", ...]
+            const [target, ...props] = sub
+            let current = target
+            for (let i = 0; i < props.length - 1; i++) {
+                if (typeof current[props[i]] !== "object") current[props[i]] = {}
+                current = current[props[i]]
+            }
+            current[props[props.length - 1]] = value
+        }
         // Call immediately if requested
         if (call && typeof sub === "function") sub({ key, value })
         const off = () => this.MAP.get(key)?.delete(sub)

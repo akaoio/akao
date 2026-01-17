@@ -235,6 +235,9 @@ export class Router {
         if (!locale) return
         // Update document lang attribute
         if (globalThis.document && globalThis.document.documentElement.lang !== code) globalThis.document.documentElement.lang = code
+        // Update document dir attribute for RTL languages
+        if (locale?.dir && globalThis.document.documentElement.dir !== locale.dir) globalThis.document.documentElement.dir = locale.dir
+        else globalThis.document.documentElement.removeAttribute("dir")
         // Load dictionary based on new locale code
         Statics.dictionary = await DB.get(["statics", "locales", `${code}.json`])
         if (!Statics.dictionary) return

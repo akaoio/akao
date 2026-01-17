@@ -1,4 +1,4 @@
-import { notify } from "/core/IDB/notify.js"
+import { notify } from "./notify.js"
 
 export async function update(idb, path, value) {
     // First notify the exact path

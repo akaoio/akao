@@ -1,5 +1,5 @@
-import { update } from "/core/IDB/update.js"
-import { BROWSER, NODE } from "/core/Utils.js"
+import { update } from "./update.js"
+import { BROWSER, NODE } from "../Utils.js"
 
 // Internal implementation
 export async function $put(path, value) {

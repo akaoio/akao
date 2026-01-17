@@ -23,8 +23,16 @@ export function notify(data = {}) {
             subs.forEach((sub) => {
                 // Support function callbacks
                 if (typeof sub === "function") sub({ ...data, key: Array.isArray(path) ? path.at(-1) : key, value: val })
-                // Support direct property assignment [object, propertyName]
-                else if (Array.isArray(sub) && sub.length === 2 && sub[0]) sub[0][sub[1]] = val
+                // Support direct property assignment [object, propertyName, ...nestedProps]
+                else if (Array.isArray(sub) && sub.length >= 2 && sub[0]) {
+                    const [target, ...props] = sub
+                    let current = target
+                    for (let i = 0; i < props.length - 1; i++) {
+                        if (typeof current[props[i]] !== "object") current[props[i]] = {}
+                        current = current[props[i]]
+                    }
+                    current[props[props.length - 1]] = val
+                }
             })
         }
     }

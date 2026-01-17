@@ -1,5 +1,5 @@
-import { Chain } from "/core/IDB/Chain.js"
-import { BROWSER, NODE } from "/core/Utils.js"
+import { Chain } from "./Chain.js"
+import { BROWSER, NODE } from "../Utils.js"
 
 // Internal implementation
 export async function $get(path) {

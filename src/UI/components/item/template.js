@@ -1,6 +1,7 @@
 import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 import "/UI/components/a/index.js"
+import "/UI/components/fiat/index.js"
 
 export const template = html`
     ${styles}
@@ -15,9 +16,9 @@ export const template = html`
         <slot name="description"></slot>
     </div>
     <div id="pricing">
-        <div id="sale"></div>
+        <ui-fiat id="sale"></ui-fiat>
         <slot name="sale"></slot>
-        <div id="price"></div>
+        <ui-fiat id="price"></ui-fiat>
         <slot name="price"></slot>
     </div>
 `
