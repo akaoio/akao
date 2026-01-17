@@ -65,6 +65,12 @@ export class ITEM extends HTMLElement {
         Context.set({ item: { ...meta, ...data } })
         this.shadowRoot.querySelector("input[name=id]").value = id
         this.shadowRoot.querySelector("input[name=sku]").value = meta.sku
+        const sale = this.shadowRoot.querySelector("#sale")
+        const price = this.shadowRoot.querySelector("#price")
+        sale.dataset.base = price.dataset.base = meta.currency
+        if (meta.sale) sale.dataset.amount = meta.sale
+        if (meta.price) price.dataset.amount = meta.price
+
         if (this.shadowRoot.querySelector("#attributes").children.length == 0) {
             const attributes = meta.attributes.map(
                 (attr) => html`

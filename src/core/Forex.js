@@ -20,13 +20,14 @@ export class Forex {
         this.process = this.process.bind(this)
         this.update = this.update.bind(this)
         this.convert = this.convert.bind(this)
-        this.init()
+        // Store init promise for awaiting
+        this.ready = this.init()
     }
 
     async init() {
         this.fiats = Statics?.fiats || (NODE ? await load(["src", "statics", "fiats.yaml"]) : BROWSER ? await DB.get(["statics", "fiats.json"]) : undefined)
         if (NODE) this.rates = await this.update()
-        if (BROWSER) this.rates = await DB.get(["statics", "forex.json"]) || await this.update()
+        if (BROWSER) this.rates = (await DB.get(["statics", "forex.json"])) || (await this.update())
         // Initialize rate structure for all supported fiat currencies
         // Creates a matrix where each currency has conversion rates to all others
         // Default values:
@@ -36,7 +37,7 @@ export class Forex {
     }
 
     // Cleans and validates rate data from APIs
-    filter (data) {
+    filter(data) {
         if (typeof data === "object") {
             for (const [code, value] of Object.entries(data)) {
                 // Remove currencies not in our supported fiats list
@@ -62,7 +63,7 @@ export class Forex {
         data = key && data?.[key] ? this.filter(data[key]) : this.filter(data)
         if (typeof data === "object") return callback && typeof callback === "function" ? callback(data) : data
     }
-    
+
     // ====================== RATE PROCESSING ======================
     // Merges and calculates cross-rates between currencies
     process(data = {}) {
@@ -87,28 +88,38 @@ export class Forex {
     }
 
     async update() {
+        // Skip update in browser if rates already loaded (CORS issues with APIs)
+        if (BROWSER && Object.keys(this.rates).length > 0) {
+            // Check if rates are properly initialized (has at least one valid conversion)
+            const valid = Object.values(this.rates).some((rates) => typeof rates === "object" && Object.values(rates).some((rate) => typeof rate === "number" && rate > 0 && rate !== 1))
+            if (valid) return this.rates
+        }
+
         let data = null
         try {
             // Fetch and merge rates from multiple sources
             data = await this.fetch("https://api.coingate.com/v2/rates", "merchant")
             if (data) this.process(data)
-            data = await this.fetch("https://open.er-api.com/v6/latest", "rates", $data => ({ USD: { ...$data } }))
+            data = await this.fetch("https://open.er-api.com/v6/latest", "rates", ($data) => ({ USD: { ...$data } }))
             if (data) this.process(data)
             // Store updated rates in database
-            return this.rates
         } catch (error) {
-            console.error(error)
+            console.error("Forex update failed:", error)
         }
+        return this.rates
     }
 
     async convert(amount, base, quote) {
+        // Wait for initialization to complete
+        await this.ready
         base = base || Statics?.site?.fiat
         quote = quote || Context.get("fiat")?.code || Statics?.site?.fiat
         if (base === quote) return amount
+        // Check if rate exists, otherwise try to update
         if (!this.rates[base] || !this.rates[base][quote]) await this.update()
-        const rate = this.rates[base] ? this.rates[base][quote] : undefined
+        const rate = this.rates[base]?.[quote]
         if (rate) return amount * rate
-        throw new Error(`Conversion rate from ${base} to ${quote} not available`)
+        return amount
     }
 }
 

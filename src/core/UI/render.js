@@ -1,3 +1,17 @@
+// ============ MODULE-LEVEL OPTIMIZATIONS ============
+// Counter for unique IDs (faster than Date.now())
+let callbackCounter = 0
+
+// Container pool for temporary elements (reduce GC pressure)
+const containerPool = []
+function getContainer() {
+    return containerPool.pop() || document.createElement("div")
+}
+function releaseContainer(container) {
+    container.innerHTML = ""
+    if (containerPool.length < 10) containerPool.push(container)
+}
+
 /**
  * Helper: Safely get nodes from container
  * ShadowRoot cannot be cloned, so we need special handling
@@ -50,8 +64,8 @@ function renderTemplateResult(templateResult, container, options = {}) {
         const value = values[index]
 
         if (typeof value === "function") {
-            // Create unique marker attribute
-            const attrId = `data-cb-${Date.now()}-${index}`
+            // Create unique marker attribute using counter (faster than Date.now())
+            const attrId = `data-cb-${++callbackCounter}`
             attributeCallbacks.push({ attrId, callback: value, index })
             return attrId
         }
@@ -83,8 +97,8 @@ function renderTemplateResult(templateResult, container, options = {}) {
     }
 
     /**
-     * STEP 3: Find and replace content markers using TreeWalker
-     * TreeWalker allows traversing all comment nodes
+     * STEP 3: Find and process markers in single pass
+     * Combine collection + processing to eliminate extra loop
      */
     const walker = document.createTreeWalker(
         fragment,
@@ -92,22 +106,17 @@ function renderTemplateResult(templateResult, container, options = {}) {
         null
     )
 
-    const markers = []
     let currentNode
+    const MARK_PREFIX = "__mark:"
 
-    // Collect all markers
+    // Process markers immediately (no intermediate array)
     while ((currentNode = walker.nextNode())) {
-        const match = currentNode.textContent.match(/^__mark:(\d+)$/)
-        if (match) {
-            const index = parseInt(match[1], 10)
-            markers.push({ node: currentNode, index })
-        }
-    }
+        const text = currentNode.textContent
+        // Fast path: direct string check instead of regex
+        if (!text.startsWith(MARK_PREFIX)) continue
 
-    /**
-     * STEP 4: Replace markers with corresponding values
-     */
-    markers.forEach(({ node, index }) => {
+        const index = parseInt(text.slice(MARK_PREFIX.length), 10)
+        const node = currentNode
         let value = values[index]
         const parent = node.parentNode
 
@@ -125,44 +134,51 @@ function renderTemplateResult(templateResult, container, options = {}) {
 
         // Case 1: Nested TemplateResult
         if (value?._isTemplateResult) {
-            // Create temporary container to render nested template
-            const $template = document.createElement("div")
-            renderTemplateResult(value, $template, {})
+            // Use container from pool
+            const temp = getContainer()
+            renderTemplateResult(value, temp, {})
 
-            // Insert all children of $template at marker position
-            while ($template.firstChild) parent.insertBefore($template.firstChild, node)
+            // Insert all children at marker position
+            while (temp.firstChild) parent.insertBefore(temp.firstChild, node)
 
+            releaseContainer(temp)
             parent.removeChild(node)
-            return
+            continue
         }
 
         // Case 2: Array (e.g., items.map(...))
         if (Array.isArray(value)) {
+            // Batch array items into DocumentFragment for single insertion
+            const frag = document.createDocumentFragment()
+            const temp = getContainer()
+
             value.forEach((item) => {
                 // If item is TemplateResult
                 if (item?._isTemplateResult) {
-                    const $template = document.createElement("div")
-                    renderTemplateResult(item, $template, {})
-                    while ($template.firstChild) parent.insertBefore($template.firstChild, node)
+                    renderTemplateResult(item, temp, {})
+                    while (temp.firstChild) frag.appendChild(temp.firstChild)
                 }
                 // If item is DOM node
-                else if (item?.nodeType) parent.insertBefore(item.cloneNode(true), node)
+                else if (item?.nodeType) frag.appendChild(item.cloneNode(true))
                 // If item is primitive
-                else parent.insertBefore(document.createTextNode(String(item ?? "")), node)
+                else frag.appendChild(document.createTextNode(String(item ?? "")))
             })
+
+            parent.insertBefore(frag, node)
+            releaseContainer(temp)
             parent.removeChild(node)
-            return
+            continue
         }
 
         // Case 3: DOM node
         if (value?.nodeType) {
             parent.replaceChild(value.cloneNode(true), node)
-            return
+            continue
         }
 
         // Case 4: Primitive value (string, number, null, undefined)
         parent.replaceChild(document.createTextNode(String(value ?? "")), node)
-    })
+    }
 
     /**
      * STEP 5: Mount fragment to container
@@ -179,16 +195,33 @@ function renderTemplateResult(templateResult, container, options = {}) {
 
     /**
      * STEP 6: Execute attribute callbacks AFTER appending to DOM
-     * This ensures event listeners are attached to elements in the live DOM tree
+     * Batch query all callback elements in single pass
      */
-    attributeCallbacks.forEach(({ attrId, callback }) => {
-        const element = container.querySelector(`[${attrId}]`)
-        if (element) {
-            element.removeAttribute(attrId) // Clean up marker attribute
-            // Call callback with element as both node and element
-            callback({ node: element, element })
-        } else console.warn("Could not find element with attribute:", attrId, "in container:", container)
-    })
+    if (attributeCallbacks.length > 0) {
+        // Build selector for all callback attributes
+        const selector = attributeCallbacks.map(({ attrId }) => `[${attrId}]`).join(",")
+        const elements = container.querySelectorAll(selector)
+
+        // Map elements by attrId for fast lookup
+        const elementMap = new Map()
+        elements.forEach((el) => {
+            for (const { attrId } of attributeCallbacks) {
+                if (el.hasAttribute(attrId)) {
+                    elementMap.set(attrId, el)
+                    break
+                }
+            }
+        })
+
+        // Execute callbacks
+        attributeCallbacks.forEach(({ attrId, callback }) => {
+            const element = elementMap.get(attrId)
+            if (element) {
+                element.removeAttribute(attrId)
+                callback({ node: element, element })
+            } else console.warn("Could not find element with attribute:", attrId)
+        })
+    }
 }
 
 /**

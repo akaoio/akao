@@ -19,10 +19,7 @@ export class FIAT extends HTMLElement {
     }
 
     connectedCallback() {
-        this.subscriptions.push(
-            Context.on("locale", this.render),
-            Context.on("fiat", this.render)
-        )
+        this.subscriptions.push(Context.on("locale", this.render), Context.on("fiat", this.render))
         this.render()
     }
 
@@ -38,7 +35,8 @@ export class FIAT extends HTMLElement {
         const converted = await Forex.convert(amount, base, quote)
         this.shadowRoot.innerHTML = new Intl.NumberFormat(locale, {
             style: "currency",
-            currency: quote
+            currency: quote,
+            currencyDisplay: "symbol"
         }).format(converted)
     }
 }

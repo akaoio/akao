@@ -21,12 +21,12 @@ export class ITEM extends HTMLElement {
         const sale = this.shadowRoot.querySelector("#sale")
         this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = `/item/${this.dataset.key}`
         this.subscriptions.push(
-            Context.on("locale", this.render), 
-            this.states.on("name", [name, "textContent"]), 
-            this.states.on("description", [description, "textContent"]), 
-            this.states.on("price", [price, "dataset", "amount"]), 
+            Context.on("locale", this.render),
+            this.states.on("name", [name, "textContent"]),
+            this.states.on("description", [description, "textContent"]),
+            this.states.on("price", [price, "dataset", "amount"]),
             this.states.on("sale", [sale, "dataset", "amount"]),
-            this.states.on("currency", ({value}) => {
+            this.states.on("currency", ({ value }) => {
                 price.dataset.base = value
                 sale.dataset.base = value
             })

@@ -2,6 +2,7 @@ import "/UI/layouts/main/index.js"
 import "/UI/components/context/index.js"
 import "/UI/components/button/index.js"
 import "/UI/components/icon/index.js"
+import "/UI/components/fiat/index.js"
 import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 
@@ -14,8 +15,8 @@ export const template = html`
             <main style="grid-area: main;">
                 <section id="description"><ui-context data-key="item.description" /></section>
                 <section id="pricing">
-                    <ui-context data-key="item.sale" />
-                    <ui-context data-key="item.price" />
+                    <ui-fiat id="sale" />
+                    <ui-fiat id="price" />
                 </section>
                 <section id="attributes"></section>
             </main>

@@ -2,7 +2,6 @@ import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { events } from "/core/Events.js"
 import { randomKey } from "/core/Utils.js"
-import "/UI/components/icon/index.js"
 
 export class NOTIFICATIONS extends HTMLElement {
     constructor() {

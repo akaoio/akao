@@ -1,8 +1,10 @@
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
+import "/UI/components/a/index.js"
 import "/UI/components/icon/index.js"
 import "/UI/components/modal/index.js"
 import "/UI/components/context/index.js"
+import "/UI/components/fiat/index.js"
 
 export const template = html`
     ${styles}

@@ -19,8 +19,7 @@ const template = html`
                     }
                 }
             }
-        }
-    `}
+        }`}
     <ui-modal data-header="profile" class="center">
         <ui-signout slot="header" />
         <section>
