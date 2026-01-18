@@ -9,7 +9,7 @@ export const styles = css`
             &::after {
                 content: "";
                 position: absolute;
-                width: 75%;
+                width: 50%;
                 height: 1px;
                 background: var(--color);
             }

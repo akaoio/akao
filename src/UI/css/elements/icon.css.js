@@ -19,6 +19,7 @@ export const styles = css`
             color: var(--color);
             font-size: calc(var(--icon) * 0.5);
             line-height: calc(var(--icon) * 0.75);
+            padding: 0;
             cursor: pointer;
             transition: var(--speed) ease-in-out;
 
@@ -32,7 +33,7 @@ export const styles = css`
             }
 
             > * {
-                width: 75%;
+                width: 50%;
                 aspect-ratio: 1 / 1;
                 display: flex;
                 align-items: center;

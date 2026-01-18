@@ -28,6 +28,9 @@ export const styles = css`
         --space-9: calc(var(--unit) * 48);
         --space-10: calc(var(--unit) * 64);
         --space: var(--space-2);
+        --space-sm: var(--space-1);
+        --space-md: var(--space-2);
+        --space-lg: var(--space-3);
 
         /* Typography */
         --text-xs: calc(var(--unit) * 6);

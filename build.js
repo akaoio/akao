@@ -6,6 +6,7 @@ import { generateRoutes } from "./src/core/Build/routes.js"
 import { processI18n } from "./src/core/Build/i18n.js"
 import { generateHashFiles } from "./src/core/Build/hash.js"
 import { Forex } from "./src/core/Forex.js"
+import fs from "fs"
 
 // ============ Helper Functions ============
 async function copyAssets(assets) {
@@ -60,6 +61,24 @@ async function processYamlDirectory(srcPath, destPath, { recursive = false, filt
 // ============ Main Build Process ============
 log.start("Starting build process...")
 
+// Check forex rates
+const forexPath = [...paths.src.statics, "forex.yaml"].join("/")
+let shouldUpdateForex = true
+
+try {
+    if (fs.existsSync(forexPath)) {
+        const stats = fs.statSync(forexPath)
+        const hoursSinceUpdate = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60)
+        
+        if (hoursSinceUpdate < 24) {
+            shouldUpdateForex = false
+            log.ok(`Found cached forex rates (${Math.round(hoursSinceUpdate)} hours old)`)
+        }
+    }
+} catch (e) {
+    // File doesn't exist or error checking, will fetch new data
+}
+
 // Clean
 log.info("Cleaning build folder...")
 await remove([paths.build.root])
@@ -87,12 +106,17 @@ for (const name of itemDirs) {
 log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} unique tags`)
 
 // Fetch forex rates
-log.info("Fetching forex rates...")
+log.info("Checking forex rates...")
 const forex = new Forex()
 await forex.init()
-await forex.update()
-await write([...paths.build.statics, "forex.json"], forex.rates)
-log.ok("Saved forex rates")
+
+if (shouldUpdateForex) {
+    await forex.update()
+    await write([...paths.src.statics, "forex.yaml"], forex.rates)
+    log.ok("Fetched and saved new forex rates")
+} else {
+    log.ok("Using cached forex rates")
+}
 
 // Build static files (YAML → JSON)
 log.info("Building static files...")

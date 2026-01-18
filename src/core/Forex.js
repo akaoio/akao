@@ -26,7 +26,7 @@ export class Forex {
 
     async init() {
         this.fiats = Statics?.fiats || (NODE ? await load(["src", "statics", "fiats.yaml"]) : BROWSER ? await DB.get(["statics", "fiats.json"]) : undefined)
-        if (NODE) this.rates = await this.update()
+        if (NODE) this.rates = await load(["src", "statics", "forex.yaml"]) || {}
         if (BROWSER) this.rates = (await DB.get(["statics", "forex.json"])) || (await this.update())
         // Initialize rate structure for all supported fiat currencies
         // Creates a matrix where each currency has conversion rates to all others

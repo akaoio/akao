@@ -38,6 +38,7 @@ export class CART extends HTMLElement {
                     <div><ui-fiat data-amount="${item.total}" /></div>
                     <div class="actions">
                         <ui-icon
+                            data-size="sm"
                             data-icon="dash-lg"
                             ${({ element }) => {
                                 element.addEventListener("click", decrease)
@@ -45,12 +46,14 @@ export class CART extends HTMLElement {
                             }} />
                         <span>${item.quantity}</span>
                         <ui-icon
+                            data-size="sm"
                             data-icon="plus-lg"
                             ${({ element }) => {
                                 element.addEventListener("click", increase)
                                 this.subscriptions.push(() => element.removeEventListener("click", increase))
                             }} />
                         <ui-icon
+                            data-size="sm"
                             data-icon="x-lg"
                             ${({ element }) => {
                                 element.addEventListener("click", remove)
