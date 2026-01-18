@@ -16,6 +16,7 @@ export const styles = css`
                 .actions {
                     display: flex;
                     flex-direction: row;
+                    align-items: center;
                     gap: var(--space);
                 }
             }

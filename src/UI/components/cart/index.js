@@ -35,7 +35,6 @@ export class CART extends HTMLElement {
             list.push(html`
                 <div class="item">
                     <div><a is="ui-a" data-to="/item/${item.id}">${$item.name}</a></div>
-                    <div>x${item.quantity}</div>
                     <div><ui-fiat data-amount="${item.total}" /></div>
                     <div class="actions">
                         <ui-icon
@@ -44,6 +43,7 @@ export class CART extends HTMLElement {
                                 element.addEventListener("click", decrease)
                                 this.subscriptions.push(() => element.removeEventListener("click", decrease))
                             }} />
+                        <span>${item.quantity}</span>
                         <ui-icon
                             data-icon="plus-lg"
                             ${({ element }) => {
