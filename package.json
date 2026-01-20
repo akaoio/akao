@@ -27,12 +27,15 @@
   "scripts": {
     "start": "node build.js && node server.js",
     "build": "node build.js",
+    "geo:download": "node geo.js --download",
+    "geo:build": "node geo.js --build",
     "format": "prettier --write \"src/**/*.js\"",
     "lint": "eslint \"src/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.js\" --fix"
   },
   "devDependencies": {
     "@akaoio/gun": "github:akaoio/gun",
+    "adm-zip": "^0.5.16",
     "bootstrap-icons": "^1.13.1",
     "chokidar": "^3.6.0",
     "eslint": "^9.39.2",

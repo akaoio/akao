@@ -1,0 +1,2307 @@
+- code: A.ADM1
+  name: first-order administrative division
+  description: a primary administrative division of a country, such as a state in
+    the United States
+- code: A.ADM1H
+  name: historical first-order administrative division
+  description: a former first-order administrative division
+- code: A.ADM2
+  name: second-order administrative division
+  description: a subdivision of a first-order administrative division
+- code: A.ADM2H
+  name: historical second-order administrative division
+  description: a former second-order administrative division
+- code: A.ADM3
+  name: third-order administrative division
+  description: a subdivision of a second-order administrative division
+- code: A.ADM3H
+  name: historical third-order administrative division
+  description: a former third-order administrative division
+- code: A.ADM4
+  name: fourth-order administrative division
+  description: a subdivision of a third-order administrative division
+- code: A.ADM4H
+  name: historical fourth-order administrative division
+  description: a former fourth-order administrative division
+- code: A.ADM5
+  name: fifth-order administrative division
+  description: a subdivision of a fourth-order administrative division
+- code: A.ADM5H
+  name: historical fifth-order administrative division
+  description: a former fifth-order administrative division
+- code: A.ADMD
+  name: administrative division
+  description: an administrative division of a country, undifferentiated as to
+    administrative level
+- code: A.ADMDH
+  name: historical administrative division
+  description: a former administrative division of a political entity,
+    undifferentiated as to administrative level
+- code: A.ADMS
+  name: school district
+  description: school district
+- code: A.LTER
+  name: leased area
+  description: a tract of land leased to another country, usually for military installations
+- code: A.PCL
+  name: political entity
+  description: ""
+- code: A.PCLD
+  name: dependent political entity
+  description: ""
+- code: A.PCLF
+  name: freely associated state
+  description: ""
+- code: A.PCLH
+  name: historical political entity
+  description: a former political entity
+- code: A.PCLI
+  name: independent political entity
+  description: ""
+- code: A.PCLIX
+  name: section of independent political entity
+  description: ""
+- code: A.PCLS
+  name: semi-independent political entity
+  description: ""
+- code: A.PRSH
+  name: parish
+  description: an ecclesiastical district
+- code: A.TERR
+  name: territory
+  description: ""
+- code: A.ZN
+  name: zone
+  description: ""
+- code: A.ZNB
+  name: buffer zone
+  description: a zone recognized as a buffer between two nations in which military
+    presence is minimal or absent
+- code: H.AIRS
+  name: seaplane landing area
+  description: a place on a waterbody where floatplanes land and take off
+- code: H.ANCH
+  name: anchorage
+  description: an area where vessels may anchor
+- code: H.BAY
+  name: bay
+  description: a coastal indentation between two capes or headlands, larger than a
+    cove but smaller than a gulf
+- code: H.BAYS
+  name: bays
+  description: coastal indentations between two capes or headlands, larger than a
+    cove but smaller than a gulf
+- code: H.BGHT
+  name: bight(s)
+  description: an open body of water forming a slight recession in a coastline
+- code: H.BNK
+  name: bank(s)
+  description: an elevation, typically located on a shelf, over which the depth of
+    water is relatively shallow but sufficient for most surface navigation
+- code: H.BNKR
+  name: stream bank
+  description: a sloping margin of a stream channel which normally confines the
+    stream to its channel on land
+- code: H.BNKX
+  name: section of bank
+  description: ""
+- code: H.BOG
+  name: bog(s)
+  description: a wetland characterized by peat forming sphagnum moss, sedge, and
+    other acid-water plants
+- code: H.CAPG
+  name: icecap
+  description: a dome-shaped mass of glacial ice covering an area of mountain
+    summits or other high lands; smaller than an ice sheet
+- code: H.CHN
+  name: channel
+  description: the deepest part of a stream, bay, lagoon, or strait, through which
+    the main current flows
+- code: H.CHNL
+  name: lake channel(s)
+  description: that part of a lake having water deep enough for navigation between
+    islands, shoals, etc.
+- code: H.CHNM
+  name: marine channel
+  description: that part of a body of water deep enough for navigation through an
+    area otherwise not suitable
+- code: H.CHNN
+  name: navigation channel
+  description: a buoyed channel of sufficient depth for the safe navigation of vessels
+- code: H.CNFL
+  name: confluence
+  description: a place where two or more streams or intermittent streams flow together
+- code: H.CNL
+  name: canal
+  description: an artificial watercourse
+- code: H.CNLA
+  name: aqueduct
+  description: a conduit used to carry water
+- code: H.CNLB
+  name: canal bend
+  description: a conspicuously curved or bent section of a canal
+- code: H.CNLD
+  name: drainage canal
+  description: an artificial waterway carrying water away from a wetland or from
+    drainage ditches
+- code: H.CNLI
+  name: irrigation canal
+  description: a canal which serves as a main conduit for irrigation water
+- code: H.CNLN
+  name: navigation canal(s)
+  description: a watercourse constructed for navigation of vessels
+- code: H.CNLQ
+  name: abandoned canal
+  description: ""
+- code: H.CNLSB
+  name: underground irrigation canal(s)
+  description: a gently inclined underground tunnel bringing water for irrigation
+    from aquifers
+- code: H.CNLX
+  name: section of canal
+  description: ""
+- code: H.COVE
+  name: cove(s)
+  description: a small coastal indentation, smaller than a bay
+- code: H.CRKT
+  name: tidal creek(s)
+  description: a meandering channel in a coastal wetland subject to bi-directional
+    tidal currents
+- code: H.CRNT
+  name: current
+  description: a horizontal flow of water in a given direction with uniform velocity
+- code: H.CUTF
+  name: cutoff
+  description: a channel formed as a result of a stream cutting through a meander neck
+- code: H.DCK
+  name: dock(s)
+  description: a waterway between two piers, or cut into the land for the berthing of ships
+- code: H.DCKB
+  name: docking basin
+  description: a part of a harbor where ships dock
+- code: H.DOMG
+  name: icecap dome
+  description: a comparatively elevated area on an icecap
+- code: H.DPRG
+  name: icecap depression
+  description: a comparatively depressed area on an icecap
+- code: H.DTCH
+  name: ditch
+  description: a small artificial watercourse dug for draining or irrigating the land
+- code: H.DTCHD
+  name: drainage ditch
+  description: a ditch which serves to drain the land
+- code: H.DTCHI
+  name: irrigation ditch
+  description: a ditch which serves to distribute irrigation water
+- code: H.DTCHM
+  name: ditch mouth(s)
+  description: an area where a drainage ditch enters a lagoon, lake or bay
+- code: H.ESTY
+  name: estuary
+  description: a funnel-shaped stream mouth or embayment where fresh water mixes
+    with sea water under tidal influences
+- code: H.FISH
+  name: fishing area
+  description: a fishing ground, bank or area where fishermen go to catch fish
+- code: H.FJD
+  name: fjord
+  description: a long, narrow, steep-walled, deep-water arm of the sea at high
+    latitudes, usually along mountainous coasts
+- code: H.FJDS
+  name: fjords
+  description: long, narrow, steep-walled, deep-water arms of the sea at high
+    latitudes, usually along mountainous coasts
+- code: H.FLLS
+  name: waterfall(s)
+  description: a perpendicular or very steep descent of the water of a stream
+- code: H.FLLSX
+  name: section of waterfall(s)
+  description: ""
+- code: H.FLTM
+  name: mud flat(s)
+  description: a relatively level area of mud either between high and low tide
+    lines, or subject to flooding
+- code: H.FLTT
+  name: tidal flat(s)
+  description: a large flat area of mud or sand attached to the shore and
+    alternately covered and uncovered by the tide
+- code: H.GLCR
+  name: glacier(s)
+  description: a mass of ice, usually at high latitudes or high elevations, with
+    sufficient thickness to flow away from the source area in lobes, tongues, or
+    masses
+- code: H.GULF
+  name: gulf
+  description: a large recess in the coastline, larger than a bay
+- code: H.GYSR
+  name: geyser
+  description: a type of hot spring with intermittent eruptions of jets of hot
+    water and steam
+- code: H.HBR
+  name: harbor(s)
+  description: a haven or space of deep water so sheltered by the adjacent land as
+    to afford a safe anchorage for ships
+- code: H.HBRX
+  name: section of harbor
+  description: ""
+- code: H.INLT
+  name: inlet
+  description: a narrow waterway extending into the land, or connecting a bay or
+    lagoon with a larger body of water
+- code: H.INLTQ
+  name: former inlet
+  description: an inlet which has been filled in, or blocked by deposits
+- code: H.LBED
+  name: lake bed(s)
+  description: a dried up or drained area of a former lake
+- code: H.LGN
+  name: lagoon
+  description: a shallow coastal waterbody, completely or partly separated from a
+    larger body of water by a barrier island, coral reef or other depositional
+    feature
+- code: H.LGNS
+  name: lagoons
+  description: shallow coastal waterbodies, completely or partly separated from a
+    larger body of water by a barrier island, coral reef or other depositional
+    feature
+- code: H.LGNX
+  name: section of lagoon
+  description: ""
+- code: H.LK
+  name: lake
+  description: a large inland body of standing water
+- code: H.LKC
+  name: crater lake
+  description: a lake in a crater or caldera
+- code: H.LKI
+  name: intermittent lake
+  description: ""
+- code: H.LKN
+  name: salt lake
+  description: an inland body of salt water with no outlet
+- code: H.LKNI
+  name: intermittent salt lake
+  description: ""
+- code: H.LKO
+  name: oxbow lake
+  description: a crescent-shaped lake commonly found adjacent to meandering streams
+- code: H.LKOI
+  name: intermittent oxbow lake
+  description: ""
+- code: H.LKS
+  name: lakes
+  description: large inland bodies of standing water
+- code: H.LKSB
+  name: underground lake
+  description: a standing body of water in a cave
+- code: H.LKSC
+  name: crater lakes
+  description: lakes in a crater or caldera
+- code: H.LKSI
+  name: intermittent lakes
+  description: ""
+- code: H.LKSN
+  name: salt lakes
+  description: inland bodies of salt water with no outlet
+- code: H.LKSNI
+  name: intermittent salt lakes
+  description: ""
+- code: H.LKX
+  name: section of lake
+  description: ""
+- code: H.MFGN
+  name: salt evaporation ponds
+  description: diked salt ponds used in the production of solar evaporated salt
+- code: H.MGV
+  name: mangrove swamp
+  description: a tropical tidal mud flat characterized by mangrove vegetation
+- code: H.MOOR
+  name: moor(s)
+  description: an area of open ground overlaid with wet peaty soils
+- code: H.MRSH
+  name: marsh(es)
+  description: a wetland dominated by grass-like vegetation
+- code: H.MRSHN
+  name: salt marsh
+  description: a flat area, subject to periodic salt water inundation, dominated
+    by grassy salt-tolerant plants
+- code: H.NRWS
+  name: narrows
+  description: a navigable narrow part of a bay, strait, river, etc.
+- code: H.OCN
+  name: ocean
+  description: one of the major divisions of the vast expanse of salt water
+    covering part of the earth
+- code: H.OVF
+  name: overfalls
+  description: an area of breaking waves caused by the meeting of currents or by
+    waves moving against the current
+- code: H.PND
+  name: pond
+  description: a small standing waterbody
+- code: H.PNDI
+  name: intermittent pond
+  description: ""
+- code: H.PNDN
+  name: salt pond
+  description: a small standing body of salt water often in a marsh or swamp,
+    usually along a seacoast
+- code: H.PNDNI
+  name: intermittent salt pond(s)
+  description: ""
+- code: H.PNDS
+  name: ponds
+  description: small standing waterbodies
+- code: H.PNDSF
+  name: fishponds
+  description: ponds or enclosures in which fish are kept or raised
+- code: H.PNDSI
+  name: intermittent ponds
+  description: ""
+- code: H.PNDSN
+  name: salt ponds
+  description: small standing bodies of salt water often in a marsh or swamp,
+    usually along a seacoast
+- code: H.POOL
+  name: pool(s)
+  description: a small and comparatively still, deep part of a larger body of
+    water such as a stream or harbor; or a small body of standing water
+- code: H.POOLI
+  name: intermittent pool
+  description: ""
+- code: H.RCH
+  name: reach
+  description: a straight section of a navigable stream or channel between two bends
+- code: H.RDGG
+  name: icecap ridge
+  description: a linear elevation on an icecap
+- code: H.RDST
+  name: roadstead
+  description: an open anchorage affording less protection than a harbor
+- code: H.RF
+  name: reef(s)
+  description: a surface-navigation hazard composed of consolidated material
+- code: H.RFC
+  name: coral reef(s)
+  description: a surface-navigation hazard composed of coral
+- code: H.RFX
+  name: section of reef
+  description: ""
+- code: H.RPDS
+  name: rapids
+  description: a turbulent section of a stream associated with a steep, irregular stream bed
+- code: H.RSV
+  name: reservoir(s)
+  description: an artificial pond or lake
+- code: H.RSVI
+  name: intermittent reservoir
+  description: ""
+- code: H.RSVT
+  name: water tank
+  description: a contained pool or tank of water at, below, or above ground level
+- code: H.RVN
+  name: ravine(s)
+  description: a small, narrow, deep, steep-sided stream channel, smaller than a gorge
+- code: H.SBKH
+  name: sabkha(s)
+  description: a salt flat or salt encrusted plain subject to periodic inundation
+    from flooding or high tides
+- code: H.SD
+  name: sound
+  description: a long arm of the sea forming a channel between the mainland and an
+    island or islands; or connecting two larger bodies of water
+- code: H.SEA
+  name: sea
+  description: a large body of salt water more or less confined by continuous land
+    or chains of islands forming a subdivision of an ocean
+- code: H.SHOL
+  name: shoal(s)
+  description: a surface-navigation hazard composed of unconsolidated material
+- code: H.SILL
+  name: sill
+  description: the low part of an underwater gap or saddle separating basins,
+    including a similar feature at the mouth of a fjord
+- code: H.SPNG
+  name: spring(s)
+  description: a place where ground water flows naturally out of the ground
+- code: H.SPNS
+  name: sulphur spring(s)
+  description: a place where sulphur ground water flows naturally out of the ground
+- code: H.SPNT
+  name: hot spring(s)
+  description: a place where hot ground water flows naturally out of the ground
+- code: H.STM
+  name: stream
+  description: a body of running water moving to a lower level in a channel on land
+- code: H.STMA
+  name: anabranch
+  description: a diverging branch flowing out of a main stream and rejoining it downstream
+- code: H.STMB
+  name: stream bend
+  description: a conspicuously curved or bent segment of a stream
+- code: H.STMC
+  name: canalized stream
+  description: a stream that has been substantially ditched, diked, or straightened
+- code: H.STMD
+  name: distributary(-ies)
+  description: a branch which flows away from the main stream, as in a delta or
+    irrigation canal
+- code: H.STMH
+  name: headwaters
+  description: the source and upper part of a stream, including the upper drainage basin
+- code: H.STMI
+  name: intermittent stream
+  description: ""
+- code: H.STMIX
+  name: section of intermittent stream
+  description: ""
+- code: H.STMM
+  name: stream mouth(s)
+  description: a place where a stream discharges into a lagoon, lake, or the sea
+- code: H.STMQ
+  name: abandoned watercourse
+  description: a former stream or distributary no longer carrying flowing water,
+    but still evident due to lakes, wetland, topographic or vegetation patterns
+- code: H.STMS
+  name: streams
+  description: bodies of running water moving to a lower level in a channel on land
+- code: H.STMSB
+  name: lost river
+  description: a surface stream that disappears into an underground channel, or
+    dries up in an arid area
+- code: H.STMX
+  name: section of stream
+  description: ""
+- code: H.STRT
+  name: strait
+  description: a relatively narrow waterway, usually narrower and less extensive
+    than a sound, connecting two larger bodies of water
+- code: H.SWMP
+  name: swamp
+  description: a wetland dominated by tree vegetation
+- code: H.SYSI
+  name: irrigation system
+  description: "a network of ditches and one or more of the following elements:
+    water supply, reservoir, canal, pump, well, drain, etc."
+- code: H.TNLC
+  name: canal tunnel
+  description: a tunnel through which a canal passes
+- code: H.WAD
+  name: wadi
+  description: a valley or ravine, bounded by relatively steep banks, which in the
+    rainy season becomes a watercourse; found primarily in North Africa and the
+    Middle East
+- code: H.WADB
+  name: wadi bend
+  description: a conspicuously curved or bent segment of a wadi
+- code: H.WADJ
+  name: wadi junction
+  description: a place where two or more wadies join
+- code: H.WADM
+  name: wadi mouth
+  description: the lower terminus of a wadi where it widens into an adjoining
+    floodplain, depression, or waterbody
+- code: H.WADS
+  name: wadies
+  description: valleys or ravines, bounded by relatively steep banks, which in the
+    rainy season become watercourses; found primarily in North Africa and the
+    Middle East
+- code: H.WADX
+  name: section of wadi
+  description: ""
+- code: H.WHRL
+  name: whirlpool
+  description: a turbulent, rotating movement of water in a stream
+- code: H.WLL
+  name: well
+  description: a cylindrical hole, pit, or tunnel drilled or dug down to a depth
+    from which water, oil, or gas can be pumped or brought to the surface
+- code: H.WLLQ
+  name: abandoned well
+  description: ""
+- code: H.WLLS
+  name: wells
+  description: cylindrical holes, pits, or tunnels drilled or dug down to a depth
+    from which water, oil, or gas can be pumped or brought to the surface
+- code: H.WTLD
+  name: wetland
+  description: an area subject to inundation, usually characterized by bog, marsh,
+    or swamp vegetation
+- code: H.WTLDI
+  name: intermittent wetland
+  description: ""
+- code: H.WTRC
+  name: watercourse
+  description: a natural, well-defined channel produced by flowing water, or an
+    artificial channel designed to carry flowing water
+- code: H.WTRH
+  name: waterhole(s)
+  description: a natural hole, hollow, or small depression that contains water,
+    used by man and animals, especially in arid areas
+- code: L.AGRC
+  name: agricultural colony
+  description: a tract of land set aside for agricultural settlement
+- code: L.AMUS
+  name: amusement park
+  description: Amusement Park are theme parks, adventure parks offering
+    entertainment, similar to funfairs but with a fix location
+- code: L.AREA
+  name: area
+  description: a tract of land without homogeneous character or boundaries
+- code: L.BSND
+  name: drainage basin
+  description: an area drained by a stream
+- code: L.BSNP
+  name: petroleum basin
+  description: an area underlain by an oil-rich structural basin
+- code: L.BTL
+  name: battlefield
+  description: a site of a land battle of historical importance
+- code: L.CLG
+  name: clearing
+  description: an area in a forest with trees removed
+- code: L.CMN
+  name: common
+  description: a park or pasture for community use
+- code: L.CNS
+  name: concession area
+  description: a lease of land by a government for economic development, e.g.,
+    mining, forestry
+- code: L.COLF
+  name: coalfield
+  description: a region in which coal deposits of possible economic value occur
+- code: L.CONT
+  name: continent
+  description: "continent: Europe, Africa, Asia, North America, South America,
+    Oceania, Antarctica"
+- code: L.CST
+  name: coast
+  description: a zone of variable width straddling the shoreline
+- code: L.CTRB
+  name: business center
+  description: a place where a number of businesses are located
+- code: L.DEVH
+  name: housing development
+  description: a tract of land on which many houses of similar design are built
+    according to a development plan
+- code: L.FLD
+  name: field(s)
+  description: an open as opposed to wooded area
+- code: L.FLDI
+  name: irrigated field(s)
+  description: a tract of level or terraced land which is irrigated
+- code: L.GASF
+  name: gasfield
+  description: an area containing a subterranean store of natural gas of economic value
+- code: L.GRAZ
+  name: grazing area
+  description: an area of grasses and shrubs used for grazing
+- code: L.GVL
+  name: gravel area
+  description: an area covered with gravel
+- code: L.INDS
+  name: industrial area
+  description: an area characterized by industrial activity
+- code: L.LAND
+  name: arctic land
+  description: a tract of land in the Arctic
+- code: L.LCTY
+  name: locality
+  description: a minor area or place of unspecified or mixed character and
+    indefinite boundaries
+- code: L.MILB
+  name: military base
+  description: a place used by an army or other armed service for storing arms and
+    supplies, and for accommodating and training troops, a base from which
+    operations can be initiated
+- code: L.MNA
+  name: mining area
+  description: an area of mine sites where minerals and ores are extracted
+- code: L.MVA
+  name: maneuver area
+  description: a tract of land where military field exercises are carried out
+- code: L.NVB
+  name: naval base
+  description: an area used to store supplies, provide barracks for troops and
+    naval personnel, a port for naval vessels, and from which operations are
+    initiated
+- code: L.OAS
+  name: oasis(-es)
+  description: an area in a desert made productive by the availability of water
+- code: L.OILF
+  name: oilfield
+  description: an area containing a subterranean store of petroleum of economic value
+- code: L.PEAT
+  name: peat cutting area
+  description: an area where peat is harvested
+- code: L.PRK
+  name: park
+  description: an area, often of forested land, maintained as a place of beauty,
+    or for recreation
+- code: L.PRT
+  name: port
+  description: a place provided with terminal and transfer facilities for loading
+    and discharging waterborne cargo or passengers, usually located in a harbor
+- code: L.QCKS
+  name: quicksand
+  description: an area where loose sand with water moving through it may become
+    unstable when heavy objects are placed at the surface, causing them to sink
+- code: L.RES
+  name: reserve
+  description: a tract of public land reserved for future use or restricted as to use
+- code: L.RESA
+  name: agricultural reserve
+  description: a tract of land reserved for agricultural reclamation and/or development
+- code: L.RESF
+  name: forest reserve
+  description: a forested area set aside for preservation or controlled use
+- code: L.RESH
+  name: hunting reserve
+  description: a tract of land used primarily for hunting
+- code: L.RESN
+  name: nature reserve
+  description: an area reserved for the maintenance of a natural habitat
+- code: L.RESP
+  name: palm tree reserve
+  description: an area of palm trees where use is controlled
+- code: L.RESV
+  name: reservation
+  description: a tract of land set aside for aboriginal, tribal, or native populations
+- code: L.RESW
+  name: wildlife reserve
+  description: a tract of public land reserved for the preservation of wildlife
+- code: L.RGN
+  name: region
+  description: an area distinguished by one or more observable physical or
+    cultural characteristics
+- code: L.RGNE
+  name: economic region
+  description: a region of a country established for economic development or for
+    statistical purposes
+- code: L.RGNH
+  name: historical region
+  description: a former historic area distinguished by one or more observable
+    physical or cultural characteristics
+- code: L.RGNL
+  name: lake region
+  description: a tract of land distinguished by numerous lakes
+- code: L.RNGA
+  name: artillery range
+  description: a tract of land used for artillery firing practice
+- code: L.SALT
+  name: salt area
+  description: a shallow basin or flat where salt accumulates after periodic inundation
+- code: L.SNOW
+  name: snowfield
+  description: an area of permanent snow and ice forming the accumulation area of a glacier
+- code: L.TRB
+  name: tribal area
+  description: a tract of land used by nomadic or other tribes
+- code: P.PPL
+  name: populated place
+  description: a city, town, village, or other agglomeration of buildings where
+    people live and work
+- code: P.PPLA
+  name: seat of a first-order administrative division
+  description: seat of a first-order administrative division (PPLC takes
+    precedence over PPLA)
+- code: P.PPLA2
+  name: seat of a second-order administrative division
+  description: ""
+- code: P.PPLA3
+  name: seat of a third-order administrative division
+  description: ""
+- code: P.PPLA4
+  name: seat of a fourth-order administrative division
+  description: ""
+- code: P.PPLA5
+  name: seat of a fifth-order administrative division
+  description: ""
+- code: P.PPLC
+  name: capital of a political entity
+  description: capital of a political entity designated as an independent state
+- code: P.PPLCD
+  name: capital of a dependency or special area
+  description: capital or administrative center of a dependent political territory
+    or area of special sovereignty
+- code: P.PPLCH
+  name: historical capital of a political entity
+  description: a former capital of a political entity
+- code: P.PPLF
+  name: farm village
+  description: a populated place where the population is largely engaged in
+    agricultural activities
+- code: P.PPLG
+  name: seat of government of a political entity
+  description: ""
+- code: P.PPLH
+  name: historical populated place
+  description: a populated place that no longer exists
+- code: P.PPLL
+  name: populated locality
+  description: an area similar to a locality but with a small group of dwellings
+    or other buildings
+- code: P.PPLQ
+  name: abandoned populated place
+  description: ""
+- code: P.PPLR
+  name: religious populated place
+  description: a populated place whose population is largely engaged in religious
+    occupations
+- code: P.PPLS
+  name: populated places
+  description: cities, towns, villages, or other agglomerations of buildings where
+    people live and work
+- code: P.PPLW
+  name: destroyed populated place
+  description: a village, town or city destroyed by a natural disaster, or by war
+- code: P.PPLX
+  name: section of populated place
+  description: ""
+- code: P.STLMT
+  name: israeli settlement
+  description: ""
+- code: R.CSWY
+  name: causeway
+  description: a raised roadway across wet ground or shallow water
+- code: R.OILP
+  name: oil pipeline
+  description: a pipeline used for transporting oil
+- code: R.PRMN
+  name: promenade
+  description: a place for public walking, usually along a beach front
+- code: R.PTGE
+  name: portage
+  description: a place where boats, goods, etc., are carried overland between
+    navigable waters
+- code: R.RD
+  name: road
+  description: an open way with improved surface for transportation of animals,
+    people and vehicles
+- code: R.RDA
+  name: ancient road
+  description: the remains of a road used by ancient cultures
+- code: R.RDB
+  name: road bend
+  description: a conspicuously curved or bent section of a road
+- code: R.RDCUT
+  name: road cut
+  description: an excavation cut through a hill or ridge for a road
+- code: R.RDJCT
+  name: road junction
+  description: a place where two or more roads join
+- code: R.RJCT
+  name: railroad junction
+  description: a place where two or more railroad tracks join
+- code: R.RR
+  name: railroad
+  description: a permanent twin steel-rail track on which freight and passenger
+    cars move long distances
+- code: R.RRQ
+  name: abandoned railroad
+  description: ""
+- code: R.RTE
+  name: caravan route
+  description: the route taken by caravans
+- code: R.RYD
+  name: railroad yard
+  description: a system of tracks used for the making up of trains, and switching
+    and storing freight cars
+- code: R.ST
+  name: street
+  description: a paved urban thoroughfare
+- code: R.STKR
+  name: stock route
+  description: a route taken by livestock herds
+- code: R.TNL
+  name: tunnel
+  description: a subterranean passageway for transportation
+- code: R.TNLN
+  name: natural tunnel
+  description: a cave that is open at both ends
+- code: R.TNLRD
+  name: road tunnel
+  description: a tunnel through which a road passes
+- code: R.TNLRR
+  name: railroad tunnel
+  description: a tunnel through which a railroad passes
+- code: R.TNLS
+  name: tunnels
+  description: subterranean passageways for transportation
+- code: R.TRL
+  name: trail
+  description: a path, track, or route used by pedestrians, animals, or off-road vehicles
+- code: S.ADMF
+  name: administrative facility
+  description: a government building
+- code: S.AGRF
+  name: agricultural facility
+  description: a building and/or tract of land used for improving agriculture
+- code: S.AIRB
+  name: airbase
+  description: an area used to store supplies, provide barracks for air force
+    personnel, hangars and runways for aircraft, and from which operations are
+    initiated
+- code: S.AIRF
+  name: airfield
+  description: a place on land where aircraft land and take off; no facilities
+    provided for the commercial handling of passengers and cargo
+- code: S.AIRH
+  name: heliport
+  description: a place where helicopters land and take off
+- code: S.AIRP
+  name: airport
+  description: a place where aircraft regularly land and take off, with runways,
+    navigational aids, and major facilities for the commercial handling of
+    passengers and cargo
+- code: S.AIRQ
+  name: abandoned airfield
+  description: ""
+- code: S.AIRT
+  name: terminal
+  description: airport facilities for the handling of freight and passengers
+- code: S.AMTH
+  name: amphitheater
+  description: an oval or circular structure with rising tiers of seats about a
+    stage or open space
+- code: S.ANS
+  name: archaeological/prehistoric site
+  description: a place where archeological remains, old structures, or cultural
+    artifacts are located
+- code: S.AQC
+  name: aquaculture facility
+  description: facility or area for the cultivation of aquatic animals and plants,
+    especially fish, shellfish, and seaweed, in natural or controlled marine or
+    freshwater environments; underwater agriculture
+- code: S.ARCH
+  name: arch
+  description: a natural or man-made structure in the form of an arch
+- code: S.ARCHV
+  name: archive
+  description: a place or institution where documents are preserved
+- code: S.ART
+  name: piece of art
+  description: a piece of art, like a sculpture, painting. In contrast to monument
+    (MNMT) it is not commemorative.
+- code: S.ASTR
+  name: astronomical station
+  description: a point on the earth whose position has been determined by
+    observations of celestial bodies
+- code: S.ASYL
+  name: asylum
+  description: a facility where the insane are cared for and protected
+- code: S.ATHF
+  name: athletic field
+  description: a tract of land used for playing team sports, and athletic track
+    and field events
+- code: S.ATM
+  name: automatic teller machine
+  description: An unattended electronic machine in a public place, connected to a
+    data system and related equipment and activated by a bank customer to obtain
+    cash withdrawals and other banking services.
+- code: S.BANK
+  name: bank
+  description: A business establishment in which money is kept for saving or
+    commercial purposes or is invested, supplied for loans, or exchanged.
+- code: S.BCN
+  name: beacon
+  description: a fixed artificial navigation mark
+- code: S.BDG
+  name: bridge
+  description: a structure erected across an obstacle such as a stream, road,
+    etc., in order to carry roads, railroads, and pedestrians across
+- code: S.BDGQ
+  name: ruined bridge
+  description: a destroyed or decayed bridge which is no longer functional
+- code: S.BLDA
+  name: apartment building
+  description: a building containing several individual apartments
+- code: S.BLDG
+  name: building(s)
+  description: a structure built for permanent use, as a house, factory, etc.
+- code: S.BLDO
+  name: office building
+  description: commercial building where business and/or services are conducted
+- code: S.BP
+  name: boundary marker
+  description: a fixture marking a point along a boundary
+- code: S.BRKS
+  name: barracks
+  description: a building for lodging military personnel
+- code: S.BRKW
+  name: breakwater
+  description: a structure erected to break the force of waves at the entrance to
+    a harbor or port
+- code: S.BSTN
+  name: baling station
+  description: a facility for baling agricultural products
+- code: S.BTYD
+  name: boatyard
+  description: a waterside facility for servicing, repairing, and building small vessels
+- code: S.BUR
+  name: burial cave(s)
+  description: a cave used for human burials
+- code: S.BUSTN
+  name: bus station
+  description: a facility comprising ticket office, platforms, etc. for loading
+    and unloading passengers
+- code: S.BUSTP
+  name: bus stop
+  description: a place lacking station facilities
+- code: S.CARN
+  name: cairn
+  description: a heap of stones erected as a landmark or for other purposes
+- code: S.CAVE
+  name: cave(s)
+  description: an underground passageway or chamber, or cavity on the side of a cliff
+- code: S.CH
+  name: church
+  description: a building for public Christian worship
+- code: S.CMP
+  name: camp(s)
+  description: a site occupied by tents, huts, or other shelters for temporary use
+- code: S.CMPL
+  name: logging camp
+  description: a camp used by loggers
+- code: S.CMPLA
+  name: labor camp
+  description: a camp used by migrant or temporary laborers
+- code: S.CMPMN
+  name: mining camp
+  description: a camp used by miners
+- code: S.CMPO
+  name: oil camp
+  description: a camp used by oilfield workers
+- code: S.CMPQ
+  name: abandoned camp
+  description: ""
+- code: S.CMPRF
+  name: refugee camp
+  description: a camp used by refugees
+- code: S.CMTY
+  name: cemetery
+  description: a burial place or ground
+- code: S.COMC
+  name: communication center
+  description: a facility, including buildings, antennae, towers and electronic
+    equipment for receiving and transmitting information
+- code: S.CRRL
+  name: corral(s)
+  description: a pen or enclosure for confining or capturing animals
+- code: S.CSNO
+  name: casino
+  description: a building used for entertainment, especially gambling
+- code: S.CSTL
+  name: castle
+  description: a large fortified building or set of buildings
+- code: S.CSTM
+  name: customs house
+  description: a building in a port where customs and duties are paid, and where
+    vessels are entered and cleared
+- code: S.CTHSE
+  name: courthouse
+  description: a building in which courts of law are held
+- code: S.CTRA
+  name: atomic center
+  description: a facility where atomic research is carried out
+- code: S.CTRCM
+  name: community center
+  description: a facility for community recreation and other activities
+- code: S.CTRF
+  name: facility center
+  description: a place where more than one facility is situated
+- code: S.CTRM
+  name: medical center
+  description: "a complex of health care buildings including two or more of the
+    following: hospital, medical school, clinic, pharmacy, doctor's offices,
+    etc."
+- code: S.CTRR
+  name: religious center
+  description: a facility where more than one religious activity is carried out,
+    e.g., retreat, school, monastery, worship
+- code: S.CTRS
+  name: space center
+  description: a facility for launching, tracking, or controlling satellites and
+    space vehicles
+- code: S.CTYD
+  name: courtyard
+  description: an area surrounded by a building or complex and open to the sky
+- code: S.CVNT
+  name: convent
+  description: a building where a community of nuns lives in seclusion
+- code: S.DAM
+  name: dam
+  description: a barrier constructed across a stream to impound water
+- code: S.DAMQ
+  name: ruined dam
+  description: a destroyed or decayed dam which is no longer functional
+- code: S.DAMSB
+  name: sub-surface dam
+  description: a dam put down to bedrock in a sand river
+- code: S.DARY
+  name: dairy
+  description: a facility for the processing, sale and distribution of milk or milk products
+- code: S.DCKD
+  name: dry dock
+  description: a dock providing support for a vessel, and means for removing the
+    water so that the bottom of the vessel can be exposed
+- code: S.DCKY
+  name: dockyard
+  description: a facility for servicing, building, or repairing ships
+- code: S.DIKE
+  name: dike
+  description: an earth or stone embankment usually constructed for flood or stream control
+- code: S.DIP
+  name: diplomatic facility
+  description: office, residence, or facility of a foreign government, which may
+    include an embassy, consulate, chancery, office of charge d'affaires, or
+    other diplomatic, economic, military, or cultural mission
+- code: S.DPOF
+  name: fuel depot
+  description: an area where fuel is stored
+- code: S.EST
+  name: estate(s)
+  description: a large commercialized agricultural landholding with associated
+    buildings and other facilities
+- code: S.ESTO
+  name: oil palm plantation
+  description: an estate specializing in the cultivation of oil palm trees
+- code: S.ESTR
+  name: rubber plantation
+  description: an estate which specializes in growing and tapping rubber trees
+- code: S.ESTSG
+  name: sugar plantation
+  description: an estate that specializes in growing sugar cane
+- code: S.ESTT
+  name: tea plantation
+  description: an estate which specializes in growing tea bushes
+- code: S.ESTX
+  name: section of estate
+  description: ""
+- code: S.FCL
+  name: facility
+  description: a building or buildings housing a center, institute, foundation,
+    hospital, prison, mission, courthouse, etc.
+- code: S.FIRE
+  name: fire station
+  description: building housing firefighters and/or fire fighting equipment
+- code: S.FNDY
+  name: foundry
+  description: a building or works where metal casting is carried out
+- code: S.FRM
+  name: farm
+  description: a tract of land with associated buildings devoted to agriculture
+- code: S.FRMQ
+  name: abandoned farm
+  description: ""
+- code: S.FRMS
+  name: farms
+  description: tracts of land with associated buildings devoted to agriculture
+- code: S.FRMT
+  name: farmstead
+  description: the buildings and adjacent service areas of a farm
+- code: S.FT
+  name: fort
+  description: a defensive structure or earthworks
+- code: S.FY
+  name: ferry
+  description: a boat or other floating conveyance and terminal facilities
+    regularly used to transport people and vehicles across a waterbody
+- code: S.FYT
+  name: ferry terminal
+  description: a place where ferries pick-up and discharge passengers, vehicles and or cargo
+- code: S.GATE
+  name: gate
+  description: a controlled access entrance or exit
+- code: S.GDN
+  name: garden(s)
+  description: an enclosure for displaying selected plant or animal life
+- code: S.GHAT
+  name: ghat
+  description: a set of steps leading to a river, which are of religious
+    significance, and at their base is usually a platform for bathing
+- code: S.GHSE
+  name: guest house
+  description: a house used to provide lodging for paying guests
+- code: S.GOSP
+  name: gas-oil separator plant
+  description: a facility for separating gas from oil
+- code: S.GOVL
+  name: local government office
+  description: a facility housing local governmental offices, usually a city,
+    town, or village hall
+- code: S.GRVE
+  name: grave
+  description: a burial site
+- code: S.HERM
+  name: hermitage
+  description: a secluded residence, usually for religious sects
+- code: S.HLT
+  name: halting place
+  description: a place where caravans stop for rest
+- code: S.HMSD
+  name: homestead
+  description: a residence, owner's or manager's, on a sheep or cattle station,
+    woolshed, outcamp, or Aboriginal outstation, specific to Australia and New
+    Zealand
+- code: S.HSE
+  name: house(s)
+  description: a building used as a human habitation
+- code: S.HSEC
+  name: country house
+  description: a large house, mansion, or chateau, on a large estate
+- code: S.HSP
+  name: hospital
+  description: a building in which sick or injured, especially those confined to
+    bed, are medically treated
+- code: S.HSPC
+  name: clinic
+  description: a medical facility associated with a hospital for outpatients
+- code: S.HSPD
+  name: dispensary
+  description: a building where medical or dental aid is dispensed
+- code: S.HSPL
+  name: leprosarium
+  description: an asylum or hospital for lepers
+- code: S.HSTS
+  name: historical site
+  description: a place of historical importance
+- code: S.HTL
+  name: hotel
+  description: a building providing lodging and/or meals for the public
+- code: S.HUT
+  name: hut
+  description: a small primitive house
+- code: S.HUTS
+  name: huts
+  description: small primitive houses
+- code: S.INSM
+  name: military installation
+  description: a facility for use of and control by armed forces
+- code: S.ITTR
+  name: research institute
+  description: a facility where research is carried out
+- code: S.JTY
+  name: jetty
+  description: a structure built out into the water at a river mouth or harbor
+    entrance to regulate currents and silting
+- code: S.LDNG
+  name: landing
+  description: a place where boats receive or discharge passengers and freight,
+    but lacking most port facilities
+- code: S.LEPC
+  name: leper colony
+  description: a settled area inhabited by lepers in relative isolation
+- code: S.LIBR
+  name: library
+  description: A place in which information resources such as books are kept for
+    reading, reference, or lending.
+- code: S.LNDF
+  name: landfill
+  description: a place for trash and garbage disposal in which the waste is buried
+    between layers of earth to build up low-lying land
+- code: S.LOCK
+  name: lock(s)
+  description: a basin in a waterway with gates at each end by means of which
+    vessels are passed from one water level to another
+- code: S.LTHSE
+  name: lighthouse
+  description: a distinctive structure exhibiting a major navigation light
+- code: S.MALL
+  name: mall
+  description: A large, often enclosed shopping complex containing various stores,
+    businesses, and restaurants usually accessible by common passageways.
+- code: S.MAR
+  name: marina
+  description: a harbor facility for small boats, yachts, etc.
+- code: S.MFG
+  name: factory
+  description: one or more buildings where goods are manufactured, processed or fabricated
+- code: S.MFGB
+  name: brewery
+  description: one or more buildings where beer is brewed
+- code: S.MFGC
+  name: cannery
+  description: a building where food items are canned
+- code: S.MFGCU
+  name: copper works
+  description: a facility for processing copper ore
+- code: S.MFGLM
+  name: limekiln
+  description: a furnace in which limestone is reduced to lime
+- code: S.MFGM
+  name: munitions plant
+  description: a factory where ammunition is made
+- code: S.MFGPH
+  name: phosphate works
+  description: a facility for producing fertilizer
+- code: S.MFGQ
+  name: abandoned factory
+  description: ""
+- code: S.MFGSG
+  name: sugar refinery
+  description: a facility for converting raw sugar into refined sugar
+- code: S.MKT
+  name: market
+  description: a place where goods are bought and sold at regular intervals
+- code: S.ML
+  name: mill(s)
+  description: a building housing machines for transforming, shaping, finishing,
+    grinding, or extracting products
+- code: S.MLM
+  name: ore treatment plant
+  description: a facility for improving the metal content of ore by concentration
+- code: S.MLO
+  name: olive oil mill
+  description: a mill where oil is extracted from olives
+- code: S.MLSG
+  name: sugar mill
+  description: a facility where sugar cane is processed into raw sugar
+- code: S.MLSGQ
+  name: former sugar mill
+  description: a sugar mill no longer used as a sugar mill
+- code: S.MLSW
+  name: sawmill
+  description: a mill where logs or lumber are sawn to specified shapes and sizes
+- code: S.MLWND
+  name: windmill
+  description: a mill or water pump powered by wind
+- code: S.MLWTR
+  name: water mill
+  description: a mill powered by running water
+- code: S.MN
+  name: mine(s)
+  description: a site where mineral ores are extracted from the ground by
+    excavating surface pits and subterranean passages
+- code: S.MNAU
+  name: gold mine(s)
+  description: a mine where gold ore, or alluvial gold is extracted
+- code: S.MNC
+  name: coal mine(s)
+  description: a mine where coal is extracted
+- code: S.MNCR
+  name: chrome mine(s)
+  description: a mine where chrome ore is extracted
+- code: S.MNCU
+  name: copper mine(s)
+  description: a mine where copper ore is extracted
+- code: S.MNFE
+  name: iron mine(s)
+  description: a mine where iron ore is extracted
+- code: S.MNMT
+  name: monument
+  description: a commemorative structure or statue
+- code: S.MNN
+  name: salt mine(s)
+  description: a mine from which salt is extracted
+- code: S.MNQ
+  name: abandoned mine
+  description: ""
+- code: S.MNQR
+  name: quarry(-ies)
+  description: a surface mine where building stone or gravel and sand, etc. are extracted
+- code: S.MOLE
+  name: mole
+  description: a massive structure of masonry or large stones serving as a pier or
+    breakwater
+- code: S.MSQE
+  name: mosque
+  description: a building for public Islamic worship
+- code: S.MSSN
+  name: mission
+  description: a place characterized by dwellings, school, church, hospital and
+    other facilities operated by a religious group for the purpose of providing
+    charitable services and to propagate religion
+- code: S.MSSNQ
+  name: abandoned mission
+  description: ""
+- code: S.MSTY
+  name: monastery
+  description: a building and grounds where a community of monks lives in seclusion
+- code: S.MTRO
+  name: metro station
+  description: metro station (Underground, Tube, or Metro)
+- code: S.MUS
+  name: museum
+  description: a building where objects of permanent interest in one or more of
+    the arts and sciences are preserved and exhibited
+- code: S.NOV
+  name: novitiate
+  description: a religious house or school where novices are trained
+- code: S.NSY
+  name: nursery(-ies)
+  description: a place where plants are propagated for transplanting or grafting
+- code: S.OBPT
+  name: observation point
+  description: a wildlife or scenic observation point
+- code: S.OBS
+  name: observatory
+  description: a facility equipped for observation of atmospheric or space phenomena
+- code: S.OBSR
+  name: radio observatory
+  description: a facility equipped with an array of antennae for receiving radio
+    waves from space
+- code: S.OILJ
+  name: oil pipeline junction
+  description: a section of an oil pipeline where two or more pipes join together
+- code: S.OILQ
+  name: abandoned oil well
+  description: ""
+- code: S.OILR
+  name: oil refinery
+  description: a facility for converting crude oil into refined petroleum products
+- code: S.OILT
+  name: tank farm
+  description: a tract of land occupied by large, cylindrical, metal tanks in
+    which oil or liquid petrochemicals are stored
+- code: S.OILW
+  name: oil well
+  description: a well from which oil may be pumped
+- code: S.OPRA
+  name: opera house
+  description: A theater designed chiefly for the performance of operas.
+- code: S.PAL
+  name: palace
+  description: a large stately house, often a royal or presidential residence
+- code: S.PGDA
+  name: pagoda
+  description: a tower-like storied structure, usually a Buddhist shrine
+- code: S.PIER
+  name: pier
+  description: a structure built out into navigable water on piles providing
+    berthing for ships and recreation
+- code: S.PKLT
+  name: parking lot
+  description: an area used for parking vehicles
+- code: S.PMPO
+  name: oil pumping station
+  description: a facility for pumping oil through a pipeline
+- code: S.PMPW
+  name: water pumping station
+  description: a facility for pumping water from a major well or through a pipeline
+- code: S.PO
+  name: post office
+  description: a public building in which mail is received, sorted and distributed
+- code: S.PP
+  name: police post
+  description: a building in which police are stationed
+- code: S.PPQ
+  name: abandoned police post
+  description: ""
+- code: S.PRKGT
+  name: park gate
+  description: a controlled access to a park
+- code: S.PRKHQ
+  name: park headquarters
+  description: a park administrative facility
+- code: S.PRN
+  name: prison
+  description: a facility for confining prisoners
+- code: S.PRNJ
+  name: reformatory
+  description: a facility for confining, training, and reforming young law offenders
+- code: S.PRNQ
+  name: abandoned prison
+  description: ""
+- code: S.PS
+  name: power station
+  description: a facility for generating electric power
+- code: S.PSH
+  name: hydroelectric power station
+  description: a building where electricity is generated from water power
+- code: S.PSN
+  name: nuclear power station
+  description: nuclear power station
+- code: S.PSTB
+  name: border post
+  description: a post or station at an international boundary for the regulation
+    of movement of people and goods
+- code: S.PSTC
+  name: customs post
+  description: a building at an international boundary where customs and duties
+    are paid on goods
+- code: S.PSTP
+  name: patrol post
+  description: a post from which patrols are sent out
+- code: S.PYR
+  name: pyramid
+  description: an ancient massive structure of square ground plan with four
+    triangular faces meeting at a point and used for enclosing tombs
+- code: S.PYRS
+  name: pyramids
+  description: ancient massive structures of square ground plan with four
+    triangular faces meeting at a point and used for enclosing tombs
+- code: S.QUAY
+  name: quay
+  description: a structure of solid construction along a shore or bank which
+    provides berthing for ships and which generally provides cargo handling
+    facilities
+- code: S.RDCR
+  name: traffic circle
+  description: a road junction formed around a central circle about which traffic
+    moves in one direction only
+- code: S.RDIN
+  name: intersection
+  description: a junction of two or more highways by a system of separate levels
+    that permit traffic to pass from one to another without the crossing of
+    traffic streams
+- code: S.RECG
+  name: golf course
+  description: a recreation field where golf is played
+- code: S.RECR
+  name: racetrack
+  description: a track where races are held
+- code: S.REST
+  name: restaurant
+  description: A place where meals are served to the public
+- code: S.RET
+  name: store
+  description: a building where goods and/or services are offered for sale
+- code: S.RHSE
+  name: resthouse
+  description: a structure maintained for the rest and shelter of travelers
+- code: S.RKRY
+  name: rookery
+  description: a breeding place of a colony of birds or seals
+- code: S.RLG
+  name: religious site
+  description: an ancient site of significant religious importance
+- code: S.RLGR
+  name: retreat
+  description: a place of temporary seclusion, especially for religious groups
+- code: S.RNCH
+  name: ranch(es)
+  description: a large farm specializing in extensive grazing of livestock
+- code: S.RSD
+  name: railroad siding
+  description: a short track parallel to and joining the main track
+- code: S.RSGNL
+  name: railroad signal
+  description: a signal at the entrance of a particular section of track governing
+    the movement of trains
+- code: S.RSRT
+  name: resort
+  description: a specialized facility for vacation, health, or participation
+    sports activities
+- code: S.RSTN
+  name: railroad station
+  description: a facility comprising ticket office, platforms, etc. for loading
+    and unloading train passengers and freight
+- code: S.RSTNQ
+  name: abandoned railroad station
+  description: ""
+- code: S.RSTP
+  name: railroad stop
+  description: a place lacking station facilities where trains stop to pick up and
+    unload passengers and freight
+- code: S.RSTPQ
+  name: abandoned railroad stop
+  description: ""
+- code: S.RUIN
+  name: ruin(s)
+  description: a destroyed or decayed structure which is no longer functional
+- code: S.SCH
+  name: school
+  description: building(s) where instruction in one or more branches of knowledge
+    takes place
+- code: S.SCHA
+  name: agricultural school
+  description: a school with a curriculum focused on agriculture
+- code: S.SCHC
+  name: college
+  description: the grounds and buildings of an institution of higher learning
+- code: S.SCHL
+  name: language school
+  description: Language Schools & Institutions
+- code: S.SCHM
+  name: military school
+  description: a school at which military science forms the core of the curriculum
+- code: S.SCHN
+  name: maritime school
+  description: a school at which maritime sciences form the core of the curriculum
+- code: S.SCHT
+  name: technical school
+  description: post-secondary school with a specifically technical or vocational curriculum
+- code: S.SECP
+  name: State Exam Prep Centre
+  description: state exam preparation centres
+- code: S.SHPF
+  name: sheepfold
+  description: a fence or wall enclosure for sheep and other small herd animals
+- code: S.SHRN
+  name: shrine
+  description: a structure or place memorializing a person or religious concept
+- code: S.SHSE
+  name: storehouse
+  description: a building for storing goods, especially provisions
+- code: S.SLCE
+  name: sluice
+  description: a conduit or passage for carrying off surplus water from a
+    waterbody, usually regulated by means of a sluice gate
+- code: S.SNTR
+  name: sanatorium
+  description: a facility where victims of physical or mental disorders are treated
+- code: S.SPA
+  name: spa
+  description: a resort area usually developed around a medicinal spring
+- code: S.SPLY
+  name: spillway
+  description: a passage or outlet through which surplus water flows over, around
+    or through a dam
+- code: S.SQR
+  name: square
+  description: a broad, open, public area near the center of a town or city
+- code: S.STBL
+  name: stable
+  description: a building for the shelter and feeding of farm animals, especially horses
+- code: S.STDM
+  name: stadium
+  description: a structure with an enclosure for athletic games with tiers of
+    seats for spectators
+- code: S.STNB
+  name: scientific research base
+  description: a scientific facility used as a base from which research is carried
+    out or monitored
+- code: S.STNC
+  name: coast guard station
+  description: a facility from which the coast is guarded by armed vessels
+- code: S.STNE
+  name: experiment station
+  description: a facility for carrying out experiments
+- code: S.STNF
+  name: forest station
+  description: a collection of buildings and facilities for carrying out forest management
+- code: S.STNI
+  name: inspection station
+  description: a station at which vehicles, goods, and people are inspected
+- code: S.STNM
+  name: meteorological station
+  description: a station at which weather elements are recorded
+- code: S.STNR
+  name: radio station
+  description: a facility for producing and transmitting information by radio waves
+- code: S.STNS
+  name: satellite station
+  description: a facility for tracking and communicating with orbiting satellites
+- code: S.STNW
+  name: whaling station
+  description: a facility for butchering whales and processing train oil
+- code: S.STPS
+  name: steps
+  description: stones or slabs placed for ease in ascending or descending a steep slope
+- code: S.SWT
+  name: sewage treatment plant
+  description: facility for the processing of sewage and/or wastewater
+- code: S.SYG
+  name: synagogue
+  description: a place for Jewish worship and religious instruction
+- code: S.THTR
+  name: theater
+  description: a building or outdoor area used for live theatrical presentations,
+    concerts, opera or dance productions, cinema, and/or other stage productions
+- code: S.TMB
+  name: tomb(s)
+  description: a structure for interring bodies
+- code: S.TMPL
+  name: temple(s)
+  description: an edifice dedicated to religious worship
+- code: S.TNKD
+  name: cattle dipping tank
+  description: a small artificial pond used for immersing cattle in chemically
+    treated water for disease control
+- code: S.TOLL
+  name: toll gate/barrier
+  description: highway toll collection station
+- code: S.TOWR
+  name: tower
+  description: a high conspicuous structure, typically much higher than its diameter
+- code: S.TRAM
+  name: tram
+  description: rail vehicle along urban streets (also known as streetcar or trolley)
+- code: S.TRANT
+  name: transit terminal
+  description: facilities for the handling of vehicular freight and passengers
+- code: S.TRIG
+  name: triangulation station
+  description: a point on the earth whose position has been determined by triangulation
+- code: S.TRMO
+  name: oil pipeline terminal
+  description: a tank farm or loading facility at the end of an oil pipeline
+- code: S.TWO
+  name: temp work office
+  description: Temporary Work Offices
+- code: S.UNIP
+  name: university prep school
+  description: University Preparation Schools & Institutions
+- code: S.UNIV
+  name: university
+  description: An institution for higher learning with teaching and research
+    facilities constituting a graduate school and professional schools that
+    award master's degrees and doctorates and an undergraduate division that
+    awards bachelor's degrees.
+- code: S.USGE
+  name: united states government establishment
+  description: a facility operated by the United States Government in Panama
+- code: S.VETF
+  name: veterinary facility
+  description: a building or camp at which veterinary services are available
+- code: S.WALL
+  name: wall
+  description: a thick masonry structure, usually enclosing a field or building,
+    or forming the side of a structure
+- code: S.WALLA
+  name: ancient wall
+  description: the remains of a linear defensive stone structure
+- code: S.WEIR
+  name: weir(s)
+  description: a small dam in a stream, designed to raise the water level or to
+    divert stream flow through a desired channel
+- code: S.WHRF
+  name: wharf(-ves)
+  description: a structure of open rather than solid construction along a shore or
+    a bank which provides berthing for ships and cargo-handling facilities
+- code: S.WRCK
+  name: wreck
+  description: the site of the remains of a wrecked vessel
+- code: S.WTRW
+  name: waterworks
+  description: a facility for supplying potable water through a water source and a
+    system of pumps and filtration beds
+- code: S.ZNF
+  name: free trade zone
+  description: an area, usually a section of a port, where goods may be received
+    and shipped free of customs duty and of most customs regulations
+- code: S.ZOO
+  name: zoo
+  description: a zoological garden or park where wild animals are kept for exhibition
+- code: T.ASPH
+  name: asphalt lake
+  description: a small basin containing naturally occurring asphalt
+- code: T.ATOL
+  name: atoll(s)
+  description: a ring-shaped coral reef which has closely spaced islands on it
+    encircling a lagoon
+- code: T.BAR
+  name: bar
+  description: a shallow ridge or mound of coarse unconsolidated material in a
+    stream channel, at the mouth of a stream, estuary, or lagoon and in the
+    wave-break zone along coasts
+- code: T.BCH
+  name: beach
+  description: a shore zone of coarse unconsolidated sediment that extends from
+    the low-water line to the highest reach of storm waves
+- code: T.BCHS
+  name: beaches
+  description: a shore zone of coarse unconsolidated sediment that extends from
+    the low-water line to the highest reach of storm waves
+- code: T.BDLD
+  name: badlands
+  description: an area characterized by a maze of very closely spaced, deep,
+    narrow, steep-sided ravines, and sharp crests and pinnacles
+- code: T.BLDR
+  name: boulder field
+  description: a high altitude or high latitude bare, flat area covered with large
+    angular rocks
+- code: T.BLHL
+  name: blowhole(s)
+  description: a hole in coastal rock through which sea water is forced by a
+    rising tide or waves and spurted through an outlet into the air
+- code: T.BLOW
+  name: blowout(s)
+  description: a small depression in sandy terrain, caused by wind erosion
+- code: T.BNCH
+  name: bench
+  description: a long, narrow bedrock platform bounded by steeper slopes above and
+    below, usually overlooking a waterbody
+- code: T.BUTE
+  name: butte(s)
+  description: a small, isolated, usually flat-topped hill with steep sides
+- code: T.CAPE
+  name: cape
+  description: a land area, more prominent than a point, projecting into the sea
+    and marking a notable change in coastal direction
+- code: T.CFT
+  name: cleft(s)
+  description: a deep narrow slot, notch, or groove in a coastal cliff
+- code: T.CLDA
+  name: caldera
+  description: a depression measuring kilometers across formed by the collapse of
+    a volcanic mountain
+- code: T.CLF
+  name: cliff(s)
+  description: a high, steep to perpendicular slope overlooking a waterbody or lower area
+- code: T.CNYN
+  name: canyon
+  description: a deep, narrow valley with steep sides cutting into a plateau or
+    mountainous area
+- code: T.CONE
+  name: cone(s)
+  description: a conical landform composed of mud or volcanic material
+- code: T.CRDR
+  name: corridor
+  description: a strip or area of land having significance as an access way
+- code: T.CRQ
+  name: cirque
+  description: a bowl-like hollow partially surrounded by cliffs or steep slopes
+    at the head of a glaciated valley
+- code: T.CRQS
+  name: cirques
+  description: bowl-like hollows partially surrounded by cliffs or steep slopes at
+    the head of a glaciated valley
+- code: T.CRTR
+  name: crater(s)
+  description: a generally circular saucer or bowl-shaped depression caused by
+    volcanic or meteorite explosive action
+- code: T.CUET
+  name: cuesta(s)
+  description: an asymmetric ridge formed on tilted strata
+- code: T.DLTA
+  name: delta
+  description: a flat plain formed by alluvial deposits at the mouth of a stream
+- code: T.DPR
+  name: depression(s)
+  description: a low area surrounded by higher land and usually characterized by
+    interior drainage
+- code: T.DSRT
+  name: desert
+  description: a large area with little or no vegetation due to extreme
+    environmental conditions
+- code: T.DUNE
+  name: dune(s)
+  description: a wave form, ridge or star shape feature composed of sand
+- code: T.DVD
+  name: divide
+  description: a line separating adjacent drainage basins
+- code: T.ERG
+  name: sandy desert
+  description: an extensive tract of shifting sand and sand dunes
+- code: T.FAN
+  name: fan(s)
+  description: a fan-shaped wedge of coarse alluvium with apex merging with a
+    mountain stream bed and the fan spreading out at a low angle slope onto an
+    adjacent plain
+- code: T.FORD
+  name: ford
+  description: a shallow part of a stream which can be crossed on foot or by land vehicle
+- code: T.FSR
+  name: fissure
+  description: a crack associated with volcanism
+- code: T.GAP
+  name: gap
+  description: a low place in a ridge, not used for transportation
+- code: T.GRGE
+  name: gorge(s)
+  description: a short, narrow, steep-sided section of a stream valley
+- code: T.HDLD
+  name: headland
+  description: a high projection of land extending into a large body of water
+    beyond the line of the coast
+- code: T.HLL
+  name: hill
+  description: a rounded elevation of limited extent rising above the surrounding
+    land with local relief of less than 300m
+- code: T.HLLS
+  name: hills
+  description: rounded elevations of limited extent rising above the surrounding
+    land with local relief of less than 300m
+- code: T.HMCK
+  name: hammock(s)
+  description: a patch of ground, distinct from and slightly above the surrounding
+    plain or wetland. Often occurs in groups
+- code: T.HMDA
+  name: rock desert
+  description: a relatively sand-free, high bedrock plateau in a hot desert, with
+    or without a gravel veneer
+- code: T.INTF
+  name: interfluve
+  description: a relatively undissected upland between adjacent stream valleys
+- code: T.ISL
+  name: island
+  description: a tract of land, smaller than a continent, surrounded by water at high water
+- code: T.ISLET
+  name: islet
+  description: small island, bigger than rock, smaller than island.
+- code: T.ISLF
+  name: artificial island
+  description: an island created by landfill or diking and filling in a wetland,
+    bay, or lagoon
+- code: T.ISLM
+  name: mangrove island
+  description: a mangrove swamp surrounded by a waterbody
+- code: T.ISLS
+  name: islands
+  description: tracts of land, smaller than a continent, surrounded by water at high water
+- code: T.ISLT
+  name: land-tied island
+  description: a coastal island connected to the mainland by barrier beaches,
+    levees or dikes
+- code: T.ISLX
+  name: section of island
+  description: ""
+- code: T.ISTH
+  name: isthmus
+  description: a narrow strip of land connecting two larger land masses and
+    bordered by water
+- code: T.KRST
+  name: karst area
+  description: a distinctive landscape developed on soluble rock such as limestone
+    characterized by sinkholes, caves, disappearing streams, and underground
+    drainage
+- code: T.LAVA
+  name: lava area
+  description: an area of solidified lava
+- code: T.LEV
+  name: levee
+  description: a natural low embankment bordering a distributary or meandering
+    stream; often built up artificially to control floods
+- code: T.MESA
+  name: mesa(s)
+  description: a flat-topped, isolated elevation with steep slopes on all sides,
+    less extensive than a plateau
+- code: T.MND
+  name: mound(s)
+  description: a low, isolated, rounded hill
+- code: T.MRN
+  name: moraine
+  description: a mound, ridge, or other accumulation of glacial till
+- code: T.MT
+  name: mountain
+  description: an elevation standing high above the surrounding area with small
+    summit area, steep slopes and local relief of 300m or more
+- code: T.MTS
+  name: mountains
+  description: a mountain range or a group of mountains or high ridges
+- code: T.NKM
+  name: meander neck
+  description: a narrow strip of land between the two limbs of a meander loop at
+    its narrowest point
+- code: T.NTK
+  name: nunatak
+  description: a rock or mountain peak protruding through glacial ice
+- code: T.NTKS
+  name: nunataks
+  description: rocks or mountain peaks protruding through glacial ice
+- code: T.PAN
+  name: pan
+  description: a near-level shallow, natural depression or basin, usually
+    containing an intermittent lake, pond, or pool
+- code: T.PANS
+  name: pans
+  description: a near-level shallow, natural depression or basin, usually
+    containing an intermittent lake, pond, or pool
+- code: T.PASS
+  name: pass
+  description: a break in a mountain range or other high obstruction, used for
+    transportation from one side to the other [See also gap]
+- code: T.PEN
+  name: peninsula
+  description: an elongate area of land projecting into a body of water and nearly
+    surrounded by water
+- code: T.PENX
+  name: section of peninsula
+  description: ""
+- code: T.PK
+  name: peak
+  description: a pointed elevation atop a mountain, ridge, or other hypsographic feature
+- code: T.PKS
+  name: peaks
+  description: pointed elevations atop a mountain, ridge, or other hypsographic features
+- code: T.PLAT
+  name: plateau
+  description: an elevated plain with steep slopes on one or more sides, and often
+    with incised streams
+- code: T.PLATX
+  name: section of plateau
+  description: ""
+- code: T.PLDR
+  name: polder
+  description: an area reclaimed from the sea by diking and draining
+- code: T.PLN
+  name: plain(s)
+  description: an extensive area of comparatively level to gently undulating land,
+    lacking surface irregularities, and usually adjacent to a higher area
+- code: T.PLNX
+  name: section of plain
+  description: ""
+- code: T.PROM
+  name: promontory(-ies)
+  description: a bluff or prominent hill overlooking or projecting into a lowland
+- code: T.PT
+  name: point
+  description: a tapering piece of land projecting into a body of water, less
+    prominent than a cape
+- code: T.PTS
+  name: points
+  description: tapering pieces of land projecting into a body of water, less
+    prominent than a cape
+- code: T.RDGB
+  name: beach ridge
+  description: a ridge of sand just inland and parallel to the beach, usually in series
+- code: T.RDGE
+  name: ridge(s)
+  description: a long narrow elevation with steep sides, and a more or less continuous crest
+- code: T.REG
+  name: stony desert
+  description: a desert plain characterized by a surface veneer of gravel and stones
+- code: T.RK
+  name: rock
+  description: a conspicuous, isolated rocky mass
+- code: T.RKFL
+  name: rockfall
+  description: an irregular mass of fallen rock at the base of a cliff or steep slope
+- code: T.RKS
+  name: rocks
+  description: conspicuous, isolated rocky masses
+- code: T.SAND
+  name: sand area
+  description: a tract of land covered with sand
+- code: T.SBED
+  name: dry stream bed
+  description: a channel formerly containing the water of a stream
+- code: T.SCRP
+  name: escarpment
+  description: a long line of cliffs or steep slopes separating level surfaces
+    above and below
+- code: T.SDL
+  name: saddle
+  description: a broad, open pass crossing a ridge or between hills or mountains
+- code: T.SHOR
+  name: shore
+  description: a narrow zone bordering a waterbody which covers and uncovers at
+    high and low water, respectively
+- code: T.SINK
+  name: sinkhole
+  description: a small crater-shape depression in a karst area
+- code: T.SLID
+  name: slide
+  description: a mound of earth material, at the base of a slope and the
+    associated scoured area
+- code: T.SLP
+  name: slope(s)
+  description: a surface with a relatively uniform slope angle
+- code: T.SPIT
+  name: spit
+  description: a narrow, straight or curved continuation of a beach into a waterbody
+- code: T.SPUR
+  name: spur(s)
+  description: a subordinate ridge projecting outward from a hill, mountain or
+    other elevation
+- code: T.TAL
+  name: talus slope
+  description: a steep concave slope formed by an accumulation of loose rock
+    fragments at the base of a cliff or steep slope
+- code: T.TRGD
+  name: interdune trough(s)
+  description: a long wind-swept trough between parallel longitudinal dunes
+- code: T.TRR
+  name: terrace
+  description: a long, narrow alluvial platform bounded by steeper slopes above
+    and below, usually overlooking a waterbody
+- code: T.UPLD
+  name: upland
+  description: an extensive interior region of high land with low to moderate surface relief
+- code: T.VAL
+  name: valley
+  description: an elongated depression usually traversed by a stream
+- code: T.VALG
+  name: hanging valley
+  description: a valley the floor of which is notably higher than the valley or
+    shore to which it leads; most common in areas that have been glaciated
+- code: T.VALS
+  name: valleys
+  description: elongated depressions usually traversed by a stream
+- code: T.VALX
+  name: section of valley
+  description: ""
+- code: T.VLC
+  name: volcano
+  description: a conical elevation composed of volcanic materials with a crater at the top
+- code: U.APNU
+  name: apron
+  description: a gentle slope, with a generally smooth surface, particularly found
+    around groups of islands and seamounts
+- code: U.ARCU
+  name: arch
+  description: a low bulge around the southeastern end of the island of Hawaii
+- code: U.ARRU
+  name: arrugado
+  description: an area of subdued corrugations off Baja California
+- code: U.BDLU
+  name: borderland
+  description: a region adjacent to a continent, normally occupied by or bordering
+    a shelf, that is highly irregular with depths well in excess of those
+    typical of a shelf
+- code: U.BKSU
+  name: banks
+  description: elevations, typically located on a shelf, over which the depth of
+    water is relatively shallow but sufficient for safe surface navigation
+- code: U.BNKU
+  name: bank
+  description: an elevation, typically located on a shelf, over which the depth of
+    water is relatively shallow but sufficient for safe surface navigation
+- code: U.BSNU
+  name: basin
+  description: a depression more or less equidimensional in plan and of variable extent
+- code: U.CDAU
+  name: cordillera
+  description: an entire mountain system including the subordinate ranges,
+    interior plateaus, and basins
+- code: U.CNSU
+  name: canyons
+  description: relatively narrow, deep depressions with steep sides, the bottom of
+    which generally has a continuous slope
+- code: U.CNYU
+  name: canyon
+  description: a relatively narrow, deep depression with steep sides, the bottom
+    of which generally has a continuous slope
+- code: U.CRSU
+  name: continental rise
+  description: a gentle slope rising from oceanic depths towards the foot of a
+    continental slope
+- code: U.DEPU
+  name: deep
+  description: a localized deep area within the confines of a larger feature, such
+    as a trough, basin or trench
+- code: U.EDGU
+  name: shelf edge
+  description: a line along which there is a marked increase of slope at the outer
+    margin of a continental shelf or island shelf
+- code: U.ESCU
+  name: escarpment (or scarp)
+  description: an elongated and comparatively steep slope separating flat or
+    gently sloping areas
+- code: U.FANU
+  name: fan
+  description: a relatively smooth feature normally sloping away from the lower
+    termination of a canyon or canyon system
+- code: U.FLTU
+  name: flat
+  description: a small level or nearly level area
+- code: U.FRZU
+  name: fracture zone
+  description: an extensive linear zone of irregular topography of the sea floor,
+    characterized by steep-sided or asymmetrical ridges, troughs, or escarpments
+- code: U.FURU
+  name: furrow
+  description: a closed, linear, narrow, shallow depression
+- code: U.GAPU
+  name: gap
+  description: a narrow break in a ridge or rise
+- code: U.GLYU
+  name: gully
+  description: a small valley-like feature
+- code: U.HLLU
+  name: hill
+  description: an elevation rising generally less than 500 meters
+- code: U.HLSU
+  name: hills
+  description: elevations rising generally less than 500 meters
+- code: U.HOLU
+  name: hole
+  description: a small depression of the sea floor
+- code: U.KNLU
+  name: knoll
+  description: an elevation rising generally more than 500 meters and less than
+    1,000 meters and of limited extent across the summit
+- code: U.KNSU
+  name: knolls
+  description: elevations rising generally more than 500 meters and less than
+    1,000 meters and of limited extent across the summits
+- code: U.LDGU
+  name: ledge
+  description: a rocky projection or outcrop, commonly linear and near shore
+- code: U.LEVU
+  name: levee
+  description: an embankment bordering a canyon, valley, or seachannel
+- code: U.MESU
+  name: mesa
+  description: an isolated, extensive, flat-topped elevation on the shelf, with
+    relatively steep sides
+- code: U.MNDU
+  name: mound
+  description: a low, isolated, rounded hill
+- code: U.MOTU
+  name: moat
+  description: an annular depression that may not be continuous, located at the
+    base of many seamounts, islands, and other isolated elevations
+- code: U.MTU
+  name: mountain
+  description: a well-delineated subdivision of a large and complex positive feature
+- code: U.PKSU
+  name: peaks
+  description: prominent elevations, part of a larger feature, either pointed or
+    of very limited extent across the summit
+- code: U.PKU
+  name: peak
+  description: a prominent elevation, part of a larger feature, either pointed or
+    of very limited extent across the summit
+- code: U.PLNU
+  name: plain
+  description: a flat, gently sloping or nearly level region
+- code: U.PLTU
+  name: plateau
+  description: a comparatively flat-topped feature of considerable extent,
+    dropping off abruptly on one or more sides
+- code: U.PNLU
+  name: pinnacle
+  description: a high tower or spire-shaped pillar of rock or coral, alone or
+    cresting a summit
+- code: U.PRVU
+  name: province
+  description: a region identifiable by a group of similar physiographic features
+    whose characteristics are markedly in contrast with surrounding areas
+- code: U.RDGU
+  name: ridge
+  description: a long narrow elevation with steep sides
+- code: U.RDSU
+  name: ridges
+  description: long narrow elevations with steep sides
+- code: U.RFSU
+  name: reefs
+  description: surface-navigation hazards composed of consolidated material
+- code: U.RFU
+  name: reef
+  description: a surface-navigation hazard composed of consolidated material
+- code: U.RISU
+  name: rise
+  description: a broad elevation that rises gently, and generally smoothly, from
+    the sea floor
+- code: U.SCNU
+  name: seachannel
+  description: a continuously sloping, elongated depression commonly found in fans
+    or plains and customarily bordered by levees on one or two sides
+- code: U.SCSU
+  name: seachannels
+  description: continuously sloping, elongated depressions commonly found in fans
+    or plains and customarily bordered by levees on one or two sides
+- code: U.SDLU
+  name: saddle
+  description: a low part, resembling in shape a saddle, in a ridge or between
+    contiguous seamounts
+- code: U.SHFU
+  name: shelf
+  description: a zone adjacent to a continent (or around an island) that extends
+    from the low water line to a depth at which there is usually a marked
+    increase of slope towards oceanic depths
+- code: U.SHLU
+  name: shoal
+  description: a surface-navigation hazard composed of unconsolidated material
+- code: U.SHSU
+  name: shoals
+  description: hazards to surface navigation composed of unconsolidated material
+- code: U.SHVU
+  name: shelf valley
+  description: a valley on the shelf, generally the shoreward extension of a canyon
+- code: U.SILU
+  name: sill
+  description: the low part of a gap or saddle separating basins
+- code: U.SLPU
+  name: slope
+  description: the slope seaward from the shelf edge to the beginning of a
+    continental rise or the point where there is a general reduction in slope
+- code: U.SMSU
+  name: seamounts
+  description: elevations rising generally more than 1,000 meters and of limited
+    extent across the summit
+- code: U.SMU
+  name: seamount
+  description: an elevation rising generally more than 1,000 meters and of limited
+    extent across the summit
+- code: U.SPRU
+  name: spur
+  description: a subordinate elevation, ridge, or rise projecting outward from a
+    larger feature
+- code: U.TERU
+  name: terrace
+  description: a relatively flat horizontal or gently inclined surface, sometimes
+    long and narrow, which is bounded by a steeper ascending slope on one side
+    and by a steep descending slope on the opposite side
+- code: U.TMSU
+  name: tablemounts (or guyots)
+  description: seamounts having a comparatively smooth, flat top
+- code: U.TMTU
+  name: tablemount (or guyot)
+  description: a seamount having a comparatively smooth, flat top
+- code: U.TNGU
+  name: tongue
+  description: an elongate (tongue-like) extension of a flat sea floor into an
+    adjacent higher feature
+- code: U.TRGU
+  name: trough
+  description: a long depression of the sea floor characteristically flat bottomed
+    and steep sided, and normally shallower than a trench
+- code: U.TRNU
+  name: trench
+  description: a long, narrow, characteristically very deep and asymmetrical
+    depression of the sea floor, with relatively steep sides
+- code: U.VALU
+  name: valley
+  description: a relatively shallow, wide depression, the bottom of which usually
+    has a continuous gradient
+- code: U.VLSU
+  name: valleys
+  description: a relatively shallow, wide depression, the bottom of which usually
+    has a continuous gradient
+- code: V.BUSH
+  name: bush(es)
+  description: a small clump of conspicuous bushes in an otherwise bare area
+- code: V.CULT
+  name: cultivated area
+  description: an area under cultivation
+- code: V.FRST
+  name: forest(s)
+  description: an area dominated by tree vegetation
+- code: V.FRSTF
+  name: fossilized forest
+  description: a forest fossilized by geologic processes and now exposed at the
+    earth's surface
+- code: V.GROVE
+  name: grove
+  description: a small wooded area or collection of trees growing closely
+    together, occurring naturally or deliberately planted
+- code: V.GRSLD
+  name: grassland
+  description: an area dominated by grass vegetation
+- code: V.GRVC
+  name: coconut grove
+  description: a planting of coconut trees
+- code: V.GRVO
+  name: olive grove
+  description: a planting of olive trees
+- code: V.GRVP
+  name: palm grove
+  description: a planting of palm trees
+- code: V.GRVPN
+  name: pine grove
+  description: a planting of pine trees
+- code: V.HTH
+  name: heath
+  description: an upland moor or sandy area dominated by low shrubby vegetation
+    including heather
+- code: V.MDW
+  name: meadow
+  description: a small, poorly drained area dominated by grassy vegetation
+- code: V.OCH
+  name: orchard(s)
+  description: a planting of fruit or nut trees
+- code: V.SCRB
+  name: scrubland
+  description: an area of low trees, bushes, and shrubs stunted by some
+    environmental limitation
+- code: V.TREE
+  name: tree(s)
+  description: a conspicuous tree used as a landmark
+- code: V.TUND
+  name: tundra
+  description: a marshy, treeless, high latitude plain, dominated by mosses,
+    lichens, and low shrub vegetation under permafrost conditions
+- code: V.VIN
+  name: vineyard
+  description: a planting of grapevines
+- code: V.VINS
+  name: vineyards
+  description: plantings of grapevines
+- code: "null"
+  name: not available
+  description: ""

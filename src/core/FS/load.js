@@ -1,5 +1,6 @@
 import { fs, YAML, NODE, BROWSER } from "./shared.js"
 import { join } from "./join.js"
+import { parse as parseCSV } from "../CSV.js"
 
 /**
  * Load content from files or directories (JSON, YAML, or plain text)
@@ -60,12 +61,16 @@ export async function load(path) {
                 .match(/\.\w+$/)?.[0]
                 ?.slice(1)
                 .toLowerCase() || ""
-        // Parse JSON or YAML files
-        if (["json", "yaml", "yml"].includes(ext))
+        // Parse JSON, YAML, or CSV files
+        if (["json", "yaml", "yml", "csv", "tsv"].includes(ext))
             try {
                 let data
                 if (ext === "json") data = JSON.parse(text)
                 else if (YAML && ["yaml", "yml"].includes(ext)) data = YAML.parse(text)
+                else if (["csv", "tsv"].includes(ext)) {
+                    const delimiter = ext === "tsv" ? "\t" : ","
+                    data = parseCSV(text, { delimiter })
+                }
                 // Return ABI property if present, otherwise return full data
                 return data?.abi || data
             } catch {

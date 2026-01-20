@@ -1,6 +1,7 @@
 import { fs, YAML } from "./shared.js"
 import { join } from "./join.js"
 import { ensure } from "./ensure.js"
+import { stringify as stringifyCSV } from "../CSV.js"
 
 /**
  * Write content to a file in JSON, YAML, or plain text format
@@ -36,6 +37,8 @@ export async function write(path = [], content) {
         // Serialize content based on file extension
         if (file.endsWith(".json")) data = JSON.stringify(content, null, 4)
         else if (file.endsWith(".yaml") || file.endsWith(".yml")) data = YAML.stringify(content)
+        else if (file.endsWith(".csv")) data = stringifyCSV(content, { delimiter: "," })
+        else if (file.endsWith(".tsv")) data = stringifyCSV(content, { delimiter: "\t" })
         else data = content
         fs.writeFileSync(filePath, data, "utf8")
         return { success: true, path: filePath }
