@@ -391,5 +391,131 @@ if (action === "build") {
     console.log(`  Total records processed: ${processedCount.toLocaleString()}`)
     console.log(`  Total records written: ${writtenCount.toLocaleString()}`)
     console.log(`  Admin features indexed: ${adminIndex.size.toLocaleString()}`)
+    
+    // ====================== STEP 5: BUILD CHILDREN RELATIONSHIPS ======================
+    console.log("\nPass 3/3: Building children relationships...")
+    const childrenMap = new Map()
+    let relationCount = 0
+    
+    const rl3 = createInterface({
+        input: createReadStream(allCountriesPath),
+        crlfDelay: Infinity
+    })
+    
+    // Build children map
+    for await (const line of rl3) {
+        if (!line.trim()) continue
+        
+        const fields = line.split("\t")
+        if (fields.length < 19) continue
+        
+        const id = parseInt(fields[0])
+        const featureCode = fields[7]
+        const countryCode = fields[8]
+        const admin1 = fields[10]
+        const admin2 = fields[11]
+        const admin3 = fields[12]
+        const admin4 = fields[13]
+        
+        // Find parent ID (same logic as Pass 2)
+        let parent = null
+        
+        if (featureCode === "ADM1") {
+            const key = `${countryCode}|||||PCLI`
+            parent = adminIndex.get(key)
+            if (!parent) {
+                for (const [k, v] of adminIndex.entries()) {
+                    if (k.startsWith(`${countryCode}|||||PCL`)) {
+                        parent = v
+                        break
+                    }
+                }
+            }
+        } else if (featureCode === "ADM2") {
+            const key = `${countryCode}|${admin1}||||ADM1`
+            parent = adminIndex.get(key)
+        } else if (featureCode === "ADM3") {
+            const key = `${countryCode}|${admin1}|${admin2}|||ADM2`
+            parent = adminIndex.get(key)
+        } else if (featureCode === "ADM4") {
+            const key = `${countryCode}|${admin1}|${admin2}|${admin3}||ADM3`
+            parent = adminIndex.get(key)
+        } else if (featureCode === "ADM5") {
+            const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
+            parent = adminIndex.get(key)
+        } else if (featureCode !== "PCLI" && !featureCode.startsWith("PCL")) {
+            if (admin4) {
+                const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
+                parent = adminIndex.get(key)
+            }
+            if (!parent && admin3) {
+                const key = `${countryCode}|${admin1}|${admin2}|${admin3}||ADM3`
+                parent = adminIndex.get(key)
+            }
+            if (!parent && admin2) {
+                const key = `${countryCode}|${admin1}|${admin2}|||ADM2`
+                parent = adminIndex.get(key)
+            }
+            if (!parent && admin1) {
+                const key = `${countryCode}|${admin1}||||ADM1`
+                parent = adminIndex.get(key)
+            }
+            if (!parent) {
+                const key = `${countryCode}|||||PCLI`
+                parent = adminIndex.get(key)
+                if (!parent) {
+                    for (const [k, v] of adminIndex.entries()) {
+                        if (k.startsWith(`${countryCode}|||||PCL`)) {
+                            parent = v
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (parent) {
+            if (!childrenMap.has(parent)) {
+                childrenMap.set(parent, [])
+            }
+            childrenMap.get(parent).push(id)
+            relationCount++
+            
+            if (relationCount % 100000 === 0) {
+                console.log(`  Mapped ${relationCount.toLocaleString()} parent-child relationships...`)
+            }
+        }
+    }
+    
+    console.log(`✓ Mapped ${relationCount.toLocaleString()} parent-child relationships for ${childrenMap.size.toLocaleString()} parents\n`)
+    
+    // Update parent files with children
+    console.log("Updating parent files with children...")
+    let updatedCount = 0
+    
+    for (const [parentId, children] of childrenMap.entries()) {
+        const pathSegments = Geo.path(parentId)
+        const filename = pathSegments[pathSegments.length - 1] + ".json"
+        const filePath = ["geo", "data", ...pathSegments.slice(0, -1), filename]
+        const fullPath = "./" + filePath.join("/")
+        
+        if (existsSync(fullPath)) {
+            try {
+                const content = readFileSync(fullPath, "utf8")
+                const record = JSON.parse(content)
+                record.children = children
+                await write(filePath, record)
+                updatedCount++
+                
+                if (updatedCount % 1000 === 0) {
+                    console.log(`  Updated ${updatedCount.toLocaleString()} parent files...`)
+                }
+            } catch (error) {
+                console.error(`Error updating parent ${parentId}:`, error.message)
+            }
+        }
+    }
+    
+    console.log(`✓ Updated ${updatedCount.toLocaleString()} parent files with children\n`)
     console.log("\nBuild complete!")
 }
