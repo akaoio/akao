@@ -7,6 +7,47 @@ import { processI18n } from "./src/core/Build/i18n.js"
 import { generateHashFiles } from "./src/core/Build/hash.js"
 import { Forex } from "./src/core/Forex.js"
 import fs from "fs"
+import path from "path"
+
+// ============ Helper Functions ============
+async function copyGeoWithProgress(srcPath, destPath) {
+    let fileCount = 0
+    let lastLog = Date.now()
+    
+    function copyRecursive(src, dest) {
+        if (!fs.existsSync(src)) return
+        
+        const stats = fs.statSync(src)
+        
+        if (stats.isFile()) {
+            const destDir = path.dirname(dest)
+            if (!fs.existsSync(destDir)) {
+                fs.mkdirSync(destDir, { recursive: true })
+            }
+            fs.copyFileSync(src, dest)
+            fileCount++
+            
+            // Log progress every 10k files or every 5 seconds
+            const now = Date.now()
+            if (fileCount % 10000 === 0 || now - lastLog > 5000) {
+                console.log(`  Copied ${fileCount.toLocaleString()} files...`)
+                lastLog = now
+            }
+        } else if (stats.isDirectory()) {
+            if (!fs.existsSync(dest)) {
+                fs.mkdirSync(dest, { recursive: true })
+            }
+            
+            const entries = fs.readdirSync(src)
+            for (const entry of entries) {
+                copyRecursive(path.join(src, entry), path.join(dest, entry))
+            }
+        }
+    }
+    
+    copyRecursive(srcPath, destPath)
+    return fileCount
+}
 
 // ============ Helper Functions ============
 async function copyAssets(assets) {
@@ -269,11 +310,11 @@ log.ok(`Created ${routeCount} route files`)
 // Copy geo data if it doesn't exist
 const geoDestPath = [...paths.build.statics, "geo"]
 if (!(await exist(geoDestPath))) {
-    log.info("Copying geo data to build (this may take a while for large datasets)...")
+    log.info("Copying geo data to build...")
     const startTime = Date.now()
-    await copy(["geo", "data"], geoDestPath)
+    const fileCount = copyGeoWithProgress("./geo/data", path.join(...geoDestPath))
     const duration = ((Date.now() - startTime) / 1000).toFixed(1)
-    log.ok(`Copied geo data (took ${duration}s)`)
+    log.ok(`Copied ${fileCount.toLocaleString()} geo files (took ${duration}s)`)
 } else {
     log.ok("Using existing geo data")
 }
