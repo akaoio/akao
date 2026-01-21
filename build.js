@@ -269,9 +269,11 @@ log.ok(`Created ${routeCount} route files`)
 // Copy geo data if it doesn't exist
 const geoDestPath = [...paths.build.statics, "geo"]
 if (!(await exist(geoDestPath))) {
-    log.info("Copying geo data to build...")
+    log.info("Copying geo data to build (this may take a while for large datasets)...")
+    const startTime = Date.now()
     await copy(["geo", "data"], geoDestPath)
-    log.ok("Copied geo data")
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1)
+    log.ok(`Copied geo data (took ${duration}s)`)
 } else {
     log.ok("Using existing geo data")
 }
