@@ -1,4 +1,4 @@
-import { write, load, copy, dir, remove, isDirectory } from "./src/core/FS.js"
+import { write, load, copy, dir, remove, isDirectory, exist } from "./src/core/FS.js"
 import { color, icons } from "./src/core/Colors.js"
 import { paths } from "./src/core/Build/config.js"
 import { log } from "./src/core/Build/logger.js"
@@ -81,7 +81,31 @@ try {
 
 // Clean
 log.info("Cleaning build folder...")
-await remove([paths.build.root])
+// Preserve build/statics/geo if it exists by removing everything except geo
+const geoPath = [...paths.build.statics, "geo"]
+const hasGeo = await exist(geoPath)
+
+if (hasGeo) {
+    // Selectively remove build contents while preserving geo
+    log.info("Preserving geo data, cleaning other build files...")
+    const buildItems = await dir([paths.build.root])
+    for (const item of buildItems) {
+        const itemPath = [paths.build.root, item]
+        if (item === "statics") {
+            // Clean statics except geo
+            const staticsItems = await dir([...paths.build.root, "statics"])
+            for (const staticsItem of staticsItems) {
+                if (staticsItem !== "geo") {
+                    await remove([...paths.build.root, "statics", staticsItem])
+                }
+            }
+        } else {
+            await remove(itemPath)
+        }
+    }
+} else {
+    await remove([paths.build.root])
+}
 log.ok("Cleaned build folder")
 
 // Load configuration
@@ -242,9 +266,19 @@ const indexContent = await load(paths.src.index)
 const routeCount = await generateRoutes(locales, items, allTags, indexContent)
 log.ok(`Created ${routeCount} route files`)
 
-// Generate hash files for all JSON files in build directory
+// Copy geo data if it doesn't exist
+const geoDestPath = [...paths.build.statics, "geo"]
+if (!(await exist(geoDestPath))) {
+    log.info("Copying geo data to build...")
+    await copy(["geo", "data"], geoDestPath)
+    log.ok("Copied geo data")
+} else {
+    log.ok("Using existing geo data")
+}
+
+// Generate hash files for all JSON files in build directory (excluding geo)
 log.info("Generating hash files...")
-const hashResult = await generateHashFiles(paths.build.root)
+const hashResult = await generateHashFiles(paths.build.root, ["geo"])
 log.ok(`Created ${hashResult.hashFiles} hash files and ${hashResult.hashDatabase} hash database entries`)
 
 // Summary

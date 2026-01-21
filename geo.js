@@ -1,7 +1,8 @@
 import { readFileSync, createReadStream, existsSync, statSync } from "fs"
 import { createInterface } from "readline"
 import AdmZip from "adm-zip"
-import { download, write, parseCSV } from "./src/core/Utils.js"
+import { download, write, parseCSV, sha256 } from "./src/core/Utils.js"
+import { load, dir, exist, isDirectory } from "./src/core/FS.js"
 import Geo from "./src/core/Geo.js"
 
 const args = process.argv.slice(2)
@@ -14,6 +15,80 @@ if (!action) {
 
 const base = "http://download.geonames.org/export/dump/"
 const files = ["readme.txt", "countryInfo.txt", "allCountries.zip", "featureCodes_en.txt"]
+
+// ====================== HASH GENERATION ======================
+let totalDirHashCount = 0
+
+/**
+ * Generate directory hash files recursively for geo data
+ * - Reads existing .hash files for JSON files (already created during Pass 2)
+ * - Only creates _.hash files for directories
+ * - Optimized for large datasets to avoid memory issues
+ */
+async function generateGeoDirectoryHashes(path = [], depth = 0) {
+    const entries = await dir(path)
+    if (!entries || entries.length === 0) return 0
+
+    const hashFiles = []
+    const subDirs = []
+    let hashCount = 0
+
+    // Separate hash files and directories
+    for (const entry of entries) {
+        const entryPath = [...path, entry]
+
+        if (await isDirectory(entryPath)) {
+            subDirs.push(entry)
+        } else if (entry.endsWith(".hash") && entry !== "_.hash") {
+            hashFiles.push(entry)
+        }
+    }
+
+    // First, process subdirectories recursively (deepest first)
+    for (const subDir of subDirs) {
+        const count = await generateGeoDirectoryHashes([...path, subDir], depth + 1)
+        hashCount += count
+    }
+
+    // Collect all child hashes (from .hash files in this directory)
+    const childHashes = []
+
+    for (const hashFile of hashFiles) {
+        const hashContent = await load([...path, hashFile])
+        if (hashContent) {
+            childHashes.push(hashContent)
+        }
+    }
+
+    // Add subdirectory hashes
+    for (const subDir of subDirs) {
+        const subDirHashPath = [...path, subDir, "_.hash"]
+        if (await exist(subDirHashPath)) {
+            const hashContent = await load(subDirHashPath)
+            if (hashContent) {
+                childHashes.push(hashContent)
+            }
+        }
+    }
+
+    // Generate directory _.hash if there are any hashes to combine
+    if (childHashes.length > 0) {
+        const combinedHash = sha256(childHashes.sort().join(""))
+        await write([...path, "_.hash"], combinedHash)
+        hashCount++
+        totalDirHashCount++
+        
+        // Progress logging at top level only
+        if (depth === 0 && totalDirHashCount % 100 === 0) {
+            console.log(`  Generated ${totalDirHashCount.toLocaleString()} directory hash files...`)
+        }
+    }
+
+    // Clear childHashes array to free memory
+    childHashes.length = 0
+
+    return hashCount
+}
 
 // ====================== DOWNLOAD ACTION ======================
 if (action === "download") {
@@ -65,16 +140,22 @@ if (action === "build") {
         process.exit(1)
     }
     
-    // Check if already extracted within 24h
+    // Check if already extracted
     let needsExtraction = true
     if (existsSync(extractedFile)) {
         const stats = statSync(extractedFile)
-        const ageMs = Date.now() - stats.mtimeMs
-        const oneDayMs = 24 * 60 * 60 * 1000
         
-        if (ageMs < oneDayMs) {
+        // If file exists and has content, skip extraction
+        if (stats.size > 0) {
+            const ageMs = Date.now() - stats.mtimeMs
             const hoursAgo = Math.floor(ageMs / (60 * 60 * 1000))
-            console.log(`⊘ Skipping extraction (extracted ${hoursAgo}h ago)\n`)
+            const daysAgo = Math.floor(ageMs / (24 * 60 * 60 * 1000))
+            
+            if (daysAgo > 0) {
+                console.log(`⊘ Skipping extraction (extracted ${daysAgo}d ago)\n`)
+            } else {
+                console.log(`⊘ Skipping extraction (extracted ${hoursAgo}h ago)\n`)
+            }
             needsExtraction = false
         }
     }
@@ -173,7 +254,7 @@ if (action === "build") {
     }
     
     // First pass: Build index of all admin features for parent lookup
-    console.log("Pass 1/2: Building admin feature index...")
+    console.log("Pass 1/4: Building admin feature index...")
     const adminIndex = new Map()
     let lineCount = 0
     
@@ -212,7 +293,7 @@ if (action === "build") {
     console.log(`✓ Indexed ${adminIndex.size.toLocaleString()} admin features from ${lineCount.toLocaleString()} records\n`)
     
     // Second pass: Process and write records
-    console.log("Pass 2/2: Processing and writing records...")
+    console.log("Pass 2/4: Processing and writing records...")
     let processedCount = 0
     let writtenCount = 0
     
@@ -352,48 +433,53 @@ if (action === "build") {
         // Write to indexed path
         const pathSegments = Geo.path(id)
         const filename = pathSegments[pathSegments.length - 1] + ".json"
+        const hashFilename = pathSegments[pathSegments.length - 1] + ".hash"
         const filePath = ["geo", "data", ...pathSegments.slice(0, -1), filename]
+        const hashFilePath = ["geo", "data", ...pathSegments.slice(0, -1), hashFilename]
         const fullPath = "./" + filePath.join("/")
+        const fullHashPath = "./" + hashFilePath.join("/")
         
-        // Check if file exists and was created within 24h with data
+        // Check if file exists with data - skip if already exists
         let needsWrite = true
-        if (existsSync(fullPath)) {
+        if (existsSync(fullPath) && existsSync(fullHashPath)) {
             const stats = statSync(fullPath)
-            const ageMs = Date.now() - stats.mtimeMs
-            const oneDayMs = 24 * 60 * 60 * 1000
+            const hashStats = statSync(fullHashPath)
             
-            if (ageMs < oneDayMs && stats.size > 10) {
+            // If both JSON and hash files exist with content, skip writing
+            if (stats.size > 10 && hashStats.size > 0) {
                 needsWrite = false
             }
         }
         
         if (needsWrite) {
             try {
+                // Write JSON file
                 await write(filePath, record)
-                writtenCount++
                 
-                if (writtenCount % 10000 === 0) {
-                    console.log(`  Processed ${processedCount.toLocaleString()} | Written ${writtenCount.toLocaleString()} records...`)
-                }
+                // Generate and write hash file immediately
+                const fileHash = sha256(JSON.stringify(record))
+                await write(hashFilePath, fileHash)
+                
+                writtenCount++
             } catch (error) {
                 console.error(`Error writing record ${id}:`, error.message)
             }
-        } else {
-            writtenCount++
         }
         
-        if (processedCount % 10000 === 0 && processedCount !== writtenCount) {
-            console.log(`  Processed ${processedCount.toLocaleString()} | Written ${writtenCount.toLocaleString()} records (skipped cached)...`)
+        // Show progress every 100k records
+        if (processedCount % 100000 === 0) {
+            console.log(`  Processed ${processedCount.toLocaleString()} | Skipped ${processedCount - writtenCount} | Written ${writtenCount.toLocaleString()} records...`)
         }
     }
     
     console.log(`\n✓ Processing complete!`)
     console.log(`  Total records processed: ${processedCount.toLocaleString()}`)
+    console.log(`  Total records skipped (cached): ${(processedCount - writtenCount).toLocaleString()}`)
     console.log(`  Total records written: ${writtenCount.toLocaleString()}`)
     console.log(`  Admin features indexed: ${adminIndex.size.toLocaleString()}`)
     
     // ====================== STEP 5: BUILD CHILDREN RELATIONSHIPS ======================
-    console.log("\nPass 3/3: Building children relationships...")
+    console.log("\nPass 3/4: Building children relationships...")
     const childrenMap = new Map()
     let relationCount = 0
     
@@ -403,12 +489,14 @@ if (action === "build") {
     })
     
     // Build children map
+    let processedRelations = 0
     for await (const line of rl3) {
         if (!line.trim()) continue
         
         const fields = line.split("\t")
         if (fields.length < 19) continue
         
+        processedRelations++
         const id = parseInt(fields[0])
         const featureCode = fields[7]
         const countryCode = fields[8]
@@ -480,10 +568,11 @@ if (action === "build") {
             }
             childrenMap.get(parent).push(id)
             relationCount++
-            
-            if (relationCount % 100000 === 0) {
-                console.log(`  Mapped ${relationCount.toLocaleString()} parent-child relationships...`)
-            }
+        }
+        
+        // Show progress every 100k records
+        if (processedRelations % 100000 === 0) {
+            console.log(`  Processed ${processedRelations.toLocaleString()} records | Mapped ${relationCount.toLocaleString()} relationships...`)
         }
     }
     
@@ -507,7 +596,7 @@ if (action === "build") {
                 await write(filePath, record)
                 updatedCount++
                 
-                if (updatedCount % 1000 === 0) {
+                if (updatedCount % 10000 === 0) {
                     console.log(`  Updated ${updatedCount.toLocaleString()} parent files...`)
                 }
             } catch (error) {
@@ -517,5 +606,12 @@ if (action === "build") {
     }
     
     console.log(`✓ Updated ${updatedCount.toLocaleString()} parent files with children\n`)
+    
+    // ====================== STEP 6: GENERATE DIRECTORY HASH FILES ======================
+    console.log("Pass 4/4: Generating directory hash files (_.hash) for geo data...")
+    totalDirHashCount = 0
+    const dirHashCount = await generateGeoDirectoryHashes(["geo", "data"])
+    console.log(`✓ Generated ${dirHashCount.toLocaleString()} directory hash files\n`)
+    
     console.log("\nBuild complete!")
 }

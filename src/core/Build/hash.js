@@ -12,8 +12,9 @@ const allHashes = new Set()
  * - Each .json file gets a .hash file containing just the hash string
  * - Each directory gets a .hash file that is hash of all direct child hashes
  * - All hash values are collected for the static hash database
+ * - Skip directories that should be excluded (e.g., geo)
  */
-async function generateHashesRecursive(path = []) {
+async function generateHashesRecursive(path = [], excludeDirs = []) {
     const entries = await dir(path)
     if (!entries || entries.length === 0) return 0
 
@@ -25,13 +26,19 @@ async function generateHashesRecursive(path = []) {
     for (const entry of entries) {
         const entryPath = [...path, entry]
 
-        if (await isDirectory(entryPath)) subDirs.push(entry)
-        else if (entry.endsWith(".json") && !entry.endsWith(".hash")) jsonFiles.push(entry)
+        if (await isDirectory(entryPath)) {
+            // Skip excluded directories
+            if (!excludeDirs.includes(entry)) {
+                subDirs.push(entry)
+            }
+        } else if (entry.endsWith(".json") && !entry.endsWith(".hash")) {
+            jsonFiles.push(entry)
+        }
     }
 
     // First, process subdirectories recursively (deepest first)
     for (const subDir of subDirs) {
-        const count = await generateHashesRecursive([...path, subDir])
+        const count = await generateHashesRecursive([...path, subDir], excludeDirs)
         hashCount += count
     }
 
@@ -52,8 +59,16 @@ async function generateHashesRecursive(path = []) {
         allHashes.add(fileHash) // Collect hash for static database
     }
 
-    // Add subdirectory hashes
-    for (const subDir of subDirs) {
+    // Add subdirectory hashes (including excluded dirs that already have hashes)
+    const allSubDirs = [...subDirs]
+    for (const excluded of excludeDirs) {
+        const excludedPath = [...path, excluded]
+        if (await exist(excludedPath)) {
+            allSubDirs.push(excluded)
+        }
+    }
+    
+    for (const subDir of allSubDirs) {
         const subDirHashPath = [...path, subDir, "_.hash"]
         if (await exist(subDirHashPath)) {
             const hashContent = await load(subDirHashPath)
@@ -78,15 +93,17 @@ async function generateHashesRecursive(path = []) {
 /**
  * Generate hash files for all JSON files in build directory
  * Also creates a static hash database in statics/hashes/
+ * @param {Array} pathArray - The root path to start hashing
+ * @param {Array} excludeDirs - Directories to exclude from hashing (but include their _.hash if exists)
  */
-export async function generateHashFiles(pathArray) {
+export async function generateHashFiles(pathArray, excludeDirs = []) {
     if (!(await exist(pathArray))) throw new Error(`Build directory not found: ${join(pathArray)}`)
 
     // Clear the hash collection
     allHashes.clear()
 
     // Generate all hash files
-    const count = await generateHashesRecursive(pathArray)
+    const count = await generateHashesRecursive(pathArray, excludeDirs)
 
     // Create static hash database - empty files named by hash value
     for (const hash of allHashes) await write([...pathArray, "statics", "hashes", hash], "") // Empty file with hash as filename
