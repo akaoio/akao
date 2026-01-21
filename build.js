@@ -312,17 +312,33 @@ const geoDestPath = [...paths.build.statics, "geo"]
 if (!(await exist(geoDestPath))) {
     log.info("Copying geo data to build...")
     const startTime = Date.now()
-    const fileCount = copyGeoWithProgress("./geo/data", path.join(...geoDestPath))
+    const fileCount = await copyGeoWithProgress("./geo/data", path.join(...geoDestPath))
     const duration = ((Date.now() - startTime) / 1000).toFixed(1)
     log.ok(`Copied ${fileCount.toLocaleString()} geo files (took ${duration}s)`)
 } else {
     log.ok("Using existing geo data")
 }
 
+// Build geo metadata files (countries and features)
+log.info("Building geo metadata files...")
+const countriesData = await load(["src", "statics", "geo", "countries.yaml"])
+const featuresData = await load(["src", "statics", "geo", "features.yaml"])
+if (countriesData) {
+    await write([...paths.build.statics, "geo", "countries.json"], countriesData)
+}
+if (featuresData) {
+    await write([...paths.build.statics, "geo", "features.json"], featuresData)
+}
+log.ok(`Built geo metadata files`)
+
 // Generate hash files for all JSON files in build directory (excluding geo)
 log.info("Generating hash files...")
 const hashResult = await generateHashFiles(paths.build.root, ["geo"])
-log.ok(`Created ${hashResult.hashFiles} hash files and ${hashResult.hashDatabase} hash database entries`)
+if (hashResult.obsoleteRemoved > 0) {
+    log.ok(`Created ${hashResult.hashFiles} hash files, removed ${hashResult.obsoleteRemoved} obsolete hashes, total database: ${hashResult.hashDatabase.toLocaleString()} entries (including ${hashResult.geoHashes.toLocaleString()} geo hashes)`)
+} else {
+    log.ok(`Created ${hashResult.hashFiles} hash files and ${hashResult.hashDatabase.toLocaleString()} hash database entries (including ${hashResult.geoHashes.toLocaleString()} geo hashes)`)
+}
 
 // Summary
 log.section("========================================")
@@ -331,7 +347,10 @@ console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`${icons.done} ${color.ok("Gun.js Files")}: 5`)
-console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashResult.hashFiles}`)
+console.log(`${icons.done} ${color.ok("Hash Files (build)")}: ${hashResult.hashFiles}`)
 console.log(`${icons.done} ${color.ok("Hash Database")}: ${hashResult.hashDatabase}`)
+if (await exist(geoDestPath)) {
+    console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
+}
 log.section("========================================")
 log.start("Build completed successfully!")

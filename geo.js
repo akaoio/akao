@@ -18,11 +18,13 @@ const files = ["readme.txt", "countryInfo.txt", "allCountries.zip", "featureCode
 
 // ====================== HASH GENERATION ======================
 let totalDirHashCount = 0
+const geoHashes = new Set()
 
 /**
  * Generate directory hash files recursively for geo data
  * - Reads existing .hash files for JSON files (already created during Pass 2)
  * - Only creates _.hash files for directories
+ * - Collects all hashes for geo/hashes database
  * - Optimized for large datasets to avoid memory issues
  */
 async function generateGeoDirectoryHashes(path = [], depth = 0) {
@@ -57,6 +59,7 @@ async function generateGeoDirectoryHashes(path = [], depth = 0) {
         const hashContent = await load([...path, hashFile])
         if (hashContent) {
             childHashes.push(hashContent)
+            geoHashes.add(hashContent)
         }
     }
 
@@ -67,6 +70,7 @@ async function generateGeoDirectoryHashes(path = [], depth = 0) {
             const hashContent = await load(subDirHashPath)
             if (hashContent) {
                 childHashes.push(hashContent)
+                geoHashes.add(hashContent)
             }
         }
     }
@@ -77,6 +81,7 @@ async function generateGeoDirectoryHashes(path = [], depth = 0) {
         await write([...path, "_.hash"], combinedHash)
         hashCount++
         totalDirHashCount++
+        geoHashes.add(combinedHash)
         
         // Progress logging at top level only
         if (depth === 0 && totalDirHashCount % 100 === 0) {
@@ -610,8 +615,31 @@ if (action === "build") {
     // ====================== STEP 6: GENERATE DIRECTORY HASH FILES ======================
     console.log("Pass 4/4: Generating directory hash files (_.hash) for geo data...")
     totalDirHashCount = 0
+    geoHashes.clear()
     const dirHashCount = await generateGeoDirectoryHashes(["geo", "data"])
     console.log(`✓ Generated ${dirHashCount.toLocaleString()} directory hash files\n`)
     
-    console.log("\nBuild complete!")
+    // ====================== STEP 7: CREATE GEO HASH DATABASE ======================
+    console.log("Creating geo hash database...")
+    let hashDbCount = 0
+    for (const hash of geoHashes) {
+        await write(["geo", "hashes", hash], "")
+        hashDbCount++
+        if (hashDbCount % 10000 === 0) {
+            console.log(`  Created ${hashDbCount.toLocaleString()} hash database entries...`)
+        }
+    }
+    console.log(`✓ Created ${geoHashes.size.toLocaleString()} hash database entries in geo/hashes/\n`)
+    
+    // ====================== CLEANUP: INVALIDATE BUILD CACHE ======================
+    console.log("Invalidating build/statics/geo cache...")
+    if (existsSync("./build/statics/geo")) {
+        const { rmSync } = await import("fs")
+        rmSync("./build/statics/geo", { recursive: true, force: true })
+        console.log("✓ Removed build/statics/geo (will be regenerated on next build)\n")
+    } else {
+        console.log("✓ No build cache to invalidate\n")
+    }
+    
+    console.log("\n✅ Geo build complete! Run 'npm run build' to sync with build folder.")
 }

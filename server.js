@@ -15,5 +15,6 @@ server.start({
     root: "build", // Set root directory that's being served. Defaults to cwd.
     open: true, // When false, it won't load your browser by default.
     wait: 1000, // Waits for all changes, before reloading. Defaults to 0 sec.
-    logLevel: 2 // 0 = errors only, 1 = some, 2 = lots
+    logLevel: 2, // 0 = errors only, 1 = some, 2 = lots
+    ignore: "build/statics/geo" // Ignore geo folder to prevent file watcher limit
 })
