@@ -3,7 +3,7 @@ import { createInterface } from "readline"
 import AdmZip from "adm-zip"
 import { download, write, parseCSV, sha256 } from "./src/core/Utils.js"
 import { load, dir, exist, isDirectory } from "./src/core/FS.js"
-import Geo from "./src/core/Geo.js"
+import DB from "./src/core/DB.js"
 
 const args = process.argv.slice(2)
 const action = args.includes("--build") ? "build" : args.includes("--download") ? "download" : null
@@ -18,14 +18,12 @@ const files = ["readme.txt", "countryInfo.txt", "allCountries.zip", "featureCode
 
 // ====================== HASH GENERATION ======================
 let totalDirHashCount = 0
-const geoHashes = new Set()
 
 /**
  * Generate directory hash files recursively for geo data
  * - Reads existing .hash files for JSON files (already created during Pass 2)
  * - Only creates _.hash files for directories
- * - Collects all hashes for geo/hashes database
- * - Optimized for large datasets to avoid memory issues
+ * - No separate hash database - only .hash files next to data
  */
 async function generateGeoDirectoryHashes(path = [], depth = 0) {
     const entries = await dir(path)
@@ -59,7 +57,6 @@ async function generateGeoDirectoryHashes(path = [], depth = 0) {
         const hashContent = await load([...path, hashFile])
         if (hashContent) {
             childHashes.push(hashContent)
-            geoHashes.add(hashContent)
         }
     }
 
@@ -70,7 +67,6 @@ async function generateGeoDirectoryHashes(path = [], depth = 0) {
             const hashContent = await load(subDirHashPath)
             if (hashContent) {
                 childHashes.push(hashContent)
-                geoHashes.add(hashContent)
             }
         }
     }
@@ -81,11 +77,11 @@ async function generateGeoDirectoryHashes(path = [], depth = 0) {
         await write([...path, "_.hash"], combinedHash)
         hashCount++
         totalDirHashCount++
-        geoHashes.add(combinedHash)
         
-        // Progress logging at top level only
-        if (depth === 0 && totalDirHashCount % 100 === 0) {
-            console.log(`  Generated ${totalDirHashCount.toLocaleString()} directory hash files...`)
+        // Progress logging every 500 directories or at specific depths
+        if (totalDirHashCount % 500 === 0 || (depth <= 2 && totalDirHashCount % 50 === 0)) {
+            const pathStr = path.slice(2).join("/") || "root"
+            console.log(`  Processed ${totalDirHashCount.toLocaleString()} directories | Current: ${pathStr}`)
         }
     }
 
@@ -214,8 +210,10 @@ if (action === "build") {
             equivalentFipsCode: row.EquivalentFipsCode || ""
         }))
         
-        await write(["src", "statics", "geo", "countries.yaml"], countries)
-        console.log(`✓ Created countries.yaml with ${countries.length} countries\n`)
+        await write(["build", "geo", "countries.json"], countries)
+        const countriesHash = sha256(JSON.stringify(countries))
+        await write(["build", "geo", "countries.hash"], countriesHash)
+        console.log(`✓ Created build/geo/countries.json with ${countries.length} countries\n`)
     } catch (error) {
         console.error("Error processing countries:", error)
         process.exit(1)
@@ -240,8 +238,10 @@ if (action === "build") {
             description: row[2] || ""
         }))
         
-        await write(["src", "statics", "geo", "features.yaml"], features)
-        console.log(`✓ Created features.yaml with ${features.length} feature codes\n`)
+        await write(["build", "geo", "features.json"], features)
+        const featuresHash = sha256(JSON.stringify(features))
+        await write(["build", "geo", "features.hash"], featuresHash)
+        console.log(`✓ Created build/geo/features.json with ${features.length} feature codes\n`)
     } catch (error) {
         console.error("Error processing feature codes:", error)
         process.exit(1)
@@ -249,7 +249,6 @@ if (action === "build") {
     
     // ====================== STEP 4: PROCESS ALL COUNTRIES DATA ======================
     console.log("Step 4: Processing allCountries.txt...")
-    console.log("This will take a while (12M+ records)...\n")
     
     const allCountriesPath = "./geo/allCountries.txt"
     
@@ -258,64 +257,97 @@ if (action === "build") {
         process.exit(1)
     }
     
-    // First pass: Build index of all admin features for parent lookup
-    console.log("Pass 1/4: Building admin feature index...")
-    const adminIndex = new Map()
-    let lineCount = 0
+    // Check if data is already built by checking for _.hash and some sample files
+    let needsProcessing = true
+    const dataRootHash = "./build/geo/_.hash"
     
-    const rl1 = createInterface({
-        input: createReadStream(allCountriesPath),
-        crlfDelay: Infinity
-    })
-    
-    for await (const line of rl1) {
-        if (!line.trim()) continue
+    if (existsSync(dataRootHash)) {
+        // Check a few sample files to verify data integrity
+        const sampleIds = [1000000, 2000000, 3000000, 6295630] // Sample IDs to check
+        let allSamplesExist = true
         
-        const fields = line.split("\t")
-        if (fields.length < 19) continue
-        
-        const featureCode = fields[7]
-        const isAdmin = featureCode === "PCLI" || featureCode.startsWith("PCL") || /^ADM[1-5]$/.test(featureCode)
-        
-        if (isAdmin) {
-            const id = parseInt(fields[0])
-            const countryCode = fields[8]
-            const admin1 = fields[10]
-            const admin2 = fields[11]
-            const admin3 = fields[12]
-            const admin4 = fields[13]
+        for (const sampleId of sampleIds) {
+            const pathSegments = DB.path(sampleId)
+            const filename = pathSegments[pathSegments.length - 1] + ".json"
+            const hashFilename = pathSegments[pathSegments.length - 1] + ".hash"
+            const samplePath = "./build/geo/" + [...pathSegments.slice(0, -1), filename].join("/")
+            const sampleHashPath = "./build/geo/" + [...pathSegments.slice(0, -1), hashFilename].join("/")
             
-            const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|${featureCode}`
-            adminIndex.set(key, id)
+            if (!existsSync(samplePath) || !existsSync(sampleHashPath)) {
+                allSamplesExist = false
+                break
+            }
         }
         
-        lineCount++
-        if (lineCount % 100000 === 0) {
-            console.log(`  Indexed ${lineCount.toLocaleString()} records...`)
+        if (allSamplesExist) {
+            console.log("⊘ Data already built (found _.hash and verified sample files)")
+            console.log("⊘ Skipping Pass 1/4, 2/4, and 3/4\n")
+            needsProcessing = false
         }
     }
     
-    console.log(`✓ Indexed ${adminIndex.size.toLocaleString()} admin features from ${lineCount.toLocaleString()} records\n`)
-    
-    // Second pass: Process and write records
-    console.log("Pass 2/4: Processing and writing records...")
+    let adminIndex = new Map()
     let processedCount = 0
     let writtenCount = 0
     
-    const rl2 = createInterface({
-        input: createReadStream(allCountriesPath),
-        crlfDelay: Infinity
-    })
+    if (needsProcessing) {
+        console.log("This will take a while (12M+ records)...\n")
     
-    for await (const line of rl2) {
-        if (!line.trim()) continue
+        // First pass: Build index of all admin features for parent lookup
+        console.log("Pass 1/4: Building admin feature index...")
+        let lineCount = 0
+    
+        const rl1 = createInterface({
+            input: createReadStream(allCountriesPath),
+            crlfDelay: Infinity
+        })
+    
+        for await (const line of rl1) {
+            if (!line.trim()) continue
+            
+            const fields = line.split("\t")
+            if (fields.length < 19) continue
+            
+            const featureCode = fields[7]
+            const isAdmin = featureCode === "PCLI" || featureCode.startsWith("PCL") || /^ADM[1-5]$/.test(featureCode)
+            
+            if (isAdmin) {
+                const id = parseInt(fields[0])
+                const countryCode = fields[8]
+                const admin1 = fields[10]
+                const admin2 = fields[11]
+                const admin3 = fields[12]
+                const admin4 = fields[13]
+            
+                const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|${featureCode}`
+                adminIndex.set(key, id)
+            }
+            
+            lineCount++
+            if (lineCount % 100000 === 0) {
+                console.log(`  Indexed ${lineCount.toLocaleString()} records...`)
+            }
+        }
         
-        const fields = line.split("\t")
-        if (fields.length < 19) continue
+        console.log(`✓ Indexed ${adminIndex.size.toLocaleString()} admin features from ${lineCount.toLocaleString()} records\n`)
         
-        processedCount++
+        // Second pass: Process and write records
+        console.log("Pass 2/4: Processing and writing records...")
         
-        // Parse record
+        const rl2 = createInterface({
+            input: createReadStream(allCountriesPath),
+            crlfDelay: Infinity
+        })
+        
+        for await (const line of rl2) {
+            if (!line.trim()) continue
+            
+            const fields = line.split("\t")
+            if (fields.length < 19) continue
+            
+            processedCount++
+            
+            // Parse record
         const id = parseInt(fields[0])
         const name = fields[1]
         const asciiname = fields[2]
@@ -436,11 +468,11 @@ if (action === "build") {
         }
         
         // Write to indexed path
-        const pathSegments = Geo.path(id)
+        const pathSegments = DB.path(id)
         const filename = pathSegments[pathSegments.length - 1] + ".json"
         const hashFilename = pathSegments[pathSegments.length - 1] + ".hash"
-        const filePath = ["geo", "data", ...pathSegments.slice(0, -1), filename]
-        const hashFilePath = ["geo", "data", ...pathSegments.slice(0, -1), hashFilename]
+        const filePath = ["build", "geo", ...pathSegments.slice(0, -1), filename]
+        const hashFilePath = ["build", "geo", ...pathSegments.slice(0, -1), hashFilename]
         const fullPath = "./" + filePath.join("/")
         const fullHashPath = "./" + hashFilePath.join("/")
         
@@ -588,9 +620,9 @@ if (action === "build") {
     let updatedCount = 0
     
     for (const [parentId, children] of childrenMap.entries()) {
-        const pathSegments = Geo.path(parentId)
+        const pathSegments = DB.path(parentId)
         const filename = pathSegments[pathSegments.length - 1] + ".json"
-        const filePath = ["geo", "data", ...pathSegments.slice(0, -1), filename]
+        const filePath = ["build", "geo", ...pathSegments.slice(0, -1), filename]
         const fullPath = "./" + filePath.join("/")
         
         if (existsSync(fullPath)) {
@@ -612,34 +644,13 @@ if (action === "build") {
     
     console.log(`✓ Updated ${updatedCount.toLocaleString()} parent files with children\n`)
     
+    } // End of if (needsProcessing)
+    
     // ====================== STEP 6: GENERATE DIRECTORY HASH FILES ======================
-    console.log("Pass 4/4: Generating directory hash files (_.hash) for geo data...")
+    console.log("Pass 4/4: Generating directory hash files (_.hash)...")
     totalDirHashCount = 0
-    geoHashes.clear()
-    const dirHashCount = await generateGeoDirectoryHashes(["geo", "data"])
+    const dirHashCount = await generateGeoDirectoryHashes(["build", "geo"])
     console.log(`✓ Generated ${dirHashCount.toLocaleString()} directory hash files\n`)
     
-    // ====================== STEP 7: CREATE GEO HASH DATABASE ======================
-    console.log("Creating geo hash database...")
-    let hashDbCount = 0
-    for (const hash of geoHashes) {
-        await write(["geo", "hashes", hash], "")
-        hashDbCount++
-        if (hashDbCount % 10000 === 0) {
-            console.log(`  Created ${hashDbCount.toLocaleString()} hash database entries...`)
-        }
-    }
-    console.log(`✓ Created ${geoHashes.size.toLocaleString()} hash database entries in geo/hashes/\n`)
-    
-    // ====================== CLEANUP: INVALIDATE BUILD CACHE ======================
-    console.log("Invalidating build/statics/geo cache...")
-    if (existsSync("./build/statics/geo")) {
-        const { rmSync } = await import("fs")
-        rmSync("./build/statics/geo", { recursive: true, force: true })
-        console.log("✓ Removed build/statics/geo (will be regenerated on next build)\n")
-    } else {
-        console.log("✓ No build cache to invalidate\n")
-    }
-    
-    console.log("\n✅ Geo build complete! Run 'npm run build' to sync with build folder.")
+    console.log("\n✅ Geo build complete! Data written to build/geo/")
 }

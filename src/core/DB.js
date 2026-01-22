@@ -1,23 +1,24 @@
-import { exist, load } from "./FS.js"
+import { load } from "./FS.js"
 import { Indexes } from "./Stores.js"
 
 export class DB {
     static async get(path = []) {
         let type = path.at?.(-1)?.endsWith?.(".hash") ? "hash" : "data"
-        let hash = await Indexes.Hashes.get(path).once()
-        if (hash) {
-            const exists = await exist(["statics", "hashes", hash])
-            if (exists) {
-                if (type === "hash") return hash
-                return await Indexes.Statics.get(path).once()
-            }
-        }
-        hash = await load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
+        const memory = await Indexes.Hashes.get(path).once()
+        const hash = await load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
+        if (memory && hash && memory === hash) return type === "hash" ? hash : await Indexes.Statics.get(path).once()
         if (hash) await Indexes.Hashes.get(path).put(hash)
         if (type === "hash") return hash
         const data = await load(path)
         if (typeof data !== "undefined") await Indexes.Statics.get(path).put(data)
         return data
+    }
+
+    static path(id) {
+        const str = String(id)
+        const segments = []
+        for (let i = str.length; i > 0; i -= 2) segments.unshift(str.slice(Math.max(0, i - 2), i))
+        return segments
     }
 }
 

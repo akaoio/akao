@@ -10,46 +10,6 @@ import fs from "fs"
 import path from "path"
 
 // ============ Helper Functions ============
-async function copyGeoWithProgress(srcPath, destPath) {
-    let fileCount = 0
-    let lastLog = Date.now()
-    
-    function copyRecursive(src, dest) {
-        if (!fs.existsSync(src)) return
-        
-        const stats = fs.statSync(src)
-        
-        if (stats.isFile()) {
-            const destDir = path.dirname(dest)
-            if (!fs.existsSync(destDir)) {
-                fs.mkdirSync(destDir, { recursive: true })
-            }
-            fs.copyFileSync(src, dest)
-            fileCount++
-            
-            // Log progress every 10k files or every 5 seconds
-            const now = Date.now()
-            if (fileCount % 10000 === 0 || now - lastLog > 5000) {
-                console.log(`  Copied ${fileCount.toLocaleString()} files...`)
-                lastLog = now
-            }
-        } else if (stats.isDirectory()) {
-            if (!fs.existsSync(dest)) {
-                fs.mkdirSync(dest, { recursive: true })
-            }
-            
-            const entries = fs.readdirSync(src)
-            for (const entry of entries) {
-                copyRecursive(path.join(src, entry), path.join(dest, entry))
-            }
-        }
-    }
-    
-    copyRecursive(srcPath, destPath)
-    return fileCount
-}
-
-// ============ Helper Functions ============
 async function copyAssets(assets) {
     for (const { src, dest, label } of assets) {
         await copy(src, dest)
@@ -120,28 +80,17 @@ try {
     // File doesn't exist or error checking, will fetch new data
 }
 
-// Clean
+// Clean build folder, preserving build/geo if it exists
 log.info("Cleaning build folder...")
-// Preserve build/statics/geo if it exists by removing everything except geo
-const geoPath = [...paths.build.statics, "geo"]
+const geoPath = [paths.build.root, "geo"]
 const hasGeo = await exist(geoPath)
 
 if (hasGeo) {
-    // Selectively remove build contents while preserving geo
     log.info("Preserving geo data, cleaning other build files...")
     const buildItems = await dir([paths.build.root])
     for (const item of buildItems) {
-        const itemPath = [paths.build.root, item]
-        if (item === "statics") {
-            // Clean statics except geo
-            const staticsItems = await dir([...paths.build.root, "statics"])
-            for (const staticsItem of staticsItems) {
-                if (staticsItem !== "geo") {
-                    await remove([...paths.build.root, "statics", staticsItem])
-                }
-            }
-        } else {
-            await remove(itemPath)
+        if (item !== "geo") {
+            await remove([paths.build.root, item])
         }
     }
 } else {
@@ -307,38 +256,14 @@ const indexContent = await load(paths.src.index)
 const routeCount = await generateRoutes(locales, items, allTags, indexContent)
 log.ok(`Created ${routeCount} route files`)
 
-// Copy geo data if it doesn't exist
-const geoDestPath = [...paths.build.statics, "geo"]
-if (!(await exist(geoDestPath))) {
-    log.info("Copying geo data to build...")
-    const startTime = Date.now()
-    const fileCount = await copyGeoWithProgress("./geo/data", path.join(...geoDestPath))
-    const duration = ((Date.now() - startTime) / 1000).toFixed(1)
-    log.ok(`Copied ${fileCount.toLocaleString()} geo files (took ${duration}s)`)
-} else {
-    log.ok("Using existing geo data")
-}
+// Note: geo data is built separately via npm run geo:build to build/geo/
 
-// Build geo metadata files (countries and features)
-log.info("Building geo metadata files...")
-const countriesData = await load(["src", "statics", "geo", "countries.yaml"])
-const featuresData = await load(["src", "statics", "geo", "features.yaml"])
-if (countriesData) {
-    await write([...paths.build.statics, "geo", "countries.json"], countriesData)
-}
-if (featuresData) {
-    await write([...paths.build.statics, "geo", "features.json"], featuresData)
-}
-log.ok(`Built geo metadata files`)
+// Note: geo metadata (countries, features) is built by geo:build to build/geo/
 
 // Generate hash files for all JSON files in build directory (excluding geo)
 log.info("Generating hash files...")
 const hashResult = await generateHashFiles(paths.build.root, ["geo"])
-if (hashResult.obsoleteRemoved > 0) {
-    log.ok(`Created ${hashResult.hashFiles} hash files, removed ${hashResult.obsoleteRemoved} obsolete hashes, total database: ${hashResult.hashDatabase.toLocaleString()} entries (including ${hashResult.geoHashes.toLocaleString()} geo hashes)`)
-} else {
-    log.ok(`Created ${hashResult.hashFiles} hash files and ${hashResult.hashDatabase.toLocaleString()} hash database entries (including ${hashResult.geoHashes.toLocaleString()} geo hashes)`)
-}
+log.ok(`Created ${hashResult.hashFiles} hash files`)
 
 // Summary
 log.section("========================================")
@@ -347,9 +272,8 @@ console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`${icons.done} ${color.ok("Gun.js Files")}: 5`)
-console.log(`${icons.done} ${color.ok("Hash Files (build)")}: ${hashResult.hashFiles}`)
-console.log(`${icons.done} ${color.ok("Hash Database")}: ${hashResult.hashDatabase}`)
-if (await exist(geoDestPath)) {
+console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashResult.hashFiles}`)
+if (await exist(geoPath)) {
     console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
 }
 log.section("========================================")

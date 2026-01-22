@@ -22,7 +22,9 @@ export const icons = {
     warn: "⚠️",
     info: "ℹ️",
     sync: "🔄",
-    chain: "⛓️"
+    chain: "⛓️",
+    watch: "👁️",
+    trash: "🗑️"
 }
 
 // Simple color functions

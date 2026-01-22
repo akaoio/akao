@@ -26,8 +26,9 @@ thread.init = async function () {
 
                 const _ = [...path, "_.hash"]
                 // Get existing hash
-                let hash = await Indexes.Hashes.get(_).once()
-                if (hash && (await exist(["statics", "hashes", hash]))) {
+                const memory = await Indexes.Hashes.get(_).once()
+                const hash = await load(_)
+                if (memory && hash && memory === hash) {
                     skippables.push(path)
                     continue
                 }
