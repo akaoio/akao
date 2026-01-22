@@ -33,8 +33,6 @@ thread.init = async function () {
                     continue
                 }
 
-                // Load new hash
-                hash = await load(_)
                 await Indexes.Hashes.get(_).put(hash)
 
                 // Now look for all IDB keys start with this path and check their hashes
