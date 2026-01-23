@@ -43,7 +43,7 @@ export class USER extends HTMLElement {
         if (Access.get("wallet")?.id == null) return
         const { sea } = globalThis
         if (!sea) return
-        const seed = await sea.work(Access.get("id"), Access.get("wallet").id)
+        const seed = await sea.work(Access.get("seed"), Access.get("wallet").id)
         this.identicon.dataset.seed = seed
     }
 }

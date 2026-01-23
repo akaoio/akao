@@ -74,15 +74,14 @@ export function setWallet({ id, total } = {}) {
  * @returns {Object} Credential object with authentication state updated
  */
 async function next(credential) {
-    if (!credential || !credential?.id) return { error: "Invalid credential" }
+    if (!credential || !credential?.id || !credential?.seed) return { error: "Invalid credential" }
     const { sea } = globalThis
-    // Generate deterministic hash from credential ID to seed key pair generation
-    const hash = await sea.work(credential.id, "self") // "self" is the default salt
     // Generate SEA key pair for user (used for encrypting data in Gun)
-    const pair = await sea.pair(null, { seed: hash })
+    const pair = await sea.pair(null, { seed: credential.seed })
     Access.set({
         authenticated: true,
         id: credential.id,
+        seed: credential.seed,
         credential,
         pair,
         wallet: getWallet() // Get the wallet ID from the local storage
@@ -139,6 +138,7 @@ async function restore() {
 export function signup(data) {
     return WebAuthn
         .create(data)
+        .then(WebAuthn.authenticate)
         .then(next)
         .then(async (credential) => {
             if (!Access.get("authenticated")) return { error: "Unauthenticated" }
@@ -170,5 +170,5 @@ export function signin(data) {
  * Clears all authentication state and user information from Access store.
  */
 export function signout() {
-    Access.set({ authenticated: false, id: null, pub: null, pair: null, wallet: null })
+    Access.set({ authenticated: false, id: null, seed: null, pub: null, pair: null, wallet: null })
 }

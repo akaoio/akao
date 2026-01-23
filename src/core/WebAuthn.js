@@ -19,6 +19,9 @@ export class WebAuthn {
         this.configs.rp = this.configs?.rp || {}
         this.configs.rp.id = this.configs.rp?.id || Statics.domain
         this.configs.rp.name = this.configs.rp?.name || Statics.site.name
+        this.create = this.create.bind(this)
+        this.authenticate = this.authenticate.bind(this)
+        this.sign = this.sign.bind(this)
     }
 
     /**
@@ -54,7 +57,10 @@ export class WebAuthn {
                 ],
                 timeout: 60000, // 60 second timeout for user interaction
                 attestation: "none", // Don't require attestation statement
-                user
+                user,
+                extentions: {
+                    prf: {} // Enable PRF extension, used for creating deterministic secrets without storing them
+                }
             }
         }
 
@@ -105,17 +111,25 @@ export class WebAuthn {
      * @param {ArrayBuffer|undefined} options.id - Specific credential ID to authenticate with (optional)
      * @returns {Promise<Object>} Assertion object with credential information
      */
-    authenticate({ id } = {}) {
+    authenticate({ id, pub } = {}) {
         // Generate a random challenge for this authentication
         const challenge = crypto.getRandomValues(new Uint8Array(32))
+        const encoder = new TextEncoder()
 
         const options = {
             challenge,
             timeout: 60000, // 60 second timeout
             userVerification: "preferred",
-            rpId: this.configs.rp.id
+            rpId: this.configs.rp.id,
+            extensions: {
+                prf: {
+                    eval: {
+                        first: encoder.encode("seed")
+                    }
+                }
+            }
         }
-
+        
         // Add specific credential if provided (for targeted authentication)
         if (id) options.allowCredentials = [{ id, type: "public-key" }]
 
@@ -129,6 +143,10 @@ export class WebAuthn {
                     type: assertion.type,
                     response: assertion.response
                 }
+                if (pub) credential.pub = pub
+                // Extract PRF result (deterministic secret) from extensions
+                const ext = assertion.getClientExtensionResults()
+                if (ext?.prf?.results?.first) credential.seed = new Uint8Array(ext.prf.results.first)
                 return credential
             })
             .catch((error) => {

@@ -65,7 +65,7 @@ export class WALLETS extends HTMLElement {
         if (this.wallets.children.length >= this.total) return
         const templates = []
         for (let id = this.wallets.children.length; id < this.total; id++) {
-            const seed = await globalThis.sea.work(Access.get("id"), id)
+            const seed = await globalThis.sea.work(Access.get("seed"), id)
             const select = () => this.select({ id })
             templates.push(html`
                 <span class="item">
@@ -81,7 +81,7 @@ export class WALLETS extends HTMLElement {
                 </span>
             `)
         }
-        render(templates, this.wallets)
+        render(templates, this.wallets, { append: true })
     }
 
     remove() {
