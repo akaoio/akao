@@ -4,7 +4,7 @@
  * Integrates with SEA (Simple End-to-End Cryptography) for encryption and Gun database.
  */
 
-import { webauthn } from "/core/WebAuthn.js"
+import WebAuthn from "/core/WebAuthn.js"
 import States from "/core/States.js"
 
 /**
@@ -137,13 +137,13 @@ async function restore() {
  * @returns {Promise<Object>} Credential object or error
  */
 export function signup(data) {
-    return webauthn
+    return WebAuthn
         .create(data)
         .then(next)
         .then(async (credential) => {
             if (!Access.get("authenticated")) return { error: "Unauthenticated" }
             if (!credential?.pub) return { error: "No public key found" }
-            save(pub)
+            save(credential)
             return credential
         })
 }
@@ -155,7 +155,7 @@ export function signup(data) {
  * @returns {Promise<Object>} Credential object or error
  */
 export function signin(data) {
-    return webauthn
+    return WebAuthn
         .authenticate(data)
         .then(next)
         .then(async (credential) => {

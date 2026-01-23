@@ -15,7 +15,7 @@ export const template = html`
                 <ui-button class="full" data-left="/images/icons/fingerprint.svg" id="signin">
                     <ui-context data-key="dictionary.signin" />
                 </ui-button>
-                <ui-button class="full" data-left="/images/icons/person-add.svg" id="signup-screen">
+                <ui-button class="full" data-left="/images/icons/person-add.svg" id="signup">
                     <ui-context data-key="dictionary.signup" />
                 </ui-button>
             </div>
@@ -26,7 +26,7 @@ export const template = html`
                 <input type="text" name="name" />
                 <input type="text" name="displayName" />
                 <div class="buttons">
-                    <ui-button class="full" data-left="/images/icons/check-lg.svg" id="signup">
+                    <ui-button class="full" data-left="/images/icons/check-lg.svg" id="confirm">
                         <ui-context data-key="dictionary.confirm" />
                     </ui-button>
                     <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="back">

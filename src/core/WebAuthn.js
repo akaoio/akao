@@ -193,7 +193,7 @@ export class WebAuthn {
     }
 }
 
-export default WebAuthn
-
 // Create or reuse global WebAuthn singleton instance
 export const webauthn = new WebAuthn()
+
+export default webauthn
