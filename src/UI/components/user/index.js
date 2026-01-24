@@ -22,7 +22,7 @@ export class USER extends HTMLElement {
         this.subscriptions.push(
             () => this.shadowRoot.querySelector(".user").removeEventListener("click", this.toggle),
             Access.on("authenticated", () => {
-                if (!Access.get("authenticated")) return this.identicon.removeAttribute("seed")
+                if (!Access.get("authenticated")) return this.identicon.removeAttribute("data-seed")
             }),
             Access.on("wallet", this.render)
         )
@@ -36,7 +36,7 @@ export class USER extends HTMLElement {
     toggle() {
         const check = Elements.Access?.checkpoint()
         if (!check) return
-        Elements.User.toggle()
+        Elements.Profile.toggle()
     }
 
     async render() {

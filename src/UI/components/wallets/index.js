@@ -1,4 +1,4 @@
-import template, { item } from "./template.js"
+import template from "./template.js"
 import { Access, setWallet } from "/core/Access.js"
 import { html, render } from "/core/UI.js"
 

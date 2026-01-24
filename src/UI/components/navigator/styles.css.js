@@ -135,6 +135,7 @@ export const styles = css`
                             --tmp-active: var(--active);
                             --tmp-total: var(--total, 0);
                             &::slotted(*) {
+                                border: var(--border);
                                 opacity: 1;
                                 --deg: calc(360deg / var(--tmp-total) * (var(--i, 0) - 1));
                                 --x: calc(sin(var(--deg)) * var(--tmp-rad));

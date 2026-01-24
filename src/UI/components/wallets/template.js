@@ -5,17 +5,10 @@ import "/UI/components/icon/index.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
 
-export const item = html`
-    <span class="item">
-        <input type="radio" name="wallet" />
-        <label><ui-identicon data-size="7" /></label>
-    </span>
-`
-
 export const template = html`
     ${styles}
     <header>
-        <ui-context data-key="dictionary.wallet" />
+        <ui-context data-key="dictionary.wallets" />
         <nav>
             <ui-icon id="increase" data-icon="plus-lg" />
             <ui-icon id="decrease" data-icon="dash-lg" />
