@@ -68,7 +68,7 @@ export class WALLETS extends HTMLElement {
             const seed = await globalThis.sea.work(Access.get("seed"), id)
             const select = () => this.select({ id })
             templates.push(html`
-                <span class="item">
+                <span class="wallet">
                     <input id="i${id}" type="radio" name="wallet" value="${id}" ${id === this.id ? "checked" : ""} />
                     <label
                         for="i${id}"

@@ -23,7 +23,7 @@ export const styles = css`
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(var(--icon-md), 1fr));
             gap: var(--space);
-            .item {
+            .wallet {
                 width: var(--icon-md);
                 max-width: var(--icon-md);
                 aspect-ratio: 1 / 1;

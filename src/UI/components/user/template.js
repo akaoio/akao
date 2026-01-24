@@ -7,7 +7,7 @@ export const template = html`
     ${styles}
     <div class="user">
         <ui-icon data-icon="person" />
-        <button class="icon identicon"><ui-identicon data-size="7" /></button>
+        <button type="button" class="icon identicon"><ui-identicon data-size="7" /></button>
     </div>
 `
 

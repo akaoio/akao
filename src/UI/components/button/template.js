@@ -4,7 +4,7 @@ import "/UI/components/svg/index.js"
 
 const template = html`
     ${styles}
-    <button>
+    <button type="button">
         <ui-svg class="icon" id="left" />
         <slot></slot>
         <ui-svg class="icon" id="right" />

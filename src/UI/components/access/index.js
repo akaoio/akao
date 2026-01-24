@@ -10,11 +10,14 @@ export class ACCESS extends HTMLElement {
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.subscriptions = []
+        this.next = this.next.bind(this)
+        this.checkpoint = this.checkpoint.bind(this)
+        this.show = this.show.bind(this)
         this.signupScreen = this.signupScreen.bind(this)
         this.unauthenticated = this.unauthenticated.bind(this)
         this.signup = this.signup.bind(this)
         this.signin = this.signin.bind(this)
-        this.next = this.next.bind(this)
+        this.sign = this.sign.bind(this)
     }
 
     connectedCallback() {
@@ -32,11 +35,7 @@ export class ACCESS extends HTMLElement {
             () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signup),
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signin)
         )
-
-        this.form.querySelectorAll("input").forEach((input) => {
-            Context.on(["dictionary", input.name], [input, "placeholder"])
-            this.subscriptions.push(() => Context.off(["dictionary", input.name], [input, "placeholder"]))
-        })
+        this.form.querySelectorAll("input[type=\"text\"]").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
     }
 
     disconnectedCallback() {
