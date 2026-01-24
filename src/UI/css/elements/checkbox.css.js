@@ -20,6 +20,7 @@ export const styles = css`
             height: var(--size);
             margin: 0;
             border: none;
+            cursor: pointer;
 
             &::before {
                 content: "";
@@ -48,6 +49,9 @@ export const styles = css`
 
             &:hover {
                 border: none;
+                &::before {
+                    border: var(--border-accent);
+                }
             }
         }
     }

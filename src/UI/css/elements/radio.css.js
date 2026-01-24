@@ -20,6 +20,7 @@ export const styles = css`
             height: var(--size);
             margin: 0;
             border: none;
+            cursor: pointer;
 
             &::before {
                 content: "";
@@ -39,10 +40,6 @@ export const styles = css`
                 border-radius: 50%;
             }
 
-            &:hover {
-                border: none;
-            }
-
             &:checked {
                 border: none;
                 &::before {
@@ -50,6 +47,13 @@ export const styles = css`
                 }
                 &::after {
                     background: var(--background-accent);
+                }
+            }
+
+            &:hover {
+                border: none;
+                &::before {
+                    border: var(--border-accent);
                 }
             }
         }
