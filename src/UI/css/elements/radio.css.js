@@ -28,7 +28,7 @@ export const styles = css`
                 width: 100%;
                 height: 100%;
                 border: var(--border);
-                box-sizing: inset;
+                box-sizing: border-box;
                 border-radius: 50%;
             }
 
