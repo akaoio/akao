@@ -25,6 +25,12 @@ export async function generateRoutes(locales, items, tags, indexContent) {
                 path: [...paths.build.root, locale, "tag", tag, "index.html"],
                 label: `/${locale}/tag/${tag}`
             })
+
+        // Add test route
+        routes.push({
+            path: [...paths.build.root, locale, "test", "index.html"],
+            label: `/${locale}/test`
+        })
     }
 
     for (const route of routes) await write(route.path, indexContent)

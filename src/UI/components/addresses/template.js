@@ -12,29 +12,35 @@ export const template = html`
     </header>
     <div id="addresses"></div>
     <form id="address-form">
-        <label>
-            <input type="checkbox" name="billingAddress" />
-            <ui-context data-key="dictionary.billingAddress" />
-        </label>
-        <label>
-            <input type="checkbox" name="shippingAddress" />
-            <ui-context data-key="dictionary.shippingAddress" />
-        </label>
+        <div class="inputs">
+            <label>
+                <input type="checkbox" name="billingAddress" />
+                <ui-context data-key="dictionary.billingAddress" />
+            </label>
+            <label>
+                <input type="checkbox" name="shippingAddress" />
+                <ui-context data-key="dictionary.shippingAddress" />
+            </label>
+        </div>
         <input type="text" name="company" />
-        <input type="text" name="firstName" required />
-        <input type="text" name="lastName" required />
-        <label>
-            <input type="radio" name="gender" value="male" required />
-            <ui-context data-key="dictionary.male" />
-        </label>
-        <label>
-            <input type="radio" name="gender" value="female" required />
-            <ui-context data-key="dictionary.female" />
-        </label>
-        <label>
-            <input type="radio" name="gender" value="other" required />
-            <ui-context data-key="dictionary.other" />
-        </label>
+        <div class="inputs">
+            <input type="text" name="firstName" required />
+            <input type="text" name="lastName" required />
+        </div>
+        <div class="inputs">
+            <label>
+                <input type="radio" name="gender" value="male" required />
+                <ui-context data-key="dictionary.male" />
+            </label>
+            <label>
+                <input type="radio" name="gender" value="female" required />
+                <ui-context data-key="dictionary.female" />
+            </label>
+            <label>
+                <input type="radio" name="gender" value="other" required />
+                <ui-context data-key="dictionary.other" />
+            </label>
+        </div>
         <select name="country" required></select>
         <input type="text" name="postalCode" required />
         <input type="text" name="addressLine1" required />

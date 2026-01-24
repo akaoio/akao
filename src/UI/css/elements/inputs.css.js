@@ -2,7 +2,7 @@ import { css } from "/core/UI.js"
 
 export const styles = css`
     :host {
-        .buttons {
+        .inputs {
             display: flex;
             justify-content: space-between;
             align-items: auto;
@@ -11,7 +11,6 @@ export const styles = css`
                 flex-grow: 1;
                 box-sizing: border-box;
                 width: 50%;
-                text-align: center;
             }
         }
     }
