@@ -5,6 +5,7 @@ export const styles = css`
         ui-modal {
             section {
                 display: flex;
+                flex-direction: column;
                 align-items: center;
                 gap: var(--space);
                 ui-identicon {
