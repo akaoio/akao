@@ -30,6 +30,7 @@
     "serve": "node server.js",
     "geo:download": "node geo.js --download",
     "geo:build": "node geo.js --build",
+    "geo:rebuild-children": "node geo.js --rebuild-children",
     "format": "prettier --write \"src/**/*.js\"",
     "lint": "eslint \"src/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.js\" --fix"

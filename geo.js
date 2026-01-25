@@ -6,10 +6,10 @@ import { load, dir, exist, isDirectory } from "./src/core/FS.js"
 import DB from "./src/core/DB.js"
 
 const args = process.argv.slice(2)
-const action = args.includes("--build") ? "build" : args.includes("--download") ? "download" : null
+const action = args.includes("--build") ? "build" : args.includes("--download") ? "download" : args.includes("--rebuild-children") ? "rebuild-children" : null
 
 if (!action) {
-    console.error("Usage: node geo.js --download | node geo.js --build")
+    console.error("Usage: node geo.js --download | node geo.js --build | node geo.js --rebuild-children")
     process.exit(1)
 }
 
@@ -89,6 +89,196 @@ async function generateGeoDirectoryHashes(path = [], depth = 0) {
     childHashes.length = 0
 
     return hashCount
+}
+
+// ====================== REBUILD CHILDREN RELATIONSHIPS ======================
+async function rebuildChildrenRelationships() {
+    console.log("Rebuilding children relationships from allCountries.txt...\n")
+    
+    const allCountriesPath = "./geo/allCountries.txt"
+    
+    if (!existsSync(allCountriesPath)) {
+        console.error("Error: allCountries.txt not found.")
+        process.exit(1)
+    }
+    
+    // ====================== STEP 1: BUILD ADMIN INDEX ======================
+    console.log("Pass 1/2: Building admin feature index...")
+    let adminIndex = new Map()
+    let lineCount = 0
+
+    const rl1 = createInterface({
+        input: createReadStream(allCountriesPath),
+        crlfDelay: Infinity
+    })
+
+    for await (const line of rl1) {
+        if (!line.trim()) continue
+        
+        const fields = line.split("\t")
+        if (fields.length < 19) continue
+        
+        const featureCode = fields[7]
+        const isAdmin = featureCode === "PCLI" || featureCode.startsWith("PCL") || /^ADM[1-5]$/.test(featureCode)
+        
+        if (isAdmin) {
+            const id = parseInt(fields[0])
+            const countryCode = fields[8]
+            // Treat "00" and whitespace as empty for admin levels
+            const admin1 = (fields[10] && fields[10] !== "00") ? fields[10] : ""
+            const admin2 = (fields[11] && fields[11] !== "00") ? fields[11] : ""
+            const admin3 = (fields[12] && fields[12] !== "00") ? fields[12] : ""
+            const admin4 = (fields[13] && fields[13] !== "00") ? fields[13] : ""
+        
+            const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|${featureCode}`
+            adminIndex.set(key, id)
+        }
+        
+        lineCount++
+        if (lineCount % 100000 === 0) {
+            console.log(`  Indexed ${lineCount.toLocaleString()} records...`)
+        }
+    }
+    
+    console.log(`✓ Indexed ${adminIndex.size.toLocaleString()} admin features from ${lineCount.toLocaleString()} records\n`)
+    
+    // ====================== STEP 2: BUILD CHILDREN MAP ======================
+    console.log("Pass 2/2: Mapping parent-child relationships...")
+    const childrenMap = new Map()
+    let relationCount = 0
+    
+    const rl3 = createInterface({
+        input: createReadStream(allCountriesPath),
+        crlfDelay: Infinity
+    })
+    
+    // Build children map
+    let processedRelations = 0
+    for await (const line of rl3) {
+        if (!line.trim()) continue
+        
+        const fields = line.split("\t")
+        if (fields.length < 19) continue
+        
+        processedRelations++
+        const id = parseInt(fields[0])
+        const featureCode = fields[7]
+        const countryCode = fields[8]
+        const admin1 = fields[10]
+        const admin2 = fields[11]
+        const admin3 = fields[12]
+        const admin4 = fields[13]
+        
+        // Find parent ID (same logic as Pass 2)
+        let parent = null
+        
+        if (featureCode === "ADM1") {
+            const key = `${countryCode}|||||PCLI`
+            parent = adminIndex.get(key)
+            if (!parent) {
+                for (const [k, v] of adminIndex.entries()) {
+                    if (k.startsWith(`${countryCode}|||||PCL`)) {
+                        parent = v
+                        break
+                    }
+                }
+            }
+        } else if (featureCode === "ADM2") {
+            const key = `${countryCode}|${admin1}||||ADM1`
+            parent = adminIndex.get(key)
+        } else if (featureCode === "ADM3") {
+            const key = `${countryCode}|${admin1}|${admin2}|||ADM2`
+            parent = adminIndex.get(key)
+        } else if (featureCode === "ADM4") {
+            const key = `${countryCode}|${admin1}|${admin2}|${admin3}||ADM3`
+            parent = adminIndex.get(key)
+        } else if (featureCode === "ADM5") {
+            const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
+            parent = adminIndex.get(key)
+        } else if (/^ADM[1-5]$/.test(featureCode)) {
+            // Only set parent for administrative features, not terrain/water/etc
+            if (admin4) {
+                const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
+                parent = adminIndex.get(key)
+            }
+            if (!parent && admin3) {
+                const key = `${countryCode}|${admin1}|${admin2}|${admin3}||ADM3`
+                parent = adminIndex.get(key)
+            }
+            if (!parent && admin2) {
+                const key = `${countryCode}|${admin1}|${admin2}|||ADM2`
+                parent = adminIndex.get(key)
+            }
+            if (!parent && admin1) {
+                const key = `${countryCode}|${admin1}||||ADM1`
+                parent = adminIndex.get(key)
+            }
+            if (!parent) {
+                const key = `${countryCode}|||||PCLI`
+                parent = adminIndex.get(key)
+                if (!parent) {
+                    for (const [k, v] of adminIndex.entries()) {
+                        if (k.startsWith(`${countryCode}|||||PCL`)) {
+                            parent = v
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Map children for PCLI and PCL countries (they have no parent but can have children)
+        if (featureCode === "PCLI" || featureCode.startsWith("PCL")) {
+            if (!childrenMap.has(id)) {
+                childrenMap.set(id, [])
+            }
+        }
+        
+        if (parent) {
+            if (!childrenMap.has(parent)) {
+                childrenMap.set(parent, [])
+            }
+            childrenMap.get(parent).push(id)
+            relationCount++
+        }
+        
+        // Show progress every 100k records
+        if (processedRelations % 100000 === 0) {
+            console.log(`  Processed ${processedRelations.toLocaleString()} records | Mapped ${relationCount.toLocaleString()} relationships...`)
+        }
+    }
+    
+    console.log(`✓ Mapped ${relationCount.toLocaleString()} parent-child relationships for ${childrenMap.size.toLocaleString()} parents\n`)
+    
+    // ====================== STEP 3: UPDATE FILES WITH CHILDREN ======================
+    console.log("Updating parent files with children...")
+    let updatedCount = 0
+    
+    for (const [parentId, children] of childrenMap.entries()) {
+        const pathSegments = DB.path(parentId)
+        const filename = pathSegments[pathSegments.length - 1] + ".json"
+        const filePath = ["build", "geo", ...pathSegments.slice(0, -1), filename]
+        const fullPath = "./" + filePath.join("/")
+        
+        if (existsSync(fullPath)) {
+            try {
+                const content = readFileSync(fullPath, "utf8")
+                const record = JSON.parse(content)
+                record.children = children
+                await write(filePath, record)
+                updatedCount++
+                
+                if (updatedCount % 10000 === 0) {
+                    console.log(`  Updated ${updatedCount.toLocaleString()} parent files...`)
+                }
+            } catch (error) {
+                console.error(`Error updating parent ${parentId}:`, error.message)
+            }
+        }
+    }
+    
+    console.log(`✓ Updated ${updatedCount.toLocaleString()} parent files with children\n`)
+    console.log("✅ Children relationships rebuilt!")
 }
 
 // ====================== DOWNLOAD ACTION ======================
@@ -314,10 +504,11 @@ if (action === "build") {
             if (isAdmin) {
                 const id = parseInt(fields[0])
                 const countryCode = fields[8]
-                const admin1 = fields[10]
-                const admin2 = fields[11]
-                const admin3 = fields[12]
-                const admin4 = fields[13]
+                // Treat "00" and whitespace as empty for admin levels
+                const admin1 = (fields[10] && fields[10] !== "00") ? fields[10] : ""
+                const admin2 = (fields[11] && fields[11] !== "00") ? fields[11] : ""
+                const admin3 = (fields[12] && fields[12] !== "00") ? fields[12] : ""
+                const admin4 = (fields[13] && fields[13] !== "00") ? fields[13] : ""
             
                 const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|${featureCode}`
                 adminIndex.set(key, id)
@@ -410,7 +601,8 @@ if (action === "build") {
         } else if (featureCode === "ADM5") {
             const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
             parent = adminIndex.get(key)
-        } else if (featureCode !== "PCLI" && !featureCode.startsWith("PCL")) {
+        } else if (/^ADM[1-5]$/.test(featureCode)) {
+            // Only set parent for administrative features, not terrain/water/etc
             if (admin4) {
                 const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
                 parent = adminIndex.get(key)
@@ -568,7 +760,8 @@ if (action === "build") {
         } else if (featureCode === "ADM5") {
             const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
             parent = adminIndex.get(key)
-        } else if (featureCode !== "PCLI" && !featureCode.startsWith("PCL")) {
+        } else if (/^ADM[1-5]$/.test(featureCode)) {
+            // Only set parent for administrative features, not terrain/water/etc
             if (admin4) {
                 const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|ADM4`
                 parent = adminIndex.get(key)
@@ -596,6 +789,13 @@ if (action === "build") {
                         }
                     }
                 }
+            }
+        }
+        
+        // Map children for PCLI and PCL countries (they have no parent but can have children)
+        if (featureCode === "PCLI" || featureCode.startsWith("PCL")) {
+            if (!childrenMap.has(id)) {
+                childrenMap.set(id, [])
             }
         }
         
@@ -653,4 +853,9 @@ if (action === "build") {
     console.log(`✓ Generated ${dirHashCount.toLocaleString()} directory hash files\n`)
     
     console.log("\n✅ Geo build complete! Data written to build/geo/")
+}
+
+// ====================== REBUILD CHILDREN ACTION ======================
+if (action === "rebuild-children") {
+    await rebuildChildrenRelationships()
 }
