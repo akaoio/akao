@@ -1,90 +1,33 @@
-import template from "./template.js"
-import States from "/core/States.js"
-import { html, render } from "/core/UI.js"
+import { render } from "/core/UI.js"
+import { template } from "./template.js"
 
 export class SELECT extends HTMLElement {
     constructor() {
         super()
-        this.states = new States({ options: [], selected: null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
-        this.show = this.show.bind(this)
-        this.close = this.close.bind(this)
-        this.select = this.select.bind(this)
-        this.render = this.render.bind(this)
     }
 
     static get observedAttributes() {
-        return ["data-name", "data-selected"]
+        return ["data-name", "data-placeholder", "data-required"]
     }
 
     attributeChangedCallback(name, last, value) {
         if (last === value) return
-        this.states.set({ [name.replace("data-", "")]: value })
+        if (name === "data-name") this.select.setAttribute("name", value)
+        else if (name === "data-placeholder") this.placeholder.dataset.key = value
+        else if (name === "data-required") {
+            if (value !== null) this.select.setAttribute("required", "")
+            else this.select.removeAttribute("required")
+        }
     }
 
     connectedCallback() {
-        this.subscriptions.push(this.states.on("options", this.render))
-        this.modal = this.shadowRoot.querySelector("ui-modal")
-        this.modal.dataset.header = this.dataset.header
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
-    }
-
-    show() {
-        this.modal.showModal()
-    }
-
-    close() {
-        this.modal.close()
-    }
-
-    get name() {
-        return this.states.get("name") || this.dataset.name
-    }
-
-    get selected() {
-        return this.states.get("selected") || this.dataset.selected
-    }
-
-    select(value) {
-        this.states.set({ selected: value })
-        this.dataset.selected = value
-        if (typeof this.callback == "function") this.callback(value)
-    }
-
-    render() {
-        const name = this.states.get("name") || this.dataset.name
-
-        // Create single template with all options
-        const options = this.states
-            .get("options")
-            .filter((option) => {
-                // Only process options that don't exist yet
-                const exist = this.modal.querySelector(`input[type="radio"][id="${option.value}"]`)
-                return !exist && option.value
-            })
-            .map((option) => {
-                const select = () => {
-                    this.select(option.value)
-                    this.modal.close()
-                }
-                return html`
-                    <input id="${option.value}" type="radio" name="${name}" value="${option.value}" ${option.value == this.selected ? "checked" : ""} />
-                    <label
-                        for="${option.value}"
-                        ${({ element }) => {
-                            element.addEventListener("click", select)
-                            this.subscriptions.push(() => element.removeEventListener("click", select))
-                        }}>
-                        ${option.label}
-                    </label>
-                `
-            })
-        render(options, this.modal)
+        this.select = this.shadowRoot.querySelector("select")
+        this.placeholder = this.shadowRoot.querySelector("#placeholder")
+        if (this.dataset.required) this.select.setAttribute("required", "")
+        if (this.dataset.name) this.select.setAttribute("name", this.dataset.name)
+        if (this.dataset.placeholder) this.placeholder.dataset.key = this.dataset.placeholder
     }
 }
 

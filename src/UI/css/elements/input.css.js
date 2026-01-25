@@ -6,6 +6,7 @@ export const styles = css`
             padding: var(--space);
             box-sizing: border-box;
             border: var(--border);
+            border-radius: var(--radius);
             background: var(--background);
             color: var(--color);
             width: 100%;

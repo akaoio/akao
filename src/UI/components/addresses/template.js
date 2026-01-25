@@ -1,6 +1,7 @@
 import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 import "/UI/components/button/index.js"
+import "/UI/components/select/index.js"
 
 export const template = html`
     ${styles}
@@ -41,7 +42,7 @@ export const template = html`
                 <ui-context data-key="dictionary.other" />
             </label>
         </div>
-        <select name="country" required></select>
+        <ui-select name="country" required />
         <input type="text" name="postalCode" required />
         <input type="text" name="addressLine1" required />
         <input type="text" name="addressLine2" required />

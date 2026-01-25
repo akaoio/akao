@@ -5,13 +5,15 @@ import buttons from "/css/elements/buttons.css.js"
 import inputs from "/css/elements/inputs.css.js"
 import checkbox from "/css/elements/checkbox.css.js"
 import radio from "/css/elements/radio.css.js"
+import select from "/css/elements/select.css.js"
 
 export const styles = css`
     ${form}
     ${checkbox}
     ${radio}
-    ${inputs}
+    ${select}
     ${input}
+    ${inputs}
     ${buttons}
     :host {
         width: 100%;

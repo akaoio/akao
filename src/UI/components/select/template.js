@@ -1,11 +1,16 @@
-import "/UI/components/modal/index.js"
-import "/UI/components/context/index.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
+import "/UI/components/context/index.js"
 
 export const template = html`
     ${styles}
-    <ui-modal />
+    <slot></slot>
+    <select>
+        <selectedcontent></selectedcontent>
+        <option disabled selected>
+            <ui-context id="placeholder" />
+        </option>
+    </select>
 `
 
 export default template

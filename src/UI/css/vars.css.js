@@ -104,7 +104,7 @@ export const styles = css`
         --radius-sm: var(--space);
         --radius-md: var(--space-2);
         --radius-lg: var(--space-3);
-        --radius: var(--radius-sm);
+        --radius: 0;
 
         /* Icon Size */
         --icon-sm: var(--unit-5);

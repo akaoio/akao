@@ -13,7 +13,7 @@ export class LOCALES extends HTMLElement {
 
     connectedCallback() {
         const button = this.shadowRoot.querySelector("ui-icon")
-        const select = this.shadowRoot.querySelector("ui-select")
+        const select = this.shadowRoot.querySelector("ui-picker")
 
         button.addEventListener("click", select.show)
         this.subscriptions.push(() => button.removeEventListener("click", select.show))

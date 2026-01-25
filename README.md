@@ -232,7 +232,7 @@ The build process is a pure Node.js script (`build.js`) that:
 - `<ui-a>` - Custom anchor with router integration
 
 **UI Controls:**
-- `<ui-button>`, `<ui-select>`, `<ui-modal>`, `<ui-icon>` - Form elements
+- `<ui-button>`, `<ui-picker>`, `<ui-modal>`, `<ui-icon>` - Form elements
 - `<ui-context>` - Dynamic text from Context state
 - `<ui-loading>` - Loading overlay
 

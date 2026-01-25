@@ -12,7 +12,7 @@ export class FIATS extends HTMLElement {
 
     connectedCallback() {
         const span = this.shadowRoot.querySelector("span")
-        const select = this.shadowRoot.querySelector("ui-select")
+        const select = this.shadowRoot.querySelector("ui-picker")
 
         // Set initial fiat symbol
         this.subscription = Context.on(["fiat", "symbol"], [span, "innerText"])
