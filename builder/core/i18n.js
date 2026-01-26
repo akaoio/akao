@@ -1,4 +1,4 @@
-import { write, load, dir } from "../FS.js"
+import { write, load, dir } from "../../src/core/FS.js"
 import { paths } from "./config.js"
 
 // ============ i18n Processing ============

@@ -1,4 +1,4 @@
-import { color, icons } from "../Colors.js"
+import { color, icons } from "../../src/core/Colors.js"
 
 // ============ Build Logger ============
 

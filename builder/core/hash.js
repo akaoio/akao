@@ -1,5 +1,5 @@
-import { sha256 } from "../Utils.js"
-import { write, load, dir, exist, isDirectory, join } from "../FS.js"
+import { sha256 } from "../../src/core/Utils.js"
+import { write, load, dir, exist, isDirectory, join } from "../../src/core/FS.js"
 
 // ============ Hash Generation ============
 
