@@ -1,11 +1,12 @@
 import States from "/core/States.js"
-import { render } from "/core/UI.js"
+import { html, render } from "/core/UI.js"
 import { template } from "./template.js"
 
 export class SELECT extends HTMLElement {
-    constructor() {
+    constructor(props = {}) {
         super()
-        this.states = new States({ options: [], selected: null })
+        this.props = props || {}
+        this.states = new States({ options: props?.options || [], selected: props?.selected || null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.subscriptions = []
@@ -18,8 +19,10 @@ export class SELECT extends HTMLElement {
 
     attributeChangedCallback(name, last, value) {
         if (last === value) return
+        this.select = this.select || this.shadowRoot.querySelector("select")
+        this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")
         if (name === "data-name") this.select.setAttribute("name", value)
-        else if (name === "data-placeholder") this.placeholder.dataset.key = value
+        else if (name === "data-placeholder") this.placeholder.forEach(e => e.dataset.key = value)
         else if (name === "data-required") {
             if (value !== null) this.select.setAttribute("required", "")
             else this.select.removeAttribute("required")
@@ -31,12 +34,14 @@ export class SELECT extends HTMLElement {
     }
 
     connectedCallback() {
-        this.select = this.shadowRoot.querySelector("select")
-        this.placeholder = this.shadowRoot.querySelector("#placeholder")
+        this.select = this.select || this.shadowRoot.querySelector("select")
+        this.select.setAttribute("name", this.props.name || this.dataset.name)
+        this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")
         if (this.dataset.required) this.select.setAttribute("required", "")
         if (this.dataset.name) this.select.setAttribute("name", this.dataset.name)
-        if (this.dataset.placeholder) this.placeholder.dataset.key = this.dataset.placeholder
+        this.placeholder.forEach(e => e.dataset.key = this.props.placeholder || this.dataset.placeholder || "")
         this.subscriptions.push(this.states.on("options", this.render))
+        this.render()
     }
 
     disconnectedCallback() {

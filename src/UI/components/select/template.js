@@ -8,7 +8,7 @@ export const template = html`
     <select>
         <selectedcontent></selectedcontent>
         <option disabled selected>
-            <ui-context id="placeholder" />
+            <ui-context class="placeholder" />
         </option>
     </select>
 `

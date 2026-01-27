@@ -23,17 +23,23 @@ export const styles = css`
             &:focus {
                 border: var(--border-accent);
             }
+            option {
+                background: var(--background);
+                color: var(--color);
+            }
             option, selectedcontent {
                 display: flex;
                 width: 100%;
                 padding: var(--space);
                 border: none;
-                background: var(--background);
-                color: var(--color);
                 box-sizing: border-box;
+                &::checkmark {
+                    display: none;
+                }
             }
-            option::checkmark {
-                display: none;
+            option:hover, option:checked, selectedcontent {
+                background: var(--background-inverted);
+                color: var(--color-inverted);
             }
         }
     }

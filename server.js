@@ -19,7 +19,7 @@ watcher.on("change", (path) => {
     console.log(`🔨 File changed: ${path}, rebuilding...`)
     buildInProgress = true
     
-    const build = spawn("npm", ["run", "build"], { stdio: "inherit" })
+    const build = spawn("npm", ["run", "build:core"], { stdio: "inherit" })
     build.on("close", (code) => {
         buildInProgress = false
         if (code === 0) {

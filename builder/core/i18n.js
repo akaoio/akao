@@ -3,7 +3,15 @@ import { paths } from "./config.js"
 
 // ============ i18n Processing ============
 
-export async function processI18n(locales) {
+export async function processI18n(locales, outputBase = "build") {
+    const dynamicPaths = outputBase === "build" ? paths : {
+        ...paths,
+        build: {
+            ...paths.build,
+            locales: [outputBase]
+        }
+    }
+    
     const i18nFiles = await dir(paths.src.i18n)
     const localeData = Object.fromEntries(locales.map((l) => [l, {}]))
 
@@ -16,7 +24,7 @@ export async function processI18n(locales) {
 
     for (const locale of locales) {
         const sorted = Object.fromEntries(Object.entries(localeData[locale]).sort(([a], [b]) => a.localeCompare(b)))
-        await write([...paths.build.locales, `${locale}.json`], sorted)
+        await write([...dynamicPaths.build.locales, `${locale}.json`], sorted)
     }
 
     return locales.length

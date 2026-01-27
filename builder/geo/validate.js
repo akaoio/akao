@@ -453,6 +453,9 @@ export function validateHierarchy(recordsMap) {
     console.log("\n" + "=".repeat(70) + "\n")
 }
 
+// Export individual functions for test.js
+export { validateCountry, loadAllRecordsFromDir as loadAllRecords }
+
 // === CLI execution (when run directly) ===
 if (import.meta.url === `file://${process.argv[1]}`) {
     ;(async () => {
