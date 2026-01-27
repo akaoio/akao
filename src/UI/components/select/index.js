@@ -10,6 +10,7 @@ export class SELECT extends HTMLElement {
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.subscriptions = []
+        this.change = this.change.bind(this)
         this.render = this.render.bind(this)
     }
 
@@ -40,12 +41,20 @@ export class SELECT extends HTMLElement {
         if (this.dataset.required) this.select.setAttribute("required", "")
         if (this.dataset.name) this.select.setAttribute("name", this.dataset.name)
         this.placeholder.forEach(e => e.dataset.key = this.props.placeholder || this.dataset.placeholder || "")
-        this.subscriptions.push(this.states.on("options", this.render))
+        this.select.addEventListener("change", this.change)
+        this.subscriptions.push(
+            this.states.on("options", this.render),
+            () => this.select.removeEventListener("change", this.change)
+        )
         this.render()
     }
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
+    }
+
+    change(event) {
+        if (this.props.change) this.props.change(event)
     }
 
     render() {
