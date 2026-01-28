@@ -35,7 +35,7 @@ export class ACCESS extends HTMLElement {
             () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signup),
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signin)
         )
-        this.form.querySelectorAll("input[type=\"text\"]").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
+        this.form.querySelectorAll("input[type='text']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
     }
 
     disconnectedCallback() {

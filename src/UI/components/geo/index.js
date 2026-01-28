@@ -2,33 +2,34 @@ import { html, render } from "/core/UI.js"
 import States from "/core/States.js"
 import DB from "/core/DB.js"
 import SELECT from "/UI/components/select/index.js"
+import template from "./template.js"
 
 export class GEO extends HTMLElement {
     constructor() {
         super()
-        this.states = new States({ countries: [], country: null })
+        this.states = new States({ id: null, countries: [], country: null })
         this.attachShadow({ mode: "open" })
+        render(template, this.shadowRoot)
         this.render = this.render.bind(this)
         this.create = this.create.bind(this)
         this.subscriptions = []
     }
 
     static get observedAttributes() {
-        return ["data-country", "data-adm1", "data-adm2", "data-adm3", "data-adm4", "data-adm5"]
+        return ["data-id"]
     }
 
     attributeChangedCallback(name, old, value) {
         if (old === value) return
-        const key = name.replace("data-", "")
-        this.states.set({ [key]: value || null })
+        this.states.set({ [name.replace("data-", "")]: Number(value) || null })
         this.render()
     }
 
     async connectedCallback() {
         const countries = await DB.get(["geo", "countries.json"])
-        if (countries) {
-            this.states.set({ countries: Object.values(countries).sort((a, b) => a.name.localeCompare(b.name)) })
-        }
+        if (countries) this.states.set({ countries: Object.values(countries).sort((a, b) => a.name.localeCompare(b.name)).map(country => ({ value: country.id, label: country.name }))})
+        if (!this.states.get("id") && this.dataset.id) this.states.set({ id: this.dataset.id || null })
+        this.subscriptions.push(this.states.on("id", this.render))
         this.render()
     }
 
@@ -45,7 +46,7 @@ export class GEO extends HTMLElement {
                 if ($child) options.push({ value: $child.id, label: $child.name })
             }
         }
-        const select = new SELECT({ 
+        const select = new SELECT({
             name, 
             options, 
             placeholder, 
@@ -69,9 +70,11 @@ export class GEO extends HTMLElement {
         //     })),
         //     placeholder: "dictionary.country"
         // })
-        this.create()
+        // this.create()
         // this.shadowRoot.appendChild(countries)
         // render(geo, this.shadowRoot, { append: true })
+        // console.log("RUNDER", this.states.get("countries"))
+        this.shadowRoot.querySelector("#country").states.set({ options: this.states.get("countries") })
     }
 }
 

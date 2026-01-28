@@ -12,7 +12,7 @@ export class ADDRESSES extends HTMLElement {
 
     connectedCallback() {
         this.form = this.shadowRoot.querySelector("#address-form")
-        this.form.querySelectorAll("input[type=\"text\"], input[type=\"email\"], input[type=\"tel\"]").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
+        this.form.querySelectorAll("input[type='text'], input[type='email'], input[type='tel']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
     }
 }
 
