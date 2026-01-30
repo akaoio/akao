@@ -134,6 +134,7 @@ async function validateCountry(countryCode, records) {
 
     for (const record of countryRecords) {
         const fc = record.featureCode
+        const level = record.level  // Use level field from build
 
         if (/^(PCLI|PCLD|PCLF|PCLIS|PCLIX|PCLS)$/.test(fc)) {
             stats.countries++
@@ -143,7 +144,8 @@ async function validateCountry(countryCode, records) {
             } else {
                 stats.orphans.push(`⚠ Country ${record.name} (${record.id}) has no children`)
             }
-        } else if (fc === "ADM1") {
+        } else if (level === 1) {
+            // All level-1 administrative units (regardless of feature code)
             stats.adm1++
             if (record.parent) {
                 stats.adm1WithParent++
@@ -174,13 +176,14 @@ async function validateCountry(countryCode, records) {
                         })
                     }
                 } else if (!parent.children || !parent.children.includes(record.id)) {
-                    stats.orphans.push(`✗ ADM1 ${record.name} (${record.id}) not listed in parent's children`)
+                    stats.orphans.push(`✗ Level-1 ${record.name} (${record.id}) [${fc}] not listed in parent's children`)
                 }
             } else {
                 stats.adm1Orphans++
-                stats.orphans.push(`✗ ADM1 ${record.name} (${record.id}) has no parent`)
+                stats.orphans.push(`✗ Level-1 ${record.name} (${record.id}) [${fc}] has no parent`)
             }
-        } else if (fc === "ADM2") {
+        } else if (level === 2) {
+            // All level-2 administrative units
             stats.adm2++
             if (record.parent) {
                 stats.adm2WithParent++
@@ -211,12 +214,13 @@ async function validateCountry(countryCode, records) {
                         })
                     }
                 } else if (!parent.children || !parent.children.includes(record.id)) {
-                    stats.orphans.push(`✗ ADM2 ${record.name} (${record.id}) not listed in parent's children`)
+                    stats.orphans.push(`✗ Level-2 ${record.name} (${record.id}) [${fc}] not listed in parent's children`)
                 }
             } else {
                 stats.adm2Orphans++
             }
-        } else if (fc === "ADM3") {
+        } else if (level === 3) {
+            // All level-3 administrative units
             stats.adm3++
             if (record.parent) {
                 const parent = records.get(record.parent)
@@ -246,10 +250,11 @@ async function validateCountry(countryCode, records) {
                         })
                     }
                 } else if (!parent.children || !parent.children.includes(record.id)) {
-                    stats.orphans.push(`✗ ADM3 ${record.name} (${record.id}) not listed in parent's children`)
+                    stats.orphans.push(`✗ Level-3 ${record.name} (${record.id}) [${fc}] not listed in parent's children`)
                 }
             }
-        } else if (fc === "ADM4") {
+        } else if (level === 4) {
+            // All level-4 administrative units
             stats.adm4++
             if (record.parent) {
                 const parent = records.get(record.parent)
@@ -279,10 +284,11 @@ async function validateCountry(countryCode, records) {
                         })
                     }
                 } else if (!parent.children || !parent.children.includes(record.id)) {
-                    stats.orphans.push(`✗ ADM4 ${record.name} (${record.id}) not listed in parent's children`)
+                    stats.orphans.push(`✗ Level-4 ${record.name} (${record.id}) [${fc}] not listed in parent's children`)
                 }
             }
-        } else if (fc === "ADM5") {
+        } else if (level === 5) {
+            // All level-5 administrative units
             stats.adm5++
         }
     }
@@ -405,24 +411,27 @@ export function validateHierarchy(recordsMap) {
     // Collect stats
     for (const record of recordsMap.values()) {
         const fc = record.featureCode
+        const level = record.level
 
         if (COUNTRY_FEATURE_REGEX.test(fc)) {
             stats.countries++
             const children = childrenMap.get(record.id) || []
             if (children.length > 0) stats.countriesWithChildren++
-        } else if (fc === "ADM1") {
+        } else if (level === 1) {
+            // All level-1 administrative units
             stats.adm1++
             if (record.parent) stats.adm1WithParent++
             else stats.adm1Orphans++
-        } else if (fc === "ADM2") {
+        } else if (level === 2) {
+            // All level-2 administrative units
             stats.adm2++
             if (record.parent) stats.adm2WithParent++
             else stats.adm2Orphans++
-        } else if (fc === "ADM3") {
+        } else if (level === 3) {
             stats.adm3++
-        } else if (fc === "ADM4") {
+        } else if (level === 4) {
             stats.adm4++
-        } else if (fc === "ADM5") {
+        } else if (level === 5) {
             stats.adm5++
         }
     }

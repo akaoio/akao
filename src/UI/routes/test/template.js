@@ -7,7 +7,7 @@ export const template = html`
     <layout-main>
         <h1><ui-context data-key="dictionary.test" /></h1>
         <div>
-            <ui-addresses></ui-addresses>
+            <ui-geo data-id="2483743" />
         </div>
     </layout-main>
 `

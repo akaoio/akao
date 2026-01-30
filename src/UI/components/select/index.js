@@ -54,6 +54,8 @@ export class SELECT extends HTMLElement {
     }
 
     change(event) {
+        console.log("CHANGE", event.target.value)
+        this.states.set({ selected: event.target.value })
         if (this.props.change) this.props.change(event)
     }
 

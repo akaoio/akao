@@ -10,6 +10,7 @@ export class GEO extends HTMLElement {
         this.states = new States({ id: null, countries: [], country: null, current: null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this.create = this.create.bind(this)
         this.render = this.render.bind(this)
         this.subscriptions = []
     }
@@ -31,33 +32,59 @@ export class GEO extends HTMLElement {
         country.props.change = event => this.states.set({ id: Number(event.target.value), current: country })
         if (!this.states.get("id") && this.dataset.id) this.states.set({ id: Number(this.dataset.id) })
         this.subscriptions.push(this.states.on("id", this.render))
-        this.render()
+        // this.render()
     }
 
-    async render() {
-        if (!this.states.get("id")) return
-        const id = DB.path(this.states.get("id"))
-        const data = await DB.get(["geo", ...id.with(-1, `${id.at(-1)}.json`)])
-        console.log(data)
-        if (data?.children.length) {
-            let options = []
+    async create({ id, selected } = {}) {
+        if (!id) return
+        const path = DB.path(id)
+        const data = await DB.get(["geo", ...path.with(-1, `${path.at(-1)}.json`)])
+        if (data?.children?.length) {
+            const options = []
             for (const child of data.children) {
                 const $id = DB.path(child)
                 const $data = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
                 if ($data) options.push({ value: $data.id, label: $data.name })
             }
             const select = new SELECT({
-                name: "", 
-                options, 
-                placeholder: "dictionary.area", 
-                selected: null, 
+                name: `level-${data.level + 1}`,
+                options,
+                placeholder: "dictionary.area",
+                selected,
                 change: event => this.states.set({ id: Number(event.target.value), current: select })
             })
+            return select
+        }
+    }
+
+    async render() {
+        if (!this.states.get("id")) return
+        const id = DB.path(this.states.get("id"))
+        const data = await DB.get(["geo", ...id.with(-1, `${id.at(-1)}.json`)])
+        if (data?.children.length) {
+            const select = await this.create({ id: this.states.get("id") })
             while (this.states.get("current")?.nextSibling) this.states.get("current")?.nextSibling.remove()
             this.states.get("current").after(select)
         }
         if (data?.parent) {
-            console.log("Parent:", data.parent)
+            let parent = this.states.get("current")?.previousElementSibling
+            if (!parent || Number(parent.states.get("selected")) !== Number(data.parent)) {
+                let element = await this.create({ id: data.parent, selected: data.id })
+                this.shadowRoot.appendChild(element)
+                let current = element
+                let $data = data
+                while ($data?.parent) {
+                    const $id = DB.path($data.parent)
+                    const $parent = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
+                    if ($parent) {
+                        element = await this.create({ id: $parent.id, selected: $data.id })
+                        this.shadowRoot.insertBefore(element, current)
+                        current = element
+                        if ($data?.parent) $data = $parent
+                    }
+                }
+                this.shadowRoot.querySelector("#country").dataset.selected = $data.id
+            }
         }
     }
 }

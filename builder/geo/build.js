@@ -163,6 +163,7 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
     // adminMeta keeps lightweight info for parent-country validation
     let adminMeta = new Map()
     let adminIndex = new Map()
+    let countryIds = new Map()  // Map countryCode -> country ID
     let processedCount = 0
     let writtenCount = 0
     let skippedHistorical = 0
@@ -201,6 +202,11 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
             const key = `${countryCode}|${admin1}|${admin2}|${admin3}|${admin4}|${featureCode}`
             adminIndex.set(key, id)
             adminMeta.set(id, { key, featureCode, countryCode, admin1, admin2, admin3, admin4 })
+            
+            // Store country IDs for quick lookup
+            if (COUNTRY_FEATURE_REGEX.test(featureCode)) {
+                countryIds.set(countryCode, id)
+            }
 
             lineCount++
             if (lineCount % 100000 === 0) {
@@ -220,7 +226,8 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
                 admin3: meta.admin3,
                 admin4: meta.admin4,
                 adminIndex,
-                hierarchyMap
+                hierarchyMap,
+                countryIds
             })
 
             if (!parentId) continue
@@ -316,20 +323,14 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
 
             let level = 0
             if (COUNTRY_FEATURE_REGEX.test(featureCode)) level = 0
-            else if (featureCode === "ADM1") level = 1
-            else if (featureCode === "ADM2") level = 2
-            else if (featureCode === "ADM3") level = 3
-            else if (featureCode === "ADM4") level = 4
-            else if (featureCode === "ADM5") level = 5
-            else {
-                if (admin4) level = 5
-                else if (admin3) level = 4
-                else if (admin2) level = 3
-                else if (admin1) level = 2
-                else level = 1
-            }
+            else if (!admin1) level = 1  // Level 1: directly under country (no admin1)
+            else if (!admin2) level = 2  // Level 2: has admin1 but no admin2
+            else if (!admin3) level = 3  // Level 3: has admin2 but no admin3
+            else if (!admin4) level = 4  // Level 4: has admin3 but no admin4
+            else level = 5               // Level 5: has all admin fields
 
-            const parent = resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap })
+            let parent = resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap, countryIds })
+            if (parent === id) parent = null
 
             // If parent was filtered out (historical or cross-country), skip this record
             if (parent && !adminMeta.has(parent)) {
@@ -429,7 +430,8 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
             const admin3 = fields[12]
             const admin4 = fields[13]
 
-            const parent = resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap })
+            const parent = resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap, countryIds })
+            if (parent === id) continue
 
             if (COUNTRY_FEATURE_REGEX.test(featureCode)) {
                 if (!childrenMap.has(id)) childrenMap.set(id, [])

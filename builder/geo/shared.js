@@ -16,7 +16,7 @@ export function normalizeAdminCodes(fields) {
     }
 }
 
-export function resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap }) {
+export function resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap, countryIds }) {
     const admin1Val = parseAdminField(admin1)
     const admin2Val = parseAdminField(admin2)
     const admin3Val = parseAdminField(admin3)
@@ -29,6 +29,12 @@ export function resolveParent({ featureCode, countryCode, admin1, admin2, admin3
     }
 
     const getCountryParent = () => {
+        // First, try to use countryIds map if available (fastest)
+        if (countryIds && countryIds.has(countryCode)) {
+            return countryIds.get(countryCode)
+        }
+        
+        // Fallback: search adminIndex for country record
         const key = `${countryCode}|||||PCLI`
         let parent = adminIndex.get(key)
         if (!parent) {
@@ -42,7 +48,19 @@ export function resolveParent({ featureCode, countryCode, admin1, admin2, admin3
         return parent || null
     }
 
+    // Country-level features don't have parents
+    if (COUNTRY_FEATURE_REGEX.test(featureCode)) {
+        return null
+    }
+
+    // ADM1 units always have the country as parent
     if (featureCode === "ADM1") {
+        return getCountryParent()
+    }
+
+    // Check if this is a level-1 administrative unit (no admin1 = directly under country)
+    const isLevel1 = !admin1
+    if (isLevel1) {
         return getCountryParent()
     }
 
