@@ -59,26 +59,25 @@ export class GEO extends HTMLElement {
 
     async render() {
         if (!this.states.get("id")) return
+        while (this.states.get("current")?.nextSibling) this.states.get("current")?.nextSibling.remove()
         const id = DB.path(this.states.get("id"))
         const data = await DB.get(["geo", ...id.with(-1, `${id.at(-1)}.json`)])
         if (data?.children.length) {
             const select = await this.create({ id: this.states.get("id") })
-            while (this.states.get("current")?.nextSibling) this.states.get("current")?.nextSibling.remove()
             this.states.get("current").after(select)
         }
         if (data?.parent) {
             let parent = this.states.get("current")?.previousElementSibling
             if (!parent || Number(parent.states.get("selected")) !== Number(data.parent)) {
-                let element = await this.create({ id: data.parent, selected: data.id })
-                this.shadowRoot.appendChild(element)
-                let current = element
                 let $data = data
+                let current
                 while ($data?.parent) {
                     const $id = DB.path($data.parent)
                     const $parent = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
                     if ($parent) {
-                        element = await this.create({ id: $parent.id, selected: $data.id })
-                        this.shadowRoot.insertBefore(element, current)
+                        const element = await this.create({ id: $parent.id, selected: $data.id })
+                        if (this.shadowRoot.querySelectorAll("ui-select:not([id='country'])").length === 0) this.shadowRoot.appendChild(element)
+                        else if (current) current.before(element)
                         current = element
                         if ($data?.parent) $data = $parent
                     }
