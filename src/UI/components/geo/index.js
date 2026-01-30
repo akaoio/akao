@@ -7,11 +7,10 @@ import template from "./template.js"
 export class GEO extends HTMLElement {
     constructor() {
         super()
-        this.states = new States({ id: null, countries: [], country: null })
+        this.states = new States({ id: null, countries: [], country: null, current: null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.render = this.render.bind(this)
-        this.create = this.create.bind(this)
         this.subscriptions = []
     }
 
@@ -26,55 +25,40 @@ export class GEO extends HTMLElement {
     }
 
     async connectedCallback() {
-        const countries = await DB.get(["geo", "countries.json"])
-        if (countries) this.states.set({ countries: Object.values(countries).sort((a, b) => a.name.localeCompare(b.name)).map(country => ({ value: country.id, label: country.name }))})
-        if (!this.states.get("id") && this.dataset.id) this.states.set({ id: this.dataset.id || null })
+        const data = await DB.get(["geo", "countries.json"])
+        const country = this.shadowRoot.querySelector("#country")
+        country.states.set({ options: Object.values(data).sort((a, b) => a.name.localeCompare(b.name)).map(country => ({ value: country.id, label: country.name })) })
+        country.props.change = event => this.states.set({ id: Number(event.target.value), current: country })
+        if (!this.states.get("id") && this.dataset.id) this.states.set({ id: Number(this.dataset.id) })
         this.subscriptions.push(this.states.on("id", this.render))
         this.render()
     }
 
-    async create({ id, name, options = [], placeholder, selected } = {}) {
-        const path = id ? DB.path(id) : ["countries"]
-        const data = await DB.get(["geo", ...path.with(-1, `${path.at(-1)}.json`)])
-        let children = []
-        children = Array.isArray(data) ? data : data?.children || []
-        for (const child of children) {
-            if (typeof child === "object") options.push({ value: child.id, label: child.name })
-            else {
+    async render() {
+        if (!this.states.get("id")) return
+        const id = DB.path(this.states.get("id"))
+        const data = await DB.get(["geo", ...id.with(-1, `${id.at(-1)}.json`)])
+        console.log(data)
+        if (data?.children.length) {
+            let options = []
+            for (const child of data.children) {
                 const $id = DB.path(child)
-                const $child = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
-                if ($child) options.push({ value: $child.id, label: $child.name })
+                const $data = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
+                if ($data) options.push({ value: $data.id, label: $data.name })
             }
+            const select = new SELECT({
+                name: "", 
+                options, 
+                placeholder: "dictionary.area", 
+                selected: null, 
+                change: event => this.states.set({ id: Number(event.target.value), current: select })
+            })
+            while (this.states.get("current")?.nextSibling) this.states.get("current")?.nextSibling.remove()
+            this.states.get("current").after(select)
         }
-        const select = new SELECT({
-            name, 
-            options, 
-            placeholder, 
-            selected, 
-            change: event => {
-                const value = event.target.value
-                this.create({id:value})
-            }
-        })
-        render(select, this.shadowRoot, { append: true })
-        return select
-    }
-
-    render() {
-        // if (!this.states.get("countries")?.length) return
-        // const countries = new SELECT({ 
-        //     name: "country", 
-        //     options: this.states.get("countries")?.map(country => ({
-        //         value: country.code,
-        //         label: country.name
-        //     })),
-        //     placeholder: "dictionary.country"
-        // })
-        // this.create()
-        // this.shadowRoot.appendChild(countries)
-        // render(geo, this.shadowRoot, { append: true })
-        // console.log("RUNDER", this.states.get("countries"))
-        this.shadowRoot.querySelector("#country").states.set({ options: this.states.get("countries") })
+        if (data?.parent) {
+            console.log("Parent:", data.parent)
+        }
     }
 }
 
