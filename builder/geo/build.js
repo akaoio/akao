@@ -285,6 +285,58 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
         }
         console.log("")
 
+        console.log("Pass 1.5/4: Removing non-administrative features...")
+        let deletedCount = 0
+        let skippedDelete = 0
+
+        const rl1b = createInterface({
+            input: createReadStream(allCountriesPath),
+            crlfDelay: Infinity
+        })
+
+        for await (const line of rl1b) {
+            if (!line.trim()) continue
+            const fields = line.split("\t")
+            if (fields.length < 19) continue
+            if (isTestMode && fields[8] !== testCountry) continue
+
+            const featureCode = fields[7]
+            const isAdmin = ADMIN_FEATURE_REGEX.test(featureCode)
+            
+            // Only delete non-admin features
+            if (isAdmin) continue
+
+            const id = parseInt(fields[0], 10)
+            const pathSegments = DB.path(id)
+            const filename = pathSegments[pathSegments.length - 1] + ".json"
+            const hashFilename = pathSegments[pathSegments.length - 1] + ".hash"
+            const filePath = [outputBase, "geo", ...pathSegments.slice(0, -1), filename]
+            const hashFilePath = [outputBase, "geo", ...pathSegments.slice(0, -1), hashFilename]
+            const fullPath = "./" + filePath.join("/")
+            const fullHashPath = "./" + hashFilePath.join("/")
+
+            try {
+                if (existsSync(fullPath)) {
+                    unlinkSync(fullPath)
+                    deletedCount++
+                }
+                if (existsSync(fullHashPath)) {
+                    unlinkSync(fullHashPath)
+                }
+            } catch (err) {
+                skippedDelete++
+                console.warn(`⚠ Could not delete non-admin record ${id}: ${err.message}`)
+            }
+        }
+
+        if (deletedCount > 0) {
+            console.log(`✓ Deleted ${deletedCount.toLocaleString()} non-administrative feature files`)
+            if (skippedDelete > 0) {
+                console.log(`  ⚠ Failed to delete ${skippedDelete.toLocaleString()} files`)
+            }
+            console.log("")
+        }
+
         console.log("Pass 2/4: Processing and writing records...")
         const rl2 = createInterface({
             input: createReadStream(allCountriesPath),

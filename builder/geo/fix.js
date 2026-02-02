@@ -1,4 +1,4 @@
-import { readFileSync, createReadStream, existsSync } from "fs"
+import { readFileSync, createReadStream, existsSync, unlinkSync } from "fs"
 import { createInterface } from "readline"
 import DB from "../../src/core/DB.js"
 import { write } from "../../src/core/Utils.js"
@@ -57,7 +57,61 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
 
     console.log(`✓ Indexed ${adminIndex.size.toLocaleString()} admin features from ${lineCount.toLocaleString()} records\n`)
 
-    console.log("Pass 2/2: Mapping parent-child relationships...")
+    console.log("Pass 1.5/4: Removing non-administrative features...")
+    let deletedCount = 0
+    let skippedDelete = 0
+
+    const rl1b = createInterface({
+        input: createReadStream(allCountriesPath),
+        crlfDelay: Infinity
+    })
+
+    for await (const line of rl1b) {
+        if (!line.trim()) continue
+
+        const fields = line.split("\t")
+        if (fields.length < 19) continue
+
+        if (isTestMode && fields[8] !== testCountry) continue
+
+        const featureCode = fields[7]
+        const isAdmin = ADMIN_FEATURE_REGEX.test(featureCode)
+        
+        // Only delete non-admin features
+        if (isAdmin) continue
+
+        const id = parseInt(fields[0], 10)
+        const pathSegments = DB.path(id)
+        const filename = pathSegments[pathSegments.length - 1] + ".json"
+        const hashFilename = pathSegments[pathSegments.length - 1] + ".hash"
+        const filePath = [outputBase, "geo", ...pathSegments.slice(0, -1), filename]
+        const hashFilePath = [outputBase, "geo", ...pathSegments.slice(0, -1), hashFilename]
+        const fullPath = "./" + filePath.join("/")
+        const fullHashPath = "./" + hashFilePath.join("/")
+
+        try {
+            if (existsSync(fullPath)) {
+                unlinkSync(fullPath)
+                deletedCount++
+            }
+            if (existsSync(fullHashPath)) {
+                unlinkSync(fullHashPath)
+            }
+        } catch (err) {
+            skippedDelete++
+            console.warn(`⚠ Could not delete non-admin record ${id}: ${err.message}`)
+        }
+    }
+
+    if (deletedCount > 0) {
+        console.log(`✓ Deleted ${deletedCount.toLocaleString()} non-administrative feature files`)
+        if (skippedDelete > 0) {
+            console.log(`  ⚠ Failed to delete ${skippedDelete.toLocaleString()} files`)
+        }
+        console.log("")
+    }
+
+    console.log("Pass 2/4: Mapping parent-child relationships...")
     const childrenMap = new Map()
     let relationCount = 0
     let processedRelations = 0
@@ -136,7 +190,7 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
     }
     console.log("")
 
-    console.log("Updating parent files with children...")
+    console.log("Pass 3/4: Updating parent files with children...")
     let updatedCount = 0
 
     for (const [parentId, children] of childrenMap.entries()) {
@@ -164,7 +218,7 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
 
     console.log(`✓ Updated ${updatedCount.toLocaleString()} parent files with children\n`)
 
-    console.log("Pass 3/3: Updating parent field for all records...")
+    console.log("Pass 4/4: Updating parent field for all records...")
     const parentMap = new Map()  // Map recordId -> parentId
     let parentUpdateCount = 0
     let processedParents = 0
@@ -234,7 +288,7 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
 
     console.log(`✓ Updated ${parentFieldUpdatedCount.toLocaleString()} records with parent field\n`)
     
-    console.log("Pass 4/4: Regenerating directory hash files (_.hash)...")
+    console.log("Pass 5/5: Regenerating directory hash files (_.hash)...")
     resetGeoHashCounter()
     const dirHashCount = await generateGeoDirectoryHashes([outputBase, "geo"])
     console.log(`✓ Generated ${dirHashCount.toLocaleString()} directory hash files\n`)
