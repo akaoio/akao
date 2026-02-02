@@ -409,6 +409,8 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
         const recordsMap = new Map()
         let relationCount = 0
         let processedRelations = 0
+        let skippedNonAdmin = 0
+        let skippedCrossCountryChildren = 0
 
         const rl3 = createInterface({
             input: createReadStream(allCountriesPath),
@@ -430,6 +432,12 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
             const admin3 = fields[12]
             const admin4 = fields[13]
 
+            // Skip non-administrative features (e.g., hotels, schools, etc.)
+            if (!ADMIN_FEATURE_REGEX.test(featureCode)) {
+                skippedNonAdmin++
+                continue
+            }
+
             const parent = resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap, countryIds })
             if (parent === id) continue
 
@@ -438,6 +446,18 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
             }
 
             if (parent) {
+                // Verify parent exists in adminMeta and belongs to same country
+                const parentMeta = adminMeta.get(parent)
+                if (!parentMeta) {
+                    skippedCrossCountryChildren++
+                    continue
+                }
+                
+                if (parentMeta.countryCode !== countryCode) {
+                    skippedCrossCountryChildren++
+                    continue
+                }
+
                 if (!childrenMap.has(parent)) childrenMap.set(parent, [])
                 childrenMap.get(parent).push(id)
                 relationCount++
@@ -452,7 +472,14 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
             }
         }
 
-        console.log(`✓ Mapped ${relationCount.toLocaleString()} parent-child relationships for ${childrenMap.size.toLocaleString()} parents\n`)
+        console.log(`✓ Mapped ${relationCount.toLocaleString()} parent-child relationships for ${childrenMap.size.toLocaleString()} parents`)
+        if (skippedNonAdmin > 0) {
+            console.log(`  ⊘ Skipped non-administrative features: ${skippedNonAdmin.toLocaleString()}`)
+        }
+        if (skippedCrossCountryChildren > 0) {
+            console.log(`  ⊘ Skipped cross-country children: ${skippedCrossCountryChildren.toLocaleString()}`)
+        }
+        console.log("")
 
         console.log("Updating parent files with children...")
         let updatedCount = 0

@@ -61,6 +61,8 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
     const childrenMap = new Map()
     let relationCount = 0
     let processedRelations = 0
+    let skippedNonAdmin = 0
+    let skippedCrossCountryChildren = 0
 
     const rl2 = createInterface({
         input: createReadStream(allCountriesPath),
@@ -84,6 +86,12 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
         const admin3 = fields[12]
         const admin4 = fields[13]
 
+        // Skip non-administrative features (e.g., hotels, schools, etc.)
+        if (!ADMIN_FEATURE_REGEX.test(featureCode)) {
+            skippedNonAdmin++
+            continue
+        }
+
         const parent = resolveParent({ featureCode, countryCode, admin1, admin2, admin3, admin4, adminIndex, hierarchyMap, countryIds })
         if (parent === id) continue
 
@@ -92,6 +100,23 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
         }
 
         if (parent) {
+            // Verify parent exists in adminIndex and belongs to same country
+            const parentMeta = adminIndex.get(`${countryCode}|||||${COUNTRY_FEATURE_REGEX.test(featureCode) ? featureCode : ''}`)
+            
+            // For non-country features, find parent's country through adminIndex
+            let parentCountryCode = countryCode
+            for (const [key, id] of adminIndex.entries()) {
+                if (id === parent) {
+                    parentCountryCode = key.split('|')[0]
+                    break
+                }
+            }
+            
+            if (parentCountryCode !== countryCode) {
+                skippedCrossCountryChildren++
+                continue
+            }
+
             if (!childrenMap.has(parent)) childrenMap.set(parent, [])
             childrenMap.get(parent).push(id)
             relationCount++
@@ -102,7 +127,14 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
         }
     }
 
-    console.log(`✓ Mapped ${relationCount.toLocaleString()} parent-child relationships for ${childrenMap.size.toLocaleString()} parents\n`)
+    console.log(`✓ Mapped ${relationCount.toLocaleString()} parent-child relationships for ${childrenMap.size.toLocaleString()} parents`)
+    if (skippedNonAdmin > 0) {
+        console.log(`  ⊘ Skipped non-administrative features: ${skippedNonAdmin.toLocaleString()}`)
+    }
+    if (skippedCrossCountryChildren > 0) {
+        console.log(`  ⊘ Skipped cross-country children: ${skippedCrossCountryChildren.toLocaleString()}`)
+    }
+    console.log("")
 
     console.log("Updating parent files with children...")
     let updatedCount = 0
