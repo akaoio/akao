@@ -5,7 +5,8 @@ export const styles = css`
         display: flex;
         flex-direction: row;
         gap: var(--space);
-        justify-content: space-between;
+        justify-content: flex-start;
+        flex-wrap: wrap;
     }
 `
 

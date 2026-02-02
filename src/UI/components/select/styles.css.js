@@ -4,8 +4,8 @@ import { css } from "/core/UI.js";
 export const styles = css`
     ${select}
     :host {
-        width: 100%;
         select {
+            width: max-content;
             option[disabled]:nth-of-type(1):has(ui-context.placeholder) {
                 display: none;   
             }
