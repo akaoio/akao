@@ -60,8 +60,8 @@ export const template = html`
             <ui-button class="full" data-left="/images/icons/trash3.svg" id="remove">
                 <ui-context data-key="dictionary.remove"/>
             </ui-button>
-            <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="back">
-                <ui-context data-key="dictionary.back" />
+            <ui-button class="full" data-left="/images/icons/x-lg.svg" id="close">
+                <ui-context data-key="dictionary.close" />
             </ui-button>
         </div>
     </form>

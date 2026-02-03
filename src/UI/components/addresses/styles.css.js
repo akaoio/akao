@@ -32,6 +32,9 @@ export const styles = css`
                 gap: var(--space);
             }
         }
+        #address-form {
+            display: none;
+        }
     }
 `
 
