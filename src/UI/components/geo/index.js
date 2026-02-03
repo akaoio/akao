@@ -96,7 +96,7 @@ export class GEO extends HTMLElement {
                         else if (current) current.before(element)
                         current = element
                         if ($data?.parent) $data = $parent
-                    }
+                    } else break
                 }
                 this.shadowRoot.querySelector("#country").dataset.selected = $data.id
             }
