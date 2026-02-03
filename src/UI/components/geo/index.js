@@ -13,6 +13,7 @@ export class GEO extends HTMLElement {
         this.create = this.create.bind(this)
         this.render = this.render.bind(this)
         this.clear = this.clear.bind(this)
+        this.reset = this.reset.bind(this)
         this.subscriptions = []
     }
 
@@ -59,6 +60,11 @@ export class GEO extends HTMLElement {
 
     clear() {
         this.states.set({ id: null, country: null, current: null })
+    }
+
+    reset() {
+        if (!this.dataset.id) this.clear()
+        if (this.dataset.id !== this.states.get("id")) this.states.set({ id: Number(this.dataset.id) })
     }
 
     async render() {

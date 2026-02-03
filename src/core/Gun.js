@@ -11,6 +11,9 @@ export function generateCerts() {
     sea.certify("*", { "*": "message", "+": "*" }, user?._?.sea, (cert) => user.get("cert").get("message").put(cert))
 }
 
+// This function is historical, kept for research purposes
+// It is not used in the current signup/signin flow with WebAuthn
+// This function will be deprecated in future versions
 export function signup(data, callback) {
     const { Gun, gun, user, sea } = globalThis
     const { referrer, name, username, password } = data

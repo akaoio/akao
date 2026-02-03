@@ -44,7 +44,7 @@ export class ITEM extends HTMLElement {
         const form = this.shadowRoot.querySelector("#item")
         if (!form.checkValidity()) {
             form.reportValidity()
-            return
+            return notify({ content: Context.get(["dictionary", "missingRequiredFields"]) })
         }
         const item = Object.fromEntries(new FormData(form))
         form.reset()

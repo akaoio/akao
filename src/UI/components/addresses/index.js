@@ -1,6 +1,8 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
+import { notify } from "/core/Utils.js"
+import { Access } from "/core/Access.js"
 
 export class ADDRESSES extends HTMLElement {
     constructor() {
@@ -35,10 +37,20 @@ export class ADDRESSES extends HTMLElement {
     }
 
     save() {
+        const geo = this.shadowRoot.querySelector("ui-geo")
+        // If there is an unseleted select in geo, do not proceed
+        const selects = Array.from(geo.shadowRoot.querySelectorAll("ui-select"))
+        if (!selects.at(-1)?.states?.get("selected") || !this.form.checkValidity()) {
+            this.form.reportValidity()
+            return notify({ content: Context.get(["dictionary", "missingRequiredFields"]) })
+        }
+        
         const data = {
             ...Object.fromEntries(new FormData(this.form)),
-            geo: this.form.querySelector("ui-geo").states.get("id")
+            geo: geo.states.get("id")
         }
+
+        console.log("ACCESS", Access, data)
         // Put to GDB
         
         // this.close()
@@ -51,7 +63,7 @@ export class ADDRESSES extends HTMLElement {
 
     reset() {
         this.form.reset()
-        this.form.querySelector("ui-geo").clear()
+        this.form.querySelector("ui-geo").reset()
     }
 
     disconnectedCallback() {
