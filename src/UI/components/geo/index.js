@@ -1,4 +1,4 @@
-import { html, render } from "/core/UI.js"
+import { render } from "/core/UI.js"
 import States from "/core/States.js"
 import DB from "/core/DB.js"
 import SELECT from "/UI/components/select/index.js"
@@ -7,11 +7,12 @@ import template from "./template.js"
 export class GEO extends HTMLElement {
     constructor() {
         super()
-        this.states = new States({ id: null, countries: [], country: null, current: null })
+        this.states = new States({ id: null, country: null, current: null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.create = this.create.bind(this)
         this.render = this.render.bind(this)
+        this.clear = this.clear.bind(this)
         this.subscriptions = []
     }
 
@@ -32,7 +33,6 @@ export class GEO extends HTMLElement {
         country.props.change = event => this.states.set({ id: Number(event.target.value), current: country })
         if (!this.states.get("id") && this.dataset.id) this.states.set({ id: Number(this.dataset.id) })
         this.subscriptions.push(this.states.on("id", this.render))
-        // this.render()
     }
 
     async create({ id, selected } = {}) {
@@ -57,8 +57,18 @@ export class GEO extends HTMLElement {
         }
     }
 
+    clear() {
+        this.states.set({ id: null, country: null, current: null })
+    }
+
     async render() {
-        if (!this.states.get("id")) return
+        if (!this.states.get("id")) {
+            const country = this.shadowRoot.querySelector("#country")
+            country.states.set({ selected: null })
+            country.select.selectedIndex = 0
+            this.shadowRoot.querySelectorAll("ui-select:not([id='country'])").forEach(select => select.remove())
+            return
+        }
         while (this.states.get("current")?.nextSibling) this.states.get("current")?.nextSibling.remove()
         const id = DB.path(this.states.get("id"))
         const data = await DB.get(["geo", ...id.with(-1, `${id.at(-1)}.json`)])

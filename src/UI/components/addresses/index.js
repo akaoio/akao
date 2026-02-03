@@ -7,11 +7,11 @@ export class ADDRESSES extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.add = this.add.bind(this)
         this.save = this.save.bind(this)
         this.close = this.close.bind(this)
         this.reset = this.reset.bind(this)
+        this.subscriptions = []
     }
 
     connectedCallback() {
@@ -35,9 +35,13 @@ export class ADDRESSES extends HTMLElement {
     }
 
     save() {
-        const data = Object.fromEntries(new FormData(this.form))
-        console.log("Saving address:", data)
-        this.close()
+        const data = {
+            ...Object.fromEntries(new FormData(this.form)),
+            geo: this.form.querySelector("ui-geo").states.get("id")
+        }
+        // Put to GDB
+        
+        // this.close()
     }
 
     close() {
@@ -47,6 +51,7 @@ export class ADDRESSES extends HTMLElement {
 
     reset() {
         this.form.reset()
+        this.form.querySelector("ui-geo").clear()
     }
 
     disconnectedCallback() {
