@@ -78,7 +78,7 @@ export class ITEM extends HTMLElement {
                         <legend><ui-context data-key="dictionary.${attr.name}" /></legend>
                         ${attr.values.map(
                             (value) => html`
-                                <input id="${value}" type="radio" name="${attr.name}" value="${value}" required />
+                                <input id="${value}" type="radio" name="${attr.name}" value="${value}" required="required" />
                                 <label for="${value}"><ui-context data-key="dictionary.${value}" /></label>
                             `
                         )}

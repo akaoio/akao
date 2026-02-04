@@ -25,7 +25,7 @@ export class SELECT extends HTMLElement {
         if (name === "data-name") this.select.setAttribute("name", value)
         else if (name === "data-placeholder") this.placeholder.forEach(e => e.dataset.key = value)
         else if (name === "data-required") {
-            if (value !== null) this.select.setAttribute("required", "")
+            if (value !== null) this.select.setAttribute("required", "required")
             else this.select.removeAttribute("required")
         }
         if (name === "data-selected") {
@@ -38,7 +38,7 @@ export class SELECT extends HTMLElement {
         this.select = this.select || this.shadowRoot.querySelector("select")
         this.select.setAttribute("name", this.props.name || this.dataset.name)
         this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")
-        if (this.dataset.required) this.select.setAttribute("required", "")
+        if (this.dataset.required || this.props.required) this.select.setAttribute("required", "required")
         if (this.dataset.name) this.select.setAttribute("name", this.dataset.name)
         this.placeholder.forEach(e => e.dataset.key = this.props.placeholder || this.dataset.placeholder || "")
         this.select.addEventListener("change", this.change)

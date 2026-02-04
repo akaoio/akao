@@ -26,29 +26,29 @@ export const template = html`
         </div>
         <input type="text" name="company" />
         <div class="inputs">
-            <input type="text" name="firstName" required />
-            <input type="text" name="lastName" required />
+            <input type="text" name="firstName" required="required" />
+            <input type="text" name="lastName" required="required" />
         </div>
         <div class="inputs">
             <label>
-                <input type="radio" name="gender" value="male" required />
+                <input type="radio" name="gender" value="male" required="required" />
                 <ui-context data-key="dictionary.male" />
             </label>
             <label>
-                <input type="radio" name="gender" value="female" required />
+                <input type="radio" name="gender" value="female" required="required" />
                 <ui-context data-key="dictionary.female" />
             </label>
             <label>
-                <input type="radio" name="gender" value="other" required />
+                <input type="radio" name="gender" value="other" required="required" />
                 <ui-context data-key="dictionary.other" />
             </label>
         </div>
         <ui-geo />
-        <input type="text" name="postalCode" required />
-        <input type="text" name="addressLine1" required />
-        <input type="text" name="addressLine2" required />
+        <input type="text" name="postalCode" required="required" />
+        <input type="text" name="addressLine1" required="required" />
+        <input type="text" name="addressLine2" required="required" />
         <input type="email" name="email" />
-        <input type="tel" name="phone" required />
+        <input type="tel" name="phone" required="required" />
         <input type="hidden" name="id" />
         <div class="buttons">
             <ui-button class="full" data-left="/images/icons/house-add.svg" id="save">

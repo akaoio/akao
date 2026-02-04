@@ -24,13 +24,13 @@ export const template = html`
                 <fieldset id="quantity">
                     <legend><ui-context data-key="dictionary.quantity" /></legend>
                     <ui-icon id="decrease" data-icon="dash-lg"></ui-icon>
-                    <input name="quantity" type="number" value="1" min="1" required />
+                    <input name="quantity" type="number" value="1" min="1" required="required" />
                     <ui-icon id="increase" data-icon="plus-lg"></ui-icon>
                 </fieldset>
                 <ui-button id="add"><ui-context data-key="dictionary.addToCart" /></ui-button>
             </footer>
-            <input type="hidden" name="id" required />
-            <input type="hidden" name="sku" required />
+            <input type="hidden" name="id" required="required" />
+            <input type="hidden" name="sku" required="required" />
         </form>
     </layout-main>
 `

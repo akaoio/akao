@@ -52,6 +52,7 @@ export class GEO extends HTMLElement {
                 options,
                 placeholder: "dictionary.area",
                 selected,
+                required: true,
                 change: event => this.states.set({ id: Number(event.target.value), current: select })
             })
             return select
