@@ -103,9 +103,7 @@ async function save(credential) {
     // Encrypt passkey pub with user's key pair
     const encrypted = await sea.encrypt(credential.pub, pair)
     // Store encrypted pub in Gun database under user's pub
-    gun.get(`~${pair.pub}`)
-        .get("@")
-        .put(encrypted, null, { opt: { authenticator: pair } })
+    gun.get(`~${pair.pub}`).get("@").put(encrypted, null, { opt: { authenticator: pair } })
     return encrypted
 }
 

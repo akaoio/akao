@@ -1,8 +1,9 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
-import { notify } from "/core/Utils.js"
+import { notify, randomKey } from "/core/Utils.js"
 import { Access } from "/core/Access.js"
+import { Elements } from "/core/Stores.js"
 
 export class ADDRESSES extends HTMLElement {
     constructor() {
@@ -36,7 +37,9 @@ export class ADDRESSES extends HTMLElement {
         this.form.reset()
     }
 
-    save() {
+    async save() {
+        const check = Elements.Access?.checkpoint()
+        if (!check) return
         const geo = this.shadowRoot.querySelector("ui-geo")
         // If there is an unseleted select in geo, do not proceed
         const selects = Array.from(geo.shadowRoot.querySelectorAll("ui-select"))
@@ -44,21 +47,19 @@ export class ADDRESSES extends HTMLElement {
             this.form.reportValidity()
             return notify({ content: Context.get(["dictionary", "missingRequiredFields"]) })
         }
-        
-        const data = {
-            ...Object.fromEntries(new FormData(this.form)),
-            geo: geo.states.get("id")
-        }
-
-        console.log("ACCESS", Access, data)
-        // Put to GDB
-        
-        // this.close()
+        const data = { ...Object.fromEntries(new FormData(this.form)), geo: geo.states.get("id") }
+        data.id = data?.id || randomKey()
+        const { gun, sea } = globalThis
+        const pair = Access.get("pair")
+        if (!pair) return
+        const encrypted = await sea.encrypt(data, pair)
+        await gun.get(`~${pair.pub}`).get("addresses").get(data.id).put(encrypted, null, { opt: { authenticator: pair } })
+        this.close()
     }
 
     close() {
         this.form.style.display = "none"
-        this.form.reset()
+        this.reset()
     }
 
     reset() {
