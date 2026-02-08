@@ -21,15 +21,6 @@ export const Construct = {
         console.log("Constructed: GDB")
         return true
     },
-    User: async function () {
-        globalThis.user = globalThis.gun.user()
-        const { authenticate } = await import("./Gun.js")
-        // Try to recall authentication
-        const pair = await Indexes.Auth.get("pair").once()
-        if (pair && !Context.get("authenticated")) authenticate(pair)
-        console.log("Constructed: User")
-        return true
-    },
     Context: async function () {
         const router = Router.process()
         Context.set({

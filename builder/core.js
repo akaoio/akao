@@ -225,15 +225,15 @@ await copyAssets([
     { src: ["node_modules", "bootstrap-icons", "icons"], dest: [...paths.build.root, "images", "icons"], label: "bootstrap icons" }
 ])
 
-// Copy Gun.js library files to GDB folder
-log.info("Copying Gun.js library to GDB...")
+// Copy gun library files to GDB folder
+log.info("Copying gun library to GDB...")
 const gunFiles = ["gun.js", "sea.js", ["lib", "radix.js"], ["lib", "radisk.js"], ["lib", "rindexed.js"]]
 for (const filePath of gunFiles) {
     const src = Array.isArray(filePath) ? ["node_modules", "@akaoio", "gun", ...filePath] : ["node_modules", "@akaoio", "gun", filePath]
     const dest = [...paths.build.core, "GDB", Array.isArray(filePath) ? filePath[filePath.length - 1] : filePath]
     await copy(src, dest)
 }
-log.ok(`Copied 5 Gun.js files to GDB`)
+log.ok(`Copied gun files to GDB`)
 
 // Build routes list using regex pattern and post-process
 log.info("Building routes list...")
@@ -271,7 +271,7 @@ console.log(`${icons.done} ${color.ok("Locales")}: ${locales.length}`)
 console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
-console.log(`${icons.done} ${color.ok("Gun.js Files")}: 5`)
+console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)
 console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashResult.hashFiles}`)
 if (await exist(geoPath)) {
     console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
