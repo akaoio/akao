@@ -4,16 +4,19 @@ import { Context } from "/core/Context.js"
 import { notify, randomKey } from "/core/Utils.js"
 import { Access } from "/core/Access.js"
 import { Elements } from "/core/Stores.js"
+import States from "/core/States.js"
 
 export class ADDRESSES extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this.states = new States({ addresses: {} })
         this.add = this.add.bind(this)
         this.save = this.save.bind(this)
         this.close = this.close.bind(this)
         this.reset = this.reset.bind(this)
+        this.render = this.render.bind(this)
         this.subscriptions = []
     }
 
@@ -24,12 +27,30 @@ export class ADDRESSES extends HTMLElement {
         this.shadowRoot.querySelector("#save").addEventListener("click", this.save)
         this.shadowRoot.querySelector("#close").addEventListener("click", this.close)
         this.shadowRoot.querySelector("#reset").addEventListener("click", this.reset)
+        
+        const { gun, sea } = globalThis
+        const pair = Access.get("pair")
+        if (pair) {
+            this.scope = gun.get(`~${pair.pub}`).get("addresses")
+            this.scope.on(async (data, key) => {
+                const addresses = this.states.get("addresses")
+                addresses[key] = await sea.decrypt(data, pair)
+                this.states.set("addresses", addresses)
+            })
+            this.subscriptions.push(() => this.scope.off())
+        }
+
         this.subscriptions.push(
             () => this.shadowRoot.querySelector("#add").removeEventListener("click", this.add),
             () => this.shadowRoot.querySelector("#save").removeEventListener("click", this.save),
             () => this.shadowRoot.querySelector("#close").removeEventListener("click", this.close),
-            () => this.shadowRoot.querySelector("#reset").removeEventListener("click", this.reset)
+            () => this.shadowRoot.querySelector("#reset").removeEventListener("click", this.reset),
+            this.states.on("addresses", this.render)
         )
+    }
+
+    disconnectedCallback() {
+        this.subscriptions.forEach((off) => off())
     }
 
     add() {
@@ -53,7 +74,7 @@ export class ADDRESSES extends HTMLElement {
         const pair = Access.get("pair")
         if (!pair) return
         const encrypted = await sea.encrypt(data, pair)
-        await gun.get(`~${pair.pub}`).get("addresses").get(data.id).put(encrypted, null, { opt: { authenticator: pair } })
+        gun.get(`~${pair.pub}`).get("addresses").get(data.id).put(encrypted, null, { opt: { authenticator: pair } })
         this.close()
     }
 
@@ -67,8 +88,9 @@ export class ADDRESSES extends HTMLElement {
         this.form.querySelector("ui-geo").reset()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    render() {
+        // To be implemented: render the list of addresses
+        console.log("Render addresses list", this.states.get("addresses"))
     }
 }
 
