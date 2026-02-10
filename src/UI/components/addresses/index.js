@@ -1,5 +1,5 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
+import { html, render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
 import { notify, randomKey } from "/core/Utils.js"
 import { Access } from "/core/Access.js"
@@ -41,8 +41,10 @@ export class ADDRESSES extends HTMLElement {
                     this.scope = this.scope || gun.get(`~${pair.pub}`).get("addresses").map()
                     this.scope?.off?.()
                     this.scope.on(async (data, key) => {
-                        const addresses = { ...this.states.get("addresses"), [key]: await sea.decrypt(data, pair) }
-                        this.states.set({ addresses })
+                        const addresses = this.states.get("addresses")
+                        addresses[key] = await sea.decrypt(data, pair)
+                        console.log("Addresses", addresses)
+                        this.states.set({ addresses: { ...addresses } })
                     })
                 }
             })
@@ -92,7 +94,13 @@ export class ADDRESSES extends HTMLElement {
     render() {
         // To be implemented: render the list of addresses
         console.log("Render addresses list", this.states.get("addresses"))
-
+        const container = this.shadowRoot.querySelector("#addresses")
+        const addresses = Object.values(this.states.get("addresses")).filter(address => this.shadowRoot.querySelector(`#${address.id}`) ? false : true).map(address => {
+            return html`<div id="${address.id}">
+                ${address.firstName} ${address.lastName} - ${address.addressLine1} ${address.addressLine2} (${address.postalCode})
+            </div>`
+        })
+        render(addresses, container, { append: true })
     }
 }
 
