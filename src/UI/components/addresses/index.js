@@ -28,29 +28,30 @@ export class ADDRESSES extends HTMLElement {
         this.shadowRoot.querySelector("#close").addEventListener("click", this.close)
         this.shadowRoot.querySelector("#reset").addEventListener("click", this.reset)
         
-        const { gun, sea } = globalThis
-        const pair = Access.get("pair")
-        if (pair) {
-            this.scope = gun.get(`~${pair.pub}`).get("addresses")
-            this.scope.on(async (data, key) => {
-                const addresses = this.states.get("addresses")
-                addresses[key] = await sea.decrypt(data, pair)
-                this.states.set("addresses", addresses)
-            })
-            this.subscriptions.push(() => this.scope.off())
-        }
-
         this.subscriptions.push(
             () => this.shadowRoot.querySelector("#add").removeEventListener("click", this.add),
             () => this.shadowRoot.querySelector("#save").removeEventListener("click", this.save),
             () => this.shadowRoot.querySelector("#close").removeEventListener("click", this.close),
             () => this.shadowRoot.querySelector("#reset").removeEventListener("click", this.reset),
-            this.states.on("addresses", this.render)
+            this.states.on("addresses", this.render),
+            Access.on("authenticated", () => {
+                const { gun, sea } = globalThis
+                const pair = Access.get("pair")
+                if (pair) {
+                    this.scope = this.scope || gun.get(`~${pair.pub}`).get("addresses").map()
+                    this.scope?.off?.()
+                    this.scope.on(async (data, key) => {
+                        const addresses = { ...this.states.get("addresses"), [key]: await sea.decrypt(data, pair) }
+                        this.states.set({ addresses })
+                    })
+                }
+            })
         )
     }
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
+        this?.scope?.off?.()
     }
 
     add() {
@@ -91,6 +92,7 @@ export class ADDRESSES extends HTMLElement {
     render() {
         // To be implemented: render the list of addresses
         console.log("Render addresses list", this.states.get("addresses"))
+
     }
 }
 
