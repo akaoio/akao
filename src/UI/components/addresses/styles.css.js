@@ -35,6 +35,29 @@ export const styles = css`
         #address-form {
             display: none;
         }
+        #addresses {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space);
+            div {
+                display: flex;
+                flex-direction: row;
+                gap: var(--space);
+                justify-content: space-between;
+                border: var(--border);
+                padding: var(--space);
+                main {
+                    span {
+                        display: block;
+                    }
+                }
+                nav {
+                    display: flex;
+                    flex-direction: row;
+                    gap: var(--space);
+                }
+            }
+        }
     }
 `
 

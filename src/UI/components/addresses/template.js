@@ -1,5 +1,7 @@
 import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
+import "/UI/components/icon/index.js"
+import "/UI/components/context/index.js"
 import "/UI/components/button/index.js"
 import "/UI/components/select/index.js"
 import "/UI/components/geo/index.js"
@@ -9,7 +11,7 @@ export const template = html`
     <header>
         <ui-context data-key="dictionary.addresses" />
         <nav>
-            <ui-icon id="add" data-icon="plus-lg" />
+            <ui-icon id="add" data-icon="plus-lg" data-size="md" />
         </nav>
     </header>
     <div id="addresses"></div>
