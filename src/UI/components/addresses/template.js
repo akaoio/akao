@@ -5,6 +5,7 @@ import "/UI/components/context/index.js"
 import "/UI/components/button/index.js"
 import "/UI/components/select/index.js"
 import "/UI/components/geo/index.js"
+import "/UI/components/modal/index.js"
 
 export const template = html`
     ${styles}
@@ -59,14 +60,25 @@ export const template = html`
             <ui-button class="full" data-left="/images/icons/x-lg.svg" id="reset">
                 <ui-context data-key="dictionary.reset"/>
             </ui-button>
-            <ui-button class="full" data-left="/images/icons/trash3.svg" id="remove">
-                <ui-context data-key="dictionary.remove"/>
+            <ui-button class="full" data-left="/images/icons/trash3.svg" id="delete">
+                <ui-context data-key="dictionary.delete"/>
             </ui-button>
             <ui-button class="full" data-left="/images/icons/x-lg.svg" id="close">
                 <ui-context data-key="dictionary.close" />
             </ui-button>
         </div>
     </form>
+    <ui-modal data-header="deletion" class="center" id="deletion">
+        <p><ui-context data-key="dictionary.deletionMessage" /></p>
+        <div class="buttons">
+            <ui-button class="full" data-left="/images/icons/check-lg.svg" id="confirm">
+                <ui-context data-key="dictionary.confirm" />
+            </ui-button>
+            <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="cancel">
+                <ui-context data-key="dictionary.cancel" />
+            </ui-button>
+        </div>
+    </ui-modal>
 `
 
 export default template
