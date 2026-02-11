@@ -52,22 +52,22 @@ export class ADDRESSES extends HTMLElement {
             () => this.shadowRoot.querySelector("#reset").removeEventListener("click", this.reset),
             () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.confirm),
             () => this.shadowRoot.querySelector("#delete").removeEventListener("click", $delete),
-            this.states.on("addresses", this.render),
-            Access.on("authenticated", () => {
-                const { gun, sea } = globalThis
-                const pair = Access.get("pair")
-                if (pair) {
-                    this.scope = this.scope || gun.get(`~${pair.pub}`).get("addresses").map()
-                    this.scope?.off?.()
-                    this.scope.on(async (data, key) => {
-                        if (!data) return
-                        const addresses = this.states.get("addresses")
-                        addresses[key] = await sea.decrypt(data, pair)
-                        this.states.set({ addresses: { ...addresses } })
-                    })
-                }
-            })
+            this.states.on("addresses", this.render)
         )
+        this.subscriptions.push(Access.on("authenticated", () => {
+            const { gun, sea } = globalThis
+            const pair = Access.get("pair")
+            if (pair) {
+                this.scope = this.scope || gun.get(`~${pair.pub}`).get("addresses").map()
+                this.scope?.off?.()
+                this.scope.on(async (data, key) => {
+                    if (!data) return
+                    const addresses = { ...this.states.get("addresses") }
+                    addresses[key] = await sea.decrypt(data, pair)
+                    this.states.set({ addresses })
+                })
+            }
+        }))
     }
 
     disconnectedCallback() {
@@ -76,6 +76,7 @@ export class ADDRESSES extends HTMLElement {
     }
 
     add() {
+        this.shadowRoot.querySelector("#addresses").style.display = "none"
         this.form.style.display = "flex"
         this.form.reset()
     }
@@ -90,13 +91,33 @@ export class ADDRESSES extends HTMLElement {
             this.form.reportValidity()
             return notify({ content: Context.get(["dictionary", "missingRequiredFields"]) })
         }
-        const data = { ...Object.fromEntries(new FormData(this.form)), geo: geo.states.get("id") }
-        data.id = data?.id || randomKey()
+        const address = { ...Object.fromEntries(new FormData(this.form)), geo: geo.states.get("id") }
+        address.id = address?.id || randomKey()
         const { gun, sea } = globalThis
         const pair = Access.get("pair")
         if (!pair) return
-        const encrypted = await sea.encrypt(data, pair)
-        gun.get(`~${pair.pub}`).get("addresses").get(data.id).put(encrypted, null, { opt: { authenticator: pair } })
+        const encrypted = await sea.encrypt(address, pair)
+        gun.get(`~${pair.pub}`).get("addresses").get(address.id).put(encrypted, null, { opt: { authenticator: pair } })
+
+        const element = this.shadowRoot.querySelector(`#addresses #${address.id}`)
+        if (element) {
+            let area = ""
+            if (address.geo) {
+                let data = null
+                while (data == null || data?.parent) {
+                    const $id = DB.path(data?.parent || address.geo)
+                    data = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
+                    if (data) {
+                        if (!data.parent) data.name = this.countries?.[data.id]?.name || data.name
+                        area = `${area ? `${area}, ` : ""}${data.name}`
+                    }
+                }
+            }
+            element.querySelector(".name").textContent = `${address.firstName} ${address.lastName}`
+            element.querySelector(".address").innerHTML = `${address.addressLine1}<br/>${address.addressLine2}`
+            element.querySelector(".postalCode").textContent = address.postalCode
+            element.querySelector(".area").textContent = area
+        }
         this.close()
     }
 
@@ -109,6 +130,7 @@ export class ADDRESSES extends HTMLElement {
     reset() {
         this.form.reset()
         this.form.querySelector("ui-geo").reset()
+        this.states.set({ current: null })
     }
 
     async edit(id) {
@@ -150,9 +172,9 @@ export class ADDRESSES extends HTMLElement {
             if (pair) gun.get(`~${pair.pub}`).get("addresses").get(id).put(null, null, { opt: { authenticator: pair } })
         }
         this.states.set({ current: null })
-        const addresses = this.states.get("addresses")
+        const addresses = { ...this.states.get("addresses") }
         delete addresses[id]
-        this.states.set({ addresses: { ...addresses } })
+        this.states.set({ addresses })
         this.shadowRoot.querySelector(`#addresses #${id}`)?.remove()
         this.modal.close()
         this.close()
