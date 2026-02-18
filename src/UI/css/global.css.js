@@ -3,6 +3,7 @@ import externals from "./externals.css.js"
 import vars from "./vars.css.js"
 import light from "./light.css.js"
 import dark from "./dark.css.js"
+import scrollbar from "./elements/scrollbar.css.js"
 import body from "./elements/body.css.js"
 import header from "./elements/header.css.js"
 import footer from "./elements/footer.css.js"
@@ -13,6 +14,7 @@ export const styles = css`
     ${vars}
     ${light}
     ${dark}
+    ${scrollbar}
     ${body}
     ${header}
     ${footer}

@@ -1,10 +1,13 @@
 import { css } from "/core/UI.js"
+import { rules as scrollbar } from "/css/elements/scrollbar.css.js"
 
 export const styles = css`
     :host {
         select, ::picker(select) {
             appearance: base-select;
         }
+
+        ${scrollbar("::picker(select)")}
 
         select {
             display: flex;

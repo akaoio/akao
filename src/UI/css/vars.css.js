@@ -120,6 +120,13 @@ export const styles = css`
         --header-font: "Noto Sans", system-ui, sans-serif;
         --content-font: "Noto Sans", system-ui, sans-serif;
         --font: "Noto Sans", system-ui, sans-serif;
+
+        /* Scrollbars */
+        --scrollbar-size: var(--unit-4);
+        --scrollbar-track: var(--background);
+        --scrollbar-thumb: var(--color);
+        --scrollbar-thumb-hover: var(--color-accent);
+        --scrollbar-corner: var(--background);
     }
 
     * {
