@@ -241,7 +241,7 @@ const found = await dir(paths.src.routes, /index\.js$/)
 // Keep only directories that have index.js by stripping the suffix
 const routeDirs = Array.from(new Set(found
     .filter(p => p.endsWith('index.js'))
-    .map(p => p.replace(/\/index\.js$/, ''))))
+    .map(p => p.replace(/\/index\.js$/, '')))).sort()
 await write([...paths.build.statics, "routes.json"], routeDirs)
 log.ok(`Built routes list with ${routeDirs.length} routes`)
 
@@ -253,7 +253,7 @@ log.ok(`Created ${localeCount} locale files`)
 // Generate routes
 log.info("Generating routes...")
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, items, allTags, indexContent)
+const routeCount = await generateRoutes(locales, items, allTags, indexContent, "build", routeDirs)
 log.ok(`Created ${routeCount} route files`)
 
 // Note: geo data is built separately via npm run geo:build to build/geo/

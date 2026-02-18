@@ -36,7 +36,7 @@ async function testCore() {
             statics: ["src", "statics"],
             items: ["src", "statics", "items"],
             sites: ["src", "statics", "sites"],
-            routes: ["src"],
+            routes: ["src", "UI", "routes"],
             core: ["src", "core"],
             UI: ["src", "UI"],
             importmap: ["importmap.json"],
@@ -116,8 +116,13 @@ async function testCore() {
 
         // Generate routes
         log.info("Generating routes...")
+        const routeFiles = await dir(paths.src.routes, /index\.js$/)
+        const routeDirs = Array.from(new Set(routeFiles
+            .filter(p => p.endsWith("index.js"))
+            .map(p => p.replace(/\/index\.js$/, "")))).sort()
+        await write([...paths.build.statics, "routes.json"], routeDirs)
         const indexContent = await load(paths.src.index)
-        const routeCount = await generateRoutes(locales, items, allTags, indexContent, outputBase)
+        const routeCount = await generateRoutes(locales, items, allTags, indexContent, outputBase, routeDirs)
         log.ok(`Created ${routeCount} route files`)
 
         // Generate hash files

@@ -3,7 +3,52 @@ import { paths } from "./config.js"
 
 // ============ Routes Generation ============
 
-export async function generateRoutes(locales, items, tags, indexContent, outputBase = "build") {
+function normalizeRoute(route = "") {
+    return String(route || "").replace(/^\/+|\/+$/g, "")
+}
+
+function isDynamicSegment(segment = "") {
+    return /^\[(?:\.\.\.)?[^\]]+\]$|^\[\[\.\.\.[^\]]+\]\]$/.test(segment)
+}
+
+function getParamName(segment = "") {
+    if (segment.startsWith("[[...") && segment.endsWith("]]")) return segment.slice(5, -2)
+    if (segment.startsWith("[...") && segment.endsWith("]")) return segment.slice(4, -1)
+    if (segment.startsWith("[") && segment.endsWith("]")) return segment.slice(1, -1)
+    return ""
+}
+
+function getParamValues(name = "", { items = [], tags = [] } = {}) {
+    const values = {
+        item: items,
+        tag: tags
+    }
+    return values[name] || []
+}
+
+function expandRouteSegments(route = "", options = {}) {
+    const segments = normalizeRoute(route).split("/").filter(Boolean)
+    if (!segments.length) return [[]]
+
+    let expanded = [[]]
+    for (const segment of segments) {
+        if (!isDynamicSegment(segment)) {
+            expanded = expanded.map((parts) => [...parts, segment])
+            continue
+        }
+
+        const name = getParamName(segment)
+        const values = getParamValues(name, options)
+
+        if (!values.length) return []
+
+        expanded = expanded.flatMap((parts) => values.map((value) => [...parts, String(value)]))
+    }
+
+    return expanded
+}
+
+export async function generateRoutes(locales, items, tags, indexContent, outputBase = "build", routePatterns = []) {
     const dynamicPaths = outputBase === "build" ? paths : {
         ...paths,
         build: {
@@ -11,37 +56,42 @@ export async function generateRoutes(locales, items, tags, indexContent, outputB
             root: [outputBase]
         }
     }
-    
-    const routes = [{ path: [...dynamicPaths.build.root, "index.html"], label: "Root" }]
+
+    const normalizedRoutes = Array.from(new Set(routePatterns.map(normalizeRoute).filter(Boolean))).sort()
+    const tagList = Array.from(tags || [])
+    const routeTargets = new Set()
+    routeTargets.add([...dynamicPaths.build.root, "index.html"].join("/"))
 
     for (const locale of locales) {
-        routes.push({ path: [...dynamicPaths.build.root, locale, "index.html"], label: `/${locale}` }, { path: [...dynamicPaths.build.root, locale, "item", "index.html"], label: `/${locale}/item` })
+        routeTargets.add([...dynamicPaths.build.root, locale, "index.html"].join("/"))
+        for (const route of normalizedRoutes) {
+            if (route === "home") continue
 
-        for (const item of items)
-            routes.push({
-                path: [...dynamicPaths.build.root, locale, "item", item, "index.html"],
-                label: `/${locale}/item/${item}`
-            })
+            const parts = route.split("/").filter(Boolean)
+            const staticPrefix = []
 
-        routes.push({
-            path: [...dynamicPaths.build.root, locale, "tag", "index.html"],
-            label: `/${locale}/tag`
-        })
+            for (const segment of parts) {
+                if (isDynamicSegment(segment)) break
+                staticPrefix.push(segment)
+            }
 
-        for (const tag of tags)
-            routes.push({
-                path: [...dynamicPaths.build.root, locale, "tag", tag, "index.html"],
-                label: `/${locale}/tag/${tag}`
-            })
+            if (staticPrefix.length) {
+                routeTargets.add([...dynamicPaths.build.root, locale, ...staticPrefix, "index.html"].join("/"))
+            }
 
-        // Add test route
-        routes.push({
-            path: [...dynamicPaths.build.root, locale, "test", "index.html"],
-            label: `/${locale}/test`
-        })
+            const expanded = expandRouteSegments(route, { items, tags: tagList })
+            if (!expanded.length) {
+                if (parts.some(isDynamicSegment)) console.warn(`Skipped dynamic route '${route}' because no values were found`)
+                continue
+            }
+
+            for (const segments of expanded) {
+                routeTargets.add([...dynamicPaths.build.root, locale, ...segments, "index.html"].join("/"))
+            }
+        }
     }
 
-    for (const route of routes) await write(route.path, indexContent)
+    for (const route of routeTargets) await write(route.split("/"), indexContent)
 
-    return routes.length
+    return routeTargets.size
 }

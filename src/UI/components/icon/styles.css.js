@@ -4,6 +4,8 @@ import { css } from "/core/UI.js"
 export const styles = css`
     ${icon}
     :host {
+        width: fit-content;
+        height: fit-content;
         border-radius: 50%;
     }
     :host([data-size="sm"]) {
