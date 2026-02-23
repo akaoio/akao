@@ -81,6 +81,31 @@ export class ADDRESSES extends HTMLElement {
         this.form.reset()
     }
 
+    async edit(id) {
+        id = id || this.states.get("current")
+        if (this.states.get("current") !== id) this.states.set({ current: id })
+        this.shadowRoot.querySelector("#addresses").style.display = "none"
+        this.form.style.display = "flex"
+        const { gun, sea } = globalThis
+        const pair = Access.get("pair")
+        if (!pair) return
+        const encrypted = await gun.get(`~${pair.pub}`).get("addresses").get(id)
+        const data = await sea.decrypt(encrypted, pair)
+        this.form.querySelectorAll("input").forEach((input) => {
+            if (input.name in data) {
+                if (input.type === "checkbox") input.checked = data[input.name]
+                else if (input.type === "radio" && input.value === data[input.name]) input.checked = true
+                else input.value = data[input.name]
+            }
+        })
+        const billing = await gun.get(`~${pair.pub}`).get("billing")
+        const shipping = await gun.get(`~${pair.pub}`).get("shipping")
+        if (billing === encrypted) this.form.querySelector("input[name='billing']").checked = true
+        if (shipping === encrypted) this.form.querySelector("input[name='shipping']").checked = true
+        const geo = this.form.querySelector("ui-geo")
+        geo.states.set({ id: data.geo || null })
+    }
+
     async save() {
         const check = Elements.Access?.checkpoint()
         if (!check) return
@@ -93,12 +118,20 @@ export class ADDRESSES extends HTMLElement {
         }
         const address = { ...Object.fromEntries(new FormData(this.form)), geo: geo.states.get("id") }
         address.id = address?.id || randomKey()
+
+        const { billing, shipping } = address
+        delete address.billing
+        delete address.shipping
+        
         const { gun, sea } = globalThis
         const pair = Access.get("pair")
         if (!pair) return
         const encrypted = await sea.encrypt(address, pair)
-        gun.get(`~${pair.pub}`).get("addresses").get(address.id).put(encrypted, null, { opt: { authenticator: pair } })
-
+        const scope = gun.get(`~${pair.pub}`).get("addresses").get(address.id)
+        scope.put(encrypted, null, { opt: { authenticator: pair } })
+        if (billing) gun.get(`~${pair.pub}`).get("billing").put(scope, null, { opt: { authenticator: pair } })
+        if (shipping) gun.get(`~${pair.pub}`).get("shipping").put(scope, null, { opt: { authenticator: pair } })
+        
         const element = this.shadowRoot.querySelector(`#addresses #${address.id}`)
         if (element) {
             let area = ""
@@ -119,43 +152,6 @@ export class ADDRESSES extends HTMLElement {
             element.querySelector(".area").textContent = area
         }
         this.close()
-    }
-
-    close() {
-        this.form.style.display = "none"
-        this.shadowRoot.querySelector("#addresses").style.display = "flex"
-        this.reset()
-    }
-
-    reset() {
-        this.form.reset()
-        this.form.querySelector("ui-geo").reset()
-        this.states.set({ current: null })
-    }
-
-    async edit(id) {
-        id = id || this.states.get("current")
-        if (this.states.get("current") !== id) this.states.set({ current: id })
-        this.shadowRoot.querySelector("#addresses").style.display = "none"
-        this.form.style.display = "flex"
-        const { gun, sea } = globalThis
-        const pair = Access.get("pair")
-        if (!pair) return
-        const encrypted = await gun.get(`~${pair.pub}`).get("addresses").get(id)
-        const data = await sea.decrypt(encrypted, pair)
-        this.form.querySelectorAll("input").forEach((input) => {
-            if (input.name in data) {
-                if (input.type === "checkbox") {
-                    input.checked = data[input.name]
-                } else if (input.type === "radio") {
-                    if (input.value === data[input.name]) input.checked = true
-                } else {
-                    input.value = data[input.name]
-                }
-            }
-        })
-        const geo = this.form.querySelector("ui-geo")
-        geo.states.set({ id: data.geo || null })
     }
 
     delete(id) {
@@ -183,6 +179,18 @@ export class ADDRESSES extends HTMLElement {
     cancel() {
         this.states.set({ current: null })
         this.modal.close()
+    }
+
+    close() {
+        this.form.style.display = "none"
+        this.shadowRoot.querySelector("#addresses").style.display = "flex"
+        this.reset()
+    }
+
+    reset() {
+        this.form.reset()
+        this.form.querySelector("ui-geo").reset()
+        this.states.set({ current: null })
     }
 
     async render() {

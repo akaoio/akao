@@ -19,12 +19,12 @@ export const template = html`
     <form id="address-form">
         <div class="inputs">
             <label>
-                <input type="checkbox" name="billingAddress" />
-                <ui-context data-key="dictionary.billingAddress" />
+                <input type="checkbox" name="billing" />
+                <ui-context data-key="dictionary.billing" />
             </label>
             <label>
-                <input type="checkbox" name="shippingAddress" />
-                <ui-context data-key="dictionary.shippingAddress" />
+                <input type="checkbox" name="shipping" />
+                <ui-context data-key="dictionary.shipping" />
             </label>
         </div>
         <input type="text" name="company" />
