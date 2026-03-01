@@ -16,6 +16,10 @@ if (!target || !["core", "geo"].includes(target)) {
 
 const modulePath = `./builder/${target}.js`
 
+if (target === "geo" && !args.includes("--build") && !args.includes("--fix")) {
+    process.argv.push("--build")
+}
+
 // Re-execute with the appropriate module
 import(modulePath)
     .then((module) => {
