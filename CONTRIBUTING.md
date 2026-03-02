@@ -50,6 +50,14 @@ Unsure where to begin? Look for issues tagged with:
 - Node.js 18+ (for build tools)
 - A modern browser (Chrome, Firefox, Safari, Edge)
 - Git
+- VS Code (recommended for development)
+
+### VS Code Extensions
+
+- `es6-string-html` (ID: `Tobermory.es6-string-html`) is required for proper HTML syntax highlighting inside JavaScript template literals used across this project.
+- The repository includes `.vscode/extensions.json`, so VS Code will automatically recommend this extension when you open the project.
+- Quick onboarding in VS Code: when the recommendation prompt appears, click **Install All**.
+- If you miss the prompt, open Extensions and search for **@recommended** under Workspace Recommendations, then install `es6-string-html`.
 
 ### Setup Steps
 

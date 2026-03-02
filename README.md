@@ -25,6 +25,10 @@ A modern **serverless eCommerce engine** built with pure Web Components. Framewo
 
 - Node.js 18+ (for build tools only)
 - No runtime dependencies
+- VS Code (recommended) with `es6-string-html` for HTML syntax highlighting in JavaScript template literals
+
+VS Code users: this repository ships with `.vscode/extensions.json`, so VS Code will prompt you to install the recommended extension automatically.
+When prompted, click **Install All**. If the prompt does not appear, open Extensions and run the **@recommended** filter for this workspace.
 
 ### Installation
 
