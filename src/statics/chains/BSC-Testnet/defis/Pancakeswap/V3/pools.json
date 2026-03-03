@@ -1,0 +1,57 @@
+[
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V3",
+        "ABI": "PancakeswapV3Pool",
+        "address": "0xcEFF7d548F87De78bfb9BecE05A5A2f315667948",
+        "token0": "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 100
+    },
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V3",
+        "ABI": "PancakeswapV3Pool",
+        "address": "0xa7cB6EF3FCDDf070BC7f3e7d4AF899251E6Bf53b",
+        "token0": "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 500
+    },
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V3",
+        "ABI": "PancakeswapV3Pool",
+        "address": "0xE2Dc7711F5C8aa218b83C5C451d2F6bFB6C3313F",
+        "token0": "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 10000
+    },
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V3",
+        "ABI": "PancakeswapV3Pool",
+        "address": "0x29A37a042b71705F7231F6aa7022D5C30c52A588",
+        "token0": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 100
+    },
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V3",
+        "ABI": "PancakeswapV3Pool",
+        "address": "0x2dbB5a4c235164B9f772179A43faca2c71a8abDB",
+        "token0": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 500
+    }
+]

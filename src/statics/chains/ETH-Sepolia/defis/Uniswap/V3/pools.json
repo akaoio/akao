@@ -1,0 +1,13 @@
+[
+    {
+        "chain": 11155111,
+        "type": "pool",
+        "dex": "Uniswap",
+        "version": "V3",
+        "ABI": "UniswapV3Pool",
+        "address": "0x30EBA19BC35c0d0Cd07943683c80e1aF8e85B777",
+        "token0": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+        "token1": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
+        "fee": 3000
+    }
+]

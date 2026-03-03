@@ -222,7 +222,9 @@ await copyAssets([
     { src: paths.src.core, dest: paths.build.core, label: "core folder" },
     { src: paths.src.UI, dest: paths.build.UI, label: "UI folder" },
     { src: paths.src.importmap, dest: [...paths.build.root, "importmap.json"], label: "importmap.json" },
-    { src: ["node_modules", "bootstrap-icons", "icons"], dest: [...paths.build.root, "images", "icons"], label: "bootstrap icons" }
+    { src: ["node_modules", "bootstrap-icons", "icons"], dest: [...paths.build.root, "images", "icons"], label: "bootstrap icons" },
+    { src: ["node_modules", "cryptocurrency-icons", "svg", "icon"], dest: [...paths.build.root, "images", "cryptos"], label: "cryptocurrency icons" },
+    { src: ["node_modules", "ethers", "dist", "ethers.min.js"], dest: [...paths.build.core, "Ethers.js"], label: "ethers" }
 ])
 
 // Copy gun library files to GDB folder

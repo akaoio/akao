@@ -1,0 +1,35 @@
+[
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V2",
+        "ABI": "PancakeswapV2Pool",
+        "address": "0x85EcDcdd01EbE0BfD0Aba74B81Ca6d7F4A53582b",
+        "token0": "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 3000
+    },
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V2",
+        "ABI": "PancakeswapV2Pool",
+        "address": "0x5F52Ad4bD4f519AE79999400ad8B83A3D002fD92",
+        "token0": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 3000
+    },
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V2",
+        "ABI": "PancakeswapV2Pool",
+        "address": "0xe7385B0f78d0F92bD499Eaf767607c5E072644a3",
+        "token0": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+        "token1": "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        "fee": 3000
+    }
+]

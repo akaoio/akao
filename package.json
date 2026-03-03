@@ -26,9 +26,13 @@
   "type": "module",
   "scripts": {
     "start": "node build.js core && node server.js",
-    "build": "node build.js core && node build.js geo",
+    "build": "node build.js core && node build.js crypto && node build.js geo",
     "build:core": "node build.js core",
+    "build:crypto": "node build.js crypto",
     "build:geo": "node build.js geo",
+    "scan:crypto": "node scan.js",
+    "scan:crypto:currencies": "node scan.js currencies",
+    "scan:crypto:pools": "node scan.js pools",
     "fix:geo": "node builder/geo.js --fix",
     "test": "node test.js core && node test.js geo",
     "test:core": "node test.js core",
@@ -43,9 +47,12 @@
     "adm-zip": "^0.5.16",
     "bootstrap-icons": "^1.13.1",
     "chokidar": "^3.6.0",
+    "cryptocurrency-icons": "^0.18.1",
     "eslint": "^9.39.2",
+    "ethers": "^6.16.0",
     "live-server": "^1.2.2",
     "prettier": "^3.7.2",
+    "qrcode": "^1.5.4",
     "yaml": "^2.8.2"
   }
 }

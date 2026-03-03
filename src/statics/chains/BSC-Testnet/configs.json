@@ -1,0 +1,17 @@
+{
+    "id": 97,
+    "code": "BSC",
+    "name": "Binance Smart Chain Testnet",
+    "architecture": "EVM",
+    "symbol": "bnb-bnb-logo.svg",
+    "RPCs": [
+        "https://data-seed-prebsc-1-s1.binance.org:8545",
+        "https://data-seed-prebsc-2-s1.binance.org:8545",
+        "https://data-seed-prebsc-1-s3.binance.org:8545",
+        "https://data-seed-prebsc-2-s3.binance.org:8545",
+        "https://bsc-testnet.drpc.org",
+        "wss://bsc-testnet-rpc.publicnode.com",
+        "wss://bsc-testnet.drpc.org"
+    ],
+    "explorer": "https://testnet.bscscan.com"
+}

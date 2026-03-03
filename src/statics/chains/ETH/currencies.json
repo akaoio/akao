@@ -1,0 +1,121 @@
+[
+    {
+        "name": "ETH",
+        "type": "currency",
+        "symbol": "ethereum-eth-logo.svg",
+        "chain": 1,
+        "wrapped": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "decimals": 18,
+        "featured": true
+    },
+    {
+        "name": "WETH",
+        "type": "currency",
+        "symbol": "ethereum-eth-logo.svg",
+        "ABI": "WETH",
+        "chain": 1,
+        "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "decimals": 18
+    },
+    {
+        "name": "WBTC",
+        "type": "currency",
+        "symbol": "wrapped-bitcoin-wbtc-logo.svg",
+        "ABI": "WBTC",
+        "chain": 1,
+        "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "decimals": 8,
+        "featured": true
+    },
+    {
+        "name": "BUSD",
+        "type": "currency",
+        "symbol": "binance-usd-busd-logo.svg",
+        "group": "stables",
+        "fiat": "USD",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0x4Fabb145d64652a948d72533023f6E7A623C7C53",
+        "decimals": 18
+    },
+    {
+        "name": "USDT",
+        "type": "currency",
+        "symbol": "tether-usdt-logo.svg",
+        "group": "stables",
+        "fiat": "USD",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "decimals": 6,
+        "featured": true
+    },
+    {
+        "name": "USDC",
+        "type": "currency",
+        "symbol": "usd-coin-usdc-logo.svg",
+        "group": "stables",
+        "fiat": "USD",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "decimals": 6,
+        "featured": true
+    },
+    {
+        "name": "USDe",
+        "type": "currency",
+        "symbol": "ethena-usde-logo.svg",
+        "group": "stables",
+        "fiat": "USD",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+        "decimals": 18
+    },
+    {
+        "name": "TRX",
+        "type": "currency",
+        "symbol": "tron-trx-logo.svg",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0x50327c6c5a14DCaDE707ABad2E27eB517df87AB5",
+        "decimals": 6
+    },
+    {
+        "name": "TON",
+        "type": "currency",
+        "symbol": "toncoin-ton-logo.svg",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1",
+        "decimals": 9
+    },
+    {
+        "name": "LINK",
+        "type": "currency",
+        "symbol": "chainlink-link-logo.svg",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+        "decimals": 18
+    },
+    {
+        "name": "UNI",
+        "type": "currency",
+        "symbol": "uniswap-uni-logo.svg",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+        "decimals": 18
+    },
+    {
+        "name": "NEAR",
+        "type": "currency",
+        "symbol": "near-protocol-near-logo.svg",
+        "ABI": "ERC20",
+        "chain": 1,
+        "address": "0x85F17Cf997934a597031b2E18a9aB6ebD4B9f6a4",
+        "decimals": 24
+    }
+]

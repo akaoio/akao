@@ -1,0 +1,40 @@
+{
+    "contracts": [
+        {
+            "chain": 11155111,
+            "name": "UniswapV3Factory",
+            "type": "factory",
+            "dex": "Uniswap",
+            "version": "V3",
+            "ABI": "UniswapV3Factory",
+            "address": "0x0227628f3F023bb0B980b67D528571c95c6DaC1c"
+        },
+        {
+            "chain": 11155111,
+            "name": "UniswapV3Router",
+            "type": "router",
+            "dex": "Uniswap",
+            "version": "V3",
+            "ABI": "UniswapV3Router",
+            "address": "0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD"
+        },
+        {
+            "chain": 11155111,
+            "name": "UniswapV3PositionManager",
+            "type": "positionManager",
+            "dex": "Uniswap",
+            "version": "V3",
+            "ABI": "UniswapV3PositionManager",
+            "address": "0x1238536071E1c677A632429e3655c799b22cDA52"
+        },
+        {
+            "chain": 11155111,
+            "name": "UniswapQuoter",
+            "type": "quoter",
+            "dex": "Uniswap",
+            "version": "V3",
+            "ABI": "UniswapQuoter",
+            "address": "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3"
+        }
+    ]
+}

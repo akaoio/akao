@@ -1,0 +1,54 @@
+[
+    {
+        "name": "ETH",
+        "type": "currency",
+        "symbol": "ethereum-eth-logo.svg",
+        "chain": 11155111,
+        "wrapped": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+        "decimals": 18,
+        "featured": true
+    },
+    {
+        "name": "WETH",
+        "type": "currency",
+        "symbol": "ethereum-eth-logo.svg",
+        "ABI": "WETH",
+        "chain": 11155111,
+        "address": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+        "decimals": 18
+    },
+    {
+        "name": "WBTC",
+        "type": "currency",
+        "symbol": "wrapped-bitcoin-wbtc-logo.svg",
+        "ABI": "WBTC",
+        "chain": 11155111,
+        "address": "0x92f3B59a79bFf5dc60c0d59eA13a44D082B2bdFC",
+        "decimals": 8,
+        "featured": true
+    },
+    {
+        "name": "USDT",
+        "type": "currency",
+        "symbol": "tether-usdt-logo.svg",
+        "group": "stables",
+        "fiat": "USD",
+        "ABI": "ERC20",
+        "chain": 11155111,
+        "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
+        "decimals": 6,
+        "featured": true
+    },
+    {
+        "name": "USDC",
+        "type": "currency",
+        "symbol": "usd-coin-usdc-logo.svg",
+        "group": "stables",
+        "fiat": "USD",
+        "ABI": "ERC20",
+        "chain": 11155111,
+        "address": "0xcc4Ea4Ac242eb8ecd594592F0Fa71b16bbB414fA",
+        "decimals": 9,
+        "featured": true
+    }
+]
