@@ -29,8 +29,8 @@ export default class Wallet {
     get seed() {
         const { sea } = globalThis
         if (!Access.get("authenticated") || !Access.get("pair")?.priv || Access.get("wallet")?.id == null || !sea) return
-        const id = Access.get("wallet").id
         const priv = Access.get("pair").priv
+        const id = Access.get("wallet").id
         const seed = sha256(priv + id)
         return seed
     }

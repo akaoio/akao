@@ -1,13 +1,16 @@
-import "/UI/layouts/main/index.js"
-import "/UI/components/context/index.js"
 import { html } from "/core/UI.js"
-import "/UI/components/addresses/index.js"
+import "/UI/layouts/main/index.js"
+import "/UI/components/wallets/index.js"
+import "/UI/components/context/index.js"
+import "/UI/components/select/index.js"
 
 export const template = html`
     <layout-main>
         <h1><ui-context data-key="dictionary.deposit" /></h1>
         <div>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, at convallis nisl efficitur a. Sed sed nunc eget nunc efficitur efficitur. Donec ut ligula id enim efficitur commodo. In hac habitasse platea dictumst. Curabitur ac felis a enim efficitur tincidunt. Donec in odio sed nisl convallis varius. Maecenas ac nisi id ipsum faucibus fermentum. Donec et ligula a metus efficitur tristique. Donec ut ligula id enim efficitur commodo. In hac habitasse platea dictumst. Curabitur ac felis a enim efficitur tincidunt. Donec in odio sed nisl convallis varius. Maecenas ac nisi id ipsum faucibus fermentum.
+            <ui-wallets />
+            <ui-select id="chain" data-name="chain" data-placeholder="dictionary.chain" />
+            <ui-select id="currency" data-name="currency" data-placeholder="dictionary.currency" />
         </div>
     </layout-main>
 `

@@ -1,4 +1,4 @@
-import { Indexes, Chains, Wallets, Dexs, Statics } from "./Stores.js"
+import { Chains, Wallets, Dexs, Statics } from "./Stores.js"
 import { Context, getTheme, getFiat, getReferrer } from "./Context.js"
 import { BROWSER } from "./Utils.js"
 import Router from "./Router.js"

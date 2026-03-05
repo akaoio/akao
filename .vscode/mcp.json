@@ -1,0 +1,9 @@
+{
+    "servers": {
+        "chrome-devtools": {
+            "type": "stdio",
+            "command": "/usr/local/bin/npx",
+            "args": ["-y", "chrome-devtools-mcp@latest"]
+        }
+    }
+}

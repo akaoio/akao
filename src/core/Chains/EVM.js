@@ -1,6 +1,5 @@
 import { BigNumber } from "../Utils/bignumber.js"
 import { loadContract, loadABI } from "../Utils/contracts.js"
-import { base64UrlToHex } from "../Utils/crypto.js"
 import { merge } from "../Utils/data.js"
 import { ethers } from "../Ethers.js"
 
@@ -63,8 +62,7 @@ export const EVM = {
         return new this.connector.JsonRpcProvider(RPC, network)
     },
     private: function (seed) {
-        const hex = base64UrlToHex(seed)
-        return "0x" + hex
+        return "0x" + seed
     },
     public: function (key) {
         const wallet = new this.connector.Wallet(key)
