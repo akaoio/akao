@@ -4,6 +4,10 @@
             "type": "stdio",
             "command": "/usr/local/bin/npx",
             "args": ["-y", "chrome-devtools-mcp@latest"]
+        },
+        "github": {
+            "type": "http",
+            "url": "https://api.githubcopilot.com/mcp/"
         }
     }
 }
