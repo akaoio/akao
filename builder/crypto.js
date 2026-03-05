@@ -11,11 +11,11 @@ async function processABIs() {
         return { files: 0, methods: 0 }
     }
 
-    const files = (await dir(abiRoot)).filter((file) => file.endsWith(".json"))
+    const files = (await dir(abiRoot)).filter((file) => file.endsWith(".yaml"))
     let methodCount = 0
 
     for (const file of files) {
-        const name = file.replace(/\.json$/i, "")
+        const name = file.replace(/\.yaml$/i, "")
         const content = await load([...abiRoot, file])
         if (!Array.isArray(content)) continue
 
@@ -45,8 +45,8 @@ async function processChains() {
         const chainPath = [...chainsRoot, chainName]
         if (!(await isChainDirectory(chainPath))) continue
 
-        const configsPath = [...chainPath, "configs.json"]
-        const currenciesPath = [...chainPath, "currencies.json"]
+        const configsPath = [...chainPath, "configs.yaml"]
+        const currenciesPath = [...chainPath, "currencies.yaml"]
         if (!(await exist(configsPath)) || !(await exist(currenciesPath))) continue
 
         const configs = await load(configsPath)
@@ -93,7 +93,7 @@ async function processChains() {
                     const versionPath = [...dexPath, version]
                     if (!(await isChainDirectory(versionPath))) continue
 
-                    const defiConfigsPath = [...versionPath, "configs.json"]
+                    const defiConfigsPath = [...versionPath, "configs.yaml"]
                     if (!(await exist(defiConfigsPath))) continue
 
                     const defiConfigs = await load(defiConfigsPath)
@@ -107,7 +107,7 @@ async function processChains() {
 
                     await write([...dest, "chains", chainId, "defis", dex, version, "configs.json"], configMap)
 
-                    const poolsPath = [...versionPath, "pools.json"]
+                    const poolsPath = [...versionPath, "pools.yaml"]
                     const pools = (await exist(poolsPath)) ? await load(poolsPath) : []
                     const validPools = Array.isArray(pools) ? pools.filter((pool) => pool?.address) : []
 

@@ -1,7 +1,8 @@
-import { Indexes, Statics, Wallets } from "./Stores.js"
-import { NODE, load, merge } from "./Utils.js"
+import { Statics, Wallets } from "./Stores.js"
+import { NODE, merge } from "./Utils.js"
 import { loadContract } from "./Utils/contracts.js"
 import { EVM } from "./Chains/EVM.js"
+import DB from "./DB.js"
 
 // Chain Architectures
 const Architectures = { EVM }
@@ -27,33 +28,22 @@ export default class Chain {
 
     async init(configs = {}) {
         this.configs = this.configs || {}
-        const stores = { chain: {}, currencies: {}, stables: {} }
-        stores.chain.indexes = await Indexes.Statics.get("chains").get(this.id).once()
-        stores.chain.statics = Statics.chains[this.id]
-        if (!configs || !Object.keys(configs).length) configs = stores.chain.indexes || stores.chain.statics || (await load(["statics", "chains", this.id, "configs.json"]))
+        if (!configs || !Object.keys(configs).length) configs = await DB.get(["statics", "chains", this.id, "configs.json"])
         merge(this.configs, configs)
 
         // Load list of currencies for this chain, it's an array of addresses only
         if (!this.configs?.currencies) {
-            stores.currencies.indexes = await Indexes.Statics.get("chains").get(this.id).get("currencies").once()
-            stores.currencies.statics = Statics.chains[this.id]?.currencies
-            const currencies = stores.currencies.indexes || stores.currencies.statics || (await load(["statics", "chains", this.id, "currencies.json"]))
+            const currencies = await DB.get(["statics", "chains", this.id, "currencies.json"])
             merge(this.configs, { currencies })
         }
 
         // Load precalculated stables
         if (!this.configs?.stables) {
-            stores.stables.indexes = await Indexes.Statics.get("chains").get(this.id).get("stables").once()
-            stores.stables.statics = Statics.chains[this.id]?.stables
-            const stables = stores.stables.indexes || stores.stables.statics || (await load(["statics", "chains", this.id, "stables.json"]))
+            const stables = await DB.get(["statics", "chains", this.id, "stables.json"])
             merge(this.configs, { stables })
         }
 
         await this.load({ address: "native" }) // Load native currency
-
-        // Merge configs into global Indexes and Statics.chains
-        if (!stores.chain.indexes) Indexes.Statics.get("chains").get(this.id).put(this.configs)
-        if (!stores.chain.statics) Statics.chains[this.id] = this.configs || {}
 
         // Load architecture
         if (Architectures[this.configs?.architecture]) Object.assign(this, Architectures[configs?.architecture])

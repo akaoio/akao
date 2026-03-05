@@ -1,6 +1,5 @@
-import { NODE } from "./environment.js"
-import { load, exist } from "../FS.js"
-import { Indexes, Lives, Statics } from "../Stores.js"
+import { Lives, Statics } from "../Stores.js"
+import DB from "../DB.js"
 
 export const loadContract = async ({ chain, address } = {}) => {
     if (!chain || !address) return
@@ -9,38 +8,36 @@ export const loadContract = async ({ chain, address } = {}) => {
     if (!Statics.chains[chain]) Statics.chains[chain] = {}
     if (!Statics.chains[chain].contracts) Statics.chains[chain].contracts = {}
 
-    // Try to get contract from different sources
-    const indexes = await Indexes.Statics.get("contracts").get(chain).get(address).once()
-    const statics = Statics.chains[chain].contracts?.[address]
-    let contract = indexes || statics || (await load(["statics", "chains", chain, "contracts", `${address}.json`]))
+    // Return from in-memory cache immediately (synchronous fast path)
+    if (Statics.chains[chain].contracts[address]) return Statics.chains[chain].contracts[address]
+
+    // Load via DB: hash-validated, IndexedDB-cached, falls back to file
+    const contract = await DB.get(["statics", "chains", chain, "contracts", `${address}.json`])
     if (!contract) return
 
-    // Cache the contract for future use
-    if (!indexes) Indexes.Statics.get("contracts").get(chain).get(address).put(contract)
-    if (!statics) Statics.chains[chain].contracts[address] = contract
+    // Store in-memory for fast repeated access within the same session
+    Statics.chains[chain].contracts[address] = contract
     return contract
 }
 
 export const loadABI = async ({ ABI, methods = [] } = {}) => {
-    if (!Statics.ABIs) Statics.ABIs = Statics.ABIs || {}
-    if (!Statics.ABIs[ABI]) Statics.ABIs[ABI] = Statics.ABIs[ABI] || {}
+    if (!Statics.ABIs) Statics.ABIs = {}
+    if (!Statics.ABIs[ABI]) Statics.ABIs[ABI] = {}
     const result = []
 
     if (typeof methods == "string") methods = [methods]
 
     await Promise.all(
         methods.map(async (method) => {
-            // Check IndexedDB first
-            const indexes = await Indexes.Statics.get("ABIs").get(ABI).get(method).once()
-            const statics = Statics.ABIs[ABI][method]
+            // Return from in-memory cache immediately (synchronous fast path)
+            if (Statics.ABIs[ABI][method]) return result.push(Statics.ABIs[ABI][method])
 
-            let data = indexes || statics
-
-            const staticsPath = ["statics", "ABIs", ABI, `${method}.json`]
-            if (!data && (!NODE || (await exist(staticsPath)))) data = await load(staticsPath)
+            // Load via DB: hash-validated, IndexedDB-cached, falls back to file
+            const data = await DB.get(["statics", "ABIs", ABI, `${method}.json`])
             if (!data) return
-            if (!indexes) Indexes.Statics.get("ABIs").get(ABI).get(method).put(data)
-            if (!statics) Statics.ABIs[ABI][method] = data
+
+            // Store in-memory for fast repeated access within the same session
+            Statics.ABIs[ABI][method] = data
             result.push(data)
         })
     )

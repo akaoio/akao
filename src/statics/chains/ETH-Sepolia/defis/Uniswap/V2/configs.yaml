@@ -1,0 +1,15 @@
+contracts:
+  - chain: 11155111
+    name: UniswapV2Factory
+    type: factory
+    dex: Uniswap
+    version: V2
+    ABI: UniswapV2Factory
+    address: "0xF62c03E08ada871A0bEb309762E260a7a6a880E6"
+  - chain: 11155111
+    name: UniswapV2Router
+    type: router
+    dex: Uniswap
+    version: V2
+    ABI: UniswapV2Router
+    address: "0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3"

@@ -1,8 +1,9 @@
-import { Indexes, Statics, Chains, Wallets } from "./Stores.js"
-import { NODE, load, merge } from "./Utils.js"
+import { Chains, Wallets } from "./Stores.js"
+import { merge } from "./Utils.js"
 import { loadContract } from "./Utils/contracts.js"
 import { V2 } from "./DeFi/V2.js"
 import { V3 } from "./DeFi/V3.js"
+import DB from "./DB.js"
 
 // Chain Architectures
 const Architectures = { V2, V3 }
@@ -13,30 +14,20 @@ export default class Dex {
         Object.assign(this.configs, configs)
         if (!this.configs.dex || !this.configs.version) throw new Error("Dex's configs not found")
         this.pools = {}
-        Statics.defis = Statics.defis || {}
         this.init = this.init.bind(this)
         this.load = this.load.bind(this)
     }
 
     async init(configs = {}) {
         this.configs = this.configs || {}
-        const stores = { dex: {}, pools: {} }
-        stores.dex.indexes = await Indexes.Statics.get("defis").get(this.id).once()
-        stores.dex.statics = Statics.defis[this.id]
-        if (!configs || !Object.keys(configs).length) configs = stores.dex.indexes || stores.dex.statics || (await load(["statics", "chains", this.configs.chain, "defis", this.configs.dex, this.configs.version, "configs.json"]))
+        if (!configs || !Object.keys(configs).length) configs = await DB.get(["statics", "chains", this.configs.chain, "defis", this.configs.dex, this.configs.version, "configs.json"])
         merge(this.configs, configs)
 
         // Load list of pools for this dex, it's an array of addresses only
         if (!this.configs?.pools) {
-            stores.pools.indexes = await Indexes.Statics.get("defis").get(this.id).get("pools").once()
-            stores.pools.statics = Statics.defis[this.id]?.pools
-            const pools = stores.pools.indexes || stores.pools.statics || (await load(["statics", "chains", this.configs.chain, "defis", this.configs.dex, this.configs.version, "pools.json"]))
+            const pools = await DB.get(["statics", "chains", this.configs.chain, "defis", this.configs.dex, this.configs.version, "pools.json"])
             merge(this.configs, { pools })
         }
-
-        // Merge configs into global Indexes and Statics.defis
-        if (!stores.dex.indexes) Indexes.Statics.get("defis").get(this.id).put(this.configs)
-        if (!stores.dex.statics) Statics.defis[this.id] = this.configs || {}
 
         // Load architecture
         if (Architectures[this.configs?.version]) Object.assign(this, Architectures[this.configs.version])

@@ -78,7 +78,7 @@ const loadABI = async (name) => {
     if (!name) return
     if (abiCache.has(name)) return abiCache.get(name)
 
-    const abi = await load(["src", "statics", "ABIs", `${name}.json`])
+    const abi = await load(["src", "statics", "ABIs", `${name}.yaml`])
     if (!Array.isArray(abi) || !abi.length) return
 
     abiCache.set(name, abi)
@@ -149,7 +149,7 @@ const orderTokens = (tokenA, tokenB) => {
 }
 
 const savePools = async ({ chainName, dex, version, pools }) => {
-    await write(["src", "statics", "chains", chainName, "defis", dex, version, "pools.json"], pools)
+    await write(["src", "statics", "chains", chainName, "defis", dex, version, "pools.yaml"], pools)
 }
 
 const scanVersion = async ({ chainName, chainConfigs, chainData, dex, version, versionData, provider, rpc, existingAddresses }) => {

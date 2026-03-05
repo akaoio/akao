@@ -57,7 +57,7 @@ const getWorkingRPC = async (chainName, chainConfigs) => {
 const loadABI = async (name) => {
     if (!name) return
     if (abiCache.has(name)) return abiCache.get(name)
-    const abi = await load(["src", "statics", "ABIs", `${name}.json`])
+    const abi = await load(["src", "statics", "ABIs", `${name}.yaml`])
     if (!Array.isArray(abi) || !abi.length) return
     abiCache.set(name, abi)
     return abi
@@ -143,7 +143,7 @@ const scanChainCurrencies = async (chainName, chainData, { force = false } = {})
         }
 
         if (updated) {
-            await write(["src", "statics", "chains", chainName, "currencies.json"], currencies)
+            await write(["src", "statics", "chains", chainName, "currencies.yaml"], currencies)
             console.log(color.ok(`Updated currencies for ${chainName}`))
         }
 
