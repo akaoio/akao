@@ -80,18 +80,36 @@ try {
     // File doesn't exist or error checking, will fetch new data
 }
 
-// Clean build folder, preserving build/geo if it exists
+// Clean build folder, preserving build/geo and crypto outputs if they exist
 log.info("Cleaning build folder...")
 const geoPath = [paths.build.root, "geo"]
 const hasGeo = await exist(geoPath)
 
-if (hasGeo) {
-    log.info("Preserving geo data, cleaning other build files...")
+// Crypto-generated directories inside build/statics
+const cryptoDirs = ["ABIs", "chains"]
+const hasCryptoDirs = (await Promise.all(cryptoDirs.map(d => exist([...paths.build.statics, d])))).some(Boolean)
+
+if (hasGeo || hasCryptoDirs) {
+    const preserved = []
+    if (hasGeo) preserved.push("geo")
+    if (hasCryptoDirs) preserved.push("statics (crypto data)")
+    log.info(`Preserving: ${preserved.join(", ")}, cleaning other build files...`)
+
     const buildItems = await dir([paths.build.root])
     for (const item of buildItems) {
-        if (item !== "geo") {
-            await remove([paths.build.root, item])
+        if (item === "geo" && hasGeo) continue
+
+        if (item === "statics" && hasCryptoDirs) {
+            // Clean statics selectively, preserving crypto-generated subdirs
+            const staticsItems = await dir(paths.build.statics)
+            for (const staticsItem of staticsItems) {
+                if (cryptoDirs.includes(staticsItem)) continue
+                await remove([...paths.build.statics, staticsItem])
+            }
+            continue
         }
+
+        await remove([paths.build.root, item])
     }
 } else {
     await remove([paths.build.root])

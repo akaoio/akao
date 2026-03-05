@@ -23,6 +23,9 @@ events.on("authenticate", () => {
 
 Progress.set({
     Site: false,
+    Chains: false,
+    Dexs: false,
+    Wallets: false,
     GDB: false,
     User: false,
     Context: false
@@ -77,6 +80,9 @@ thread.init = async function () {
         themes: await DB.get(["statics", "themes.json"])
     })
     Progress.set({ Site: true })
+    Progress.set({ Chains: await Construct.Chains() })
+    Progress.set({ Dexs: await Construct.Dexs() })
+    Progress.set({ Wallets: await Construct.Wallets() })
     Progress.set({ GDB: await Construct.GDB() })
     // Listen to the popstate event, which is triggered when the user navigates back to the previous page
     // Updates Context with the new route info

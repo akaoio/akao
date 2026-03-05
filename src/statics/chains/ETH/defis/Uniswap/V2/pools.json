@@ -240,5 +240,38 @@
         "token0": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
         "token1": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
         "fee": 3000
+    },
+    {
+        "chain": 1,
+        "type": "pool",
+        "dex": "Uniswap",
+        "version": "V2",
+        "ABI": "UniswapV2Pool",
+        "address": "0xb7520724abb3f1DD06c2338cA56d68BB3A58Cbf2",
+        "token0": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+        "token1": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "fee": 3000
+    },
+    {
+        "chain": 1,
+        "type": "pool",
+        "dex": "Uniswap",
+        "version": "V2",
+        "ABI": "UniswapV2Pool",
+        "address": "0x21839E2444a49270126CEaBFbB6320ef42880217",
+        "token0": "0x50327c6c5a14DCaDE707ABad2E27eB517df87AB5",
+        "token1": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "fee": 3000
+    },
+    {
+        "chain": 1,
+        "type": "pool",
+        "dex": "Uniswap",
+        "version": "V2",
+        "ABI": "UniswapV2Pool",
+        "address": "0x1A0323DE8D056F6572669ACA723Abf6BC8eFC77b",
+        "token0": "0x85F17Cf997934a597031b2E18a9aB6ebD4B9f6a4",
+        "token1": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "fee": 3000
     }
 ]

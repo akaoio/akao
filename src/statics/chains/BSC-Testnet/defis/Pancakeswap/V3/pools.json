@@ -53,5 +53,16 @@
         "token0": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
         "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
         "fee": 500
+    },
+    {
+        "chain": 97,
+        "type": "pool",
+        "dex": "Pancakeswap",
+        "version": "V3",
+        "ABI": "PancakeswapV3Pool",
+        "address": "0x4025602F13e7f328eeb9f5B3557A2817348fC4C6",
+        "token0": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+        "token1": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "fee": 10000
     }
 ]

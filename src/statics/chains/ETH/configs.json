@@ -11,7 +11,6 @@
         "https://eth.blockrazor.xyz",
         "https://eth.merkle.io",
         "https://1rpc.io/eth",
-        "wss://ethereum.callstaticrpc.com",
         "wss://ethereum-rpc.publicnode.com"
     ],
     "explorer": "https://etherscan.io"

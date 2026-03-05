@@ -1,8 +1,9 @@
 name: localhost
 brand:
-  text: /statics/sites/localhost/images/branding.svg
-  symbol: /statics/sites/localhost/images/logo.svg
-favicon: /statics/sites/localhost/images/mimiza.svg
+  text: /statics/sites/localhost/images/akao-text.svg
+  symbol: /statics/sites/localhost/images/akao-symbol.svg
+favicon: /statics/sites/localhost/images/favicon.svg
 env: development
 locale: en
 fiat: USD
+chains: [ 1, 56 ]
