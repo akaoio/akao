@@ -87,7 +87,7 @@ shop/
 │       └── themes.yaml      # Theme configurations
 ├── build/                    # Generated output (gitignored)
 ├── build.js                  # Build script
-├── server.js                 # Dev server with hot reload
+├── dev.js                 # Dev server with hot reload
 └── docs/                     # Documentation and thoughts
 ```
 

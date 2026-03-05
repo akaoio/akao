@@ -1,5 +1,5 @@
 import Thread from "/core/Thread.js"
-import { loop, load, exist } from "/core/Utils.js"
+import { loop } from "/core/Utils.js"
 import { Indexes } from "/core/Stores.js"
 import DB from "/core/DB.js"
 
@@ -25,15 +25,14 @@ thread.init = async function () {
                     continue
 
                 const _ = [...path, "_.hash"]
-                // Get existing hash
-                const memory = await Indexes.Hashes.get(_).once()
-                const hash = await load(_)
-                if (memory && hash && memory === hash) {
+                // Compare old vs new directory hash via DB (handles Indexes.Hashes internally)
+                const before = await Indexes.Hashes.get(_).once()
+                const after = await DB.get(_)
+                if (!after) continue
+                if (before === after) {
                     skippables.push(path)
                     continue
                 }
-
-                await Indexes.Hashes.get(_).put(hash)
 
                 // Now look for all IDB keys start with this path and check their hashes
                 const range = IDBKeyRange.bound(path, [...path, []], false, true)

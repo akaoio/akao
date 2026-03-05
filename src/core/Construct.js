@@ -57,18 +57,17 @@ export const Construct = {
         console.log("Constructed: Dexs")
         return true
     },
-    Wallet: async function ({ chain, seed } = {}) {
+    Wallet: async function ({ chain } = {}) {
         if (!chain) return
         const { Wallet } = await import("./Wallet.js")
-        const instance = new Wallet({ chain, seed })
+        const instance = new Wallet({ chain })
         if (Wallets[instance.id]) return Wallets[instance.id]
         if (typeof instance?.init === "function") await instance.init()
         Wallets[instance.id] = instance
         return true
     },
-    Wallets: async function ({ seed } = {}) {
-        if (!seed) seed = await Indexes.Wallet.get("seed").once()
-        for (const chain in Chains) await Construct.Wallet({ chain, seed })
+    Wallets: async function () {
+        for (const chain in Chains) await Construct.Wallet({ chain })
         console.log("Constructed: Wallets")
         return true
     },

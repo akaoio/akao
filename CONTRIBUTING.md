@@ -95,7 +95,7 @@ shop/
 │       └── sites/      # Site configurations
 ├── build/             # Generated output (gitignored)
 ├── build.js           # Build script
-└── server.js          # Dev server
+└── dev.js          # Dev server
 ```
 
 ## Coding Style

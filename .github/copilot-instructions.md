@@ -224,7 +224,7 @@ Traverse hierarchy by following `parent`/`children`. See [src/UI/components/geo/
 - [src/core/DB.js](src/core/DB.js) → Static file loader with caching
 - [src/core/FS.js](src/core/FS.js) → Universal file operations
 - [builder/core.js](builder/core.js) → Build system implementation
-- [server.js](server.js) → Dev server with hot reload
+- [dev.js](dev.js) → Dev server with hot reload
 
 ## Testing
 Run tests: `npm test`. Core tests in [test.js](test.js). Currently tests core modules and geo data integrity.

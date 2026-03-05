@@ -25,8 +25,8 @@
   "author": "mimiza",
   "type": "module",
   "scripts": {
-    "start": "node build.js core && node server.js",
-    "build": "node build.js core && node build.js crypto && node build.js geo",
+    "start": "node build.js core && node dev.js",
+    "build": "node build.js crypto && node build.js core && node build.js geo",
     "build:core": "node build.js core",
     "build:crypto": "node build.js crypto",
     "build:geo": "node build.js geo",
@@ -37,7 +37,7 @@
     "test": "node test.js core && node test.js geo",
     "test:core": "node test.js core",
     "test:geo": "node test.js geo",
-    "serve": "node server.js",
+    "dev": "node dev.js",
     "format": "prettier --write \"src/**/*.js\"",
     "lint": "eslint \"src/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.js\" --fix"
