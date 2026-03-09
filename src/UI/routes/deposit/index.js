@@ -1,7 +1,6 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
-import { Wallets } from "/core/Stores.js"
-import {Access} from "/core/Access.js"
+import { Elements } from "/core/Stores.js"
 
 export class DEPOSIT extends HTMLElement {
     constructor() {
@@ -11,10 +10,8 @@ export class DEPOSIT extends HTMLElement {
     }
 
     connectedCallback() {
-        Access.on("authenticated", () => {
-            console.log("AUT", Access.get("pair"), Access.get("wallet"))
-            console.log("WALLET", Wallets)
-        })
+        const check = Elements.Access?.checkpoint()
+        if (!check) return
     }
 }
 

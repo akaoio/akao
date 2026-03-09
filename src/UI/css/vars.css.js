@@ -78,9 +78,9 @@ export const styles = css`
         --h2-10: calc(360 / 12 * 10);
         --h2-11: calc(360 / 12 * 11);
         --h2-12: calc(360 / 12 * 12);
-        --h2: var(--h2-5);
+        --h2: var(--h2-3);
         --s2: 70%;
-        --l2: 40%;
+        --l2: 60%;
 
         /* Color System */
         --background: hsl(var(--h1), var(--s1), var(--l1));

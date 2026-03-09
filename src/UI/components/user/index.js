@@ -24,7 +24,7 @@ export class USER extends HTMLElement {
             Access.on("authenticated", () => {
                 if (!Access.get("authenticated")) return this.identicon.removeAttribute("data-seed")
             }),
-            Access.on("wallet", this.render)
+            Access.on("avatar", this.render)
         )
         if (Access.get("authenticated")) this.render()
     }
@@ -40,10 +40,10 @@ export class USER extends HTMLElement {
     }
 
     async render() {
-        if (Access.get("wallet")?.id == null) return
+        if (Access.get("avatar")?.id == null) return
         const { sea } = globalThis
         if (!sea) return
-        const seed = await sea.work(Access.get("seed"), Access.get("wallet").id)
+        const seed = await sea.work(Access.get("seed"), Access.get("avatar").id)
         this.identicon.dataset.seed = seed
     }
 }

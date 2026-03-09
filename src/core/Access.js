@@ -20,7 +20,8 @@ export const Access = new States({
     id: null, // This is the passkey's credential ID
     pub: null, // This is the public key of the passkey, not pub of the pair bellow
     pair: null, // This is the key pair generated from the user's ID
-    wallet: null // This is only ID of the current wallet, not the wallet object itself, we use this to calculate wallet seed.
+    wallet: null, // This is only ID of the current wallet, not the wallet object itself, we use this to calculate wallet seed.
+    avatar: null // This is only ID of the current avatar, not the avatar object itself, we use this to calculate avatar seed.
 })
 
 /**
@@ -68,6 +69,50 @@ export function setWallet({ id, total } = {}) {
 }
 
 /**
+ * Retrieve avatar information from local storage.
+ * Returns cached avatar data or defaults to avatar ID 0.
+ * Automatically fixes and re-saves malformed avatar data.
+ * @returns {Object} Avatar object with id and total
+ */
+export function getAvatar() {
+    const memory = globalThis.localStorage ? globalThis.localStorage.getItem("avatar") : null
+    let data = { id: 0 }
+    let avatar
+    try {
+        if (memory) data = JSON.parse(memory)
+        if (typeof data === "object") avatar = JSON.stringify(data)
+    } catch (error) {}
+    // Auto-correct and save if data was modified during parsing
+    if (avatar && avatar !== memory && globalThis.localStorage) globalThis.localStorage.setItem("avatar", avatar)
+    return data
+}
+
+/**
+ * Save or update avatar information in local storage and Access state.
+ * Only updates if user is authenticated.
+ * @param {Object} options - Avatar update options
+ * @param {number} options.id - Avatar ID (uses current avatar if not provided)
+ * @param {number} options.total - Avatar total (uses current avatar if not provided)
+ * @returns {Object} Updated avatar data
+ */
+export function setAvatar({ id, total } = {}) {
+    // Only proceed if user is authenticated and id is not null and id is different to the current wallet ID
+    if (!Access.get("authenticated")) return
+    const avatar = Access.get("avatar") ?? getAvatar()
+    let data = {
+        id: id ?? avatar.id ?? 0,
+        total: total ?? avatar.total
+    }
+    let json
+    try {
+        json = JSON.stringify(data)
+    } catch (error) {}
+    if (json && globalThis.localStorage) globalThis.localStorage.setItem("avatar", json)
+    Access.set({ avatar: data })
+    return data
+}
+
+/**
  * Internal handler for completing authentication after WebAuthn credential verification.
  * Generates SEA key pair from credential hash and updates Access state.
  * @param {Object} credential - WebAuthn credential from create() or authenticate()
@@ -84,7 +129,8 @@ async function next(credential) {
         seed: credential.seed,
         credential,
         pair,
-        wallet: getWallet() // Get the wallet ID from the local storage
+        wallet: getWallet(), // Get the wallet ID from the local storage
+        avatar: getAvatar(), // Get the avatar ID from the local storage
     })
     return credential
 }
@@ -168,5 +214,5 @@ export function signin(data) {
  * Clears all authentication state and user information from Access store.
  */
 export function signout() {
-    Access.set({ authenticated: false, id: null, seed: null, pub: null, pair: null, wallet: null })
+    Access.set({ authenticated: false, id: null, seed: null, pub: null, pair: null, wallet: null, avatar: null })
 }

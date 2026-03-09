@@ -14,11 +14,11 @@ export class WebAuthn {
      * @param {Object} configs - Configuration object for WebAuthn
      */
     constructor(configs = {}) {
-        this.configs = { configs }
+        this.configs = { ...configs }
         // Set relying party (RP) information - identifies the website to the authenticator
         this.configs.rp = this.configs?.rp || {}
         this.configs.rp.id = this.configs.rp?.id || Statics.domain
-        this.configs.rp.name = this.configs.rp?.name || Statics.site.name
+        this.configs.rp.name = this.configs.rp?.name || Statics.site?.name
         this.create = this.create.bind(this)
         this.authenticate = this.authenticate.bind(this)
         this.sign = this.sign.bind(this)

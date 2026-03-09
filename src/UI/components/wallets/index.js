@@ -1,16 +1,24 @@
 import template from "./template.js"
 import { Access, setWallet } from "/core/Access.js"
 import { html, render } from "/core/UI.js"
+import { Chains } from "/core/Stores.js"
+import States from "/core/States.js"
 
 export class WALLETS extends HTMLElement {
     constructor() {
         super()
+        this.states = new States({
+            currency: null
+        })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.subscriptions = []
         this.step = 5
         this.increase = this.increase.bind(this)
         this.decrease = this.decrease.bind(this)
+        this.create = this.create.bind(this)
+        this.remove = this.remove.bind(this)
+        this.select = this.select.bind(this)
         this.render = this.render.bind(this)
     }
 
@@ -33,7 +41,7 @@ export class WALLETS extends HTMLElement {
         return setWallet({ total: Number(value) })
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         this.wallets = this.shadowRoot.querySelector("#wallets")
         this.shadowRoot.querySelector("#increase").addEventListener("click", this.increase)
         this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease)
@@ -46,6 +54,13 @@ export class WALLETS extends HTMLElement {
             () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
             () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease)
         )
+
+        // Load currency contracts for all chains
+        for (const chain of Object.values(Chains)) {
+            if (!chain.configs?.currencies?.length) return
+            if (chain.configs?.currencies?.length !== Object.values(chain?.currencies)?.length) await chain.load()
+        }
+
         if (Access.get("authenticated")) this.render()
     }
 
@@ -76,7 +91,7 @@ export class WALLETS extends HTMLElement {
                             element.addEventListener("click", select)
                             this.subscriptions.push(() => element.removeEventListener("click", select))
                         }}>
-                        <ui-identicon data-size="7" data-seed="${seed}" />
+                        <ui-identicon data-size="5" data-seed="${seed}" />
                     </label>
                 </span>
             `)
@@ -95,6 +110,32 @@ export class WALLETS extends HTMLElement {
     async select({ id }) {
         if (!this.wallets.querySelector(`input#i${id}`)) await this.create()
         this.id = id
+    }
+
+    get currencies() {
+        const currencies = {}
+        for (const chain of Object.values(Chains)) {
+            for (const currency of Object.values(chain.currencies)) {
+                if (!currency?.name) continue
+                currencies[currency.name] = true
+            }
+        }
+        return Object.keys(currencies)
+            .sort()
+            .map((name) => ({ label: name, value: name }))
+    }
+
+    get chains() {
+        const currency = this.states.get("currency")
+        if (!currency) return []
+        return Object.values(Chains)
+            .filter((chain) =>
+                Object.values(chain.currencies).some((c) => c.name === currency)
+            )
+            .map((chain) => ({
+                label: chain.configs.name || String(chain.id),
+                value: String(chain.id)
+            }))
     }
 
     async render() {

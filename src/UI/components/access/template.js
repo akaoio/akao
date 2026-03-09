@@ -1,4 +1,3 @@
-import "/UI/layouts/main/index.js"
 import "/UI/components/context/index.js"
 import "/UI/components/modal/index.js"
 import "/UI/components/button/index.js"

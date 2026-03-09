@@ -55,7 +55,12 @@ export default class Chain {
     }
 
     async load({ address } = {}) {
-        if (!address) return
+        if (!address) {
+            if (!this.configs?.currencies?.length) return
+            const currencies = this.configs.currencies.filter((currency) => !this.currencies[currency])
+            for (const currency of currencies) await this.load({ address: currency })
+            return
+        }
         const contract = await loadContract({ chain: this.id, address })
         if (!contract || contract.type !== "currency") return
         this.currencies[address] = contract

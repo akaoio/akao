@@ -6,7 +6,6 @@ import "/UI/components/locales/index.js"
 import "/UI/components/themes/index.js"
 import "/UI/components/user/index.js"
 import "/UI/components/fiats/index.js"
-import "/UI/components/access/index.js"
 import "/UI/components/profile/index.js"
 import "/UI/components/notifications/index.js"
 import styles from "./styles.css.js"
@@ -26,7 +25,6 @@ export const template = html`
             </ui-navigator>
         </ui-navigator>
     </footer>
-    <ui-access />
     <ui-profile />
     <ui-notifications />
 `

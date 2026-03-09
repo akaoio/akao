@@ -3,6 +3,7 @@ import { Context } from "/core/Context.js"
 import { Access, signup, signin } from "/core/Access.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import WebAuthn from "/core/WebAuthn.js"
 
 export class ACCESS extends HTMLElement {
     constructor() {
@@ -39,6 +40,7 @@ export class ACCESS extends HTMLElement {
     }
 
     disconnectedCallback() {
+        if (Elements.Access === this) Elements.Access = null
         this.subscriptions.forEach((off) => off())
     }
 
@@ -82,7 +84,7 @@ export class ACCESS extends HTMLElement {
         this.modal.showModal()
         this.show("sign-screen")
         this.shadowRoot.querySelector("#sign").addEventListener("click", () =>
-            webauthn.sign({ data }).then((data) => {
+            WebAuthn.sign({ data }).then((data) => {
                 if (typeof callback === "function") callback(data)
                 this.modal.close()
             })

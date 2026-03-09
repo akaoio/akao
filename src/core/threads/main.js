@@ -8,6 +8,7 @@ import { Context } from "/core/Context.js"
 import Router from "/core/Router.js"
 import DB from "/core/DB.js"
 import styles from "/css/global.css.js"
+import ACCESS from "/UI/components/access/index.js"
 import { SPLASH } from "/UI/components/splash/index.js"
 
 const thread = new Thread()
@@ -94,4 +95,6 @@ thread.init = async function () {
     Context.on("locale", ({ value: locale }) => Router.setLocale(locale.code))
     Progress.set({ Context: await Construct.Context() })
     splash(false)
+    const access = new ACCESS()
+    document.body.appendChild(access)
 }
