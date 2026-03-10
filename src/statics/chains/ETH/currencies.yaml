@@ -51,7 +51,7 @@
   featured: true
 - name: USDe
   type: currency
-  symbol: ethena-usde-logo.svg
+  symbol: ethena-usde-usde-logo.svg
   group: stables
   fiat: USD
   ABI: ERC20

@@ -3,9 +3,15 @@ import { css } from "/core/UI.js"
 export const styles = css`
     :host {
         width: 100%;
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: var(--space);
+        & > div:nth-child(2) {
+            grid-column: 1 / -1;
+        }
+        ui-select {
+            --select-width: stretch;
+        }
         header {
             --icon: var(--icon-md);
             width: 100%;

@@ -34,13 +34,13 @@ export class AVATARS extends HTMLElement {
     }
 
     connectedCallback() {
-        this.avatars = this.shadowRoot.querySelector("#avatars")
+        this.$avatars = this.shadowRoot.querySelector("#avatars")
         this.shadowRoot.querySelector("#increase").addEventListener("click", this.increase)
         this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease)
         this.subscriptions.push(
             Access.on("authenticated", ({ value }) => {
                 this.style.display = value ? "flex" : "none"
-                if (!value) while (this.avatars.firstChild) this.avatars.removeChild(this.avatars.firstChild)
+                if (!value) while (this.$avatars.firstChild) this.$avatars.removeChild(this.$avatars.firstChild)
             }),
             Access.on("avatar", this.render),
             () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
@@ -62,9 +62,9 @@ export class AVATARS extends HTMLElement {
     }
 
     async create() {
-        if (this.avatars.children.length >= this.total) return
+        if (this.$avatars.children.length >= this.total) return
         const templates = []
-        for (let id = this.avatars.children.length; id < this.total; id++) {
+        for (let id = this.$avatars.children.length; id < this.total; id++) {
             const seed = await globalThis.sea.work(Access.get("seed"), id)
             const select = () => this.select({ id })
             templates.push(html`
@@ -81,26 +81,26 @@ export class AVATARS extends HTMLElement {
                 </span>
             `)
         }
-        render(templates, this.avatars, { append: true })
+        render(templates, this.$avatars, { append: true })
     }
 
     remove() {
-        const count = this.avatars.children.length
+        const count = this.$avatars.children.length
         const min = Math.max(this.step, this.id + 1)
         if (count <= min) return
-        for (let i = 0; i < Math.min(this.step, count - this.total); i++) this.avatars.removeChild(this.avatars.lastChild)
-        if (this.avatars.children.length > this.total) this.remove()
+        for (let i = 0; i < Math.min(this.step, count - this.total); i++) this.$avatars.removeChild(this.$avatars.lastChild)
+        if (this.$avatars.children.length > this.total) this.remove()
     }
 
     async select({ id }) {
-        if (!this.avatars.querySelector(`input#i${id}`)) await this.create()
+        if (!this.$avatars.querySelector(`input#i${id}`)) await this.create()
         this.id = id
     }
 
     async render() {
         if (!Access.get("authenticated")) return
-        if (this.avatars.children.length < this.total) await this.create()
-        if (this.avatars.children.length > this.total) this.remove()
+        if (this.$avatars.children.length < this.total) await this.create()
+        if (this.$avatars.children.length > this.total) this.remove()
     }
 }
 

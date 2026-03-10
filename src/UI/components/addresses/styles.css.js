@@ -20,6 +20,9 @@ export const styles = css`
         display: flex;
         flex-direction: column;
         gap: var(--space);
+        ui-select {
+            --select-width: max-content;
+        }
         header {
             --icon: var(--icon-md);
             width: 100%;

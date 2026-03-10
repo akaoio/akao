@@ -1,4 +1,4 @@
-import { write, load, dir, exist } from "../src/core/FS.js"
+import { write, load, dir, exist, ensure, download, copy, join } from "../src/core/FS.js"
 import { log } from "./core/logger.js"
 
 const src = ["src", "statics"]
@@ -145,7 +145,73 @@ async function isChainDirectory(path) {
     }
 }
 
+async function processImages() {
+    const chainsRoot = [...src, "chains"]
+    if (!(await exist(chainsRoot))) {
+        log.info("No chains directory found, skipping image build")
+        return { downloaded: 0, skipped: 0, failed: 0 }
+    }
+
+    // Collect all unique symbol filenames from every currencies.yaml found
+    const symbols = new Set()
+    const chainNames = await dir(chainsRoot)
+
+    for (const chainName of chainNames) {
+        const chainPath = [...chainsRoot, chainName]
+        if (!(await isChainDirectory(chainPath))) continue
+
+        const currenciesPath = [...chainPath, "currencies.yaml"]
+        if (!(await exist(currenciesPath))) continue
+
+        const currencies = await load(currenciesPath)
+        if (!Array.isArray(currencies)) continue
+
+        for (const currency of currencies) {
+            if (currency?.symbol) symbols.add(currency.symbol)
+        }
+    }
+
+    log.info(`Found ${symbols.size} unique symbols across all chains`)
+
+    // Ensure src/images/cryptos/ exists
+    const cryptoSrcDir = ["src", "images", "cryptos"]
+    await ensure(join(cryptoSrcDir))
+
+    let downloaded = 0
+    let skipped = 0
+    let failed = 0
+
+    for (const symbol of symbols) {
+        const destPath = [...cryptoSrcDir, symbol]
+        if (await exist(destPath)) {
+            skipped++
+            continue
+        }
+
+        const url = `https://cryptologos.cc/logos/${symbol}`
+        const result = await download(url, destPath)
+
+        if (result?.success) {
+            downloaded++
+            log.ok(`Downloaded: ${symbol}`)
+        } else {
+            failed++
+            log.info(`Not found: ${symbol}`)
+        }
+    }
+
+    // Merge src/images/cryptos/ into build/images/cryptos/ (non-destructive: adds files, never deletes)
+    if (await exist(cryptoSrcDir)) {
+        await copy(cryptoSrcDir, ["build", "images", "cryptos"])
+    }
+
+    return { downloaded, skipped, failed }
+}
+
 log.start("Starting crypto build...")
+
+const images = await processImages()
+log.ok(`Images: ${images.downloaded} downloaded, ${images.skipped} already exist, ${images.failed} not found`)
 
 const abi = await processABIs()
 log.ok(`Processed ${abi.files} ABI files into ${abi.methods} ABI method files`)

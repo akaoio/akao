@@ -88,11 +88,13 @@ const hasGeo = await exist(geoPath)
 // Crypto-generated directories inside build/statics
 const cryptoDirs = ["ABIs", "chains"]
 const hasCryptoDirs = (await Promise.all(cryptoDirs.map(d => exist([...paths.build.statics, d])))).some(Boolean)
+const hasCryptoImages = await exist([...paths.build.root, "images", "cryptos"])
 
 if (hasGeo || hasCryptoDirs) {
     const preserved = []
     if (hasGeo) preserved.push("geo")
     if (hasCryptoDirs) preserved.push("statics (crypto data)")
+    if (hasCryptoImages) preserved.push("images/cryptos")
     log.info(`Preserving: ${preserved.join(", ")}, cleaning other build files...`)
 
     const buildItems = await dir([paths.build.root])
@@ -105,6 +107,16 @@ if (hasGeo || hasCryptoDirs) {
             for (const staticsItem of staticsItems) {
                 if (cryptoDirs.includes(staticsItem)) continue
                 await remove([...paths.build.statics, staticsItem])
+            }
+            continue
+        }
+
+        if (item === "images" && hasCryptoImages) {
+            // Clean images selectively, preserving cryptos subfolder
+            const imageItems = await dir([...paths.build.root, "images"])
+            for (const imageItem of imageItems) {
+                if (imageItem === "cryptos") continue
+                await remove([...paths.build.root, "images", imageItem])
             }
             continue
         }
@@ -241,7 +253,6 @@ await copyAssets([
     { src: paths.src.UI, dest: paths.build.UI, label: "UI folder" },
     { src: paths.src.importmap, dest: [...paths.build.root, "importmap.json"], label: "importmap.json" },
     { src: ["node_modules", "bootstrap-icons", "icons"], dest: [...paths.build.root, "images", "icons"], label: "bootstrap icons" },
-    { src: ["node_modules", "cryptocurrency-icons", "svg", "icon"], dest: [...paths.build.root, "images", "cryptos"], label: "cryptocurrency icons" },
     { src: ["node_modules", "ethers", "dist", "ethers.min.js"], dest: [...paths.build.core, "Ethers.js"], label: "ethers" }
 ])
 

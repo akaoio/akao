@@ -34,6 +34,8 @@ export const styles = css`
                 display: flex;
                 width: 100%;
                 padding: var(--space);
+                gap: var(--space);
+                align-items: center;
                 border: none;
                 box-sizing: border-box;
                 &::checkmark {
