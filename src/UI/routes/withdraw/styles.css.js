@@ -13,6 +13,13 @@ export const styles = css`
             flex-direction: column;
             gap: var(--space);
         }
+        #gas {
+            font-size: 0.875em;
+            opacity: 0.75;
+            &:empty {
+                display: none;
+            }
+        }
     }
 `
 

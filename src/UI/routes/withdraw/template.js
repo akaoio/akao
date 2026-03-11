@@ -14,6 +14,7 @@ export const template = html`
             <form id="form">
                 <input type="number" name="amount" min="0" step="any" required disabled />
                 <input type="text" name="address" required disabled />
+                <div id="gas"></div>
                 <div class="buttons">
                     <ui-button class="full" data-left="send" id="submit">
                         <ui-context data-key="dictionary.withdraw" />

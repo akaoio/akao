@@ -2,6 +2,7 @@ import { BigNumber } from "../Utils/bignumber.js"
 import { loadContract, loadABI } from "../Utils/contracts.js"
 import { merge } from "../Utils/data.js"
 import { ethers } from "../Ethers.js"
+import { toDecimal } from "../Utils/number.js"
 
 export const EVM = {
     construct: async function () {
@@ -112,8 +113,22 @@ export const EVM = {
         const feeData = await this.https.getFeeData()
         return feeData.gasPrice
     },
+    fee: async function ({ from, to, amount, currency }) {
+        const [gasLimit, gasPrice] = await Promise.all([
+            this.gas({ from, to, amount, currency }),
+            this.gasPrice()
+        ])
+        if (gasLimit == null) return null
+        const native = this.currencies.native
+        const feeWei = BigInt(gasLimit) * BigInt(gasPrice)
+        return {
+            amount: toDecimal(feeWei, native?.decimals || 18),
+            symbol: native?.symbol || ""
+        }
+    },
     gas: async function ({ from, to, amount, currency }) {
         try {
+            if (!ethers.isAddress(to)) return
             let estimateContent = {}
             if (!currency) currency = this.currencies.native
             let decimals = currency.decimals
@@ -163,11 +178,10 @@ export const EVM = {
             return await this.https.estimateGas(estimateContent)
         } catch (error) {
             console.error("Gas estimation error:", error)
-            // Return a safe fallback in case estimation fails
-            return 60000
+            return null
         }
     },
-    send: async function ({ from, to, amount, currency, gas }) {
+    send: async function ({ from, to, amount, currency, gas, key }) {
         try {
             if (!currency) currency = this.currencies.native
 
@@ -232,7 +246,7 @@ export const EVM = {
             }
 
             // Create wallet and sign transaction
-            const wallet = new ethers.Wallet(this.private, this.https)
+            const wallet = new ethers.Wallet(key, this.https)
             const transaction = await wallet.sendTransaction(content)
             const receipt = await transaction.wait()
 

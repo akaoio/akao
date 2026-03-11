@@ -53,11 +53,18 @@ export default class Wallet {
         return await this.chain.balance({ address: this.address, currency })
     }
 
+    async fee({ to, amount, currency }) {
+        return await this.chain.fee({ from: this.address, to, amount, currency })
+    }
+
     async send({ to, amount, currency, callback }) {
-        const tx = await this.chain.send({ from: this.address, to, amount, currency })
-        if (tx.error) console.error(tx.error)
-        if (callback && typeof callback === "function") callback(tx)
-        return tx
+        try {
+            const tx = await this.chain.send({ from: this.address, to, amount, currency, key: this.private })
+            if (callback && typeof callback === "function") callback(tx)
+            return tx
+        } catch (error) {
+            return { error }
+        }
     }
 }
 

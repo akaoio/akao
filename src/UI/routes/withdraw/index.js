@@ -11,16 +11,20 @@ export class WITHDRAW extends HTMLElement {
         render(template, this.shadowRoot)
         this.subscriptions = []
         this.submit = this.submit.bind(this)
+        this.estimateGas = this.estimateGas.bind(this)
     }
 
     connectedCallback() {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.$form = this.shadowRoot.querySelector("#form")
+        this.$gas = this.shadowRoot.querySelector("#gas")
         const $submit = this.shadowRoot.querySelector("#submit")
 
-        this.$form.querySelectorAll("input[type='text'], input[type='number']").forEach((input) =>
+        this.$form.querySelectorAll("input[type='text'], input[type='number']").forEach((input) => {
             this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"]))
-        )
+            input.addEventListener("input", this.estimateGas)
+            this.subscriptions.push(() => input.removeEventListener("input", this.estimateGas))
+        })
 
         $submit.addEventListener("click", this.submit)
 
@@ -28,7 +32,12 @@ export class WITHDRAW extends HTMLElement {
             this.$wallets.states.on("address", ({ value }) => {
                 this.$form.querySelectorAll("input").forEach((el) => (el.disabled = !value))
                 $submit.toggleAttribute("disabled", !value)
-                if (!value) this.$form.reset()
+                if (!value) {
+                    this.$form.reset()
+                    this.$gas.textContent = ""
+                } else {
+                    this.estimateGas()
+                }
             }, true),
             () => $submit.removeEventListener("click", this.submit)
         )
@@ -38,6 +47,27 @@ export class WITHDRAW extends HTMLElement {
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
+    }
+
+    estimateGas() {
+        clearTimeout(this._gasPending)
+        this._gasPending = setTimeout(async () => {
+            const chain = this.$wallets.states.get("chain")
+            const currencyName = this.$wallets.states.get("currency")
+            const amount = this.$form.querySelector("input[name='amount']").value
+            const to = this.$form.querySelector("input[name='address']").value
+
+            if (!chain || !currencyName || !amount || !to) return
+
+            const wallet = Wallets[chain]
+            const currency = Object.values(wallet.chain.currencies).find((c) => c.name === currencyName)
+            if (!currency) return
+
+            const fee = await wallet.fee({ to, amount: Number(amount), currency })
+            if (!fee) return
+            const label = Context.get(["dictionary", "gasFee"]) || "Gas fee"
+            this.$gas.textContent = `${label}: ${fee.amount} ${fee.symbol}`
+        }, 500)
     }
 
     async submit() {
@@ -60,12 +90,11 @@ export class WITHDRAW extends HTMLElement {
 
         this.$form.querySelectorAll("input").forEach((el) => (el.disabled = false))
         this.shadowRoot.querySelector("#submit").toggleAttribute("disabled", false)
-
-        if (tx?.error) {
-            notify({ content: Context.get(["dictionary", "transactionError"]), autoClose: true })
-        } else {
+        if (tx && !tx.error) {
             notify({ content: Context.get(["dictionary", "transactionSent"]), autoClose: true })
             this.$form.reset()
+        } else if (!tx || tx?.error) {
+            notify({ content: Context.get(["dictionary", "transactionError"]), autoClose: true })
         }
     }
 }
