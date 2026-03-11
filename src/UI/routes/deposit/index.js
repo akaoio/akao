@@ -15,9 +15,10 @@ export class DEPOSIT extends HTMLElement {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.subscriptions.push(
             this.$wallets.states.on("address", async ({ value }) => {
-                if (!value) return
+                const $qr = this.shadowRoot.querySelector("#qr")
+                if (!value) return ($qr.innerHTML = "")
                 const code = await QRCode.toString(value, { type: "svg", margin: 0 })
-                render(html`${code}`, this.shadowRoot.querySelector("#qr"))
+                render(html`${code}`, $qr)
             }, true)
         )
         Elements.Access?.checkpoint()

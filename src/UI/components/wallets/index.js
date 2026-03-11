@@ -53,7 +53,11 @@ export class WALLETS extends HTMLElement {
         this.subscriptions.push(
             Access.on("authenticated", ({ value }) => {
                 this.toggleAttribute("hidden", !value)
-                if (!value) while (this.$wallets.firstChild) this.$wallets.removeChild(this.$wallets.firstChild)
+                if (value) this.change()
+                else {
+                    this.states.set({ address: null })
+                    while (this.$wallets.firstChild) this.$wallets.removeChild(this.$wallets.firstChild)
+                }
             }),
             Access.on("wallet", this.change),
             this.states.on("chain", this.render),
@@ -150,6 +154,7 @@ export class WALLETS extends HTMLElement {
     }
 
     async change(event) {
+        if (!Access.get("authenticated")) return
         if (event?.target) {
             const { name, value } = event.target
             if (name === "currency") {
@@ -163,6 +168,7 @@ export class WALLETS extends HTMLElement {
                 this.states.set({ [name]: value })
             }
         }
+        this.render()
         if (this.states.get("chain") && this.states.get("currency")) {
             const wallet = Wallets[this.states.get("chain")]
             const address = wallet?.address || null
