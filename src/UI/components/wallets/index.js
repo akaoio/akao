@@ -22,6 +22,7 @@ export class WALLETS extends HTMLElement {
         this.create = this.create.bind(this)
         this.remove = this.remove.bind(this)
         this.select = this.select.bind(this)
+        this.change = this.change.bind(this)
         this.render = this.render.bind(this)
     }
 
@@ -68,12 +69,19 @@ export class WALLETS extends HTMLElement {
             if (chain.configs?.currencies?.length !== Object.values(chain?.currencies)?.length) await chain.load()
         }
 
+        const currency = this.states.get("currency") || this.currencies[0]?.value || null
+        const chains = this.chains(currency)
+        const chain = chains.some(o => o.value === this.states.get("chain"))
+            ? this.states.get("chain")
+            : chains[0]?.value || null
+        this.states.set({ currency: currency, chain: chain })
+
         this.$chains = new SELECT({
             name: "chain",
-            options: this.chains,
+            options: chains,
             placeholder: "dictionary.chain",
-            selected: this.states.get("chain"),
-            change: event => this.states.set({ chain: event.target.value })
+            selected: chain,
+            change: this.change
         })
         render(this.$chains, this.shadowRoot.querySelector("#chains"), { append: true })
 
@@ -81,10 +89,12 @@ export class WALLETS extends HTMLElement {
             name: "currency",
             options: this.currencies,
             placeholder: "dictionary.currency",
-            selected: this.states.get("currency"),
-            change: event => this.states.set({ currency: event.target.value })
+            selected: currency,
+            change: this.change
         })
         render(this.$currencies, this.shadowRoot.querySelector("#currencies"), { append: true })
+
+        console.log("WALLETS connected", this.states.get("chain"), this.states.get("currency"))
 
         this.$address = this.shadowRoot.querySelector("#address")
         this.$balance = this.shadowRoot.querySelector("#balance")
@@ -140,6 +150,20 @@ export class WALLETS extends HTMLElement {
         this.id = id
     }
 
+    change(event) {
+        const { name, value } = event.target
+        if (name === "currency") {
+            const options = this.chains(value)
+            const chain = options.some(o => o.value === this.states.get("chain"))
+                ? this.states.get("chain")
+                : options[0]?.value || null
+            this.$chains.states.set({ options, selected: chain })
+            this.states.set({ currency: value, chain })
+        } else {
+            this.states.set({ [name]: value })
+        }
+    }
+
     get currencies() {
         const currencies = {}
         for (const chain of Object.values(Chains)) {
@@ -159,8 +183,9 @@ export class WALLETS extends HTMLElement {
             }))
     }
 
-    get chains() {
+    chains(currency = null) {
         return Object.values(Chains)
+            .filter(chain => !currency || Object.values(chain.currencies).some(c => c.name === currency))
             .map((chain) => ({
                 label: html`<ui-svg class="icon" data-src="/images/cryptos/${chain.configs.symbol}" /> ${chain.configs.name || String(chain.id)}`,
                 value: String(chain.id)

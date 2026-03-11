@@ -19,8 +19,8 @@ export const template = html`
         <div id="wallets"></div>
         <div id="address"></div>
     </div>
-    <div id="chains"></div>
     <div id="currencies"></div>
+    <div id="chains"></div>
 `
 
 export default template
