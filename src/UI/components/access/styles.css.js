@@ -10,8 +10,10 @@ export const styles = css`
     :host {
         main {
             display: none;
+            flex-direction: column;
+            gap: var(--space);
             &.active {
-                display: block;
+                display: flex;
             }
         }
     }

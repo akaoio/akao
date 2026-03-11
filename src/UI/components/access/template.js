@@ -11,10 +11,10 @@ export const template = html`
             <h3><ui-context data-key="dictionary.welcome" /></h3>
             <p><ui-context data-key="dictionary.pleaseCreateAnAccountOrSignin" /></p>
             <div class="buttons">
-                <ui-button class="full" data-left="/images/icons/fingerprint.svg" id="signin">
+                <ui-button class="full" data-left="fingerprint" id="signin">
                     <ui-context data-key="dictionary.signin" />
                 </ui-button>
-                <ui-button class="full" data-left="/images/icons/person-add.svg" id="signup">
+                <ui-button class="full" data-left="person-add" id="signup">
                     <ui-context data-key="dictionary.signup" />
                 </ui-button>
             </div>
@@ -25,10 +25,10 @@ export const template = html`
                 <input type="text" name="name" />
                 <input type="text" name="displayName" />
                 <div class="buttons">
-                    <ui-button class="full" data-left="/images/icons/check-lg.svg" id="confirm">
+                    <ui-button class="full" data-left="check-lg" id="confirm">
                         <ui-context data-key="dictionary.confirm" />
                     </ui-button>
-                    <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="back">
+                    <ui-button class="full" data-left="arrow-left" id="back">
                         <ui-context data-key="dictionary.back" />
                     </ui-button>
                 </div>

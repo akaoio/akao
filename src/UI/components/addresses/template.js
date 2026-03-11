@@ -54,16 +54,16 @@ export const template = html`
         <input type="tel" name="phone" required="required" />
         <input type="hidden" name="id" />
         <div class="buttons">
-            <ui-button class="full" data-left="/images/icons/house-add.svg" id="save">
+            <ui-button class="full" data-left="house-add" id="save">
                 <ui-context data-key="dictionary.save"/>
             </ui-button>
-            <ui-button class="full" data-left="/images/icons/x-lg.svg" id="reset">
+            <ui-button class="full" data-left="x-lg" id="reset">
                 <ui-context data-key="dictionary.reset"/>
             </ui-button>
-            <ui-button class="full" data-left="/images/icons/trash3.svg" id="delete">
+            <ui-button class="full" data-left="trash3" id="delete">
                 <ui-context data-key="dictionary.delete"/>
             </ui-button>
-            <ui-button class="full" data-left="/images/icons/x-lg.svg" id="close">
+            <ui-button class="full" data-left="x-lg" id="close">
                 <ui-context data-key="dictionary.close" />
             </ui-button>
         </div>
@@ -71,10 +71,10 @@ export const template = html`
     <ui-modal data-header="deletion" class="center" id="deletion">
         <p><ui-context data-key="dictionary.deletionMessage" /></p>
         <div class="buttons">
-            <ui-button class="full" data-left="/images/icons/check-lg.svg" id="confirm">
+            <ui-button class="full" data-left="check-lg" id="confirm">
                 <ui-context data-key="dictionary.confirm" />
             </ui-button>
-            <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="cancel">
+            <ui-button class="full" data-left="arrow-left" id="cancel">
                 <ui-context data-key="dictionary.cancel" />
             </ui-button>
         </div>
