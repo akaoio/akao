@@ -87,11 +87,17 @@ thread.init = async function () {
     Progress.set({ GDB: await Construct.GDB() })
     // Listen to the popstate event, which is triggered when the user navigates back to the previous page
     // Updates Context with the new route info
-    globalThis.addEventListener("popstate", (data) => {
-        if (Context.get("locale")?.code !== data?.state?.locale?.code) Router.setLocale(data.state.locale.code)
-        render(data?.state || {})
+    globalThis.addEventListener("popstate", () => {
+        // Use stored history state (has correct params) rather than re-parsing the URL
+        // Falls back to Router.process() only if history.state is unavailable
+        const state = globalThis.history.state ? { ...globalThis.history.state } : Router.process()
+        if (Context.get("locale")?.code !== state.locale?.code) Router.setLocale(state.locale.code)
+        // Update params and route in Context before render so connectedCallback reads correct values
+        Context.set({ params: state.params, route: state.route })
+        render(state)
     })
-    Context.on("path", ({ value: path }) => render({ path }))
+    // Pass full Context state so render() preserves search params in history
+    Context.on("path", ({ value: path }) => render({ path, route: Context.get("route"), locale: Context.get("locale"), params: Context.get("params") }))
     Context.on("locale", ({ value: locale }) => Router.setLocale(locale.code))
     Progress.set({ Context: await Construct.Context() })
     splash(false)

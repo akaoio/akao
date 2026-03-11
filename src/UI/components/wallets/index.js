@@ -3,14 +3,15 @@ import { Access, setWallet } from "/core/Access.js"
 import { html, render } from "/core/UI.js"
 import { Chains, Wallets } from "/core/Stores.js"
 import States from "/core/States.js"
+import { Context } from "/core/Context.js"
 import SELECT from "/UI/components/select/index.js"
 
 export class WALLETS extends HTMLElement {
     constructor() {
         super()
         this.states = new States({
-            chain: null,
-            currency: null
+            chain: Context.get("params")?.chain || null,
+            currency: Context.get("params")?.currency || null
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)

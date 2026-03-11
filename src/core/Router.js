@@ -33,7 +33,11 @@ export class Router {
      */
     static process({ path = "", routes = [], locales = [], site = {}, locale } = {}) {
         // Remove last segment if it's a file (contains a file extension)
-        path = path || globalThis?.location?.pathname
+        path = path || (globalThis?.location?.pathname || "") + (globalThis?.location?.search || "")
+        // Extract search query string before path processing
+        const query = path.indexOf("?")
+        const search = query !== -1 ? path.slice(query) : ""
+        if (query !== -1) path = path.slice(0, query)
         site = Object.keys(site).length ? site : Statics?.site || {}
         routes = routes.length ? routes : Statics?.routes || []
         locales = locales.length ? locales : Statics?.locales || []
@@ -61,6 +65,12 @@ export class Router {
                     result.route = route
                     break
                 }
+            }
+        }
+        // Merge search params into params (path params take precedence)
+        if (search) {
+            for (const [key, value] of new URLSearchParams(search)) {
+                if (!(key in result.params)) result.params[key] = value
             }
         }
         // Create new path including locale
@@ -205,7 +215,10 @@ export class Router {
         if (!globalThis.history || !globalThis.location) return
         try {
             const url = new URL(globalThis?.location?.href)
-            if (path) url.pathname = path
+            if (path) {
+                if (url.pathname !== path) url.search = ""
+                url.pathname = path
+            }
             // Check if the URL has changed from the old URL, then update browser history without reloading
             if (url.pathname !== globalThis.history.state?.path) globalThis.history.pushState({ path: url.pathname, locale, route, params }, "", url)
         } catch (error) {

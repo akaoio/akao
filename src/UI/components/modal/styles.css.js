@@ -58,11 +58,18 @@ export const styles = css`
                     white-space: nowrap;
                     max-width: 100%;
                     margin-bottom: -0.5px;
+                    --clip-x1: 0;
+                    --clip-x2: calc(100% - var(--header-size));
                     padding: 0 calc(var(--space) + var(--header-size)) 0 var(--space);
                     background: var(--background-inverted);
                     color: var(--color-inverted);
-                    clip-path: polygon(0 0, calc(100% - var(--header-size)) 0, 100% 100%, 0 100%);
+                    clip-path: polygon(var(--clip-x1) 0, var(--clip-x2) 0, 100% 100%, 0 100%);
                     text-transform: uppercase;
+                }
+
+                slot[name="header"] {
+                    position: absolute;
+                    right: var(--space);
                 }
             }
 
@@ -94,6 +101,22 @@ export const styles = css`
         }
     }
 
+    :host(:dir(rtl)) {
+        dialog {
+            header {
+                #header {
+                    --clip-x1: var(--header-size);
+                    --clip-x2: 100%;
+                    padding: 0 var(--space) 0 calc(var(--space) + var(--header-size));
+                }
+                slot[name="header"] {
+                    left: var(--space);
+                    right: auto;
+                }
+            }
+        }
+    }
+
     :host(.center) {
         display: flex;
         align-items: center;
@@ -104,10 +127,9 @@ export const styles = css`
                 height: calc(auto - var(--header-size));
                 padding: 0 var(--space);
                 transform: translateY(50%);
+                justify-content: center;
 
                 #header {
-                    left: 50%;
-                    transform: translateX(-50%);
                     padding: 0 calc(var(--space) + var(--header-size));
                     clip-path: polygon(0 50%, var(--header-size) 0, calc(100% - var(--header-size)) 0, 100% 50%, calc(100% - var(--header-size)) 100%, var(--header-size) 100%);
                 }
