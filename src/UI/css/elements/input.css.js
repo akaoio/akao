@@ -10,6 +10,7 @@ export const styles = css`
             background: var(--background);
             color: var(--color);
             width: 100%;
+            font-size: var(--text);
             &::placeholder {
                 color: var(--color);
                 opacity: 0.25;

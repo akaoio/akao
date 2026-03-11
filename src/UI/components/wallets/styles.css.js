@@ -6,7 +6,12 @@ export const styles = css`
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: var(--space);
-        & > div:nth-child(2) {
+        div {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space);
+        }
+        div:nth-child(2), div:nth-child(3) {
             grid-column: 1 / -1;
         }
         ui-select {
@@ -23,6 +28,11 @@ export const styles = css`
                 display: inline-flex;
                 gap: var(--space);
             }
+        }
+        #balance {
+            width: 100%;
+            text-align: center;
+            font-size: var(--text-xl);
         }
         #wallets {
             width: 100%;
@@ -48,6 +58,9 @@ export const styles = css`
                     }
                 }
             }
+        }
+        #address {
+            text-transform: lowercase;
         }
     }
 `

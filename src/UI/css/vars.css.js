@@ -36,8 +36,8 @@ export const styles = css`
         --text-xs: calc(var(--unit) * 6);
         --text-sm: calc(var(--unit) * 7);
         --text-md: calc(var(--unit) * 8);
-        --text-lg: calc(var(--unit) * 9);
-        --text-xl: calc(var(--unit) * 10);
+        --text-lg: calc(var(--unit) * 10);
+        --text-xl: calc(var(--unit) * 12);
         --text: var(--text-md);
 
         /* Animation */

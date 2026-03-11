@@ -12,9 +12,11 @@ export const styles = css`
         select {
             display: flex;
             flex-direction: column;
+            gap: var(--space);
             background: var(--background);
             border: var(--border);
             border-radius: var(--radius);
+            padding: var(--space);
             color: var(--color);
             cursor: pointer;
             &::picker-icon {
@@ -29,11 +31,11 @@ export const styles = css`
             option {
                 background: var(--background);
                 color: var(--color);
+                padding: var(--space);
             }
             option, selectedcontent {
                 display: flex;
                 width: 100%;
-                padding: var(--space);
                 gap: var(--space);
                 align-items: center;
                 border: none;
@@ -42,9 +44,12 @@ export const styles = css`
                     display: none;
                 }
             }
-            option:hover, option:checked, selectedcontent {
+            option:hover, option:checked {
                 background: var(--background-inverted);
                 color: var(--color-inverted);
+            }
+            selectedcontent {
+                padding: 0;
             }
         }
     }

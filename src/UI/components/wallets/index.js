@@ -59,7 +59,7 @@ export class WALLETS extends HTMLElement {
             () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease)
         )
 
-        // this.style.display = Access.get("authenticated") ? "grid" : "none"
+        this.style.display = Access.get("authenticated") ? "grid" : "none"
 
         // Load currency contracts for all chains
         for (const chain of Object.values(Chains)) {
@@ -86,6 +86,7 @@ export class WALLETS extends HTMLElement {
         render(this.$currencies, this.shadowRoot.querySelector("#currencies"), { append: true })
 
         this.$address = this.shadowRoot.querySelector("#address")
+        this.$balance = this.shadowRoot.querySelector("#balance")
 
         if (Access.get("authenticated")) this.render()
     }
@@ -173,6 +174,9 @@ export class WALLETS extends HTMLElement {
             const wallet = Wallets[this.states.get("chain")]
             const address = wallet?.address
             this.$address.textContent = address || ""
+            const currency = Object.values(wallet.chain.currencies).find((c) => c.name === this.states.get("currency"))
+            const balance = await wallet.balance({ currency })
+            if (typeof balance !== undefined) this.$balance.textContent = balance
         }
     }
 }

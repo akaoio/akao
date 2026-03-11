@@ -15,7 +15,6 @@ export const styles = css`
         position: absolute;
 
         dialog {
-            --icon: var(--icon);
             --header-size: var(--icon-sm);
             --footer-size: var(--icon-md);
             width: auto;

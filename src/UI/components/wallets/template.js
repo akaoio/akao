@@ -7,6 +7,7 @@ import { html } from "/core/UI.js"
 
 export const template = html`
     ${styles}
+    <div id="balance"></div>
     <div>
         <header>
             <ui-context data-key="dictionary.wallet" />
@@ -16,25 +17,10 @@ export const template = html`
             </nav>
         </header>
         <div id="wallets"></div>
-    </div>
-    <div>
-        <header>
-            <ui-context data-key="dictionary.chain" />
-        </header>
-        <div id="chains"></div>
-    </div>
-    <div>
-        <header>
-            <ui-context data-key="dictionary.currency" />
-        </header>
-        <div id="currencies"></div>
-    </div>
-    <div>
-        <header>
-            <ui-context data-key="dictionary.address" />
-        </header>
         <div id="address"></div>
     </div>
+    <div id="chains"></div>
+    <div id="currencies"></div>
 `
 
 export default template

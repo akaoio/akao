@@ -59,7 +59,7 @@ export class SELECT extends HTMLElement {
     }
 
     render() {
-        this.select.querySelectorAll("option:not([disabled])").forEach(option => option.remove())
+        this.select.querySelectorAll("option").forEach(option => option.remove())
         const options = this.states.get("options").map(option => html`
             <option value="${option.value}" ${option.value === this.states.get("selected") ? "selected" : ""}>
                 ${option.label}

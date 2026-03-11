@@ -8,9 +8,6 @@ export const styles = css`
     :host {
         select {
             width: var(--select-width, auto);
-            option[disabled]:nth-of-type(1):has(ui-context.placeholder) {
-                display: none;   
-            }
         }
         .icon {
             background: transparent;

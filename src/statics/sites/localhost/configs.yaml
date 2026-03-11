@@ -6,4 +6,4 @@ favicon: /statics/sites/localhost/images/favicon.svg
 env: development
 locale: en
 fiat: USD
-chains: [ 1, 56 ]
+chains: [ 1, 56, 97, 11155111 ]

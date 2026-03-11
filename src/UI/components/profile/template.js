@@ -10,8 +10,8 @@ export const template = html`
     <ui-modal data-header="profile" class="center">
         <ui-signout slot="header" />
         <section>
-            <ui-addresses />
             <ui-avatars />
+            <ui-addresses />
         </section>
     </ui-modal>
 `

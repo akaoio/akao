@@ -22,16 +22,13 @@ export const styles = css`
             padding: 0;
             cursor: pointer;
             transition: var(--speed) ease-in-out;
-
             &:hover {
                 background: var(--background-inverted);
                 color: var(--color-inverted);
             }
-
             &:focus * {
                 animation: in var(--speed) ease-in-out none;
             }
-
             > * {
                 width: 50%;
                 aspect-ratio: 1 / 1;

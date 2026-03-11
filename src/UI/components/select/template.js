@@ -6,10 +6,7 @@ export const template = html`
     ${styles}
     <slot></slot>
     <select>
-        <selectedcontent></selectedcontent>
-        <option disabled selected>
-            <ui-context class="placeholder" />
-        </option>
+        <button><ui-context class="placeholder" /><selectedcontent></selectedcontent></button>
     </select>
 `
 

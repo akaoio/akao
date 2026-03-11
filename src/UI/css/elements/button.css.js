@@ -15,6 +15,7 @@ export const styles = css`
             white-space: nowrap;
             box-sizing: border-box;
             font-family: var(--font);
+            font-size: var(--text);
             &.full {
                 width: 100%;
             }

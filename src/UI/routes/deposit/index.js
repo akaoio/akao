@@ -10,8 +10,8 @@ export class DEPOSIT extends HTMLElement {
     }
 
     connectedCallback() {
-        // const check = Elements.Access?.checkpoint()
-        // if (!check) return
+        const check = Elements.Access?.checkpoint()
+        if (!check) return
     }
 }
 

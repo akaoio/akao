@@ -4,7 +4,6 @@ name: Ethereum
 architecture: EVM
 symbol: ethereum-eth-logo.svg
 RPCs:
-  - https://rpc.ankr.com/eth
   - https://eth.drpc.org
   - https://rpc.mevblocker.io
   - https://eth.blockrazor.xyz
