@@ -5,7 +5,7 @@
  */
 export function has(data) {
     if (!data) return false
-    if (typeof data === "string") return data in this.states
-    if (Array.isArray(data)) return data.every((k) => k in this.states)
-    return Object.entries(data).every(([_, v]) => v in this.states)
+    if (typeof data === "string") return data in this.proxy
+    if (Array.isArray(data)) return data.every((k) => k in this.proxy)
+    return Object.entries(data).every(([_, v]) => v in this.proxy)
 }

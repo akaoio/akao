@@ -16,9 +16,9 @@ import { clear } from "./States/clear.js"
 export class States {
     /**
      * Initialize state manager with optional initial state.
-     * @param {Object} states - Initial state object (default: empty object)
+     * @param {Object} proxy - Initial state object (default: empty object)
      */
-    constructor(states = {}) {
+    constructor(proxy = {}) {
         // Notifications as results of state changes
         this.notifications = []
         // Set of global subscribers notified on any state change
@@ -26,7 +26,7 @@ export class States {
         // Map of path-specific subscribers (key -> Set of subscribers)
         this.MAP = new Map()
         // Proxied state object that intercepts property assignments
-        this.states = new Proxy(states, {
+        this.proxy = new Proxy(proxy, {
             // Intercept property assignments to trigger notifications
             set: (target, key, value, receiver) => {
                 const last = target[key]
@@ -37,6 +37,7 @@ export class States {
                 return result
             }
         })
+        this.states = this.proxy
     }
 
     same = same

@@ -28,7 +28,7 @@ export function on(...args) {
         if (!this.MAP.has(key)) this.MAP.set(key, new Set())
         this.MAP.get(key).add(sub)
         // Get current value for the key/path
-        const value = Array.isArray(key) ? key.reduce((acc, k) => acc && acc[k], this.states) : this.states[key]
+        const value = Array.isArray(key) ? key.reduce((acc, k) => acc && acc[k], this.proxy) : this.proxy[key]
         // If subscriber is property assignment target, set initial value
         if (Array.isArray(sub)) {
             // Support nested property assignment: [obj, "prop1", "prop2", ...]
