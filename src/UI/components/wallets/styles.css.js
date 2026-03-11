@@ -1,6 +1,9 @@
 import { css } from "/core/UI.js"
 
 export const styles = css`
+    :host([hidden]) {
+        display: none;
+    }
     :host {
         width: 100%;
         display: grid;

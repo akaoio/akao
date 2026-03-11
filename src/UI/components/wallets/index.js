@@ -11,7 +11,8 @@ export class WALLETS extends HTMLElement {
         super()
         this.states = new States({
             chain: Context.get("params")?.chain || null,
-            currency: Context.get("params")?.currency || null
+            currency: Context.get("params")?.currency || null,
+            address: null
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
@@ -51,17 +52,17 @@ export class WALLETS extends HTMLElement {
         this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease)
         this.subscriptions.push(
             Access.on("authenticated", ({ value }) => {
-                this.style.display = value ? "grid" : "none"
+                this.toggleAttribute("hidden", !value)
                 if (!value) while (this.$wallets.firstChild) this.$wallets.removeChild(this.$wallets.firstChild)
             }),
-            Access.on("wallet", this.render),
+            Access.on("wallet", this.change),
             this.states.on("chain", this.render),
             this.states.on("currency", this.render),
             () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
             () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease)
         )
 
-        this.style.display = Access.get("authenticated") ? "grid" : "none"
+        this.toggleAttribute("hidden", !Access.get("authenticated"))
 
         // Load currency contracts for all chains
         for (const chain of Object.values(Chains)) {
@@ -94,12 +95,10 @@ export class WALLETS extends HTMLElement {
         })
         render(this.$currencies, this.shadowRoot.querySelector("#currencies"), { append: true })
 
-        console.log("WALLETS connected", this.states.get("chain"), this.states.get("currency"))
-
         this.$address = this.shadowRoot.querySelector("#address")
         this.$balance = this.shadowRoot.querySelector("#balance")
 
-        if (Access.get("authenticated")) this.render()
+        if (Access.get("authenticated")) this.change()
     }
 
     disconnectedCallback() {
@@ -150,17 +149,28 @@ export class WALLETS extends HTMLElement {
         this.id = id
     }
 
-    change(event) {
-        const { name, value } = event.target
-        if (name === "currency") {
-            const options = this.chains(value)
-            const chain = options.some(o => o.value === this.states.get("chain"))
-                ? this.states.get("chain")
-                : options[0]?.value || null
-            this.$chains.states.set({ options, selected: chain })
-            this.states.set({ currency: value, chain })
-        } else {
-            this.states.set({ [name]: value })
+    async change(event) {
+        if (event?.target) {
+            const { name, value } = event.target
+            if (name === "currency") {
+                const options = this.chains(value)
+                const chain = options.some(o => o.value === this.states.get("chain"))
+                    ? this.states.get("chain")
+                    : options[0]?.value || null
+                this.$chains.states.set({ options, selected: chain })
+                this.states.set({ currency: value, chain })
+            } else {
+                this.states.set({ [name]: value })
+            }
+        }
+        if (this.states.get("chain") && this.states.get("currency")) {
+            const wallet = Wallets[this.states.get("chain")]
+            const address = wallet?.address || null
+            this.states.set({ address })
+            this.$address.textContent = address || ""
+            const currency = Object.values(wallet.chain.currencies).find((c) => c.name === this.states.get("currency"))
+            const balance = await wallet.balance({ currency })
+            if (typeof balance !== undefined) this.$balance.textContent = balance
         }
     }
 
@@ -192,18 +202,15 @@ export class WALLETS extends HTMLElement {
             }))
     }
 
-    async render() {
-        if (!Access.get("authenticated")) return
-        if (this.$wallets.children.length < this.total) await this.create()
-        if (this.$wallets.children.length > this.total) this.remove()
-        if (this.states.get("chain") && this.states.get("currency")) {
-            const wallet = Wallets[this.states.get("chain")]
-            const address = wallet?.address
-            this.$address.textContent = address || ""
-            const currency = Object.values(wallet.chain.currencies).find((c) => c.name === this.states.get("currency"))
-            const balance = await wallet.balance({ currency })
-            if (typeof balance !== undefined) this.$balance.textContent = balance
-        }
+    render() {
+        if (this._renderPending) return
+        this._renderPending = true
+        queueMicrotask(async () => {
+            this._renderPending = false
+            if (!Access.get("authenticated")) return
+            if (this.$wallets.children.length < this.total) await this.create()
+            if (this.$wallets.children.length > this.total) this.remove()
+        })
     }
 }
 
