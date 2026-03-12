@@ -8,6 +8,9 @@ node_modules/
 # Build directory
 /build/
 
+# IndexedDB emulator data (Node.js test runtime, not for commit)
+/indexed/
+
 # Environment variables
 .env
 .env.*

@@ -37,6 +37,7 @@
     "test": "node test.js core && node test.js geo",
     "test:core": "node test.js core",
     "test:geo": "node test.js geo",
+    "test:browser": "node test-browser.js",
     "dev": "node dev.js",
     "format": "prettier --write \"src/**/*.js\"",
     "lint": "eslint \"src/**/*.js\"",

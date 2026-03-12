@@ -366,6 +366,80 @@ details: Detailed specifications
 
 ## Testing
 
+### Running Tests
+
+```bash
+npm test              # full test suite (Node.js)
+npm run test:core     # core module unit tests only
+npm run test:geo      # geo data integrity tests
+```
+
+For live feedback during development, open `http://localhost:8080/en/test` in the browser. The `/test` route runs the same suite in the browser and shows pass/fail per test with inline error messages. You can re-run individual suites or only the failed tests without refreshing the page.
+
+### Test Runner (`src/core/Test.js`)
+
+A minimal dual-environment test runner — no third-party dependencies. Works in Node.js (coloured console output, `process.exitCode = 1` on failure) and in the browser (returns structured results for the live UI).
+
+**API:**
+
+```javascript
+import Test from "/core/Test.js"
+
+Test.describe("Suite name", () => {
+
+    Test.it("passes normally", () => {
+        Test.assert.equal(result, expected)
+        Test.assert.truthy(value)
+        Test.assert.deepEqual(obj, { key: "val" })
+        Test.assert.throws(() => badFn())
+        await Test.assert.rejects(badPromise())
+    })
+
+    // Skipped in Node.js — requires DOM/localStorage
+    Test.it("browser only", () => { ... }, { browser: true })
+
+    // Never auto-run — requires hardware (WebAuthn, camera, etc.)
+    Test.it("interactive", async () => { ... }, { interactive: true })
+
+}, { browser: true }) // suite-level default
+```
+
+**Available assertions:** `equal`, `notEqual`, `deepEqual`, `truthy`, `falsy`, `throws`, `rejects`, `inRange`.
+
+### Writing Tests
+
+Test files live in `src/core/tests/` and are named `ModuleName.test.js`. Follow these conventions:
+
+1. **Isolation** — save and restore any global/localStorage state you touch
+2. **No side effects** — clean up DOM nodes, subscriptions, and IDB entries you create
+3. **Browser flag** — add `{ browser: true }` to any test (or suite) that uses DOM APIs
+4. **Interactive flag** — add `{ interactive: true }` only for tests that require real hardware
+5. **One assert per test** — keep each `it()` focused on a single behaviour
+
+After adding or modifying tests, rebuild and verify:
+
+```bash
+npm run build:core
+npm run test:core
+```
+
+### Existing Test Coverage
+
+| File | Modules covered | Tests |
+|---|---|---|
+| `Events.test.js` | Events | 8 |
+| `States.test.js` | States | 19 |
+| `Utils.test.js` | all Utils helpers | 51 |
+| `Router.test.js` | Router | 21 |
+| `Forex.test.js` | Forex | 9 |
+| `IDB.test.js` | IDB | 8 |
+| `DB.test.js` | DB | 11 |
+| `Cart.test.js` | Cart | 14 |
+| `UI.test.js` | html(), render() | 13 |
+| `Context.test.js` | Context helpers | 8 |
+| `Access.test.js` | Access | 8 |
+| `WebAuthn.test.js` | WebAuthn | 4 |
+
 ### Manual Testing Checklist
 
 - [ ] Test in multiple browsers (Chrome, Firefox, Safari, Edge)
@@ -373,14 +447,6 @@ details: Detailed specifications
 - [ ] Test with different locales (especially RTL: `ar`, `he`, `ur`)
 - [ ] Check browser console for errors or warnings
 - [ ] Verify Network tab shows correct cache behavior
-
-### Automated Tests
-
-```bash
-npm test          # run all tests
-npm run test:core # core module unit tests
-npm run test:geo  # geo data integrity tests
-```
 
 ### Checklist Before Submitting
 

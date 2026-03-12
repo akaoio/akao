@@ -38,11 +38,11 @@ export function getFiat() {
 }
 
 export function setFiat(code) {
-    // Don't proceed if new fiat code is not different with the current fiat code
-    if (code === Context.get("fiat")?.code) return
-    if (globalThis.localStorage) globalThis.localStorage.setItem("fiat", code)
     const fiat = Statics.fiats?.find?.((e) => e.code == code)
     if (!fiat) return
+    if (globalThis.localStorage) globalThis.localStorage.setItem("fiat", code)
+    // Don't update Context if it already reflects this fiat
+    if (code === Context.get("fiat")?.code) return
     Context.set({ fiat })
 }
 

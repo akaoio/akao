@@ -459,6 +459,39 @@ const geo = await DB.get(["geo", "12", "34", "5.json"])
 
 Used by `<ui-geo>` for cascading country → region → city selection.
 
+## 🧪 Testing
+
+The project ships a micro test runner (`src/core/Test.js`) with zero external dependencies that works in both Node.js and the browser.
+
+### Running Tests
+
+```bash
+npm test              # full test suite (Node.js, coloured console output)
+npm run test:core     # core module unit tests only
+npm run test:geo      # geo data integrity tests
+```
+
+For a live interactive view, open `/{locale}/test` in the dev server (e.g. `http://localhost:8080/en/test`). The browser UI shows pass/fail per suite in real time, lets you re-run individual suites or only failed tests, and displays inline error messages.
+
+### Test Coverage (12 files, 36 suites, 174 tests)
+
+| File | Modules covered | Tests |
+|---|---|---|
+| `Events.test.js` | Events | 8 |
+| `States.test.js` | States | 19 |
+| `Utils.test.js` | all Utils helpers | 51 |
+| `Router.test.js` | Router | 21 |
+| `Forex.test.js` | Forex | 9 |
+| `IDB.test.js` | IDB | 8 |
+| `DB.test.js` | DB | 11 |
+| `Cart.test.js` | Cart | 14 |
+| `UI.test.js` | html(), render() | 13 |
+| `Context.test.js` | Context helpers | 8 |
+| `Access.test.js` | Access | 8 |
+| `WebAuthn.test.js` | WebAuthn passkey lifecycle | 4 |
+
+Tests marked `{ browser: true }` are skipped in Node.js. Tests marked `{ interactive: true }` (e.g. WebAuthn hardware) are always skipped in automated runs and triggered manually in the browser UI.
+
 ## 🚢 Deployment
 
 Deploy the `build/` directory to any static host:

@@ -1,19 +1,20 @@
 import "/UI/layouts/main/index.js"
-import "/UI/components/context/index.js"
 import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
     <layout-main>
-        <h1><ui-context data-key="dictionary.test" /></h1>
-        <div id="container">
-            <div>
-                <input type="checkbox" name="billingAddress" />
+        <div id="test-root">
+            <div id="summary">
+                <h1>Unit Tests</h1>
+                <div class="actions">
+                    <button id="run-all">Run All</button>
+                    <button id="run-failed">Run Failed</button>
+                </div>
+                <div class="progress-bar"><div class="fill" style="width:0%"></div></div>
             </div>
-            <div>
-                <ui-geo data-id="8615918" />
-            </div>
+            <div id="suites"></div>
         </div>
     </layout-main>
 `
