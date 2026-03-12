@@ -25,9 +25,9 @@ export class PICKER extends HTMLElement {
     }
 
     connectedCallback() {
-        this.subscriptions.push(this.states.on("options", this.render))
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.modal.dataset.header = this.dataset.header
+        this.subscriptions.push(this.states.on("options", this.render, true))
     }
 
     disconnectedCallback() {

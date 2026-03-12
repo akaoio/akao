@@ -15,7 +15,7 @@ export const styles = css`
             white-space: nowrap;
             box-sizing: border-box;
             font-family: var(--font);
-            font-size: var(--text);
+            font-size: var(--text-sm);
             &.full {
                 width: 100%;
             }
@@ -26,7 +26,7 @@ export const styles = css`
                 display: none;
             }
             .icon {
-                width: var(--icon);
+                width: var(--icon-sm);
                 aspect-ratio: 1;
             }
         }

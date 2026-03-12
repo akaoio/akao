@@ -14,12 +14,15 @@ export const styles = css`
             &::placeholder {
                 color: var(--color);
                 opacity: 0.25;
+                font-size: smaller;
+                font-weight: lighter;
+                letter-spacing: var(--unit-1);
             }
             &:hover {
                 &::placeholder {
                     opacity: 0.75;
                 }
-                border: var(--border);
+                border: var(--border-accent);
             }
             &:focus {
                 &::placeholder {

@@ -23,7 +23,10 @@ export const styles = css`
                 display: none;
             }
             &:hover {
-                border: var(--border);
+                border: var(--border-accent);
+                & > button:first-child ui-context {
+                    opacity: 0.75;
+                }
             }
             &:focus {
                 border: var(--border-accent);
@@ -51,6 +54,19 @@ export const styles = css`
             selectedcontent {
                 padding: 0;
             }
+            & > button:first-child {
+                display: flex;
+                flex-direction: column;
+                gap: var(--unit-1);
+                ui-context {
+                    color: var(--color);
+                    opacity: 0.25;
+                    font-size: smaller;
+                    font-weight: lighter;
+                    letter-spacing: var(--unit-1);
+                    text-transform: uppercase;
+                }
+        }
         }
     }
 `
