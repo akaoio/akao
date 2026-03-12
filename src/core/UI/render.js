@@ -284,11 +284,9 @@ export function render(template, container, options = {}) {
         // If user provided a real container, nodes are already appended - return container
         // If temp container, extract and return nodes
         if (hasRealContainer) {
-            // Upgrade custom elements synchronously, but only when the container is
-            // already connected to the live document. Upgrading a disconnected
-            // shadowRoot too early breaks subscription ordering (connectedCallback
-            // of child elements fires after the parent's connectedCallback).
-            if (typeof customElements !== "undefined" && container.isConnected) customElements.upgrade(container)
+            // Force synchronous upgrade of custom elements (e.g. inside Shadow DOM
+            // before the host is connected to the live document)
+            if (typeof customElements !== "undefined") customElements.upgrade(container)
             return container
         }
 
