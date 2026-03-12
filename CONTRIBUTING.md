@@ -1,45 +1,35 @@
 # Contributing to Shop
 
-First off, thank you for considering contributing to Shop! It's people like you that make this project a great tool for the community.
+Thank you for considering contributing to Shop! It's people like you that make this project a great tool for the community.
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by our commitment to providing a welcoming and inspiring community for all. By participating, you are expected to uphold this standard. Please report unacceptable behavior to the project maintainers.
+This project is committed to providing a welcoming and inspiring community for all. By participating, you are expected to maintain this standard. Please report unacceptable behavior to the project maintainers.
 
 ## How Can I Contribute?
 
 ### Reporting Bugs
 
-Before creating bug reports, please check the existing issues to avoid duplicates. When you create a bug report, include as many details as possible:
+Before filing a bug report, check existing issues to avoid duplicates. Include:
 
-- **Use a clear and descriptive title**
-- **Describe the exact steps to reproduce the problem**
-- **Provide specific examples** (code snippets, screenshots)
-- **Describe the behavior you observed and what you expected**
-- **Include browser/OS information**
+- **Clear, descriptive title**
+- **Steps to reproduce** (exact commands, URLs, or code)
+- **Expected vs actual behavior**
+- **Browser / OS / Node.js version**
+- **Console errors and screenshots**
 
 ### Suggesting Enhancements
 
-Enhancement suggestions are welcome! When suggesting an enhancement:
-
-- **Use a clear and descriptive title**
-- **Provide a detailed description of the suggested enhancement**
-- **Explain why this enhancement would be useful**
-- **List any alternative solutions you've considered**
-
-### Your First Code Contribution
-
-Unsure where to begin? Look for issues tagged with:
-
-- `good first issue` - Small, well-defined tasks perfect for newcomers
-- `help wanted` - Issues where we especially appreciate community help
+- **Clear title**
+- **Detailed description** of the feature and its benefits
+- **Alternatives considered**
 
 ### Pull Requests
 
-1. **Fork the repo** and create your branch from `main`
+1. **Fork** the repo and create your branch from `main`
 2. **Follow the coding style** (see below)
-3. **Test your changes** thoroughly
-4. **Update documentation** if needed
+3. **Test your changes** in multiple browsers
+4. **Update docs** if needed
 5. **Write clear commit messages**
 6. **Submit a pull request**
 
@@ -47,17 +37,15 @@ Unsure where to begin? Look for issues tagged with:
 
 ### Prerequisites
 
-- Node.js 18+ (for build tools)
+- Node.js 18+ (build tools only)
 - A modern browser (Chrome, Firefox, Safari, Edge)
 - Git
-- VS Code (recommended for development)
+- VS Code (recommended)
 
 ### VS Code Extensions
 
-- `es6-string-html` (ID: `Tobermory.es6-string-html`) is required for proper HTML syntax highlighting inside JavaScript template literals used across this project.
-- The repository includes `.vscode/extensions.json`, so VS Code will automatically recommend this extension when you open the project.
-- Quick onboarding in VS Code: when the recommendation prompt appears, click **Install All**.
-- If you miss the prompt, open Extensions and search for **@recommended** under Workspace Recommendations, then install `es6-string-html`.
+- `es6-string-html` (ID: `Tobermory.es6-string-html`) is required for HTML syntax highlighting inside JavaScript template literals.
+- The repository includes `.vscode/extensions.json` — VS Code will auto-recommend this extension when you open the project.
 
 ### Setup Steps
 
@@ -76,40 +64,60 @@ npm install
 npm start
 ```
 
-The development server runs on `http://localhost:8080` with hot reload enabled.
+The dev server runs at `http://localhost:8080` with hot reload enabled.
 
-### Project Structure
+### Build Commands
+
+```bash
+npm start                    # build:core + dev server (recommended for development)
+npm run build                # full build (crypto + core + geo)
+npm run build:core           # YAML→JSON, routes, i18n, hashes, forex rates
+npm run build:crypto         # blockchain ABIs, chain configs, DEX pool lists
+npm run build:geo            # GeoNames data (~12M records, ~5 min)
+npm run scan:crypto          # scan on-chain data for currencies/pools
+npm run fix:geo              # fix specific GeoNames entries without full rebuild
+npm run format               # Prettier formatting
+npm run lint                 # ESLint
+npm run test                 # full test suite
+npm run test:core            # core module tests
+npm run test:geo             # geo data integrity tests
+```
+
+## Project Structure
 
 ```
 shop/
 ├── src/
-│   ├── core/          # Core systems (UI, States, Router, etc.)
+│   ├── core/          # Core systems (UI, States, Router, Chain, Dex, Wallet…)
 │   ├── UI/
-│   │   ├── components/  # Web Components
-│   │   ├── routes/      # Route handlers
+│   │   ├── components/  # 29 Web Components
+│   │   ├── routes/      # 10 route handlers
 │   │   ├── layouts/     # Page layouts
 │   │   └── css/         # Global styles
 │   └── statics/       # Data files (YAML)
-│       ├── i18n/       # Translation files
-│       ├── items/      # Product data
-│       └── sites/      # Site configurations
-├── build/             # Generated output (gitignored)
-├── build.js           # Build script
-└── dev.js          # Dev server
+│       ├── i18n/        # Translation files (200+)
+│       ├── items/       # Product data
+│       ├── sites/       # Site configurations
+│       ├── chains/      # Blockchain configs
+│       └── logistics/   # Shipping data
+├── builder/           # Build system modules
+├── build/             # Generated output (gitignored — never edit)
+├── build.js           # Build entry point
+└── dev.js             # Dev server
 ```
 
 ## Coding Style
 
 ### General Principles
 
-1. **Framework-less** - Use native Web APIs, no framework dependencies
-2. **Web Standards** - Leverage modern browser standards
-3. **Readability** - Code should be self-documenting
-4. **Performance** - Optimize for speed and size
+1. **Framework-less** — Use native Web APIs only, no framework dependencies
+2. **Web Standards** — Leverage modern browser capabilities
+3. **Readability** — Code should be self-documenting
+4. **Performance** — Optimize for speed and minimal payload
 
 ### JavaScript Style
 
-We use Prettier for code formatting. Run `npm run format` before committing.
+We use Prettier for formatting. Run `npm run format` before committing.
 
 **Key conventions:**
 
@@ -121,12 +129,10 @@ let count = 0
 // Arrow functions for short callbacks
 items.map(item => item.name)
 
-// Traditional functions for methods
-function processData() {
-    // ...
-}
+// Traditional functions for methods/exports
+function processData() { ... }
 
-// Async/await over promises
+// Async/await over raw promises
 async function loadData() {
     const data = await fetch(url)
     return data.json()
@@ -142,11 +148,12 @@ const message = `Hello ${name}`
 const value = obj?.nested?.property
 ```
 
-### Web Components Style
+### Web Components Pattern
 
-Follow this standard pattern:
+Follow this standard structure for every component:
 
 ```javascript
+// src/UI/components/my-component/index.js
 import template from "./template.js"
 import { render } from "/core/UI.js"
 import States from "/core/States.js"
@@ -154,15 +161,10 @@ import States from "/core/States.js"
 export class MyComponent extends HTMLElement {
     constructor() {
         super()
-        // Initialize state
         this.states = new States({ key: "value" })
-        // Shadow DOM
         this.attachShadow({ mode: "open" })
-        // Initial render
         render(template, this.shadowRoot)
-        // Subscriptions array for cleanup
         this.subscriptions = []
-        // Bind methods that will be used as callbacks
         this.handleEvent = this.handleEvent.bind(this)
     }
 
@@ -172,28 +174,23 @@ export class MyComponent extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue === newValue) return
-        // Handle attribute changes
+        // handle change
     }
 
     connectedCallback() {
-        // Setup: add event listeners, subscribe to state
         this.subscriptions.push(
             this.states.on("key", this.render.bind(this))
         )
     }
 
     disconnectedCallback() {
-        // Cleanup: remove listeners, unsubscribe
+        // ALWAYS clean up subscriptions to prevent memory leaks
         this.subscriptions.forEach(off => off())
     }
 
-    handleEvent(event) {
-        // Event handler logic
-    }
+    handleEvent(event) { ... }
 
-    render() {
-        // Update DOM based on state
-    }
+    render() { ... }
 }
 
 customElements.define("ui-my-component", MyComponent)
@@ -202,13 +199,11 @@ export default MyComponent
 
 ### Component File Structure
 
-Each component should have its own directory:
-
 ```
 my-component/
-├── index.js         # Component class
-├── template.js      # HTML template
-└── styles.css.js    # Component styles
+├── index.js          # Component class + customElements.define()
+├── template.js       # html`` template
+└── styles.css.js     # css`` styles
 ```
 
 **template.js:**
@@ -220,7 +215,7 @@ import styles from "./styles.css.js"
 export const template = html`
     ${styles}
     <div class="container">
-        <!-- Component markup -->
+        <!-- markup -->
     </div>
 `
 
@@ -236,10 +231,6 @@ export const styles = css`
     :host {
         display: block;
     }
-
-    .container {
-        padding: 1rem;
-    }
 `
 
 export default styles
@@ -247,67 +238,61 @@ export default styles
 
 ### CSS Style
 
-- Use CSS custom properties for theming
+- Use CSS custom properties for theming (`var(--text-primary)`, `var(--bg-primary)` etc.)
 - Scope styles with `:host` in Shadow DOM
-- Follow BEM naming for class names
+- Follow BEM naming: `.component__element--modifier`
 - Mobile-first responsive design
-
-```css
-:host {
-    /* Theme variables */
-    color: var(--text-primary);
-    background: var(--bg-primary);
-}
-
-.component__element {
-    /* BEM naming */
-}
-
-.component__element--modifier {
-    /* Modifier class */
-}
-```
 
 ### File Naming
 
-- **Components:** lowercase with hyphens (`my-component/`)
-- **JavaScript:** camelCase (`myComponent.js`)
+- **Component directories:** lowercase with hyphens (`my-component/`)
+- **JavaScript files:** camelCase (`myHelper.js`)
 - **Classes:** PascalCase (`MyComponent`)
-- **Custom elements:** lowercase with hyphens (`ui-my-component`)
+- **Custom elements:** `ui-` prefix, lowercase hyphenated (`ui-my-component`)
 
 ## Adding Features
 
 ### Creating a New Component
 
-1. Create component directory: `src/UI/components/my-component/`
-2. Create `index.js`, `template.js`, `styles.css.js`
-3. Follow the component pattern (see above)
-4. Import and use in other components/routes
-5. Add to README if it's a public-facing component
+1. Create `src/UI/components/my-component/`
+2. Add `index.js`, `template.js`, `styles.css.js`
+3. Follow the component pattern above
+4. Import in parent component or route
+5. Add to README if user-facing
+6. Run `npm run build:core`
 
 ### Creating a New Route
 
-1. Create route directory: `src/UI/routes/my-route/`
-2. Create `index.js` (route handler class)
-3. Build system auto-detects and generates HTML
-4. Router auto-matches at runtime
+Routes are file-system based. Create a directory under `src/UI/routes/`:
 
-**Dynamic routes:**
+```
+src/UI/routes/my-route/index.js   →  /{locale}/my-route
+src/UI/routes/item/[item]/index.js →  /{locale}/item/[slug]
+```
+
+The build system auto-detects new route directories and generates the corresponding HTML files. The router auto-matches paths at runtime.
+
+**Dynamic route example:**
 
 ```javascript
-// File: src/UI/routes/item/[slug]/index.js
-export class ItemRoute extends HTMLElement {
+// src/UI/routes/item/[item]/index.js
+import { Context } from "/core/Context.js"
+
+export class ITEM extends HTMLElement {
     connectedCallback() {
-        const { slug } = Context.get("params")
-        // Use slug to load data
+        const { item } = Context.get("params")
+        // load item by slug
     }
 }
+
+customElements.define("route-item", ITEM)
 ```
+
+After adding a route, run `npm run build:core` to regenerate static HTML files.
 
 ### Adding Translations
 
-1. Create YAML file: `src/statics/i18n/my-string.yaml`
-2. Add translations for all 19 locales:
+1. Create `src/statics/i18n/my-key.yaml` with all 19 locale codes:
 
 ```yaml
 en: My String
@@ -326,20 +311,16 @@ vi: Chuỗi Của Tôi
 th: สตริงของฉัน
 he: המחרוזת שלי
 ur: میری سٹرنگ
-"zh-TW": 我的字符串
+zh-TW: 我的字符串
 no: Min Streng
 ```
 
-3. Build process automatically aggregates
-4. Use in components:
-
-```javascript
-const text = Context.get("dictionary").myString
-```
+2. Run `npm run build:core` to aggregate into locale JSON files.
+3. Use in components: `Context.get(["dictionary", "myKey"])`
 
 ### Adding Products
 
-1. Create item directory: `src/statics/items/my-product/`
+1. Create `src/statics/items/my-product/`
 2. Add `meta.yaml`:
 
 ```yaml
@@ -355,110 +336,77 @@ attributes:
     options: [S, M, L, XL]
 ```
 
-3. Add translations (`en.yaml`, `fr.yaml`, etc.):
+3. Add locale translation files (`en.yaml`, `fr.yaml`, etc.):
 
 ```yaml
 name: Product Name
 description: Product description
-details: Detailed information
+details: Detailed specifications
 ```
 
-4. Rebuild - product appears in listings
+4. Run `npm run build:core` — product appears in listings and static pages are generated.
+
+### Adding Blockchain Support
+
+1. Add chain config to `src/statics/chains/YOUR-CHAIN/configs.yaml`
+2. Add ABIs to `src/statics/ABIs/` (or run `npm run build:crypto` to fetch)
+3. Register DEXs in `src/statics/dexs.yaml`
+4. Add the chain code to the site config: `chains: [YOUR-CHAIN]`
+
+## Critical Pitfalls
+
+1. **Don't use JSX** — this is not React; use tagged template literals `` html`...` ``
+2. **Always use Shadow DOM** — `this.shadowRoot.querySelector()`, not `document.querySelector()`
+3. **Always clean up subscriptions** — `disconnectedCallback()` must call every `off()` function
+4. **Rebuild after source changes** — `src/` edits require `npm run build:core` before the browser sees them
+5. **Import paths start with `/`** — absolute from build root: `/core/UI.js`, not `../../core/UI.js`
+6. **Never mutate Context directly** — use `Context.set({ key: value })`, not `Context.states.key = value`
+7. **Use `DB.get()` for static files** — not raw `fetch()`, to leverage hash-based caching
+8. **Don't edit `build/`** — all files there are auto-generated
 
 ## Testing
 
-### Manual Testing
+### Manual Testing Checklist
 
-- Test in multiple browsers (Chrome, Firefox, Safari, Edge)
-- Test responsive design (mobile, tablet, desktop)
-- Test with different locales
-- Test with dev tools (console errors, network tab)
+- [ ] Test in multiple browsers (Chrome, Firefox, Safari, Edge)
+- [ ] Test responsive design (mobile, tablet, desktop)
+- [ ] Test with different locales (especially RTL: `ar`, `he`, `ur`)
+- [ ] Check browser console for errors or warnings
+- [ ] Verify Network tab shows correct cache behavior
+
+### Automated Tests
+
+```bash
+npm test          # run all tests
+npm run test:core # core module unit tests
+npm run test:geo  # geo data integrity tests
+```
 
 ### Checklist Before Submitting
 
 - [ ] Code follows the style guide
 - [ ] Tested in multiple browsers
 - [ ] No console errors or warnings
-- [ ] Documentation updated (if needed)
-- [ ] Translations added (if needed)
-- [ ] Build completes without errors
-- [ ] No merge conflicts with main branch
-
-## Build System
-
-Understanding the build process helps when contributing:
-
-### Build Steps
-
-```bash
-npm run build
-```
-
-1. Clean `build/` directory
-2. Load configuration (locales, items, tags)
-3. Convert YAML → JSON
-4. Generate paginated data
-5. Process translations
-6. Generate static routes
-7. Create hash files
-8. Copy assets
-
-### Build Output
-
-```
-build/
-├── en/
-│   ├── index.html
-│   ├── item/[slug]/index.html
-│   └── tag/[slug]/index.html
-├── fr/ (same structure)
-├── ... (19 locales)
-├── core/          # Core systems (copied)
-├── UI/            # Components (copied)
-├── statics/       # Data (JSON)
-│   ├── locales/   # Translation files
-│   ├── items/     # Product data
-│   ├── hashes/    # Integrity hashes
-│   └── ...
-└── images/        # Assets
-```
+- [ ] Translations added for all 19 locales (if new UI strings)
+- [ ] Build completes without errors (`npm run build:core`)
+- [ ] No merge conflicts with `main`
 
 ## Commit Messages
 
-Write clear, descriptive commit messages:
+Format: `type: Description`
 
 ```
-feat: Add user profile component
-fix: Correct routing for nested paths
-docs: Update API documentation
-style: Format code with Prettier
-refactor: Simplify state management logic
-perf: Optimize template rendering
-test: Add unit tests for utils
-chore: Update dependencies
+feat: add <ui-notifications> component
+fix: correct search param parsing in Router
+docs: update component creation guide
+style: format code with Prettier
+refactor: simplify Cart state update logic
+perf: avoid re-render when state unchanged
+test: add unit tests for DB hash validation
+chore: update ethers to 6.16
 ```
 
-**Format:** `type: Description`
-
-**Types:**
-- `feat` - New feature
-- `fix` - Bug fix
-- `docs` - Documentation
-- `style` - Code style (formatting, no logic change)
-- `refactor` - Code refactoring
-- `perf` - Performance improvement
-- `test` - Adding/updating tests
-- `chore` - Maintenance tasks
-
-## Release Process
-
-(For maintainers)
-
-1. Update version in `package.json`
-2. Update CHANGELOG.md
-3. Create git tag: `git tag v1.2.3`
-4. Push tag: `git push origin v1.2.3`
-5. Create GitHub release with notes
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`
 
 ## Questions?
 
@@ -471,6 +419,8 @@ chore: Update dependencies
 - [Shadow DOM v1](https://developers.google.com/web/fundamentals/web-components/shadowdom)
 - [Custom Elements v1](https://developers.google.com/web/fundamentals/web-components/customelements)
 - [ES Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+- [WebAuthn Guide](https://webauthn.guide/)
+- [ethers.js Docs](https://docs.ethers.org/)
 
 ---
 

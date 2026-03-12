@@ -9,15 +9,16 @@ A modern **serverless eCommerce engine** built with pure Web Components. Framewo
 ## ✨ Features
 
 - 🌍 **19 Languages** - Full internationalization with static routes per locale for optimal SEO
-- 💱 **30+ Currencies** - Multi-currency support with real-time switching
+- 💱 **Multi-Currency** - Fiat currencies + on-chain crypto (ETH, BSC, and testnets)
 - 🚀 **Serverless** - Pure static files deployable anywhere (Netlify, Vercel, GitHub Pages, S3)
-- 🧩 **Web Components** - Native browser APIs, no framework dependencies
+- 🧩 **Web Components** - 29 native custom elements, no framework dependencies
 - 🔐 **Passwordless Auth** - WebAuthn passkeys (Face ID, Touch ID, Windows Hello)
-- �� **Decentralized** - Optional GunDB integration for peer-to-peer data sync
+- 🔗 **DeFi Integration** - Uniswap V2/V3 DEX support, on-chain wallet, token swaps
+- 📡 **Decentralized** - Optional GunDB integration for peer-to-peer data sync
 - ⚡ **Fast** - Pre-rendered routes, hash-based caching, offline-first capabilities
 - 🎨 **Themeable** - Built-in light/dark mode with CSS custom properties
-- 📱 **PWA Ready** - Progressive Web App with service worker support
-- 🏪 **Multi-tenant** - Different domains per site with shared infrastructure
+- 📦 **Multi-tenant** - Different domains per site with shared infrastructure
+- 🧵 **Multi-threaded** - Web Worker thread system for background tasks
 
 ## 🚀 Quick Start
 
@@ -49,45 +50,98 @@ The dev server will open at `http://localhost:8080` with hot reload enabled.
 ### Development Workflow
 
 ```bash
-# Full build (YAML → JSON, routes, hashes)
-npm run build
-
-# Start dev server with file watching
+# Start dev server (auto runs build:core first)
 npm start
 
-# Format code
-npm run format
+# Full build (crypto + core + geo)
+npm run build
+
+# Individual build steps
+npm run build:core       # YAML→JSON, routes, i18n, hashes, forex rates
+npm run build:crypto     # Blockchain ABIs, chain configs, DEX pools
+npm run build:geo        # GeoNames data (~5 min, 12M+ records)
+
+# Crypto data scanning
+npm run scan:crypto
+npm run scan:crypto:currencies
+npm run scan:crypto:pools
+
+# Fix specific geo entries
+npm run fix:geo
+
+# Testing
+npm test
+npm run test:core
+npm run test:geo
+
+# Code quality
+npm run format   # Prettier
+npm run lint
+npm run lint:fix
 ```
 
 ## 📁 Project Structure
 
 ```
 shop/
-├── src/                      # Source files
+├── src/                      # Source files (never edit build/)
 │   ├── core/                 # Core systems
 │   │   ├── UI/              # Template engine (html, render, css)
-│   │   ├── States.js        # Reactive state management
-│   │   ├── Router.js        # Pattern-based routing
-│   │   ├── Access.js        # Authentication system
-│   │   ├── DB.js            # Static file loader with caching
+│   │   ├── States/          # Reactive state internals
+│   │   ├── IDB/             # IndexedDB wrapper internals
+│   │   ├── FS/              # File system abstraction internals
+│   │   ├── Utils/           # Utilities (crypto, data, environment…)
+│   │   ├── Chains/          # Blockchain architecture (EVM)
+│   │   ├── DeFi/            # DEX integrations (Uniswap V2, V3)
+│   │   ├── threads/         # Web Worker thread scripts
+│   │   ├── Access.js        # WebAuthn authentication state
+│   │   ├── Cart.js          # Shopping cart logic
+│   │   ├── Chain.js         # Blockchain chain instance
+│   │   ├── Construct.js     # App initialization helpers
+│   │   ├── Context.js       # Global reactive state
+│   │   ├── DB.js            # Hash-validated static file loader
+│   │   ├── Dex.js           # DEX instance (V2/V3)
+│   │   ├── Events.js        # Universal event bus (browser + Node.js)
+│   │   ├── Forex.js         # Foreign exchange rate management
+│   │   ├── GDB.js           # GunDB integration (Gun + SEA)
 │   │   ├── IDB.js           # IndexedDB wrapper
-│   │   ├── GDB.js           # GunDB integration
-│   │   └── Build/           # Build system utilities
+│   │   ├── Launcher.js      # Thread bootstrap
+│   │   ├── Progress.js      # Global progress state
+│   │   ├── Router.js        # Pattern-based routing
+│   │   ├── States.js        # Proxy-based reactive state
+│   │   ├── Stores.js        # Shared stores (IDB indexes, chains, wallets…)
+│   │   ├── Thread.js        # Single thread abstraction
+│   │   ├── Threads.js       # Thread manager (main + worker threads)
+│   │   ├── Wallet.js        # Crypto wallet (key derivation, balance, send)
+│   │   └── WebAuthn.js      # WebAuthn/FIDO2 passkey wrapper
 │   ├── UI/                   # User interface
-│   │   ├── components/      # 23 reusable web components
+│   │   ├── components/      # 29 reusable web components
 │   │   ├── layouts/         # Page layouts
-│   │   ├── routes/          # Route handlers
+│   │   ├── routes/          # 10 route handlers
 │   │   └── css/             # Global styles
 │   └── statics/              # Static data and content
-│       ├── i18n/            # 180+ translation files
+│       ├── i18n/            # 200+ translation files
 │       ├── items/           # Product data (YAML)
-│       ├── sites/           # Multi-tenant configs
-│       ├── locales.yaml     # Language definitions
-│       ├── fiats.yaml       # Currency definitions
-│       └── themes.yaml      # Theme configurations
+│       ├── sites/           # Multi-tenant site configs
+│       ├── chains/          # Blockchain configs (ETH, BSC…)
+│       ├── ABIs/            # Smart contract ABIs
+│       ├── logistics/       # Shipping carriers and routes
+│       ├── locales.yaml     # Language definitions (19 locales)
+│       ├── fiats.yaml       # Fiat currency definitions
+│       ├── themes.yaml      # Theme configurations
+│       ├── dexs.yaml        # DEX definitions
+│       ├── forex.yaml       # Cached forex rates
+│       └── system.yaml      # System-wide settings (pagination etc.)
 ├── build/                    # Generated output (gitignored)
-├── build.js                  # Build script
-├── dev.js                 # Dev server with hot reload
+├── builder/                  # Build system modules
+│   ├── core.js              # Main core build runner
+│   ├── crypto.js            # Crypto/blockchain build runner
+│   ├── geo.js               # Geo data build runner
+│   ├── core/                # Core build helpers (routes, i18n, hash…)
+│   └── geo/                 # Geo build helpers
+├── build.js                  # Build entry point (selects builder by arg)
+├── scan.js                   # Crypto data scanner
+├── dev.js                    # Dev server with hot reload
 └── docs/                     # Documentation and thoughts
 ```
 
@@ -130,41 +184,60 @@ render(template, container)
 - Nested templates and arrays
 - Attribute event handlers
 - Automatic primitive value embedding (performance optimization)
-- No Virtual DOM, no diffing - direct DOM manipulation
+- No Virtual DOM, no diffing — direct DOM manipulation
 
 ### State Management
 
-Reactive state with ES6 Proxy:
+Reactive state with ES6 Proxy, two layers:
+
+| Layer | Module | Scope |
+|---|---|---|
+| Global | `Context.js` | Shared across the entire app (theme, fiat, locale, route…) |
+| Local | `States.js` | Component-level, garbage-collected with the component |
 
 ```javascript
 import { Context } from "/core/Context.js"
 
 // Subscribe to changes
-Context.on("theme", ({ value }) => {
-    console.log("Theme changed:", value)
-})
+Context.on("theme", ({ value }) => console.log("Theme:", value))
 
-// Update state (triggers subscribers)
+// Update state (triggers all subscribers)
 Context.set({ theme: "dark" })
-
-// Direct property binding
-Context.on("locale", [element, "textContent"])
 ```
 
 ### Routing
 
-Pattern-based router with dynamic segments:
+Pattern-based router with dynamic segments and search param support:
 
 ```javascript
-// Route definition
-export class ItemRoute extends HTMLElement {
-    // File: /src/UI/routes/item/[slug]/index.js
-    // Pattern: /item/[slug]
-}
+// Route defined by file structure
+// src/UI/routes/item/[item]/index.js → /item/[item]
 
-// Router automatically matches:
-// /en/item/organic-green-tea → { locale: "en", slug: "organic-green-tea" }
+// URL parsing with search params
+Router.process({ path: "/fr/item/organic-tea?sort=price&page=2" })
+// => { locale: {code: "fr"}, params: { item: "organic-tea", sort: "price", page: "2" }, route: "/item/[item]" }
 ```
+
+Routes are always locale-prefixed: `/en/`, `/fr/`, etc.
+
+### Multi-threading
+
+```javascript
+// Launcher.js bootstraps two threads:
+// - main thread  (threads/main.js)
+// - update worker (threads/update.js) — background data sync
+```
+
+### Blockchain / DeFi
+
+Optional on-chain features built on `ethers.js`:
+
+- **Chain** — connects to EVM networks (HTTPS + WebSocket RPC)
+- **Wallet** — derives key pairs from WebAuthn credential + wallet ID (no seed phrases)
+- **Dex** — Uniswap V2/V3 pool queries and swaps
+- **Forex** — fiat exchange rates with 24-hour file cache
+
+Supported networks (configurable per site): `ETH`, `ETH-Sepolia`, `BSC`, `BSC-Testnet`.
 
 ## 🌐 Internationalization
 
@@ -174,87 +247,101 @@ Static routes generated for each locale:
 
 ```
 build/
-├── en/
-│   ├── index.html
-│   ├── item/organic-green-tea/index.html
-│   └── ...
-├── fr/
-│   ├── index.html
-│   ├── item/organic-green-tea/index.html
-│   └── ...
-└── ... (19 locales total)
+├── en/index.html, item/[slug]/index.html, ...
+├── fr/, de/, zh/, ... (19 locales total)
 ```
 
 **Benefits:**
-- Perfect SEO (separate URLs per language)
+- Perfect SEO (separate URL per language)
 - No JavaScript required for initial render
-- Fast page loads (pre-rendered HTML)
+- Instant First Contentful Paint
 
 ### Translation Files
 
-Each UI string has its own YAML file:
+Each UI string has its own YAML file (`src/statics/i18n/`):
 
 ```yaml
-# src/statics/i18n/home.yaml
-en: Home
-fr: Accueil
-es: Inicio
-de: Startseite
-...
+# src/statics/i18n/cart.yaml
+en: Cart
+fr: Panier
+es: Carrito
+de: Warenkorb
 ```
 
-Build process aggregates into:
-
-```javascript
-// build/statics/locales/en.json
-{
-  "home": "Home",
-  "cart": "Cart",
-  ...
-}
-```
+Build aggregates into per-locale JSON files served at runtime. Access via `Context.get(["dictionary", "cart"])`.
 
 ## 🛠️ Build System
 
-The build process is a pure Node.js script (`build.js`) that:
+Three independent build pipelines, all triggered via `build.js`:
 
-1. **Converts YAML → JSON** - All configs and content
-2. **Generates Routes** - Creates static HTML for all locale/item/tag combinations
-3. **Processes i18n** - Aggregates translations by locale
-4. **Paginates Data** - Items and tags (10 per page by default)
-5. **Generates Hashes** - SHA-256 integrity hashes for all JSON files
-6. **Copies Assets** - Core code, UI components, icons
+| Command | What it does |
+|---|---|
+| `npm run build:core` | YAML→JSON, static routes, i18n, hashes, forex |
+| `npm run build:crypto` | Fetches ABIs, chain configs, DEX pool lists |
+| `npm run build:geo` | Processes GeoNames (~12M records, ~5 min) |
 
-**Output:** ~200+ pre-rendered HTML files for full SEO coverage.
+**Build output** (in `build/`):
+
+```
+build/
+├── en/index.html, item/[slug]/index.html, tag/[slug]/index.html
+├── fr/, de/, ... (19 locales)
+├── core/          — copied JS modules
+├── UI/            — copied components
+├── statics/
+│   ├── locales/   — per-locale i18n JSON
+│   ├── items/     — product data + pagination
+│   ├── chains/    — blockchain configs
+│   ├── ABIs/      — contract ABIs
+│   └── hashes/    — SHA-256 integrity hashes
+├── geo/           — hierarchical GeoNames data
+└── images/        — copied assets
+```
+
+**DO NOT** edit files in `build/` — they are regenerated on every build.
 
 ## 🧩 Components
 
-### Available Components
+### Available Components (29)
 
 **Navigation & Layout:**
-- `<ui-header>`, `<ui-footer>`, `<ui-navigator>` - Layout structure
-- `<ui-a>` - Custom anchor with router integration
+- `<ui-header>`, `<ui-footer>`, `<ui-navigator>` — page structure
+- `<ui-a>` — router-aware anchor element
 
 **UI Controls:**
-- `<ui-button>`, `<ui-picker>`, `<ui-modal>`, `<ui-icon>` - Form elements
-- `<ui-context>` - Dynamic text from Context state
-- `<ui-loading>` - Loading overlay
+- `<ui-button>`, `<ui-picker>`, `<ui-modal>` — interactive controls
+- `<ui-icon>` — icon renderer (Bootstrap Icons)
+- `<ui-svg>` — inline SVG wrapper
+- `<ui-select>` — enhanced select control
+- `<ui-context>` — live value from Context state
+- `<ui-splash>` — loading/splash screen
 
 **Localization:**
-- `<ui-locales>` - Language switcher
-- `<ui-fiats>` - Currency switcher
-- `<ui-themes>` - Theme toggle (light/dark)
+- `<ui-locales>` — language switcher
+- `<ui-fiats>` — fiat currency switcher
+- `<ui-fiat>` — single currency display
+- `<ui-themes>` — theme toggle (light/dark)
 
-**Authentication:**
-- `<ui-user>` - User profile display
-- `<ui-access>` - Authentication modal
-- `<ui-logout>` - Logout button
-- `<ui-wallets>` - Wallet management
+**Authentication & Identity:**
+- `<ui-user>` — user profile display
+- `<ui-access>` — WebAuthn authentication modal
+- `<ui-signout>` — sign-out button
+- `<ui-avatars>` — avatar selector
+- `<ui-identicon>` — deterministic avatar from public key
 
 **eCommerce:**
-- `<ui-item>` - Product card
-- `<ui-items>` - Product grid with pagination
-- `<ui-cart>` - Shopping cart
+- `<ui-item>` — product card
+- `<ui-items>` — paginated product grid
+- `<ui-cart>` — shopping cart
+- `<ui-profile>` — user profile editor
+
+**Blockchain / Wallet:**
+- `<ui-wallets>` — wallet selector (chain + currency aware)
+
+**Geo & Other:**
+- `<ui-geo>` — hierarchical geographic selector (country → region → city)
+- `<ui-addresses>` — address book manager
+- `<ui-notifications>` — toast notification system
 
 ### Creating a Component
 
@@ -267,7 +354,7 @@ import States from "/core/States.js"
 export class MyComponent extends HTMLElement {
     constructor() {
         super()
-        this.states = new States({ count: 0 })
+        this.states = new States({ key: "value" })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.subscriptions = []
@@ -275,7 +362,7 @@ export class MyComponent extends HTMLElement {
 
     connectedCallback() {
         this.subscriptions.push(
-            this.states.on("count", this.render.bind(this))
+            this.states.on("key", this.render.bind(this))
         )
     }
 
@@ -283,13 +370,26 @@ export class MyComponent extends HTMLElement {
         this.subscriptions.forEach(off => off())
     }
 
-    render() {
-        // Update DOM based on state
-    }
+    render() {}
 }
 
 customElements.define("ui-my-component", MyComponent)
 ```
+
+## 📄 Routes
+
+| Route | Path | Description |
+|---|---|---|
+| Home | `/` | Product listing homepage |
+| Item | `/item/[item]` | Product detail page |
+| Checkout | `/checkout` | Checkout flow |
+| Order | `/order` | Order confirmation / status |
+| Deposit | `/deposit` | Crypto wallet funding |
+| Withdraw | `/withdraw` | Crypto withdrawal |
+| Inventory | `/inventory` | Seller inventory management |
+| Dispute | `/dispute` | Order dispute handling |
+| Profile | `/profile` | User profile settings |
+| Test | `/test` | Development testing page |
 
 ## 🔐 Authentication
 
@@ -298,44 +398,41 @@ WebAuthn-based passwordless authentication:
 ```javascript
 import { Access } from "/core/Access.js"
 
-// Check authentication
 if (Access.get("authenticated")) {
-    console.log("User is signed in")
+    const { pair, wallet, avatar } = Access.states.get()
 }
 
-// Subscribe to changes
 Access.on("authenticated", ({ value }) => {
     console.log("Auth state:", value)
 })
 ```
 
 **Features:**
-- Platform authenticators (biometrics, security keys)
-- SEA key pair generation from credential hash
+- Platform authenticators (Touch ID, Face ID, Windows Hello, security keys)
+- SEA key pair derived deterministically from WebAuthn credential hash (no seed phrases)
 - Encrypted public key storage in GunDB
-- No passwords to manage
+- Multi-wallet support (wallet ID selects BIP-32 derivation path)
+- Avatar support with deterministic identicons
 
 ## 🗄️ Data Storage
 
-Three storage layers:
-
-1. **IDB (IndexedDB)** - Client-side persistent storage
-2. **GDB (GunDB)** - Decentralized graph database (optional)
-3. **DB (Static Files)** - Hash-verified JSON files with caching
+| Layer | Module | Purpose |
+|---|---|---|
+| IndexedDB | `IDB.js` | Client-side persistent cache |
+| GunDB | `GDB.js` | Decentralized graph database (optional) |
+| Static Files | `DB.js` | Hash-validated JSON with auto-caching |
+| Blockchain | `Chain.js` / `Wallet.js` | On-chain state and transactions |
 
 ```javascript
-import { DB } from "/core/DB.js"
+import DB from "/core/DB.js"
 
-// Load data with hash verification
-const item = await DB.get(["items", "organic-green-tea", "meta.json"])
-
-// Automatically cached in IndexedDB
-// Falls back to network on cache miss
+// Automatically hash-validated and IndexedDB-cached
+const item = await DB.get(["statics", "items", "organic-green-tea", "meta.json"])
 ```
 
 ## 🎨 Theming
 
-CSS custom properties with automatic theme switching:
+CSS custom properties with automatic system-preference detection:
 
 ```css
 :host {
@@ -344,56 +441,57 @@ CSS custom properties with automatic theme switching:
 }
 ```
 
-Themes defined in `src/statics/themes.yaml`:
+Themes defined in `src/statics/themes.yaml`. Selected theme is persisted in `localStorage` and applied as `data-theme` on `<html>`.
 
-```yaml
-light:
-  --text-primary: "#000000"
-  --bg-primary: "#ffffff"
-  ...
+## 🌍 Geo Data
 
-dark:
-  --text-primary: "#ffffff"
-  --bg-primary: "#000000"
-  ...
+Hierarchical geographic data from GeoNames (~12M locations):
+
+```javascript
+import DB from "/core/DB.js"
+
+// DB.path() splits a numeric ID into directory path segments
+DB.path(12345) // => ["12", "34", "5"]
+
+const geo = await DB.get(["geo", "12", "34", "5.json"])
+// { id: 12345, name: "Paris", parent: 123, children: [...] }
 ```
+
+Used by `<ui-geo>` for cascading country → region → city selection.
 
 ## 🚢 Deployment
 
-### Static Hosting
-
-Deploy `build/` directory to any static host:
+Deploy the `build/` directory to any static host:
 
 ```bash
-# Build production files
 npm run build
 
-# Deploy to Netlify
+# Netlify
 netlify deploy --dir=build --prod
 
-# Deploy to Vercel
+# Vercel
 vercel --prod
-
-# Deploy to GitHub Pages
-# (configure GitHub Actions or manual push to gh-pages branch)
 ```
 
-### Configuration
+### Site Configuration
 
-Edit `src/statics/sites/your-site.yaml`:
+`src/statics/sites/your-site/configs.yaml`:
 
 ```yaml
 name: mystore
 brand:
-  text: /images/branding.svg
-  symbol: /images/logo.svg
-favicon: /images/icon.svg
+  text: /statics/sites/mystore/images/branding.svg
+  symbol: /statics/sites/mystore/images/logo.svg
+favicon: /statics/sites/mystore/images/icon.svg
 locale: en
 fiat: USD
-peers: []  # GunDB peers for decentralized sync
+chains:
+  - ETH
+  - BSC
+peers: []   # GunDB peers for decentralized sync
 ```
 
-Map domain in `src/statics/domains.yaml`:
+`src/statics/domains.yaml`:
 
 ```yaml
 mystore.com: mystore
@@ -401,36 +499,22 @@ mystore.com: mystore
 
 ## 📚 Documentation
 
-- [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) - Why no framework?
-- [Web Components Compatibility](docs/thoughts/web-components-compatibility.md) - Browser support
-- [New UI Template Architecture](docs/thoughts/new-UI-html-template-architecture.md) - Template system design
-- [Performance Optimization](docs/thoughts/performance-optimization.md) - Speed improvements
-- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+- [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) — Why no framework?
+- [WebAuthn PRF Extension](docs/WebAuthn-PRF-Extension.md) — Passkey deep-dive
+- [White Paper Draft](docs/thoughts/white-paper-draft.md) — 4-party escrow design
 
 ## 🤝 Contributing
 
-We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
-- Code of conduct
 - Development setup
-- Code style guidelines
-- Submission process
+- Code style guide
 - Component creation guide
+- Commit message format
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🌟 Acknowledgments
-
-- Built with native Web Standards
-- Icons from [Bootstrap Icons](https://icons.getbootstrap.com/)
-- Inspired by the principles of framework-less development
-
-## 💬 Community
-
-- **Issues:** [GitHub Issues](https://github.com/akaoio/shop/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/akaoio/shop/discussions)
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
