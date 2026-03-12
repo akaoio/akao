@@ -43,7 +43,8 @@ export class USER extends HTMLElement {
         if (Access.get("avatar")?.id == null) return
         const { sea } = globalThis
         if (!sea) return
-        const seed = await sea.work(Access.get("seed"), Access.get("avatar").id)
+        const namespaced = await sea.work(Access.get("seed"), "avatar")
+        const seed = await sea.work(namespaced, Access.get("avatar").id)
         this.identicon.dataset.seed = seed
     }
 }

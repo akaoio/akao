@@ -65,7 +65,7 @@ export class WITHDRAW extends HTMLElement {
 
             const fee = await wallet.fee({ to, amount: Number(amount), currency })
             if (!fee) return
-            const label = Context.get(["dictionary", "gasFee"]) || "Gas fee"
+            const label = Context.get(["dictionary", "gasFee"])
             this.$gas.textContent = `${label}: ${fee.amount} ${fee.symbol}`
         }, 500)
     }

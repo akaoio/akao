@@ -18,13 +18,7 @@ export class WALLETS extends HTMLElement {
         render(template, this.shadowRoot)
         this.subscriptions = []
         this.step = 5
-        this.increase = this.increase.bind(this)
-        this.decrease = this.decrease.bind(this)
-        this.create = this.create.bind(this)
-        this.remove = this.remove.bind(this)
-        this.select = this.select.bind(this)
         this.change = this.change.bind(this)
-        this.render = this.render.bind(this)
     }
 
     get id() {
@@ -47,23 +41,26 @@ export class WALLETS extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.$wallets = this.shadowRoot.querySelector("#wallets")
-        this.shadowRoot.querySelector("#increase").addEventListener("click", this.increase)
-        this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease)
+        this.$identicons = this.shadowRoot.querySelector("ui-identicons")
+
+        const seed = async () => {
+            const hashed = await globalThis.sea.work(Access.get("seed"), "wallet")
+            this.$identicons.dataset.seed = hashed
+        }
+
         this.subscriptions.push(
-            Access.on("authenticated", ({ value }) => {
+            this.$identicons.events.on("select", ({ detail: { id } }) => { this.id = id }),
+            this.$identicons.events.on("increase", () => { this.total += this.step }),
+            this.$identicons.events.on("decrease", () => { if (this.total - this.step > this.id) this.total -= this.step }),
+            Access.on("authenticated", async ({ value }) => {
                 this.toggleAttribute("hidden", !value)
-                if (value) this.change()
+                if (value) { await seed(); this.change() }
                 else {
                     this.states.set({ address: null })
-                    while (this.$wallets.firstChild) this.$wallets.removeChild(this.$wallets.firstChild)
+                    this.$identicons.clear()
                 }
             }),
-            Access.on("wallet", this.change),
-            this.states.on("chain", this.render),
-            this.states.on("currency", this.render),
-            () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
-            () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease)
+            Access.on("wallet", this.change)
         )
 
         this.toggleAttribute("hidden", !Access.get("authenticated"))
@@ -102,55 +99,11 @@ export class WALLETS extends HTMLElement {
         this.$address = this.shadowRoot.querySelector("#address")
         this.$balance = this.shadowRoot.querySelector("#balance")
 
-        if (Access.get("authenticated")) this.change()
+        if (Access.get("authenticated")) seed().then(() => this.change())
     }
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
-    }
-
-    increase() {
-        this.total += this.step
-    }
-
-    decrease() {
-        if (this.total - this.step > this.id) this.total -= this.step
-    }
-
-    async create() {
-        if (this.$wallets.children.length >= this.total) return
-        const templates = []
-        for (let id = this.$wallets.children.length; id < this.total; id++) {
-            const seed = await globalThis.sea.work(Access.get("seed"), id)
-            const select = () => this.select({ id })
-            templates.push(html`
-                <span class="wallet">
-                    <input id="i${id}" type="radio" name="wallet" value="${id}" ${id === this.id ? "checked" : ""} />
-                    <label
-                        for="i${id}"
-                        ${({ element }) => {
-                            element.addEventListener("click", select)
-                            this.subscriptions.push(() => element.removeEventListener("click", select))
-                        }}>
-                        <ui-identicon data-size="5" data-seed="${seed}" />
-                    </label>
-                </span>
-            `)
-        }
-        render(templates, this.$wallets, { append: true })
-    }
-
-    remove() {
-        const count = this.$wallets.children.length
-        const min = Math.max(this.step, this.id + 1)
-        if (count <= min) return
-        for (let i = 0; i < Math.min(this.step, count - this.total); i++) this.$wallets.removeChild(this.$wallets.lastChild)
-        if (this.$wallets.children.length > this.total) this.remove()
-    }
-
-    async select({ id }) {
-        if (!this.$wallets.querySelector(`input#i${id}`)) await this.create()
-        this.id = id
     }
 
     async change(event) {
@@ -168,7 +121,8 @@ export class WALLETS extends HTMLElement {
                 this.states.set({ [name]: value })
             }
         }
-        this.render()
+        this.$identicons.id = this.id
+        this.$identicons.total = this.total
         if (this.states.get("chain") && this.states.get("currency")) {
             const wallet = Wallets[this.states.get("chain")]
             const address = wallet?.address || null
@@ -206,17 +160,6 @@ export class WALLETS extends HTMLElement {
                 label: html`<ui-svg class="icon" data-src="/images/cryptos/${chain.configs.symbol}" /> ${chain.configs.name || String(chain.id)}`,
                 value: String(chain.id)
             }))
-    }
-
-    render() {
-        if (this._renderPending) return
-        this._renderPending = true
-        queueMicrotask(async () => {
-            this._renderPending = false
-            if (!Access.get("authenticated")) return
-            if (this.$wallets.children.length < this.total) await this.create()
-            if (this.$wallets.children.length > this.total) this.remove()
-        })
     }
 }
 

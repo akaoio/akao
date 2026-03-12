@@ -5,18 +5,20 @@
 
 import { NODE, BROWSER } from "./Utils/environment.js"
 
-// Global event dispatcher that uses platform-appropriate API
-let EVENTS = null
-
-// Initialize with browser EventTarget in browser environment
-if (BROWSER && !NODE) EVENTS = new EventTarget()
-// Initialize with Node.js EventEmitter in Node environment
-else if (NODE && !BROWSER) {
+// Load EventEmitter class once at module level (Node.js only)
+let EventEmitterClass = null
+if (NODE && !BROWSER) {
     const { EventEmitter } = await import("events")
-    EVENTS = new EventEmitter()
+    EventEmitterClass = EventEmitter
 }
 
 export class Events {
+    constructor() {
+        // Each instance gets its own independent event dispatcher
+        if (BROWSER && !NODE) this.$events = new EventTarget()
+        else if (NODE && !BROWSER) this.$events = new EventEmitterClass()
+    }
+
     /**
      * Register an event listener with automatic unsubscribe capability.
      * Works across browser (addEventListener) and Node.js (on) environments.
@@ -26,8 +28,8 @@ export class Events {
      * @returns {Function} Unsubscribe function that removes the listener
      */
     on(event, listener) {
-        if (BROWSER && !NODE) EVENTS.addEventListener(event, listener)
-        else if (NODE && !BROWSER) EVENTS.on(event, listener)
+        if (BROWSER && !NODE) this.$events.addEventListener(event, listener)
+        else if (NODE && !BROWSER) this.$events.on(event, listener)
         // Return unsubscribe function with self-reference for convenience
         const off = () => this.off(event, listener)
         off.off = off
@@ -42,8 +44,8 @@ export class Events {
      * @param {Function} listener - The callback function to remove
      */
     off(event, listener) {
-        if (BROWSER && !NODE) EVENTS.removeEventListener(event, listener)
-        else if (NODE && !BROWSER) EVENTS.removeListener(event, listener)
+        if (BROWSER && !NODE) this.$events.removeEventListener(event, listener)
+        else if (NODE && !BROWSER) this.$events.removeListener(event, listener)
     }
 
     /**
@@ -57,10 +59,10 @@ export class Events {
         // Browser: create and dispatch CustomEvent
         if (BROWSER && !NODE) {
             const e = new CustomEvent(event, { detail })
-            EVENTS.dispatchEvent(e)
+            this.$events.dispatchEvent(e)
         }
         // Node.js: emit event with detail as argument
-        else if (NODE && !BROWSER) EVENTS.emit(event, { detail })
+        else if (NODE && !BROWSER) this.$events.emit(event, { detail })
     }
 }
 
