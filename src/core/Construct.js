@@ -16,7 +16,12 @@ export const Construct = {
     GDB: async function () {
         if (!Statics.site) return
         await import("./GDB.js")
-        globalThis.gun = GUN({ peers: Statics.site?.peers || [] })
+        globalThis.gun = GUN({
+            peers: Statics.site?.peers || [],
+            localStorage: false,
+            radisk: true,
+            file: "GDB"
+        })
         globalThis.sea = SEA
         console.log("Constructed: GDB")
         return true

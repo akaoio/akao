@@ -1,2 +1,6 @@
 import "./GDB/gun.js"
+import "./GDB/radix.js"
+import "./GDB/radisk.js"
+import "./GDB/rindexed.js"
+import "./GDB/store.js"
 import "./GDB/sea.js"
