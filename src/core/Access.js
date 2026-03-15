@@ -150,6 +150,15 @@ async function save(credential) {
     const encrypted = await sea.encrypt(credential.pub, pair)
     // Store encrypted pub in Gun database under user's pub
     gun.get(`~${pair.pub}`).get("@").put(encrypted, null, { opt: { authenticator: pair } })
+    // Register pub in the ~ shard network so it can be discovered by prefix traversal
+    // Break the pub into smaller chunks to avoid hitting Gun's node size limits
+    const chunks = pair.pub.match(/.{1,2}/g) || []
+    let node = gun.get("~")
+    // Traverse or create nodes for each chunk of the pub key
+    // It now looks like this: gun.get("~").get("ab").get("cd").get("ef")... and so on until the full pub is traversed
+    for (const chunk of chunks) node = node.get(chunk)
+    // Finally, store a reference to the encrypted pub at the end of the traversal
+    node.put({ "#": "~" + pair.pub }, null, { opt: { authenticator: pair } })
     return encrypted
 }
 
