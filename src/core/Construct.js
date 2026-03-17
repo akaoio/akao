@@ -1,5 +1,5 @@
 import { Chains, Wallets, Dexs, Statics } from "./Stores.js"
-import { Context, getTheme, getFiat, getReferrer } from "./Context.js"
+import { Context, getTheme, getWhitelabel, getFiat, getReferrer } from "./Context.js"
 import { BROWSER } from "./Utils.js"
 import Router from "./Router.js"
 import DB from "./DB.js"
@@ -81,6 +81,7 @@ export const Construct = {
         Context.set({
             ...router,
             theme: getTheme(),
+            whitelabel: getWhitelabel(),
             fiat: getFiat(),
             referrer: globalThis.localStorage ? globalThis.localStorage.getItem("referrer") : await getReferrer()
         })

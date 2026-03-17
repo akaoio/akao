@@ -6,6 +6,10 @@ export const styles = css`
             position: fixed;
             top: 0;
             width: 100%;
+            background: var(--header-background, var(--background));
+            border-bottom: var(--header-border-bottom, none);
+            backdrop-filter: var(--header-backdrop, none);
+            -webkit-backdrop-filter: var(--header-backdrop, none);
 
             nav {
                 max-height: var(--header-height);
@@ -22,8 +26,9 @@ export const styles = css`
 
             .brand {
                 max-width: 8rem;
-                color: var(--color);
+                color: var(--whitelabel-color, var(--color));
                 display: flex;
+                filter: drop-shadow(var(--glow-c, none));
             }
         }
     }

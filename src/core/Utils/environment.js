@@ -14,4 +14,6 @@ if (globalThis?.location?.origin) {
 
 if (globalThis?.process?.platform?.includes("win")) WIN = true
 
-export { NODE, BROWSER, WIN }
+const DEV = BROWSER && globalThis?.location?.hostname === "localhost"
+
+export { NODE, BROWSER, WIN, DEV }
