@@ -9,7 +9,6 @@ import picker from "./picker.js"
 import a from "./a.js"
 import context from "./context.js"
 import themes from "./themes.js"
-import whitelabels from "./whitelabels.js"
 import notifications from "./notifications.js"
 import items from "./items.js"
 
@@ -25,7 +24,6 @@ export default [
     a,
     context,
     themes,
-    whitelabels,
     notifications,
     items
 ]

@@ -89,8 +89,7 @@ thread.init = async function () {
         routes: await DB.get(["statics", "routes.json"]),
         locales: await DB.get(["statics", "locales.json"]),
         fiats: await DB.get(["statics", "fiats.json"]),
-        themes: await DB.get(["statics", "themes.json"]),
-        whitelabels: await DB.get(["statics", "whitelabels.json"])
+        themes: await DB.get(["statics", "themes.json"])
     })
     Progress.set({ Site: true })
     Progress.set({ Chains: await Construct.Chains() })

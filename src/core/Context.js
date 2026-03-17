@@ -4,7 +4,6 @@ import { Statics } from "./Stores.js"
 
 export const Context = new States({
     theme: getTheme(),
-    whitelabel: getWhitelabel(),
     fiat: getFiat(),
     referrer: null
 })
@@ -27,19 +26,6 @@ export function setTheme(theme) {
     if (globalThis.document) document.documentElement.dataset.theme = theme
     if (Context.get("theme") === theme) return
     Context.set({ theme })
-}
-
-export function getWhitelabel() {
-    if (!BROWSER) return
-    const whitelabel = Statics.whitelabels?.[0]?.code || "default"
-    if (globalThis?.document) globalThis.document.documentElement.dataset.whitelabel = whitelabel
-    return whitelabel
-}
-
-export function setWhitelabel(whitelabel) {
-    if (globalThis.document) document.documentElement.dataset.whitelabel = whitelabel
-    if (Context.get("whitelabel") === whitelabel) return
-    Context.set({ whitelabel })
 }
 
 export function getFiat() {
