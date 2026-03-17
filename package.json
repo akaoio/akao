@@ -33,6 +33,7 @@
     "scan:crypto": "node scan.js",
     "scan:crypto:currencies": "node scan.js currencies",
     "scan:crypto:pools": "node scan.js pools",
+    "crawl:metaforge:items": "node scripts/crawl-metaforge-items.js",
     "fix:geo": "node builder/geo.js --fix",
     "test": "node test.js core && node test.js geo",
     "test:core": "node test.js core",
