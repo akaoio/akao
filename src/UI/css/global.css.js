@@ -5,6 +5,7 @@ import light from "./light.css.js"
 import dark from "./dark.css.js"
 import defaultWhitelabel from "./whitelabels/default.css.js"
 import cyberpunk from "./whitelabels/cyberpunk.css.js"
+import metamarket from "./whitelabels/metamarket.css.js"
 import scrollbar from "./elements/scrollbar.css.js"
 import body from "./elements/body.css.js"
 import header from "./elements/header.css.js"
@@ -18,6 +19,7 @@ export const styles = css`
     ${dark}
     ${defaultWhitelabel}
     ${cyberpunk}
+    ${metamarket}
     ${scrollbar}
     ${body}
     ${header}
