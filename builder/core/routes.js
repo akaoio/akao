@@ -18,10 +18,11 @@ function getParamName(segment = "") {
     return ""
 }
 
-function getParamValues(name = "", { items = [], tags = [] } = {}) {
+function getParamValues(name = "", { items = [], tags = [], games = [] } = {}) {
     const values = {
         item: items,
-        tag: tags
+        tag: tags,
+        game: games
     }
     return values[name] || []
 }
@@ -48,7 +49,7 @@ function expandRouteSegments(route = "", options = {}) {
     return expanded
 }
 
-export async function generateRoutes(locales, items, tags, indexContent, outputBase = "build", routePatterns = []) {
+export async function generateRoutes(locales, items, tags, games, indexContent, outputBase = "build", routePatterns = []) {
     const dynamicPaths = outputBase === "build" ? paths : {
         ...paths,
         build: {
@@ -59,6 +60,7 @@ export async function generateRoutes(locales, items, tags, indexContent, outputB
 
     const normalizedRoutes = Array.from(new Set(routePatterns.map(normalizeRoute).filter(Boolean))).sort()
     const tagList = Array.from(tags || [])
+    const gameList = Array.from(games || [])
     const routeTargets = new Set()
     routeTargets.add([...dynamicPaths.build.root, "index.html"].join("/"))
 
@@ -79,7 +81,7 @@ export async function generateRoutes(locales, items, tags, indexContent, outputB
                 routeTargets.add([...dynamicPaths.build.root, locale, ...staticPrefix, "index.html"].join("/"))
             }
 
-            const expanded = expandRouteSegments(route, { items, tags: tagList })
+            const expanded = expandRouteSegments(route, { items, tags: tagList, games: gameList })
             if (!expanded.length) {
                 if (parts.some(isDynamicSegment)) console.warn(`Skipped dynamic route '${route}' because no values were found`)
                 continue

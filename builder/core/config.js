@@ -6,6 +6,7 @@ export const paths = {
         statics: ["src", "statics"],
         i18n: ["src", "statics", "i18n"],
         items: ["src", "statics", "items"],
+        games: ["src", "statics", "games"],
         sites: ["src", "statics", "sites"],
         core: ["src", "core"],
         UI: ["src", "UI"],

@@ -152,6 +152,15 @@ for (const name of itemDirs) {
 
 log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} unique tags`)
 
+// Load games metadata
+const gameDirs = await dir(paths.src.games)
+const games = []
+for (const name of gameDirs) {
+    const meta = await load([...paths.src.games, name, 'meta.yaml'])
+    if (meta) games.push(name)
+}
+log.ok(`Loaded: ${games.length} games`)
+
 // Fetch forex rates
 log.info("Checking forex rates...")
 const forex = new Forex()
@@ -244,6 +253,49 @@ for (const tag of tagsList) {
 }
 log.ok(`Generated ${totalTagPages} tag pages and ${tagsList.length} tag-specific pagination structures`)
 
+// Build games
+log.info("Building games (YAML → JSON)...")
+await processYamlDirectory(paths.src.games, [...paths.build.statics, "games"], { recursive: true })
+log.ok(`Built ${games.length} games`)
+
+// Generate games pagination
+log.info("Generating games pagination...")
+const totalGamePages = Math.ceil(games.length / pagination)
+await write([...paths.build.statics, "games", "meta.json"], {
+    children: games.length,
+    pages: totalGamePages
+})
+for (let page = 1; page <= totalGamePages; page++) {
+    const start = (page - 1) * pagination
+    const pageGames = games.slice(start, start + pagination)
+    await write([...paths.build.statics, "games", `${page}.json`], pageGames)
+}
+log.ok(`Generated ${totalGamePages} game pages`)
+
+// Generate per-game item lists with pagination
+for (const game of games) {
+    const gameItems = []
+    for (const itemName of items) {
+        const meta = await load([...paths.build.statics, "items", itemName, "meta.json"])
+        if (meta?.taxonomy?.game === game) {
+            gameItems.push(itemName)
+        }
+    }
+
+    const gameItemPages = Math.ceil(gameItems.length / pagination)
+    await write([...paths.build.statics, "games", game, "items", "meta.json"], {
+        children: gameItems.length,
+        pages: gameItemPages
+    })
+
+    for (let page = 1; page <= gameItemPages; page++) {
+        const start = (page - 1) * pagination
+        const pageItems = gameItems.slice(start, start + pagination)
+        await write([...paths.build.statics, "games", game, "items", `${page}.json`], pageItems)
+    }
+}
+log.ok(`Generated per-game item pagination for ${games.length} games`)
+
 // Build sites
 log.info("Building sites (YAML → JSON)...")
 const siteDirs = await dir(paths.src.sites)
@@ -298,7 +350,7 @@ log.ok(`Created ${localeCount} locale files`)
 // Generate routes
 log.info("Generating routes...")
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, items, allTags, indexContent, "build", routeDirs)
+const routeCount = await generateRoutes(locales, items, allTags, games, indexContent, "build", routeDirs)
 log.ok(`Created ${routeCount} route files`)
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
