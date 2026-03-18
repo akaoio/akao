@@ -84,10 +84,24 @@ export class SHOWCASE extends HTMLElement {
             codeBlock.className = "story-code"
             codeBlock.textContent = story.code.trim()
 
+            const codeToggle = document.createElement("button")
+            codeToggle.className = "story-code-toggle"
+            codeToggle.innerHTML = `<span class="story-code-toggle-label">&lt;/&gt; Code</span><span class="story-code-toggle-arrow">▾</span>`
+            codeToggle.addEventListener("click", () => {
+                const open = card.classList.toggle("code-open")
+                codeToggle.querySelector(".story-code-toggle-arrow").textContent = open ? "▴" : "▾"
+            })
+
             card.appendChild(storyName)
             card.appendChild(preview)
+            card.appendChild(codeToggle)
             card.appendChild(codeBlock)
             grid.appendChild(card)
+        }
+
+        if (typeof group.toolbar === "function") {
+            const toolbarEl = group.toolbar(grid)
+            if (toolbarEl) canvas.appendChild(toolbarEl)
         }
 
         canvas.appendChild(grid)

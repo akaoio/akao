@@ -34,8 +34,6 @@ export const styles = css`
         /* Hero shadow */
         --hero-title-shadow: 0 0 30px rgba(0, 110, 122, 0.2), 0 0 80px rgba(0, 110, 122, 0.08);
 
-        --whitelabel-color: var(--neon-c);
-
         /* Apple frosted-glass header */
         --header-background:    rgba(255, 255, 255, 0.72);
         --header-border-bottom: var(--border-width) solid rgba(0, 0, 0, 0.08);

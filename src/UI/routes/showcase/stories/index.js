@@ -8,6 +8,8 @@ import select from "./select.js"
 import picker from "./picker.js"
 import a from "./a.js"
 import context from "./context.js"
+import locales from "./locales.js"
+import typography from "./typography.js"
 import themes from "./themes.js"
 import notifications from "./notifications.js"
 import items from "./items.js"
@@ -23,6 +25,8 @@ export default [
     picker,
     a,
     context,
+    locales,
+    typography,
     themes,
     notifications,
     items

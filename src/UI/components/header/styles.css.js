@@ -26,7 +26,7 @@ export const styles = css`
 
             .brand {
                 max-width: 8rem;
-                color: var(--whitelabel-color, var(--color));
+                color: var(--neon-c);
                 display: flex;
                 filter: drop-shadow(var(--glow-c, none));
             }

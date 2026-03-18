@@ -17,8 +17,6 @@ export const styles = css`
         --border:       var(--border-width) solid #233c4d;
         --border-inset: inset 0 0 0 var(--border-width) #233c4d;
 
-        --whitelabel-color: var(--neon-c);
-
         --header-background:    rgba(18, 28, 38, 0.85);
         --header-border-bottom: var(--border-width) solid var(--neon-c);
         --footer-background:    rgba(18, 28, 38, 0.85);
