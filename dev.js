@@ -24,7 +24,7 @@ watcher.on("change", (path) => {
     buildInProgress = true
 
     const runBuild = (script, next) => {
-        const build = spawn("npm", ["run", script], { stdio: "inherit" })
+        const build = spawn("npm", ["run", script], { stdio: "inherit", shell: true })
         build.on("close", (code) => {
             if (code !== 0) {
                 console.error(`❌ ${script} failed with code ${code}`)
