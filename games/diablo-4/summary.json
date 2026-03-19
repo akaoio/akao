@@ -1,13 +1,11 @@
 {
-  "fetchedAt": "2026-03-19T09:14:35.658Z",
-  "pagesFetched": 0,
-  "totalItems": 0,
-  "downloadedImages": 0,
+  "source": "https://www.wowhead.com/diablo-4/items",
+  "fetchedAt": "2026-03-19T10:23:35.320Z",
+  "pagesFetched": 1,
+  "totalItems": 1000,
+  "duplicateItemsSkipped": 0,
+  "uniqueIcons": 601,
+  "downloadedImages": 600,
   "cachedImages": 0,
-  "missingImages": 0,
-  "message": "Crawler diablo-4 is scaffolded and ready for implementation",
-  "args": {
-    "dryRun": false,
-    "output": "C:\\Users\\x\\Projects\\shop\\games\\diablo-4"
-  }
+  "missingImages": 1
 }

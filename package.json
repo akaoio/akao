@@ -35,6 +35,7 @@
     "scan:crypto:currencies": "node scan.js currencies",
     "scan:crypto:pools": "node scan.js pools",
     "crawl:arc-raiders": "node build.js games --game=arc-raiders",
+    "crawl:diablo-4": "node build.js games --game=diablo-4",
     "fix:geo": "node builder/geo.js --fix",
     "test": "node test.js core && node test.js geo",
     "test:core": "node test.js core",
