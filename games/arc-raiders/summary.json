@@ -1,0 +1,16 @@
+{
+  "source": "https://metaforge.app/arc-raiders/database/items/page",
+  "fetchedAt": "2026-03-19T09:14:35.647Z",
+  "pagesFetched": 14,
+  "totalItems": 534,
+  "downloadedImages": 534,
+  "cachedImages": 0,
+  "missingImages": 0,
+  "args": {
+    "maxPages": 14,
+    "concurrency": 8,
+    "limit": 40,
+    "output": "C:\\Users\\x\\Projects\\shop\\games\\arc-raiders",
+    "dryRun": false
+  }
+}

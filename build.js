@@ -3,16 +3,19 @@
 const args = process.argv.slice(2)
 const target = args[0]
 
-if (!target || !["core", "crypto", "geo"].includes(target)) {
-    console.error("Usage: node build.js <core|crypto|geo> [options]")
+if (!target || !["core", "crypto", "geo", "games"].includes(target)) {
+    console.error("Usage: node build.js <core|crypto|geo|games> [options]")
     console.error("  core - Build core application (items, routes, i18n, etc.)")
     console.error("  crypto - Build crypto statics (ABIs, chains, contracts)")
     console.error("  geo  - Build geo data from GeoNames")
+    console.error("  games - Build game datasets using per-game crawlers")
     console.error("")
     console.error("Examples:")
     console.error("  node build.js core")
     console.error("  node build.js crypto")
     console.error("  node build.js geo --country=US")
+    console.error("  node build.js games")
+    console.error("  node build.js games --game=arc-raiders")
     process.exit(1)
 }
 
