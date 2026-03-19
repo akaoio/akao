@@ -1,0 +1,13 @@
+{
+  "fetchedAt": "2026-03-19T09:14:35.658Z",
+  "pagesFetched": 0,
+  "totalItems": 0,
+  "downloadedImages": 0,
+  "cachedImages": 0,
+  "missingImages": 0,
+  "message": "Crawler diablo-4 is scaffolded and ready for implementation",
+  "args": {
+    "dryRun": false,
+    "output": "C:\\Users\\x\\Projects\\shop\\games\\diablo-4"
+  }
+}
