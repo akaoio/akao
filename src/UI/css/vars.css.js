@@ -94,11 +94,11 @@ export const styles = css`
         /* Borders */
         --border-width: 1px;
         --border: var(--border-width) solid color-mix(in hsl, var(--color) 75%, transparent 50%);
-        --border-accent: var(--border-width) solid color-mix(in hsl, var(--color-accent) 75%, transparent 50%);
-        --border-inverted: var(--border-width) solid color-mix(in hsl, var(--color-inverted) 75%, transparent 50%);
+        --border-accent: var(--border-width) solid var(--neon-c);
+        --border-inverted: var(--border-width) solid var(--neon-g);
         --border-inset: inset 0 0 0 var(--border-width) color-mix(in hsl, var(--color) 75%, transparent 50%);
-        --border-accent-inset: inset 0 0 0 var(--border-width) color-mix(in hsl, var(--color-accent) 75%, transparent 50%);
-        --border-inverted-inset: inset 0 0 0 var(--border-width) color-mix(in hsl, var(--color-inverted) 75%, transparent 50%);
+        --border-accent-inset: inset 0 0 0 var(--border-width) var(--neon-c);
+        --border-inverted-inset: inset 0 0 0 var(--border-width) var(--neon-g);
 
         /* Roundness */
         --radius-sm: var(--space);
@@ -117,9 +117,38 @@ export const styles = css`
         --content-width: min(100% - var(--space-4), var(--max-width));
 
         /* Font */
-        --header-font: "Noto Sans", system-ui, sans-serif;
-        --content-font: "Noto Sans", system-ui, sans-serif;
-        --font: "Noto Sans", system-ui, sans-serif;
+        --header-font: "Orbitron", system-ui, sans-serif;
+        --content-font: "Exo 2", system-ui, sans-serif;
+        --font: "Exo 2", system-ui, sans-serif;
+
+        /* Neon palette */
+        --neon-g: #00ff9d;
+        --neon-c: #00e5ff;
+        --neon-m: #ff2d78;
+        --neon-y: #f5e642;
+
+        /* Glow shadows */
+        --glow-g: 0 0 8px #00ff9d88, 0 0 24px #00ff9d33;
+        --glow-c: 0 0 8px #00e5ff88, 0 0 24px #00e5ff33;
+        --glow-m: 0 0 8px #ff2d7888, 0 0 24px #ff2d7833;
+        --glow-y: 0 0 8px #f5e64288, 0 0 24px #f5e64233;
+
+        /* Layout hooks */
+        --header-backdrop: blur(12px);
+        --footer-backdrop: blur(12px);
+
+        /* Hero typography */
+        --hero-title-shadow:   0 0 30px #00e5ff44, 0 0 80px #00e5ff1a;
+        --hero-eyebrow-shadow: var(--glow-g);
+
+        /* Section headers */
+        --section-label-color:  var(--neon-g);
+        --section-label-shadow: var(--glow-g);
+
+        /* Item cards */
+        --item-border-left: 3px solid var(--neon-c);
+        --item-name-color:  var(--neon-c);
+        --item-name-shadow: var(--glow-c);
 
         /* Scrollbars */
         --scrollbar-size: var(--unit-4);

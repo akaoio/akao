@@ -9,6 +9,7 @@ export const styles = css`
             gap: var(--space);
             background: var(--background);
             border: var(--border);
+            border-radius: var(--radius);
             padding: var(--space);
             color: var(--color);
             cursor: pointer;

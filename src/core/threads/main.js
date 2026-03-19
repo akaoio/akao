@@ -10,9 +10,11 @@ import DB from "/core/DB.js"
 import styles from "/css/global.css.js"
 import ACCESS from "/UI/components/access/index.js"
 import { SPLASH } from "/UI/components/splash/index.js"
+import { DEV } from "/core/Utils/environment.js"
 
 const thread = new Thread()
 const components = {}
+let devtools = null
 document.head.appendChild(styles)
 
 events.on("authenticate", () => {
@@ -44,6 +46,7 @@ async function render(state = {}) {
     state.path = state?.path || Context.get("path") || globalThis?.location?.pathname
     if (!state?.route || !state?.locale || !state.params) state = { ...state, ...Router.process({ path: state.path }) }
     state.route = state?.route || Context.get("route") || "home"
+    if (state.route?.startsWith("showcase") && !DEV) state = { ...state, ...Router.process({ path: "/" }) } // make sure /showcase is only accessible in dev mode, otherwise fallback to home route
     state.locale = state?.locale || Context.get("locale") || Statics?.locales?.find?.((e) => e.code === Statics?.site?.locale) || Statics?.locales?.[0]
     state.params = state?.params || Context.get("params") || {}
     const component = components[state.route] || (await import(`/UI/routes/${state.route}/index.js`))
@@ -58,6 +61,14 @@ async function render(state = {}) {
     root.replaceChildren(element)
     Router.setHistory(state)
     Router.setHead({ title: Statics?.dictionary?.[state.route?.replace?.("-", "")?.toLowerCase?.()] || "" })
+    if (DEV && state.route === "home" && !devtools) {
+        const { DEVTOOLS } = await import("/UI/components/devtools/index.js")
+        devtools = new DEVTOOLS()
+        document.body.appendChild(devtools)
+    } else if (DEV && state.route !== "home" && devtools) {
+        devtools.remove()
+        devtools = null
+    }
 }
 
 function splash(state = false) {
