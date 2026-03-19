@@ -84,6 +84,28 @@ export default {
 </div>`
         },
         {
+            name: "Gradient Text",
+            wide: true,
+            code: `<div class="typo-stack">
+  <div>
+    <div class="typo-glow-label">Green → Cyan · --neon-g to --neon-c</div>
+    <div class="typo-glow-demo typo-gradient typo-gradient--gc">CYBER MARKET</div>
+  </div>
+  <div>
+    <div class="typo-glow-label">Green → Magenta · --neon-g to --neon-m</div>
+    <div class="typo-glow-demo typo-gradient typo-gradient--gm">CYBER MARKET</div>
+  </div>
+  <div>
+    <div class="typo-glow-label">Cyan → Magenta · --neon-c to --neon-m</div>
+    <div class="typo-glow-demo typo-gradient typo-gradient--cm">CYBER MARKET</div>
+  </div>
+  <div>
+    <div class="typo-glow-label">Cyan → Yellow · --neon-c to --neon-y</div>
+    <div class="typo-glow-demo typo-gradient typo-gradient--cy">CYBER MARKET</div>
+  </div>
+</div>`
+        },
+        {
             name: "Heading Scale",
             wide: true,
             code: `<div class="typo-stack--sm">
@@ -194,6 +216,64 @@ export default {
             }
         },
         {
+            name: "Line Height",
+            wide: true,
+            code: `<div class="typo-stack--lh">
+  <div class="typo-lh-row">
+    <div class="typo-meta-col">
+      <span class="typo-meta">None</span>
+      <span class="typo-meta-val">1</span>
+    </div>
+    <div data-sample class="typo-body typo-size-md typo-lh-none typo-lh-text"></div>
+  </div>
+  <div class="typo-lh-row">
+    <div class="typo-meta-col">
+      <span class="typo-meta">Tight</span>
+      <span class="typo-meta-val">1.25</span>
+    </div>
+    <div data-sample class="typo-body typo-size-md typo-lh-tight typo-lh-text"></div>
+  </div>
+  <div class="typo-lh-row">
+    <div class="typo-meta-col">
+      <span class="typo-meta">Snug</span>
+      <span class="typo-meta-val">1.375</span>
+    </div>
+    <div data-sample class="typo-body typo-size-md typo-lh-snug typo-lh-text"></div>
+  </div>
+  <div class="typo-lh-row">
+    <div class="typo-meta-col">
+      <span class="typo-meta">Normal</span>
+      <span class="typo-meta-val">1.5</span>
+    </div>
+    <div data-sample class="typo-body typo-size-md typo-lh-normal typo-lh-text"></div>
+  </div>
+  <div class="typo-lh-row">
+    <div class="typo-meta-col">
+      <span class="typo-meta">Relaxed</span>
+      <span class="typo-meta-val">1.625</span>
+    </div>
+    <div data-sample class="typo-body typo-size-md typo-lh-relaxed typo-lh-text"></div>
+  </div>
+  <div class="typo-lh-row">
+    <div class="typo-meta-col">
+      <span class="typo-meta">Loose</span>
+      <span class="typo-meta-val">2</span>
+    </div>
+    <div data-sample class="typo-body typo-size-md typo-lh-loose typo-lh-text"></div>
+  </div>
+</div>`,
+            setup(container) {
+                function update(code) {
+                    const t = T[code] || T.en
+                    container.dir = getDir(code)
+                    const phrase = `${t.addToCart} · ${t.signIn} · ${t.checkout} · ${t.total} · ${t.cart} · ${t.profile} · ${t.wallet} · ${t.confirm} · ${t.shipping} · ${t.cancel}`
+                    for (const el of container.querySelectorAll("[data-sample]")) el.textContent = phrase
+                }
+                container._updateLocale = update
+                update("en")
+            }
+        },
+        {
             name: "Font Families",
             wide: true,
             code: `<div class="typo-stack--fw">
@@ -265,6 +345,36 @@ export default {
             }
         },
         {
+            name: "Font Style",
+            wide: true,
+            code: `<div class="typo-stack--sm">
+  <div class="typo-row--baseline">
+    <span class="typo-meta-tag--sm">Exo 2</span>
+    <span data-sample class="typo-ff-exo2 typo-fw-sample typo-not-italic">Home · Add to Cart</span>
+    <span data-sample class="typo-ff-exo2 typo-fw-sample typo-italic">Home · Add to Cart</span>
+  </div>
+  <div class="typo-row--baseline">
+    <span class="typo-meta-tag--sm">Poppins</span>
+    <span data-sample class="typo-ff-poppins typo-fw-sample typo-not-italic">Home · Add to Cart</span>
+    <span data-sample class="typo-ff-poppins typo-fw-sample typo-italic">Home · Add to Cart</span>
+  </div>
+  <div class="typo-row--baseline">
+    <span class="typo-meta-tag--sm">Orbitron</span>
+    <span data-sample class="typo-header typo-fw-sample typo-not-italic">Home · Add to Cart</span>
+    <span data-sample class="typo-header typo-fw-sample typo-italic">Home · Add to Cart</span>
+  </div>
+</div>`,
+            setup(container) {
+                function update(code) {
+                    const t = T[code] || T.en
+                    container.dir = getDir(code)
+                    for (const el of container.querySelectorAll("[data-sample]")) el.textContent = `${t.home} · ${t.addToCart}`
+                }
+                container._updateLocale = update
+                update("en")
+            }
+        },
+        {
             name: "Letter Spacing",
             wide: true,
             code: `<div class="typo-stack--ls">
@@ -275,15 +385,85 @@ export default {
   <div class="typo-row"><span class="typo-meta-tag typo-meta-tag--ls">Widest<br><span class="typo-dim">0.2em</span></span><span data-sample class="typo-ls-sample typo-ls-widest">Home</span></div>
   <div class="typo-row"><span class="typo-meta-tag typo-meta-tag--ls">Ultra<br><span class="typo-dim">0.4em</span></span><span data-sample class="typo-ls-sample typo-ls-ultra">Home</span></div>
 </div>`,
+
             setup(container) {
                 function update(code) {
                     const t = T[code] || T.en
                     container.dir = getDir(code)
-                    for (const el of container.querySelectorAll("[data-sample]")) el.textContent = t.home
+                    for (const el of container.querySelectorAll("[data-sample]")) el.textContent = `${t.home} · ${t.cart} · ${t.checkout} · ${t.profile} · ${t.wallet} · ${t.addToCart} · ${t.signIn} · ${t.signUp} · ${t.confirm} · ${t.total} · ${t.shipping} · ${t.cancel}`
                 }
                 container._updateLocale = update
                 update("en")
             }
+        },
+        {
+            name: "Word Break",
+            wide: true,
+            code: `<div class="typo-grid-2">
+  <div>
+    <div class="typo-meta--wide typo-mb-sm">Normal</div>
+    <div class="typo-break-demo"><span data-sample class="typo-body typo-size-md typo-break-normal">Add to Cart Sign In Checkout Total Shipping Cancel</span></div>
+  </div>
+  <div>
+    <div class="typo-meta--wide typo-mb-sm">Break All</div>
+    <div class="typo-break-demo"><span data-sample class="typo-body typo-size-md typo-break-all">Add to Cart Sign In Checkout Total Shipping Cancel</span></div>
+  </div>
+  <div>
+    <div class="typo-meta--wide typo-mb-sm">Break Word</div>
+    <div class="typo-break-demo"><span data-sample class="typo-body typo-size-md typo-break-word">Add to Cart Sign In Checkout Total Shipping Cancel</span></div>
+  </div>
+  <div>
+    <div class="typo-meta--wide typo-mb-sm">Keep All</div>
+    <div class="typo-break-demo"><span data-sample class="typo-body typo-size-md typo-break-keep">Add to Cart Sign In Checkout Total Shipping Cancel</span></div>
+  </div>
+</div>`,
+            setup(container) {
+                function update(code) {
+                    const t = T[code] || T.en
+                    container.dir = getDir(code)
+                    for (const el of container.querySelectorAll("[data-sample]")) el.textContent = `${t.addToCart} ${t.signIn} ${t.checkout} ${t.total} ${t.shipping} ${t.cancel}`
+                }
+                container._updateLocale = update
+                update("en")
+            }
+        },
+        {
+            name: "Tabular Numbers",
+            wide: true,
+            code: `<div class="typo-grid-2">
+  <div>
+    <div class="typo-meta--wide typo-mb-sm">Proportional</div>
+    <div class="typo-stack--xs typo-header typo-size-lg typo-nums-proportional">
+      <span>¥1,111</span>
+      <span>$999.99</span>
+      <span>€10,000.00</span>
+      <span>£77.77</span>
+    </div>
+  </div>
+  <div>
+    <div class="typo-meta--wide typo-mb-sm">Tabular</div>
+    <div class="typo-stack--xs typo-header typo-size-lg typo-nums-tabular">
+      <span>¥1,111</span>
+      <span>$999.99</span>
+      <span>€10,000.00</span>
+      <span>£77.77</span>
+    </div>
+  </div>
+</div>`
+        },
+        {
+            name: "Prose Block",
+            wide: true,
+            code: `<div class="typo-grid-2">
+  <div>
+    <div class="typo-meta--wide typo-mb-md">--text-sm · product description</div>
+    <p class="typo-size-sm typo-lh-relaxed typo-prose">The AK-7 Neon Keyboard features per-key RGB lighting with 16.8 million colors, hot-swappable switches, and a durable aluminum frame. Designed for extended sessions, its sculpted keycaps reduce fatigue and the USB-C braided cable ensures a reliable, low-latency connection. Compatible with Windows, macOS, and Linux out of the box.</p>
+  </div>
+  <div>
+    <div class="typo-meta--wide typo-mb-md">--text-md · editorial body</div>
+    <p class="typo-size-md typo-lh-relaxed typo-prose">The AK-7 Neon Keyboard features per-key RGB lighting with 16.8 million colors, hot-swappable switches, and a durable aluminum frame. Designed for extended sessions, its sculpted keycaps reduce fatigue and the USB-C braided cable ensures a reliable, low-latency connection. Compatible with Windows, macOS, and Linux out of the box.</p>
+  </div>
+</div>`
         }
     ]
 }

@@ -331,6 +331,111 @@ export const styles = css`
         .typo-ls-wider   { letter-spacing: 0.1em; }
         .typo-ls-widest  { letter-spacing: 0.2em; }
         .typo-ls-ultra   { letter-spacing: 0.4em; }
+
+        /* ── Layout helpers (new stories) ─────────────────────────── */
+        .typo-align-demo   { flex: 1; }
+        .typo-overflow-demo { flex: 1; min-width: 0; }
+        .typo-break-demo   { max-width: 14rem; }
+        .typo-prose        { max-width: 60ch; }
+
+        /* ── Line Height ──────────────────────────────────────────── */
+        .typo-stack--lh {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 0.5rem 0;
+        }
+
+        .typo-lh-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid color-mix(in srgb, var(--color) 8%, transparent);
+        }
+
+        .typo-lh-row:last-child {
+            border-bottom: none;
+        }
+
+        .typo-lh-text {
+            width: 26rem;
+        }
+
+        .typo-lh-none     { line-height: 1; }
+        .typo-lh-tight    { line-height: 1.25; }
+        .typo-lh-snug     { line-height: 1.375; }
+        .typo-lh-normal   { line-height: 1.5; }
+        .typo-lh-relaxed  { line-height: 1.625; }
+        .typo-lh-loose    { line-height: 2; }
+
+        /* ── Text Alignment ───────────────────────────────────────── */
+        .typo-align-left    { text-align: left; }
+        .typo-align-center  { text-align: center; }
+        .typo-align-right   { text-align: right; }
+        .typo-align-justify { text-align: justify; }
+        .typo-align-start   { text-align: start; }
+        .typo-align-end     { text-align: end; }
+
+        /* ── Text Transform ───────────────────────────────────────── */
+        .typo-tt-upper { text-transform: uppercase; }
+        .typo-tt-lower { text-transform: lowercase; }
+        .typo-tt-cap   { text-transform: capitalize; }
+        .typo-tt-none  { text-transform: none; }
+
+        /* ── Font Style ───────────────────────────────────────────── */
+        .typo-italic     { font-style: italic; }
+        .typo-not-italic { font-style: normal; }
+
+        /* ── Truncation & Overflow ────────────────────────────────── */
+        .typo-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .typo-clip {
+            overflow: hidden;
+            text-overflow: clip;
+            white-space: nowrap;
+        }
+
+        .typo-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .typo-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ── Word Break ───────────────────────────────────────────── */
+        .typo-break-normal { overflow-wrap: normal; word-break: normal; }
+        .typo-break-all    { word-break: break-all; }
+        .typo-break-word   { overflow-wrap: break-word; }
+        .typo-break-keep   { word-break: keep-all; }
+        .typo-nowrap       { white-space: nowrap; }
+
+        /* ── Tabular Numbers ──────────────────────────────────────── */
+        .typo-nums-tabular      { font-variant-numeric: tabular-nums; }
+        .typo-nums-proportional { font-variant-numeric: proportional-nums; }
+
+        /* ── Gradient Text ────────────────────────────────────────── */
+        .typo-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .typo-gradient--gc { background-image: linear-gradient(135deg, var(--neon-g), var(--neon-c)); }
+        .typo-gradient--gm { background-image: linear-gradient(135deg, var(--neon-g), var(--neon-m)); }
+        .typo-gradient--cm { background-image: linear-gradient(135deg, var(--neon-c), var(--neon-m)); }
+        .typo-gradient--cy { background-image: linear-gradient(135deg, var(--neon-c), var(--neon-y)); }
     }
 `
 
