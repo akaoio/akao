@@ -17,24 +17,52 @@ export const styles = css`
         rotate: 180deg;
         padding: var(--space-3) var(--space-2);
         background: var(--background);
-        border: 1px solid var(--neon-c);
+        border: 1px solid var(--game-text-color, var(--game-primary, var(--neon-c)));
         border-left: none;
-        color: var(--neon-c);
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
+        color: var(--game-text-color, var(--game-primary, var(--neon-c)));
         cursor: pointer;
-        box-shadow: var(--glow-c);
+        box-shadow:
+            0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 53%, transparent),
+            0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 20%, transparent);
         transition:
             background var(--speed),
             box-shadow var(--speed),
             color var(--speed);
 
         &:hover {
-            background: color-mix(in hsl, var(--neon-c) 10%, var(--background));
-            box-shadow: var(--glow-c), 4px 0 24px #00e5ff22;
+            background: color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 10%, var(--background));
+            box-shadow:
+                0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 53%, transparent),
+                0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 20%, transparent),
+                4px 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 13%, transparent);
         }
+    }
+
+    .game-nav__toggle-label {
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .game-nav__toggle-icon {
+        display: none;
+    }
+
+    /* ── Mobile: square gamepad icon button ── */
+    @media (max-width: 767px) {
+        .game-nav__toggle {
+            writing-mode: horizontal-tb;
+            rotate: 0;
+            padding: 0;
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+            display: grid;
+            place-items: center;
+        }
+
+        .game-nav__toggle-label { display: none; }
+        .game-nav__toggle-icon { display: block; }
     }
 
     /* ── Backdrop ── */
@@ -63,8 +91,8 @@ export const styles = css`
         z-index: 220;
         width: min(320px, 85vw);
         background: var(--background);
-        border-right: 1px solid var(--neon-c);
-        box-shadow: 4px 0 40px #00e5ff22;
+        border-right: 1px solid var(--game-primary, var(--neon-c));
+        box-shadow: 4px 0 40px color-mix(in hsl, var(--game-primary, var(--neon-c)) 13%, transparent);
         display: flex;
         flex-direction: column;
         transform: translateX(-100%);
@@ -82,7 +110,7 @@ export const styles = css`
         align-items: center;
         justify-content: space-between;
         padding: var(--space-4) var(--space-3);
-        border-bottom: 1px solid color-mix(in hsl, var(--neon-c) 30%, transparent);
+        border-bottom: 1px solid color-mix(in hsl, var(--game-primary, var(--neon-c)) 30%, transparent);
         flex-shrink: 0;
     }
 
@@ -91,8 +119,10 @@ export const styles = css`
         font-size: var(--text-sm);
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--neon-c);
-        text-shadow: var(--glow-c);
+        color: var(--game-text-color, var(--game-primary, var(--neon-c)));
+        text-shadow:
+            0 0 8px color-mix(in hsl, var(--game-primary, var(--neon-c)) 53%, transparent),
+            0 0 24px color-mix(in hsl, var(--game-primary, var(--neon-c)) 20%, transparent);
     }
 
     .game-nav__close {
@@ -123,7 +153,7 @@ export const styles = css`
         padding: var(--space-2) 0;
 
         scrollbar-width: thin;
-        scrollbar-color: var(--neon-c) transparent;
+        scrollbar-color: var(--game-primary, var(--neon-c)) transparent;
     }
 
     .game-nav__item {
@@ -140,17 +170,19 @@ export const styles = css`
             border-color var(--speed);
 
         &:hover {
-            background: color-mix(in hsl, var(--neon-c) 6%, transparent);
-            border-left-color: var(--neon-c);
+            background: color-mix(in hsl, var(--game-primary, var(--neon-c)) 6%, transparent);
+            border-left-color: var(--game-primary, var(--neon-c));
         }
 
         &.active {
-            background: color-mix(in hsl, var(--neon-c) 8%, transparent);
-            border-left-color: var(--neon-c);
+            background: color-mix(in hsl, var(--game-primary, var(--neon-c)) 8%, transparent);
+            border-left-color: var(--game-primary, var(--neon-c));
 
             .game-nav__item-name {
-                color: var(--neon-c);
-                text-shadow: var(--glow-c);
+                color: var(--game-text-color, var(--game-primary, var(--neon-c)));
+                text-shadow:
+                    0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 53%, transparent),
+                    0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 20%, transparent);
             }
         }
     }

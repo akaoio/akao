@@ -116,6 +116,36 @@ export const styles = css`
         .price--zero {
             opacity: 0.35;
         }
+
+        /* sm/xs: compact list-style layout — badges now live inside .info so cards are single-row */
+        @media (max-width: 767px) {
+            :host {
+                padding: var(--space-2) var(--space-3);
+            }
+
+            .body {
+                align-items: center;
+                gap: var(--space-2);
+            }
+
+            .badges {
+                flex-wrap: nowrap;
+                margin-bottom: var(--space-1);
+            }
+
+            .badge {
+                font-size: var(--text-xs);
+            }
+
+            .name {
+                font-size: var(--text-md);
+                margin-bottom: 0;
+            }
+
+            .footer {
+                margin-top: var(--space-1);
+            }
+        }
     }
 `
 

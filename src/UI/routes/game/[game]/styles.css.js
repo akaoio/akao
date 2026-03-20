@@ -34,8 +34,8 @@ export const styles = css`
                 font-weight: 900;
                 letter-spacing: 0.06em;
                 line-height: 1.05;
-                color: var(--color);
-                text-shadow: var(--hero-title-shadow, none);
+                color: var(--game-text-color, var(--game-primary, var(--color)));
+                text-shadow: var(--game-title-shadow, var(--hero-title-shadow, none));
             }
 
             p {
@@ -61,12 +61,27 @@ export const styles = css`
             }
         }
 
+        /* ── Sticky band (filters + toolbar) ── */
+        .catalog-sticky {
+            position: sticky;
+            top: calc(var(--header-height) * 2);
+            z-index: 20;
+            background: color-mix(in hsl, var(--background) 94%, transparent);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid color-mix(in hsl, var(--game-primary, var(--neon-c)) 40%, transparent);
+            box-shadow:
+                0 1px 0 color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
+                0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent),
+                0 20px 60px color-mix(in hsl, var(--background) 55%, transparent);
+        }
+
         /* ── Marketplace Nav ── */
         .marketplace-nav {
             display: flex;
             flex-direction: column;
             gap: 0;
-            padding: var(--space-2) 0;
+            padding: var(--space-3) 0 var(--space-2);
             border-bottom: 1px solid var(--border);
         }
 
@@ -75,7 +90,7 @@ export const styles = css`
             display: flex;
             align-items: flex-start;
             gap: var(--space-3);
-            padding: var(--space-2) 0;
+            padding: var(--space-2) var(--space-4);
 
             & + .filter-group {
                 border-top: 1px solid color-mix(in hsl, var(--color) 8%, transparent);
@@ -163,6 +178,52 @@ export const styles = css`
             }
         }
 
+        /* ── Filter Select (mobile replacement for tabs/pills) ── */
+        .filter-select {
+            display: none; /* shown only at ≤767px */
+            flex: 1;
+            min-width: 0;
+            font-family: var(--header-font);
+            font-size: var(--text-xs);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: var(--space-1) var(--space-5) var(--space-1) var(--space-2);
+            background: transparent;
+            border: 1px solid color-mix(in hsl, var(--color) 25%, transparent);
+            color: var(--color);
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            /* chevron arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='%2300e5ff' stroke-width='1.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 10px 6px;
+            background-position: right var(--space-2) center;
+            transition:
+                border-color var(--speed),
+                color var(--speed),
+                box-shadow var(--speed);
+
+            option {
+                background: var(--background);
+                color: var(--color);
+                text-transform: uppercase;
+            }
+
+            &.active {
+                border-color: var(--select-accent, var(--neon-c));
+                color: var(--select-accent, var(--neon-c));
+                box-shadow: 0 0 12px color-mix(in hsl, var(--select-accent, var(--neon-c)) 30%, transparent);
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='currentColor' stroke-width='1.5'/%3E%3C/svg%3E");
+            }
+
+            &:focus {
+                border-color: var(--neon-c);
+                box-shadow: var(--glow-c);
+            }
+        }
+
         /* ── Rarity Pills ── */
         .rarity-pills {
             flex: 1;
@@ -246,8 +307,8 @@ export const styles = css`
             display: flex;
             align-items: center;
             gap: var(--space-3);
-            padding: var(--space-4) var(--space-4);
-            margin: var(--space-3) 0;
+            padding: var(--space-3) var(--space-4) var(--space-4);
+            margin: 0;
             border: 1px solid color-mix(in hsl, var(--color) 12%, transparent);
             background: color-mix(in hsl, var(--color) 3%, transparent);
             transition:
@@ -437,7 +498,76 @@ export const styles = css`
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: var(--space-3);
-            padding: var(--space-3) 0 var(--space-3);
+            padding: var(--space-4) 0 var(--space-3);
+        }
+
+        /* ── Responsive Breakpoints ── */
+
+        /* md: Tablets (768–1023px) */
+        @media (max-width: 1023px) {
+            .game-hero {
+                padding: var(--space-6) 0 var(--space-4);
+            }
+
+            .catalog-grid {
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            }
+        }
+
+        /* sm: Large phones / small tablets (481–767px) */
+        @media (max-width: 767px) {
+            .game-hero {
+                padding: var(--space-5) 0 var(--space-4);
+            }
+
+            #toolbar {
+                padding: var(--space-3);
+            }
+
+            /* swap buttons → selects */
+            .type-tabs,
+            .rarity-pills { display: none; }
+
+            .filter-select { display: block; }
+
+            .catalog-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+
+        /* xs: Mobile phones (≤480px) */
+        @media (max-width: 480px) {
+            .game-hero {
+                padding: var(--space-4) 0 var(--space-3);
+                gap: var(--space-1);
+
+                h1 { letter-spacing: 0.04em; }
+
+                p { font-size: var(--text-sm); }
+            }
+
+            #toolbar {
+                flex-wrap: wrap;
+                gap: var(--space-2);
+                padding: var(--space-3);
+            }
+
+            .catalog-count {
+                order: 1;
+                flex: 1;
+            }
+
+            .sort-bar {
+                order: 2;
+                flex-wrap: nowrap;
+            }
+
+            .catalog-search-wrap {
+                order: 3;
+                flex-basis: 100%;
+            }
+
+            .filter-group__label { width: 3rem; }
         }
 
         /* ── Load More ── */
@@ -453,17 +583,23 @@ export const styles = css`
             letter-spacing: 0.12em;
             text-transform: uppercase;
             padding: var(--space-2) var(--space-6);
-            border: 1px solid var(--neon-c);
+            border: 1px solid var(--game-text-color, var(--game-primary, var(--neon-c)));
             background: transparent;
-            color: var(--neon-c);
+            color: var(--game-text-color, var(--game-primary, var(--neon-c)));
             cursor: pointer;
+            box-shadow:
+                0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 30%, transparent),
+                0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 12%, transparent);
             transition:
                 box-shadow var(--speed),
                 background var(--speed);
 
             &:hover {
-                box-shadow: var(--glow-c);
-                background: color-mix(in hsl, var(--neon-c) 8%, transparent);
+                background: color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 8%, transparent);
+                box-shadow:
+                    0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 53%, transparent),
+                    0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 20%, transparent),
+                    0 0 48px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 10%, transparent);
             }
 
             &:disabled {

@@ -5,6 +5,7 @@ export const styles = css`
         header {
             position: fixed;
             top: 0;
+            z-index: 50;
             width: 100%;
             background: var(--header-background, var(--background));
             border-bottom: var(--header-border-bottom, none);

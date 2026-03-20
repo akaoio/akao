@@ -58,6 +58,9 @@ export class GAME extends HTMLElement {
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
+        ;["--game-primary", "--game-text-color", "--game-title-shadow"].forEach((v) =>
+            document.documentElement.style.removeProperty(v)
+        )
     }
 
     applyFilters() {
@@ -104,13 +107,29 @@ export class GAME extends HTMLElement {
             }
         }
 
-        // Sync active filter states
+        // Sync active filter states — buttons
         this.shadowRoot.querySelectorAll(".type-tabs button").forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.type === (activeType || ""))
         })
         this.shadowRoot.querySelectorAll(".rarity-pills button").forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.rarity === (activeRarity || ""))
         })
+
+        // Sync active filter states — selects (mobile)
+        const typeSelect = this.shadowRoot.querySelector("#type-select")
+        if (typeSelect) {
+            typeSelect.value = activeType || ""
+            typeSelect.classList.toggle("active", !!activeType)
+        }
+        const raritySelect = this.shadowRoot.querySelector("#rarity-select")
+        if (raritySelect) {
+            raritySelect.value = activeRarity || ""
+            raritySelect.classList.toggle("active", !!activeRarity)
+            if (activeRarity) {
+                const key = activeRarity.toLowerCase().replace(/\s+/g, "-")
+                raritySelect.style.setProperty("--select-accent", `var(--rarity-${key}, var(--neon-c))`)
+            } else raritySelect.style.removeProperty("--select-accent")
+        }
         this.shadowRoot.querySelectorAll(".sort-bar button[data-sort-key]").forEach((btn) => {
             const isAsc = sort === btn.dataset.sortAsc
             const isDesc = sort === btn.dataset.sortDesc
@@ -183,19 +202,44 @@ export class GAME extends HTMLElement {
         Router.setHead({ title: meta.name, description: data.description || "" })
         this.states.set({ rarityOrder: meta.rarity_order || [] })
 
-        // Inject game-specific rarity palette as scoped CSS vars
-        if (meta.rarity_palette) {
+        // Inject rarity palette + game primary color as scoped CSS vars on :host
+        if (meta.rarity_palette || meta.color) {
             let styleEl = this.shadowRoot.querySelector("#rarity-palette")
             if (!styleEl) {
                 styleEl = document.createElement("style")
                 styleEl.id = "rarity-palette"
                 this.shadowRoot.appendChild(styleEl)
             }
-            const vars = Object.entries(meta.rarity_palette)
-                .map(([key, val]) => `--rarity-${key}: ${val};`)
-                .join(" ")
+            const vars = [
+                ...Object.entries(meta.rarity_palette || {}).map(([key, val]) => `--rarity-${key}: ${val};`),
+                ...(meta.color ? [`--game-primary: ${meta.color};`] : []),
+                ...(meta.text_color ? [`--game-text-color: ${meta.text_color};`] : [])
+            ].join(" ")
             styleEl.textContent = `:host { ${vars} }`
         }
+
+        // Promote game vars to :root so sibling components (e.g. game-nav) can inherit them
+        const gameVars = ["--game-primary", "--game-text-color", "--game-title-shadow"]
+        const toRgba = (hex, a) => {
+            const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+            return `rgba(${r},${g},${b},${a})`
+        }
+
+        if (meta.color) {
+            document.documentElement.style.setProperty("--game-primary", meta.color)
+            if (meta.text_color) document.documentElement.style.setProperty("--game-text-color", meta.text_color)
+            else document.documentElement.style.removeProperty("--game-text-color")
+
+            // --game-title-shadow: use meta.colors (multi-stop) if defined, else single color
+            const glowColors = Array.isArray(meta.colors) && meta.colors.length ? meta.colors : [meta.color]
+            const titleShadow = glowColors
+                .flatMap((c, i) => [
+                    `0 0 ${15 + i * 18}px ${toRgba(c, 0.65 - i * 0.08)}`,
+                    `0 0 ${40 + i * 27}px ${toRgba(c, 0.3 - i * 0.05)}`
+                ])
+                .join(", ")
+            document.documentElement.style.setProperty("--game-title-shadow", titleShadow)
+        } else gameVars.forEach((v) => document.documentElement.style.removeProperty(v))
 
         // Load catalog meta
         const catalogMeta = await DB.get(["statics", "games", id, "catalog", "meta.json"])
@@ -229,6 +273,23 @@ export class GAME extends HTMLElement {
         }
         typeTabs.replaceChildren(...typeButtons)
 
+        // Build type select (mobile)
+        const typeSelect = this.shadowRoot.querySelector("#type-select")
+        const typeSelectOptions = [{ label: "All Types", value: "" }, ...types.map((t) => ({ label: t, value: t }))]
+        typeSelect.replaceChildren(
+            ...typeSelectOptions.map(({ label, value }) => {
+                const opt = document.createElement("option")
+                opt.value = value
+                opt.textContent = label
+                return opt
+            })
+        )
+        typeSelect.value = this.states.get("activeType") || ""
+        typeSelect.onchange = () => {
+            this.states.set({ activeType: typeSelect.value || null })
+            this.applyFilters()
+        }
+
         // Build rarity pills
         const rarityPills = this.shadowRoot.querySelector("#rarity-pills")
         const rarityButtons = [
@@ -243,6 +304,23 @@ export class GAME extends HTMLElement {
             })
         ]
         rarityPills.replaceChildren(...rarityButtons)
+
+        // Build rarity select (mobile)
+        const raritySelect = this.shadowRoot.querySelector("#rarity-select")
+        const raritySelectOptions = [{ label: "All Rarities", value: "" }, ...rarities.map((r) => ({ label: r, value: r }))]
+        raritySelect.replaceChildren(
+            ...raritySelectOptions.map(({ label, value }) => {
+                const opt = document.createElement("option")
+                opt.value = value
+                opt.textContent = label
+                return opt
+            })
+        )
+        raritySelect.value = this.states.get("activeRarity") || ""
+        raritySelect.onchange = () => {
+            this.states.set({ activeRarity: raritySelect.value || null })
+            this.applyFilters()
+        }
 
         // Wire search input + autocomplete
         const searchInput = this.shadowRoot.querySelector("#search")

@@ -22,6 +22,7 @@ rarity_palette:
   uncommon: "#888888"
   epic: "#9940cc"
   special: "#cc78a0"
+color: "#cc1111"
 developer: Blizzard Entertainment
 publisher: Blizzard Entertainment
 release: 2023-06-01

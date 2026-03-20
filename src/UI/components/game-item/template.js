@@ -4,10 +4,6 @@ import "/UI/components/a/index.js"
 
 export const template = html`
     ${styles}
-    <div class="badges">
-        <span class="badge badge--rarity" id="rarity-badge"></span>
-        <span class="badge badge--type" id="type-badge"></span>
-    </div>
     <div class="body">
         <div class="icon" id="icon-wrap">
             <svg class="icon__placeholder" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,6 +12,10 @@ export const template = html`
             </svg>
         </div>
         <div class="info">
+            <div class="badges">
+                <span class="badge badge--rarity" id="rarity-badge"></span>
+                <span class="badge badge--type" id="type-badge"></span>
+            </div>
             <div class="name">
                 <a is="ui-a" id="item-link"></a>
             </div>

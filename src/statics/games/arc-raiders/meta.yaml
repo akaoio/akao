@@ -12,6 +12,13 @@ rarity_palette:
   rare: "#3b82f6"
   epic: "#a855f7"
   legendary: "#eab308"
+color: "#00e5ff"
+text_color: "#ede0c8"
+colors:
+  - "#00c8dc"
+  - "#38c840"
+  - "#f5c020"
+  - "#e82820"
 developer: Embark Studios
 publisher: Embark Studios
 release: 2025-10-30
