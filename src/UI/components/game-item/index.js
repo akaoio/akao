@@ -1,15 +1,6 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
 
-const RARITY_VARS = {
-    legendary: "var(--rarity-legendary)",
-    unique: "var(--rarity-unique)",
-    rare: "var(--rarity-rare)",
-    magic: "var(--rarity-magic)",
-    common: "var(--rarity-common)",
-    special: "var(--rarity-special)"
-}
-
 export class GAME_ITEM extends HTMLElement {
     constructor() {
         super()
@@ -30,8 +21,8 @@ export class GAME_ITEM extends HTMLElement {
         }
 
         const { id, name, icon, rarity = "common", type = "", value = 0 } = item
-        const rarityKey = rarity.toLowerCase()
-        const rarityColor = RARITY_VARS[rarityKey] || "var(--neon-c)"
+        const rarityKey = rarity.toLowerCase().replace(/\s+/g, "-")
+        const rarityColor = `var(--rarity-${rarityKey}, var(--rarity-common, #888888))`
 
         // Set rarity CSS custom property on host for border + hover
         this.style.setProperty("--item-rarity-color", rarityColor)

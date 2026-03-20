@@ -157,6 +157,10 @@ export const styles = css`
         --rarity-magic: hsl(270, 70%, 68%);
         --rarity-common: color-mix(in hsl, var(--color) 45%, transparent);
         --rarity-special: var(--neon-g);
+        --rarity-normal: color-mix(in hsl, var(--color) 60%, transparent);
+        --rarity-uncommon: color-mix(in hsl, var(--neon-g) 60%, var(--color));
+        --rarity-epic: hsl(270, 70%, 68%);
+        --rarity-mythic: var(--neon-g);
 
         --glow-legendary: var(--glow-y);
         --glow-unique: var(--glow-m);

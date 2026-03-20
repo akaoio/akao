@@ -7,18 +7,24 @@ import GAME_ITEM from "/UI/components/game-item/index.js"
 import { html, render } from "/core/UI.js"
 
 const SORT_OPTIONS = [
-    { key: "name", label: "Name A→Z" },
-    { key: "name-desc", label: "Name Z→A" },
-    { key: "value-asc", label: "Price ↑" },
-    { key: "value-desc", label: "Price ↓" }
+    { key: "name", label: "Name", asc: "name", desc: "name-desc", indAsc: "↑", indDesc: "↓" },
+    { key: "rarity", label: "Rarity", asc: "rarity-asc", desc: "rarity-desc", indAsc: "↑", indDesc: "↓" },
+    { key: "price", label: "Price", asc: "value-asc", desc: "value-desc", indAsc: "↑", indDesc: "↓" }
 ]
 
-function sortItems(items, sort) {
+function sortItems(items, sort, rarityOrder = []) {
     const copy = [...items]
     if (sort === "name") return copy.sort((a, b) => (a.name || "").localeCompare(b.name || ""))
     if (sort === "name-desc") return copy.sort((a, b) => (b.name || "").localeCompare(a.name || ""))
     if (sort === "value-asc") return copy.sort((a, b) => (a.value || 0) - (b.value || 0))
     if (sort === "value-desc") return copy.sort((a, b) => (b.value || 0) - (a.value || 0))
+    if (sort === "rarity-asc" || sort === "rarity-desc") {
+        const orderMap = Object.fromEntries(rarityOrder.map((r, i) => [r.toLowerCase(), i]))
+        const rank = (item) => orderMap[(item.rarity || "").toLowerCase()] ?? rarityOrder.length
+        copy.sort((a, b) => rank(a) - rank(b))
+        if (sort === "rarity-desc") copy.reverse()
+        return copy
+    }
     return copy
 }
 
@@ -33,7 +39,9 @@ export class GAME extends HTMLElement {
             totalItems: 0,
             activeType: null,
             activeRarity: null,
-            sort: "name"
+            sort: "name",
+            search: "",
+            rarityOrder: []
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
@@ -57,6 +65,8 @@ export class GAME extends HTMLElement {
         const activeType = this.states.get("activeType")
         const activeRarity = this.states.get("activeRarity")
         const sort = this.states.get("sort")
+        const search = this.states.get("search")
+        const rarityOrder = this.states.get("rarityOrder")
         const loadedPages = this.states.get("loadedPages")
         const totalPages = this.states.get("totalPages")
         const totalItems = this.states.get("totalItems")
@@ -64,7 +74,11 @@ export class GAME extends HTMLElement {
         let filtered = allItems
         if (activeType) filtered = filtered.filter((i) => i.type === activeType)
         if (activeRarity) filtered = filtered.filter((i) => i.rarity === activeRarity)
-        filtered = sortItems(filtered, sort)
+        if (search) {
+            const q = search.toLowerCase()
+            filtered = filtered.filter((i) => (i.name || "").toLowerCase().includes(q))
+        }
+        filtered = sortItems(filtered, sort, rarityOrder)
 
         // Count
         const countEl = this.shadowRoot.querySelector("#count")
@@ -97,8 +111,12 @@ export class GAME extends HTMLElement {
         this.shadowRoot.querySelectorAll(".rarity-pills button").forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.rarity === (activeRarity || ""))
         })
-        this.shadowRoot.querySelectorAll(".sort-bar button").forEach((btn) => {
-            btn.classList.toggle("active", btn.dataset.sort === sort)
+        this.shadowRoot.querySelectorAll(".sort-bar button[data-sort-key]").forEach((btn) => {
+            const isAsc = sort === btn.dataset.sortAsc
+            const isDesc = sort === btn.dataset.sortDesc
+            btn.classList.toggle("active", isAsc || isDesc)
+            const dirEl = btn.querySelector(".sort-dir")
+            if (dirEl) dirEl.textContent = isAsc ? btn.dataset.indAsc : isDesc ? btn.dataset.indDesc : ""
         })
     }
 
@@ -163,6 +181,21 @@ export class GAME extends HTMLElement {
         render(metaRows, metaSection)
 
         Router.setHead({ title: meta.name, description: data.description || "" })
+        this.states.set({ rarityOrder: meta.rarity_order || [] })
+
+        // Inject game-specific rarity palette as scoped CSS vars
+        if (meta.rarity_palette) {
+            let styleEl = this.shadowRoot.querySelector("#rarity-palette")
+            if (!styleEl) {
+                styleEl = document.createElement("style")
+                styleEl.id = "rarity-palette"
+                this.shadowRoot.appendChild(styleEl)
+            }
+            const vars = Object.entries(meta.rarity_palette)
+                .map(([key, val]) => `--rarity-${key}: ${val};`)
+                .join(" ")
+            styleEl.textContent = `:host { ${vars} }`
+        }
 
         // Load catalog meta
         const catalogMeta = await DB.get(["statics", "games", id, "catalog", "meta.json"])
@@ -175,9 +208,25 @@ export class GAME extends HTMLElement {
         const firstPage = await DB.get(["statics", "games", id, "catalog", "1.json"])
         this.states.set({ allItems: Array.isArray(firstPage) ? firstPage : [], loadedPages: 1 })
 
-        // Build type tabs
+        // Build type tabs with collapse
+        const VISIBLE_TYPES = 6
         const typeTabs = this.shadowRoot.querySelector("#type-tabs")
+        typeTabs.classList.remove("expanded")
         const typeButtons = [this._makeFilterBtn("All", null, "activeType"), ...types.map((t) => this._makeFilterBtn(t, t, "activeType"))]
+        const overflowCount = Math.max(0, types.length - VISIBLE_TYPES)
+        if (overflowCount > 0) {
+            typeButtons.forEach((btn, i) => {
+                if (i > VISIBLE_TYPES) btn.dataset.overflow = "true"
+            })
+            const toggleBtn = document.createElement("button")
+            toggleBtn.className = "type-tabs__toggle"
+            toggleBtn.textContent = `+${overflowCount} more`
+            toggleBtn.addEventListener("click", () => {
+                const expanded = typeTabs.classList.toggle("expanded")
+                toggleBtn.textContent = expanded ? "Show less" : `+${overflowCount} more`
+            })
+            typeButtons.push(toggleBtn)
+        }
         typeTabs.replaceChildren(...typeButtons)
 
         // Build rarity pills
@@ -187,25 +236,131 @@ export class GAME extends HTMLElement {
             ...rarities.map((r) => {
                 const btn = this._makeFilterBtn(r, r, "activeRarity")
                 btn.dataset.rarity = r
-                btn.setAttribute("data-rarity-key", r.toLowerCase())
+                const key = r.toLowerCase().replace(/\s+/g, "-")
+                btn.setAttribute("data-rarity-key", key)
+                btn.style.setProperty("--rarity-pill-color", `var(--rarity-${key}, var(--color-accent))`)
                 return btn
             })
         ]
         rarityPills.replaceChildren(...rarityButtons)
 
+        // Wire search input + autocomplete
+        const searchInput = this.shadowRoot.querySelector("#search")
+        const suggestions = this.shadowRoot.querySelector("#search-suggestions")
+        searchInput.value = ""
+        this.states.set({ search: "" })
+
+        const closeSuggestions = () => suggestions.classList.remove("open")
+
+        const openSuggestions = (query) => {
+            if (!query || query.length < 2) return closeSuggestions()
+            const q = query.toLowerCase()
+            const matches = this.states
+                .get("allItems")
+                .filter((i) => (i.name || "").toLowerCase().includes(q))
+                .slice(0, 8)
+            if (!matches.length) return closeSuggestions()
+
+            const items = matches.map((item) => {
+                const li = document.createElement("li")
+                li.className = "catalog-search__suggestion"
+
+                const nameEl = document.createElement("span")
+                nameEl.className = "suggestion__name"
+                nameEl.textContent = item.name || ""
+
+                const rarityEl = document.createElement("span")
+                rarityEl.className = "suggestion__rarity"
+                rarityEl.textContent = item.rarity || ""
+                const key = (item.rarity || "").toLowerCase().replace(/\s+/g, "-")
+                rarityEl.style.setProperty("--rarity-pill-color", `var(--rarity-${key}, var(--color-accent))`)
+
+                li.append(nameEl, rarityEl)
+                li.addEventListener("mousedown", (e) => {
+                    e.preventDefault()
+                    searchInput.value = item.name
+                    this.states.set({ search: item.name })
+                    closeSuggestions()
+                    this.applyFilters()
+                })
+                return li
+            })
+
+            suggestions.replaceChildren(...items)
+            suggestions.classList.add("open")
+        }
+
+        searchInput.oninput = (e) => {
+            const val = e.target.value.trim()
+            this.states.set({ search: val })
+            openSuggestions(val)
+            this.applyFilters()
+        }
+
+        searchInput.onfocus = (e) => openSuggestions(e.target.value.trim())
+
+        searchInput.onblur = () => setTimeout(closeSuggestions, 150)
+
+        searchInput.onkeydown = (e) => {
+            const lis = [...suggestions.querySelectorAll(".catalog-search__suggestion")]
+            const hi = lis.findIndex((li) => li.classList.contains("highlighted"))
+            if (e.key === "ArrowDown") {
+                e.preventDefault()
+                lis[hi]?.classList.remove("highlighted")
+                lis[Math.min(hi + 1, lis.length - 1)]?.classList.add("highlighted")
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault()
+                lis[hi]?.classList.remove("highlighted")
+                lis[Math.max(hi - 1, 0)]?.classList.add("highlighted")
+            } else if (e.key === "Enter" && hi >= 0) {
+                e.preventDefault()
+                lis[hi]?.dispatchEvent(new MouseEvent("mousedown"))
+            } else if (e.key === "Escape") {
+                closeSuggestions()
+                searchInput.blur()
+            }
+        }
+
         // Build sort bar
         const sortBar = this.shadowRoot.querySelector("#sort")
         const sortButtons = SORT_OPTIONS.map((opt) => {
             const btn = document.createElement("button")
-            btn.textContent = opt.label
-            btn.dataset.sort = opt.key
+            btn.dataset.sortKey = opt.key
+            btn.dataset.sortAsc = opt.asc
+            btn.dataset.sortDesc = opt.desc
+            btn.dataset.indAsc = opt.indAsc
+            btn.dataset.indDesc = opt.indDesc
+
+            const labelEl = document.createElement("span")
+            labelEl.textContent = opt.label
+            const dirEl = document.createElement("span")
+            dirEl.className = "sort-dir"
+            btn.append(labelEl, dirEl)
+
             btn.addEventListener("click", () => {
-                this.states.set({ sort: opt.key })
+                const current = this.states.get("sort")
+                const next = current === opt.asc ? opt.desc : opt.asc
+                this.states.set({ sort: next })
                 this.applyFilters()
             })
             return btn
         })
         sortBar.replaceChildren(...sortButtons)
+
+        // Lock every sort button to the same width so switching active option
+        // never shifts the search input. Measure at the widest possible indicator
+        // text ("A→Z"), then restore empty dir slots and pin min-width.
+        const allDirs = [...sortBar.querySelectorAll(".sort-dir")]
+        allDirs.forEach((d) => {
+            d.textContent = "↑"
+        })
+        const maxBtnW = Math.max(...[...sortBar.children].map((b) => b.offsetWidth))
+        allDirs.forEach((d) => {
+            d.textContent = ""
+        })
+        sortBar.querySelectorAll("button").forEach((b) => {
+            b.style.minWidth = `${maxBtnW}px`
+        })
 
         // Wire load-more button
         const loadMoreBtn = this.shadowRoot.querySelector("#load-more")

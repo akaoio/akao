@@ -15,12 +15,22 @@ export const template = html`
         </header>
 
         <nav class="marketplace-nav">
-            <div class="type-tabs" id="type-tabs"></div>
-            <div class="rarity-pills" id="rarity-pills"></div>
+            <div class="filter-group">
+                <span class="filter-group__label">Type</span>
+                <div class="type-tabs" id="type-tabs"></div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group__label">Rarity</span>
+                <div class="rarity-pills" id="rarity-pills"></div>
+            </div>
         </nav>
 
-        <div class="catalog-toolbar">
+        <div class="catalog-toolbar" id="toolbar">
             <span class="catalog-count" id="count"></span>
+            <div class="catalog-search-wrap">
+                <input class="catalog-search" id="search" type="search" placeholder="Search items…" autocomplete="off" spellcheck="false" />
+                <ul class="catalog-search__suggestions" id="search-suggestions"></ul>
+            </div>
             <div class="sort-bar" id="sort"></div>
         </div>
 

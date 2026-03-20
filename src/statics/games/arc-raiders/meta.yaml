@@ -1,5 +1,17 @@
 name: Arc Raiders
 logo: /statics/games/arc-raiders/logo.svg
+rarity_order:
+  - common
+  - uncommon
+  - rare
+  - epic
+  - legendary
+rarity_palette:
+  common: "#9b9b9b"
+  uncommon: "#22c55e"
+  rare: "#3b82f6"
+  epic: "#a855f7"
+  legendary: "#eab308"
 developer: Embark Studios
 publisher: Embark Studios
 release: 2025-10-30

@@ -61,20 +61,50 @@ export const styles = css`
             }
         }
 
-        /* ── Marketplace Nav (odealo-style tabs) ── */
+        /* ── Marketplace Nav ── */
         .marketplace-nav {
             display: flex;
             flex-direction: column;
-            gap: var(--space-2);
-            padding: var(--space-3) 0;
+            gap: 0;
+            padding: var(--space-2) 0;
             border-bottom: 1px solid var(--border);
         }
 
-        .type-tabs,
-        .rarity-pills {
+        /* ── Filter Group row (label + choices) ── */
+        .filter-group {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            padding: var(--space-2) 0;
+
+            & + .filter-group {
+                border-top: 1px solid color-mix(in hsl, var(--color) 8%, transparent);
+            }
+        }
+
+        .filter-group__label {
+            flex-shrink: 0;
+            width: 3.5rem;
+            padding-top: calc(var(--space-1) + 1px);
+            font-family: var(--header-font);
+            font-size: var(--text-xs);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color);
+            opacity: 0.35;
+        }
+
+        /* ── Type Tabs ── */
+        .type-tabs {
+            flex: 1;
             display: flex;
             flex-wrap: wrap;
             gap: var(--space-1);
+
+            /* hide overflow buttons when not expanded */
+            &:not(.expanded) button[data-overflow] {
+                display: none;
+            }
         }
 
         .type-tabs button {
@@ -105,9 +135,49 @@ export const styles = css`
             }
         }
 
-        .rarity-pills button {
+        /* toggle "show more / less" button */
+        .type-tabs__toggle {
+            margin-left: auto;
+            flex-shrink: 0;
+            font-family: var(--header-font);
             font-size: var(--text-xs);
             letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-style: italic;
+            padding: var(--space-1) 0;
+            border: none;
+            background: transparent;
+            color: var(--neon-g);
+            opacity: 0.5;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-color: color-mix(in hsl, var(--neon-g) 40%, transparent);
+            transition:
+                opacity var(--speed),
+                text-decoration-color var(--speed);
+
+            &:hover {
+                opacity: 1;
+                text-decoration-color: var(--neon-g);
+            }
+        }
+
+        /* ── Rarity Pills ── */
+        .rarity-pills {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-1);
+        }
+
+        .rarity-pills button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35em;
+            font-family: var(--header-font);
+            font-size: var(--text-xs);
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             padding: var(--space-1) var(--space-2);
             border: 1px solid var(--border);
@@ -118,57 +188,202 @@ export const styles = css`
             transition:
                 border-color var(--speed),
                 color var(--speed),
+                background var(--speed),
                 box-shadow var(--speed);
 
+            /* color swatch dot — only on rarity buttons, not "All" */
+            &[data-rarity-key]::before {
+                content: "";
+                display: inline-block;
+                flex-shrink: 0;
+                width: 0.5em;
+                height: 0.5em;
+                border-radius: 50%;
+                background: var(--rarity-pill-color, var(--color));
+                opacity: 0.7;
+                transition: opacity var(--speed);
+            }
+
             &:hover {
-                border-color: var(--color-accent);
-                color: var(--color-accent);
+                border-color: var(--rarity-pill-color, var(--color-accent));
+                color: var(--rarity-pill-color, var(--color-accent));
+                background: color-mix(in hsl, var(--rarity-pill-color, var(--color-accent)) 10%, transparent);
+                box-shadow: 0 0 12px color-mix(in hsl, var(--rarity-pill-color, var(--color-accent)) 30%, transparent);
+
+                &[data-rarity-key]::before {
+                    opacity: 1;
+                }
             }
 
             &.active {
-                border-color: currentColor;
-                box-shadow: 0 0 6px currentColor;
-            }
-
-            &[data-rarity-key="legendary"] {
-                --rarity-pill-color: var(--rarity-legendary);
-            }
-            &[data-rarity-key="unique"] {
-                --rarity-pill-color: var(--rarity-unique);
-            }
-            &[data-rarity-key="rare"] {
-                --rarity-pill-color: var(--rarity-rare);
-            }
-            &[data-rarity-key="magic"] {
-                --rarity-pill-color: var(--rarity-magic);
-            }
-            &[data-rarity-key="special"] {
-                --rarity-pill-color: var(--rarity-special);
-            }
-
-            &[data-rarity-key].active,
-            &[data-rarity-key]:hover {
-                color: var(--rarity-pill-color, var(--color-accent));
                 border-color: var(--rarity-pill-color, var(--color-accent));
+                color: var(--rarity-pill-color, var(--color-accent));
+                background: color-mix(in hsl, var(--rarity-pill-color, var(--color-accent)) 12%, transparent);
+                box-shadow: 0 0 16px color-mix(in hsl, var(--rarity-pill-color, var(--color-accent)) 40%, transparent);
+
+                &[data-rarity-key]::before {
+                    opacity: 1;
+                }
             }
         }
 
         /* ── Toolbar ── */
-        .catalog-toolbar {
+        @keyframes toolbar-pulse {
+            0% {
+                box-shadow: none;
+            }
+            50% {
+                box-shadow: 0 0 32px color-mix(in hsl, var(--neon-c) 18%, transparent);
+            }
+            100% {
+                box-shadow:
+                    0 0 0 1px color-mix(in hsl, var(--neon-c) 25%, transparent),
+                    0 2px 20px color-mix(in hsl, var(--neon-c) 10%, transparent);
+            }
+        }
+
+        #toolbar {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: var(--space-2) 0;
-            flex-wrap: wrap;
-            gap: var(--space-2);
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-4);
+            margin: var(--space-3) 0;
+            border: 1px solid color-mix(in hsl, var(--color) 12%, transparent);
+            background: color-mix(in hsl, var(--color) 3%, transparent);
+            transition:
+                border-color var(--speed-2),
+                background var(--speed-2),
+                box-shadow var(--speed-2);
+
+            &:focus-within {
+                border-color: color-mix(in hsl, var(--neon-c) 45%, transparent);
+                background: color-mix(in hsl, var(--neon-c) 3%, transparent);
+                animation: toolbar-pulse var(--speed-2) ease forwards;
+            }
         }
 
         .catalog-count {
+            flex-shrink: 0;
+            font-family: var(--header-font);
             font-size: var(--text-xs);
+            letter-spacing: 0.08em;
             color: var(--color);
-            opacity: 0.5;
+            opacity: 0.4;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ── Search wrap + autocomplete ── */
+        .catalog-search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .catalog-search {
+            width: 100%;
+            background: transparent;
+            border: 1px solid color-mix(in hsl, var(--color) 18%, transparent);
+            color: var(--color);
+            font-family: var(--header-font);
+            font-size: var(--text-sm);
+            letter-spacing: 0.06em;
+            padding: var(--space-2) var(--space-3);
+            outline: none;
+            transition:
+                border-color var(--speed),
+                box-shadow var(--speed),
+                background var(--speed);
+
+            &::placeholder {
+                color: var(--color);
+                opacity: 0.2;
+            }
+
+            &::-webkit-search-cancel-button {
+                filter: invert(0.5);
+                cursor: pointer;
+            }
+
+            &:focus {
+                border-color: var(--neon-c);
+                background: color-mix(in hsl, var(--neon-c) 4%, transparent);
+                box-shadow: inset 0 0 0 1px color-mix(in hsl, var(--neon-c) 30%, transparent);
+            }
+
+            &:not(:placeholder-shown) {
+                border-color: color-mix(in hsl, var(--neon-c) 55%, transparent);
+            }
+        }
+
+        /* ── Autocomplete suggestions ── */
+        .catalog-search__suggestions {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            z-index: 50;
+            list-style: none;
+            background: color-mix(in hsl, var(--background) 96%, var(--neon-c));
+            border: 1px solid color-mix(in hsl, var(--neon-c) 40%, transparent);
+            box-shadow:
+                0 8px 32px color-mix(in hsl, var(--background) 60%, transparent),
+                0 0 0 1px color-mix(in hsl, var(--neon-c) 10%, transparent);
+            max-height: 280px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition:
+                opacity var(--speed),
+                transform var(--speed);
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-c) transparent;
+
+            &.open {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+        }
+
+        .catalog-search__suggestion {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            cursor: pointer;
+            transition: background var(--speed);
+
+            &:not(:last-child) {
+                border-bottom: 1px solid color-mix(in hsl, var(--color) 6%, transparent);
+            }
+
+            &:hover,
+            &.highlighted {
+                background: color-mix(in hsl, var(--neon-c) 8%, transparent);
+            }
+        }
+
+        .suggestion__name {
+            font-family: var(--header-font);
+            font-size: var(--text-xs);
+            letter-spacing: 0.05em;
+            color: var(--color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .suggestion__rarity {
+            flex-shrink: 0;
+            font-family: var(--header-font);
+            font-size: var(--text-xs);
             letter-spacing: 0.06em;
             text-transform: uppercase;
+            color: var(--rarity-pill-color, var(--color-accent));
+            opacity: 0.8;
         }
 
         .sort-bar {
@@ -178,6 +393,9 @@ export const styles = css`
         }
 
         .sort-bar button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
             font-size: var(--text-xs);
             letter-spacing: 0.06em;
             text-transform: uppercase;
@@ -198,6 +416,19 @@ export const styles = css`
             &.active {
                 border-color: var(--neon-g);
                 color: var(--neon-g);
+            }
+        }
+
+        /* fixed-width direction slot — always occupies space, visible only when active */
+        .sort-dir {
+            display: inline-block;
+            min-width: 3ch;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--speed);
+
+            .sort-bar button.active & {
+                opacity: 1;
             }
         }
 
