@@ -1,35 +1,23 @@
-import fs from "node:fs/promises"
-import path from "node:path"
+import { write, load, exist } from "../../src/core/FS.js"
+import { paths } from "./config.js"
 import { log } from "./logger.js"
 
 const CATALOG_PAGE_SIZE = 36
 
-async function readJsonFile(filePath) {
-    try {
-        const raw = await fs.readFile(filePath, "utf8")
-        return JSON.parse(raw)
-    } catch {
-        return null
-    }
-}
-
-async function writeJsonFile(filePath, data) {
-    await fs.mkdir(path.dirname(filePath), { recursive: true })
-    await fs.writeFile(filePath, JSON.stringify(data), "utf8")
-}
-
-async function buildGameCatalog(gameId, catalogMapper, buildStaticsRoot) {
+async function buildGameCatalog(gameId, catalogMapper) {
     if (!catalogMapper) {
         log.info(`  No catalogMapper for "${gameId}", skipping.`)
         return
     }
 
-    const rawPath = path.resolve("games", gameId, "items.json")
-    const rawItems = await readJsonFile(rawPath)
-    if (!rawItems || !Array.isArray(rawItems)) {
-        log.info(`  No raw items found at ${rawPath}, skipping.`)
+    const rawItemsPath = ["games", gameId, "items.json"]
+    if (!(await exist(rawItemsPath))) {
+        log.info(`  No raw items found at games/${gameId}/items.json, skipping.`)
         return
     }
+
+    const rawItems = await load(rawItemsPath)
+    if (!Array.isArray(rawItems)) return
 
     const items = rawItems.map(catalogMapper).sort((a, b) => (a.name || "").localeCompare(b.name || ""))
 
@@ -46,9 +34,9 @@ async function buildGameCatalog(gameId, catalogMapper, buildStaticsRoot) {
     const classes = rawClasses.length ? [...new Set(rawClasses)].sort() : undefined
 
     const totalPages = Math.ceil(items.length / CATALOG_PAGE_SIZE)
-    const catalogDir = path.join(buildStaticsRoot, "games", gameId, "catalog")
+    const catalogDir = [...paths.build.statics, "games", gameId, "catalog"]
 
-    await writeJsonFile(path.join(catalogDir, "meta.json"), {
+    await write([...catalogDir, "meta.json"], {
         children: items.length,
         pages: totalPages,
         types,
@@ -59,8 +47,7 @@ async function buildGameCatalog(gameId, catalogMapper, buildStaticsRoot) {
 
     for (let page = 1; page <= totalPages; page++) {
         const start = (page - 1) * CATALOG_PAGE_SIZE
-        const pageItems = items.slice(start, start + CATALOG_PAGE_SIZE)
-        await writeJsonFile(path.join(catalogDir, `${page}.json`), pageItems)
+        await write([...catalogDir, `${page}.json`], items.slice(start, start + CATALOG_PAGE_SIZE))
     }
 
     log.ok(`  ${gameId}: ${items.length} items → ${totalPages} catalog pages`)
@@ -69,16 +56,15 @@ async function buildGameCatalog(gameId, catalogMapper, buildStaticsRoot) {
 /**
  * @param {string[]} gameIds - game IDs from src/statics/games/
  * @param {Array<{id: string, catalogMapper?: Function}>} gameRegistry - from builder/games/index.js
- * @param {string} buildStaticsRoot
  */
-export async function processGamesCatalog(gameIds, gameRegistry = [], buildStaticsRoot = path.resolve("build", "statics")) {
+export async function processGamesCatalog(gameIds, gameRegistry = []) {
     log.info("Building game catalogs...")
 
     const registryMap = new Map(gameRegistry.map((g) => [g.id, g]))
 
     for (const gameId of gameIds) {
         const game = registryMap.get(gameId)
-        await buildGameCatalog(gameId, game?.catalogMapper ?? null, buildStaticsRoot)
+        await buildGameCatalog(gameId, game?.catalogMapper ?? null)
     }
 
     log.ok(`Generated game catalogs for ${gameIds.length} game(s)`)
