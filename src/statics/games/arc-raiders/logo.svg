@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 48" fill="none">
+  <!-- Angular A — the arc/peak -->
+  <path d="M24 6 L6 42 L16 42 L20 30 L28 30 L32 42 L42 42 L24 6 Z" fill="#041a22" stroke="#00e5ff" stroke-width="1.5" stroke-linejoin="round"/>
+  <line x1="14.5" y1="30" x2="33.5" y2="30" stroke="#00e5ff" stroke-width="1.5"/>
+  <!-- Accent arc over the peak -->
+  <path d="M10 18 Q24 8 38 18" stroke="#00e5ff" stroke-width="1" fill="none" opacity="0.5" stroke-linecap="round"/>
+  <!-- "RAIDERS" label -->
+  <text x="48" y="30" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#00e5ff" letter-spacing="1" opacity="0.9">RAIDERS</text>
+</svg>

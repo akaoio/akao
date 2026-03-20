@@ -1,0 +1,79 @@
+import template from "./template.js"
+import { render } from "/core/UI.js"
+
+const RARITY_VARS = {
+    legendary: "var(--rarity-legendary)",
+    unique: "var(--rarity-unique)",
+    rare: "var(--rarity-rare)",
+    magic: "var(--rarity-magic)",
+    common: "var(--rarity-common)",
+    special: "var(--rarity-special)"
+}
+
+export class GAME_ITEM extends HTMLElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: "open" })
+        render(template, this.shadowRoot)
+    }
+
+    connectedCallback() {
+        this._populate()
+    }
+
+    _populate() {
+        let item
+        try {
+            item = JSON.parse(this.dataset.item || "{}")
+        } catch {
+            return
+        }
+
+        const { id, name, icon, rarity = "common", type = "", value = 0 } = item
+        const rarityKey = rarity.toLowerCase()
+        const rarityColor = RARITY_VARS[rarityKey] || "var(--neon-c)"
+
+        // Set rarity CSS custom property on host for border + hover
+        this.style.setProperty("--item-rarity-color", rarityColor)
+
+        // Rarity badge
+        const rarityBadge = this.shadowRoot.querySelector("#rarity-badge")
+        rarityBadge.textContent = rarity
+        rarityBadge.style.background = rarityColor
+
+        // Type badge
+        const typeBadge = this.shadowRoot.querySelector("#type-badge")
+        typeBadge.textContent = type
+        typeBadge.style.display = type ? "" : "none"
+
+        // Icon
+        const iconWrap = this.shadowRoot.querySelector("#icon-wrap")
+        if (icon) {
+            const img = document.createElement("img")
+            img.src = icon
+            img.alt = name || ""
+            img.loading = "lazy"
+            img.onerror = () => img.remove()
+            iconWrap.replaceChildren(img)
+        }
+
+        // Name / link
+        const link = this.shadowRoot.querySelector("#item-link")
+        link.textContent = name || id || ""
+        if (id) link.dataset.to = `/item/${id}`
+
+        // Price
+        const priceEl = this.shadowRoot.querySelector("#price")
+        if (value) {
+            priceEl.textContent = value.toLocaleString()
+            priceEl.classList.remove("price--zero")
+        } else {
+            priceEl.textContent = "—"
+            priceEl.classList.add("price--zero")
+        }
+    }
+}
+
+customElements.define("ui-game-item", GAME_ITEM)
+
+export default GAME_ITEM

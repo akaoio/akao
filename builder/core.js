@@ -1,4 +1,6 @@
 import { write, load, copy, dir, remove, isDirectory, exist } from "../src/core/FS.js"
+import { processGamesCatalog } from "./core/games-statics.js"
+import { gameRegistry } from "./games/index.js"
 import { color, icons } from "../src/core/Colors.js"
 import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
@@ -42,17 +44,15 @@ async function processYamlDirectory(srcPath, destPath, { recursive = false, filt
                 // Otherwise, try to load and convert YAML/JSON
                 const data = await load(fullSubPath)
                 if (data) {
-                    const jsonName = subFile.replace(/\.(yaml|yml)$/, '.json')
+                    const jsonName = subFile.replace(/\.(yaml|yml)$/, ".json")
                     await write([...destPath, file, jsonName], data)
                     processed++
-                } else {
-                    await copy(fullSubPath, [...destPath, file, subFile])
-                }
+                } else await copy(fullSubPath, [...destPath, file, subFile])
             }
         } else {
             const data = await load(fullSrcPath)
             if (data) {
-                const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
+                const jsonName = file.replace(/\.(yaml|yml)$/, ".json")
                 await write([...destPath, jsonName], data)
                 processed++
             }
@@ -73,7 +73,7 @@ try {
     if (fs.existsSync(forexPath)) {
         const stats = fs.statSync(forexPath)
         const hoursSinceUpdate = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60)
-        
+
         if (hoursSinceUpdate < 24) {
             shouldUpdateForex = false
             log.ok(`Found cached forex rates (${Math.round(hoursSinceUpdate)} hours old)`)
@@ -90,7 +90,7 @@ const hasGeo = await exist(geoPath)
 
 // Crypto-generated directories inside build/statics
 const cryptoDirs = ["ABIs", "chains"]
-const hasCryptoDirs = (await Promise.all(cryptoDirs.map(d => exist([...paths.build.statics, d])))).some(Boolean)
+const hasCryptoDirs = (await Promise.all(cryptoDirs.map((d) => exist([...paths.build.statics, d])))).some(Boolean)
 const hasCryptoImages = await exist([...paths.build.root, "images", "cryptos"])
 
 if (hasGeo || hasCryptoDirs) {
@@ -126,16 +126,15 @@ if (hasGeo || hasCryptoDirs) {
 
         await remove([paths.build.root, item])
     }
-} else {
-    await remove([paths.build.root])
-}
+} else await remove([paths.build.root])
+
 log.ok("Cleaned build folder")
 
 // Load configuration
 log.info("Loading configuration and data...")
 const localesConfig = await load([...paths.src.statics, "locales.yaml"])
-const locales = localesConfig.map(locale => locale.code)
-const system = await load([...paths.src.statics, "system.yaml"]) || { pagination: 10 }
+const locales = localesConfig.map((locale) => locale.code)
+const system = (await load([...paths.src.statics, "system.yaml"])) || { pagination: 10 }
 
 // Load items metadata
 const itemDirs = await dir(paths.src.items)
@@ -143,10 +142,10 @@ const items = []
 const allTags = new Set()
 
 for (const name of itemDirs) {
-    const meta = await load([...paths.src.items, name, 'meta.yaml'])
+    const meta = await load([...paths.src.items, name, "meta.yaml"])
     if (meta) {
         items.push(name)
-        meta.tags?.forEach(tag => allTags.add(tag))
+        meta.tags?.forEach((tag) => allTags.add(tag))
     }
 }
 
@@ -156,7 +155,7 @@ log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size
 const gameDirs = await dir(paths.src.games)
 const games = []
 for (const name of gameDirs) {
-    const meta = await load([...paths.src.games, name, 'meta.yaml'])
+    const meta = await load([...paths.src.games, name, "meta.yaml"])
     if (meta) games.push(name)
 }
 log.ok(`Loaded: ${games.length} games`)
@@ -170,17 +169,11 @@ if (shouldUpdateForex) {
     await forex.update()
     await write([...paths.src.statics, "forex.yaml"], forex.rates)
     log.ok("Fetched and saved new forex rates")
-} else {
-    log.ok("Using cached forex rates")
-}
+} else log.ok("Using cached forex rates")
 
 // Build static files (YAML → JSON)
 log.info("Building static files...")
-const { processed: staticCount } = await processYamlDirectory(
-    paths.src.statics,
-    paths.build.statics,
-    { filter: file => file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json') }
-)
+const { processed: staticCount } = await processYamlDirectory(paths.src.statics, paths.build.statics, { filter: (file) => file.endsWith(".yaml") || file.endsWith(".yml") || file.endsWith(".json") })
 log.ok(`Built ${staticCount} static files`)
 
 // Build domains mapping
@@ -234,9 +227,7 @@ for (const tag of tagsList) {
     const tagItems = []
     for (const itemName of items) {
         const meta = await load([...paths.build.statics, "items", itemName, "meta.json"])
-        if (meta?.tags?.includes(tag)) {
-            tagItems.push(itemName)
-        }
+        if (meta?.tags?.includes(tag)) tagItems.push(itemName)
     }
 
     const tagPages = Math.ceil(tagItems.length / pagination)
@@ -277,9 +268,7 @@ for (const game of games) {
     const gameItems = []
     for (const itemName of items) {
         const meta = await load([...paths.build.statics, "items", itemName, "meta.json"])
-        if (meta?.taxonomy?.game === game) {
-            gameItems.push(itemName)
-        }
+        if (meta?.taxonomy?.game === game) gameItems.push(itemName)
     }
 
     const gameItemPages = Math.ceil(gameItems.length / pagination)
@@ -295,6 +284,9 @@ for (const game of games) {
     }
 }
 log.ok(`Generated per-game item pagination for ${games.length} games`)
+
+// Build game catalogs (from raw crawled game data)
+await processGamesCatalog(games, gameRegistry)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")
@@ -336,9 +328,7 @@ log.ok(`Copied gun files to GDB`)
 log.info("Building routes list...")
 const found = await dir(paths.src.routes, /index\.js$/)
 // Keep only directories that have index.js by stripping the suffix
-const routeDirs = Array.from(new Set(found
-    .filter(p => p.endsWith('index.js'))
-    .map(p => p.replace(/\/index\.js$/, '')))).sort()
+const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, "")))).sort()
 await write([...paths.build.statics, "routes.json"], routeDirs)
 log.ok(`Built routes list with ${routeDirs.length} routes`)
 
@@ -370,8 +360,7 @@ console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)
 console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashResult.hashFiles}`)
-if (await exist(geoPath)) {
-    console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
-}
+if (await exist(geoPath)) console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
+
 log.section("========================================")
 log.start("Build completed successfully!")
