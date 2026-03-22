@@ -1,6 +1,15 @@
 import { css } from "/core/UI.js"
 
 export const styles = css`
+    @keyframes header-nav-sweep {
+        0% {
+            background-position: 0% 0;
+        }
+        100% {
+            background-position: 100% 0;
+        }
+    }
+
     :host {
         header {
             position: fixed;
@@ -8,7 +17,6 @@ export const styles = css`
             z-index: 50;
             width: 100%;
             background: var(--header-background, var(--background));
-            border-bottom: var(--header-border-bottom, none);
             backdrop-filter: var(--header-backdrop, none);
             -webkit-backdrop-filter: var(--header-backdrop, none);
 
@@ -18,6 +26,20 @@ export const styles = css`
                 align-items: center;
                 justify-content: space-between;
                 padding: var(--space);
+                position: relative;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 1px;
+                    background: linear-gradient(90deg, transparent 0%, #00e5ff 25%, #9c3fc7 55%, #ff2d78 80%, transparent 100%);
+                    background-size: 200% 100%;
+                    animation: header-nav-sweep 4s ease-in-out infinite alternate;
+                }
+
                 & a,
                 & div {
                     display: flex;
