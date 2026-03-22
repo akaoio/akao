@@ -21,7 +21,8 @@ export const styles = css`
             display: flex;
             gap: var(--space-1);
             margin-bottom: var(--space-2);
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow: hidden;
         }
 
         .badge {
@@ -31,6 +32,7 @@ export const styles = css`
             text-transform: uppercase;
             padding: 2px var(--space-2);
             line-height: 1.6;
+            white-space: nowrap;
         }
 
         .badge--rarity {
@@ -77,6 +79,9 @@ export const styles = css`
         .info {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .name {
@@ -117,7 +122,6 @@ export const styles = css`
             opacity: 0.35;
         }
 
-        /* sm/xs: compact list-style layout — badges now live inside .info so cards are single-row */
         @media (max-width: 767px) {
             :host {
                 padding: var(--space-2) var(--space-3);
@@ -129,7 +133,6 @@ export const styles = css`
             }
 
             .badges {
-                flex-wrap: nowrap;
                 margin-bottom: var(--space-1);
             }
 

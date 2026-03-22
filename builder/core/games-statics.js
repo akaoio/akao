@@ -4,7 +4,25 @@ import { log } from "./logger.js"
 
 const CATALOG_PAGE_SIZE = 36
 
-async function buildGameCatalog(gameId, catalogMapper) {
+async function buildGameItemFiles(gameId, rawItems, detailMapper, localeCodes) {
+    for (const raw of rawItems) {
+        const { meta: gameMeta, locale: localeData } = detailMapper(raw)
+        const itemDir = [...paths.build.statics, "items", raw.id]
+
+        const existingMeta = (await exist([...itemDir, "meta.json"])) ? await load([...itemDir, "meta.json"]) : null
+        await write([...itemDir, "meta.json"], { ...gameMeta, ...(existingMeta || {}) })
+
+        await Promise.all(
+            localeCodes.map(async (code) => {
+                const localePath = [...itemDir, `${code}.json`]
+                if (!(await exist(localePath))) await write(localePath, localeData)
+            })
+        )
+    }
+    log.ok(`  ${gameId}: wrote ${rawItems.length} item detail files`)
+}
+
+async function buildGameCatalog(gameId, catalogMapper, detailMapper) {
     if (!catalogMapper) {
         log.info(`  No catalogMapper for "${gameId}", skipping.`)
         return
@@ -45,17 +63,26 @@ async function buildGameCatalog(gameId, catalogMapper) {
         ...(classes && { classes })
     })
 
-    for (let page = 1; page <= totalPages; page++) {
-        const start = (page - 1) * CATALOG_PAGE_SIZE
-        await write([...catalogDir, `${page}.json`], items.slice(start, start + CATALOG_PAGE_SIZE))
-    }
+    await Promise.all(
+        Array.from({ length: totalPages }, (_, i) => {
+            const page = i + 1
+            const start = (page - 1) * CATALOG_PAGE_SIZE
+            return write([...catalogDir, `${page}.json`], items.slice(start, start + CATALOG_PAGE_SIZE))
+        })
+    )
 
     log.ok(`  ${gameId}: ${items.length} items → ${totalPages} catalog pages`)
+
+    if (detailMapper) {
+        const localesConfig = await load([...paths.src.statics, "locales.yaml"])
+        const localeCodes = localesConfig.map((l) => l.code)
+        await buildGameItemFiles(gameId, rawItems, detailMapper, localeCodes)
+    }
 }
 
 /**
  * @param {string[]} gameIds - game IDs from src/statics/games/
- * @param {Array<{id: string, catalogMapper?: Function}>} gameRegistry - from builder/games/index.js
+ * @param {Array<{id: string, catalogMapper?: Function, detailMapper?: Function}>} gameRegistry - from builder/games/index.js
  */
 export async function processGamesCatalog(gameIds, gameRegistry = []) {
     log.info("Building game catalogs...")
@@ -64,7 +91,7 @@ export async function processGamesCatalog(gameIds, gameRegistry = []) {
 
     for (const gameId of gameIds) {
         const game = registryMap.get(gameId)
-        await buildGameCatalog(gameId, game?.catalogMapper ?? null)
+        await buildGameCatalog(gameId, game?.catalogMapper ?? null, game?.detailMapper ?? null)
     }
 
     log.ok(`Generated game catalogs for ${gameIds.length} game(s)`)

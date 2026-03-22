@@ -7,6 +7,10 @@ import { notify } from "/core/Utils.js"
 import { States } from "/core/States.js"
 import Cart from "/core/Cart.js"
 
+function camelToLabel(key) {
+    return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim()
+}
+
 export class ITEM extends HTMLElement {
     constructor() {
         super()
@@ -52,6 +56,77 @@ export class ITEM extends HTMLElement {
         if (result) notify({ content: `${Context.get(["dictionary", "itemAddedToCart"])}: ${Context.get(["item", "name"])} x ${item?.quantity}` })
     }
 
+    _renderGameData(meta) {
+        const root = this.shadowRoot
+
+        // Icon
+        const icon = root.querySelector("#icon")
+        if (meta.icon) {
+            icon.src = meta.icon
+            icon.alt = meta.name || ""
+            icon.style.display = ""
+        } else {
+            icon.style.display = "none"
+        }
+
+        // Rarity + type badges
+        const rarityKey = (meta.rarity || "common").toLowerCase().replace(/\s+/g, "-")
+        const rarityColor = `var(--rarity-${rarityKey}, var(--color-accent, #888))`
+        this.style.setProperty("--item-rarity-color", rarityColor)
+
+        const rarityBadge = root.querySelector("#rarity-badge")
+        rarityBadge.textContent = meta.rarity || ""
+        rarityBadge.style.background = rarityColor
+        rarityBadge.style.display = meta.rarity ? "" : "none"
+
+        const typeBadge = root.querySelector("#type-badge")
+        typeBadge.textContent = meta.type || ""
+        typeBadge.style.display = meta.type ? "" : "none"
+
+        const subtypeBadge = root.querySelector("#subtype-badge")
+        subtypeBadge.textContent = meta.subtype || ""
+        subtypeBadge.style.display = meta.subtype ? "" : "none"
+
+        // Breadcrumb
+        const backLink = root.querySelector("#back-link")
+        if (meta.game) {
+            backLink.textContent = meta.game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+            backLink.dataset.to = `/game/${meta.game}`
+            root.querySelector("#breadcrumb").style.display = ""
+        } else {
+            root.querySelector("#breadcrumb").style.display = "none"
+        }
+
+        // Flavor text
+        const flavorEl = root.querySelector("#flavor-text")
+        flavorEl.textContent = meta.flavor_text || ""
+        flavorEl.style.display = meta.flavor_text ? "" : "none"
+
+        // Stat block (rendered once — meta doesn't change on locale switch)
+        const statBlock = root.querySelector("#stat-block")
+        if (statBlock.children.length === 0 && meta.stat_block) {
+            const rows = Object.entries(meta.stat_block).map(([key, val]) =>
+                html`<div class="stat-row"><dt>${camelToLabel(key)}</dt><dd>${val}</dd></div>`
+            )
+            render(rows, statBlock)
+            root.querySelector("#stats").style.display = ""
+        } else if (!meta.stat_block) {
+            root.querySelector("#stats").style.display = "none"
+        }
+
+        // Loadout slots
+        const slotsEl = root.querySelector("#loadout-slots")
+        if (slotsEl.children.length === 0 && meta.loadout_slots?.length) {
+            const chips = meta.loadout_slots.map((slot) =>
+                html`<span class="slot-chip">${camelToLabel(slot)}</span>`
+            )
+            render(chips, slotsEl)
+            root.querySelector("#slots").style.display = ""
+        } else if (!meta.loadout_slots?.length) {
+            root.querySelector("#slots").style.display = "none"
+        }
+    }
+
     async render() {
         const id = this.states.get("id")
         const meta = this.states.get("meta")
@@ -63,15 +138,21 @@ export class ITEM extends HTMLElement {
             description: data.description || ""
         })
         Context.set({ item: { ...meta, ...data } })
-        this.shadowRoot.querySelector("input[name=id]").value = id
-        this.shadowRoot.querySelector("input[name=sku]").value = meta.sku
-        const sale = this.shadowRoot.querySelector("#sale")
-        const price = this.shadowRoot.querySelector("#price")
-        sale.dataset.base = price.dataset.base = meta.currency
-        if (meta.sale) sale.dataset.amount = meta.sale
-        if (meta.price) price.dataset.amount = meta.price
 
-        if (this.shadowRoot.querySelector("#attributes").children.length == 0) {
+        const root = this.shadowRoot
+        root.querySelector("#breadcrumb-name").textContent = data.name || ""
+        root.querySelector("input[name=id]").value = id
+        root.querySelector("input[name=sku]").value = meta?.sku || ""
+
+        const sale = root.querySelector("#sale")
+        const price = root.querySelector("#price")
+        if (meta?.currency) sale.dataset.base = price.dataset.base = meta.currency
+        if (meta?.sale) sale.dataset.amount = meta.sale
+        if (meta?.price) price.dataset.amount = meta.price
+
+        if (meta) this._renderGameData(meta)
+
+        if (root.querySelector("#attributes").children.length === 0 && meta?.attributes?.length) {
             const attributes = meta.attributes.map(
                 (attr) => html`
                     <fieldset>
@@ -85,15 +166,16 @@ export class ITEM extends HTMLElement {
                     </fieldset>
                 `
             )
-            render(attributes, this.shadowRoot.querySelector("#attributes"))
+            render(attributes, root.querySelector("#attributes"))
         }
-        this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease)
-        this.shadowRoot.querySelector("#increase").addEventListener("click", this.increase)
-        this.shadowRoot.querySelector("#add").addEventListener("click", this.add)
+
+        root.querySelector("#decrease").addEventListener("click", this.decrease)
+        root.querySelector("#increase").addEventListener("click", this.increase)
+        root.querySelector("#add").addEventListener("click", this.add)
         this.subscriptions.push(
-            () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease),
-            () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
-            () => this.shadowRoot.querySelector("#add").removeEventListener("click", this.add)
+            () => root.querySelector("#decrease").removeEventListener("click", this.decrease),
+            () => root.querySelector("#increase").removeEventListener("click", this.increase),
+            () => root.querySelector("#add").removeEventListener("click", this.add)
         )
     }
 }

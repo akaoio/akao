@@ -20,7 +20,7 @@ export class GAME_ITEM extends HTMLElement {
             return
         }
 
-        const { id, name, icon, rarity = "common", type = "", value = 0 } = item
+        const { id, name, icon, rarity = "common", type = "", subtype = "", value = 0 } = item
         const rarityKey = rarity.toLowerCase().replace(/\s+/g, "-")
         const rarityColor = `var(--rarity-${rarityKey}, var(--rarity-common, #888888))`
 
@@ -36,6 +36,11 @@ export class GAME_ITEM extends HTMLElement {
         const typeBadge = this.shadowRoot.querySelector("#type-badge")
         typeBadge.textContent = type
         typeBadge.style.display = type ? "" : "none"
+
+        // Subtype badge
+        const subtypeBadge = this.shadowRoot.querySelector("#subtype-badge")
+        subtypeBadge.textContent = subtype
+        subtypeBadge.style.display = subtype ? "" : "none"
 
         // Icon
         const iconWrap = this.shadowRoot.querySelector("#icon-wrap")
