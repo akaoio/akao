@@ -49,16 +49,10 @@ export const styles = css`
         display: none;
     }
 
-    /* ── Mobile: square gamepad icon button ── */
+    /* ── Mobile: hide fixed toggle (button moves to header) ── */
     @media (max-width: 767px) {
         .game-nav__toggle {
-            writing-mode: horizontal-tb;
-            rotate: 0;
-            padding: 0;
-            width: var(--icon-lg);
-            height: var(--icon-lg);
-            display: grid;
-            place-items: center;
+            display: none;
         }
 
         .game-nav__toggle-label { display: none; }

@@ -21,12 +21,14 @@ export class GAME_NAV extends HTMLElement {
         this.subscriptions.push(Context.on("locale", this._render))
         this.subscriptions.push(Context.on("params", this._render))
         this._bindEvents()
+        window.addEventListener("game-nav:open", this._toggle)
         await this._loadGames()
         this._render()
     }
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
+        window.removeEventListener("game-nav:open", this._toggle)
     }
 
     async _loadGames() {

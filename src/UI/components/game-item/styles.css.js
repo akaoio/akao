@@ -2,12 +2,13 @@ import { css } from "/core/UI.js"
 
 export const styles = css`
     :host {
-        display: block;
+        display: flex;
+        align-items: stretch;
         position: relative;
         background: var(--item-background, transparent);
         border: var(--border);
         border-left: 3px solid var(--item-rarity-color, var(--neon-c));
-        padding: var(--space-3);
+        overflow: hidden;
         transition: box-shadow var(--speed) ease-in-out;
         cursor: pointer;
 
@@ -17,76 +18,48 @@ export const styles = css`
                 0 0 16px color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 30%, transparent);
         }
 
-        .badges {
-            display: flex;
-            gap: var(--space-1);
-            margin-bottom: var(--space-2);
-            flex-wrap: nowrap;
-            overflow: hidden;
-        }
-
-        .badge {
-            font-size: calc(var(--text-xs) * 0.9);
-            font-family: var(--header-font);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 2px var(--space-2);
-            line-height: 1.6;
-            white-space: nowrap;
-        }
-
-        .badge--rarity {
-            background: var(--item-rarity-color, var(--neon-c));
-            color: var(--background);
-        }
-
-        .badge--type {
-            border: 1px solid var(--border);
-            color: var(--color);
-            opacity: 0.7;
-        }
-
-        .body {
-            display: flex;
-            gap: var(--space-3);
-            align-items: flex-start;
-        }
-
         .icon {
             flex-shrink: 0;
-            width: 48px;
-            height: 48px;
+            width: 96px;
+            height: 96px;
+            align-self: center;
             display: flex;
             align-items: center;
             justify-content: center;
             background: color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 8%, transparent);
-            border: 1px solid color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 30%, transparent);
+            border-right: 1px solid color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 25%, transparent);
+            box-sizing: border-box;
 
             img {
-                width: 40px;
-                height: 40px;
+                width: 100%;
+                height: 100%;
                 object-fit: contain;
+                object-position: center center;
                 image-rendering: pixelated;
+                padding: var(--space-2);
+                box-sizing: border-box;
             }
 
             .icon__placeholder {
-                width: 24px;
-                height: 24px;
+                width: 32px;
+                height: 32px;
                 opacity: 0.3;
             }
         }
 
-        .info {
+        .content {
             flex: 1;
             min-width: 0;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
         }
 
         .name {
             font-family: var(--header-font);
-            font-size: var(--text-sm);
+            font-size: var(--text-md);
             font-weight: 700;
             letter-spacing: 0.04em;
             color: var(--item-rarity-color, var(--neon-c));
@@ -94,7 +67,6 @@ export const styles = css`
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: var(--space-1);
 
             a {
                 color: inherit;
@@ -105,13 +77,11 @@ export const styles = css`
         .footer {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-top: var(--space-2);
         }
 
         .price {
             font-family: var(--header-font);
-            font-size: var(--text-sm);
+            font-size: var(--text-md);
             font-weight: 700;
             color: var(--neon-g);
             text-shadow: var(--glow-g);
@@ -122,32 +92,37 @@ export const styles = css`
             opacity: 0.35;
         }
 
-        @media (max-width: 767px) {
-            :host {
-                padding: var(--space-2) var(--space-3);
-            }
+        .badges {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
+            gap: var(--space-1);
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
 
-            .body {
-                align-items: center;
-                gap: var(--space-2);
-            }
+        .badge {
+            font-size: calc(var(--text-xs) * 0.65);
+            font-family: var(--header-font);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 1px var(--space-1);
+            line-height: 1.5;
+            white-space: nowrap;
+        }
 
-            .badges {
-                margin-bottom: var(--space-1);
-            }
+        .badge--rarity {
+            background: var(--item-rarity-color, var(--neon-c));
+            color: var(--background);
+            box-shadow:
+                0 0 6px color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 70%, transparent),
+                0 0 14px color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 35%, transparent);
+        }
 
-            .badge {
-                font-size: var(--text-xs);
-            }
-
-            .name {
-                font-size: var(--text-md);
-                margin-bottom: 0;
-            }
-
-            .footer {
-                margin-top: var(--space-1);
-            }
+        .badge--type {
+            border: 1px solid var(--border);
+            color: color-mix(in hsl, white 75%, var(--color) 25%);
         }
     }
 `

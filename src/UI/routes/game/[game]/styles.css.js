@@ -533,6 +533,7 @@ export const styles = css`
             .catalog-grid {
                 grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             }
+
         }
 
         /* xs: Mobile phones (≤480px) */
