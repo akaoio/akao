@@ -3,6 +3,7 @@ import "/UI/components/context/index.js"
 import "/UI/components/button/index.js"
 import "/UI/components/icon/index.js"
 import "/UI/components/fiat/index.js"
+import "/UI/components/a/index.js"
 import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 
@@ -10,10 +11,31 @@ export const template = html`
     ${styles}
     <layout-main>
         <form id="item">
-            <div id="image" style="grid-area: image;">image</div>
-            <header style="grid-area: header;"><ui-context data-key="item.name" /></header>
+            <nav id="breadcrumb" style="grid-area: breadcrumb;">
+                <a is="ui-a" id="back-link"></a>
+                <span id="breadcrumb-sep"> › </span>
+                <span id="breadcrumb-name"></span>
+            </nav>
+            <div id="image" style="grid-area: image;">
+                <img id="icon" alt="" loading="lazy" />
+            </div>
+            <header style="grid-area: header;">
+                <div class="badges">
+                    <span class="badge badge--rarity" id="rarity-badge"></span>
+                    <span class="badge badge--type" id="type-badge"></span>
+                    <span class="badge badge--type" id="subtype-badge"></span>
+                </div>
+                <h1><ui-context data-key="item.name" /></h1>
+            </header>
             <main style="grid-area: main;">
+                <p id="flavor-text"></p>
                 <section id="description"><ui-context data-key="item.description" /></section>
+                <section id="stats">
+                    <dl id="stat-block"></dl>
+                </section>
+                <section id="slots">
+                    <div id="loadout-slots"></div>
+                </section>
                 <section id="pricing">
                     <ui-fiat id="sale" />
                     <ui-fiat id="price" />
