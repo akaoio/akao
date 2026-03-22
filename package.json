@@ -56,7 +56,6 @@
     "eslint": "^9.39.2",
     "ethers": "^6.16.0",
     "ggwave": "^0.4.0",
-    "live-server": "^1.2.2",
     "prettier": "^3.7.2",
     "qrcode": "^1.5.4",
     "rollup": "^4.59.0",
