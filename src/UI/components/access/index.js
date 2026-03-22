@@ -1,6 +1,6 @@
 import { Elements } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
-import { Access, signup, signin } from "/core/Access.js"
+import { Access, signup, passkey } from "/core/Access.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
 import WebAuthn from "/core/WebAuthn.js"
@@ -15,10 +15,13 @@ export class ACCESS extends HTMLElement {
         this.checkpoint = this.checkpoint.bind(this)
         this.show = this.show.bind(this)
         this.signupScreen = this.signupScreen.bind(this)
+        this.signinScreen = this.signinScreen.bind(this)
         this.unauthenticated = this.unauthenticated.bind(this)
         this.signup = this.signup.bind(this)
         this.signin = this.signin.bind(this)
         this.sign = this.sign.bind(this)
+        this.passkey = this.passkey.bind(this)
+
     }
 
     connectedCallback() {
@@ -29,12 +32,14 @@ export class ACCESS extends HTMLElement {
         this.shadowRoot.querySelector("#signup").addEventListener("click", this.signupScreen)
         this.shadowRoot.querySelector("#back").addEventListener("click", this.unauthenticated)
         this.shadowRoot.querySelector("#confirm").addEventListener("click", this.signup)
-        this.shadowRoot.querySelector("#signin").addEventListener("click", this.signin)
+        this.shadowRoot.querySelector("#signin").addEventListener("click", this.signinScreen)
+        this.shadowRoot.querySelector("#passkey").addEventListener("click", this.passkey)
         this.subscriptions.push(
             () => this.shadowRoot.querySelector("#signup").removeEventListener("click", this.signupScreen),
             () => this.shadowRoot.querySelector("#back").removeEventListener("click", this.unauthenticated),
             () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signup),
-            () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signin)
+            () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signinScreen),
+            () => this.shadowRoot.querySelector("#passkey").removeEventListener("click", this.passkey)
         )
         this.form.querySelectorAll("input[type='text']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
     }
@@ -67,6 +72,10 @@ export class ACCESS extends HTMLElement {
         this.show("signup-screen")
     }
 
+    signinScreen() {
+        this.show("signin-screen")
+    }
+
     unauthenticated() {
         this.show("unauthenticated-screen")
     }
@@ -77,7 +86,11 @@ export class ACCESS extends HTMLElement {
     }
 
     signin() {
-        signin().then(this.next)
+        passkey().then(this.next)
+    }
+
+    passkey() {
+        passkey().then(this.next)
     }
 
     sign(data, callback) {

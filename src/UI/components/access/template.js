@@ -19,6 +19,18 @@ export const template = html`
                 </ui-button>
             </div>
         </main>
+        <main id="signin-screen">
+            <h3><ui-context data-key="dictionary.signin" /></h3>
+            <p><ui-context data-key="dictionary.pleaseChooseYourAuthenticationMethod" /></p>
+            <div class="buttons">
+                <ui-button class="full" data-left="soundwave" id="wave">
+                    <ui-context data-key="dictionary.wave" />
+                </ui-button>
+                <ui-button class="full" data-left="key-fill" id="passkey">
+                    <ui-context data-key="dictionary.passkey" />
+                </ui-button>
+            </div>
+        </main>
         <main id="signup-screen">
             <h3><ui-context data-key="dictionary.signup" /></h3>
             <form id="signup-form">

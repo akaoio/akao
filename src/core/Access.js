@@ -201,13 +201,17 @@ export function signup(data) {
         })
 }
 
+export function wave() {
+    console.log("Signing in with wave...")
+}
+
 /**
  * Sign in an existing user with WebAuthn passkey.
  * Authenticates with existing passkey and restores the public key from Gun.
  * @param {Object} data - WebAuthn authentication options
  * @returns {Promise<Object>} Credential object or error
  */
-export function signin(data) {
+export function passkey(data) {
     return WebAuthn
         .authenticate(data)
         .then(next)

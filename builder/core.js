@@ -7,7 +7,6 @@ import { processI18n } from "./core/i18n.js"
 import { generateHashFiles } from "./core/hash.js"
 import { Forex } from "../src/core/Forex.js"
 import fs from "fs"
-import path from "path"
 
 // ============ Helper Functions ============
 async function copyAssets(assets) {
@@ -308,13 +307,10 @@ await copyAssets([
     { src: ["node_modules", "ethers", "dist", "ethers.min.js"], dest: [...paths.build.core, "Ethers.js"], label: "ethers" }
 ])
 
-// Prepare ggwave as ESM module for worker imports
-const ggwaveCode = fs.readFileSync(path.join("node_modules", "ggwave", "ggwave.js"), "utf8")
-await write(
-    [...paths.build.core, "Wave.js"],
-    `${ggwaveCode}\n\nexport default ggwave_factory\n`
-)
-log.ok("Prepared ggwave → build/core/Wave.js")
+// Prepare ggwave under build/core/Wave/ for worker imports
+const ggwaveCode = fs.readFileSync("node_modules/ggwave/ggwave.js", "utf8")
+await write([...paths.build.core, "Wave", "ggwave.js"], `${ggwaveCode}\n\nexport default ggwave_factory\n`)
+log.ok("Prepared ggwave → build/core/Wave/ggwave.js")
 
 // Copy uqr ESM library
 log.info("Copying uqr to build...")
