@@ -16,6 +16,7 @@ export const styles = css`
         width: var(--size);
         aspect-ratio: 1 / 1;
         border-radius: 50%;
+        z-index: 1000;
 
         nav {
             display: flex;
@@ -31,6 +32,20 @@ export const styles = css`
                 #orbit {
                     width: calc(var(--rad, 0px) * 2);
                     opacity: 1;
+                    &::before {
+                        --glow: calc((var(--rad, 0px) * 2) + calc(var(--size) * 2));
+                        position: absolute;
+                        border-radius: 50%;
+                        content: "";
+                        aspect-ratio: 1 / 1;
+                        width: var(--glow);
+                        top: calc(50% - var(--glow) / 2);
+                        left: calc(50% - var(--glow) / 2);
+                        background: var(--background);
+                        filter: blur(calc(var(--glow) * 0.125));
+                        z-index: -1;
+                        transition: var(--transition);
+                    }
                 }
             }
 

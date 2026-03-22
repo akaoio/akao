@@ -1,24 +1,29 @@
 import { css } from "/core/UI.js"
 
 export const styles = css`
-    @keyframes header-nav-sweep {
-        0% {
-            background-position: 0% 0;
-        }
-        100% {
-            background-position: 100% 0;
-        }
-    }
-
     :host {
         header {
             position: fixed;
             top: 0;
             z-index: 50;
             width: 100%;
-            background: var(--header-background, var(--background));
-            backdrop-filter: var(--header-backdrop, none);
-            -webkit-backdrop-filter: var(--header-backdrop, none);
+            background: transparent;
+
+            &::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: linear-gradient(
+                    to bottom,
+                    var(--background) 0%,
+                    color-mix(in hsl, var(--background) 0%, transparent 100%) 100%
+                );
+                backdrop-filter: var(--header-backdrop, none);
+                -webkit-backdrop-filter: var(--header-backdrop, none);
+                mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+            }
 
             nav {
                 max-height: var(--header-height);
@@ -27,18 +32,7 @@ export const styles = css`
                 justify-content: space-between;
                 padding: var(--space);
                 position: relative;
-
-                &::after {
-                    content: "";
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 1px;
-                    background: linear-gradient(90deg, transparent 0%, #00e5ff 25%, #9c3fc7 55%, #ff2d78 80%, transparent 100%);
-                    background-size: 200% 100%;
-                    animation: header-nav-sweep 4s ease-in-out infinite alternate;
-                }
+                z-index: 1;
 
                 & a,
                 & div {

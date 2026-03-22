@@ -55,9 +55,8 @@
     "ethers": "^6.16.0",
     "ggwave": "^0.4.0",
     "prettier": "^3.7.2",
+    "qr-scanner": "^1.4.2",
+    "uqr": "^0.1.2",
     "yaml": "^2.8.2"
-  },
-  "dependencies": {
-    "uqr": "^0.1.2"
   }
 }

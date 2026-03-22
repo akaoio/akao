@@ -1,27 +1,186 @@
-import { renderSVG } from "/core/QR.js"
+import { renderSVG } from "/core/QR/encode.js"
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
+import { setup as setupQRWorker, decode as decodeQRFrame } from "/core/QR/worker.js"
 
 class QR extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         this.render = this.render.bind(this)
+        this.syncMode = this.syncMode.bind(this)
+        this.onCameraReady = this.onCameraReady.bind(this)
+        this.onCameraCapture = this.onCameraCapture.bind(this)
+        this.onCameraResume = this.onCameraResume.bind(this)
+        this.start = this.start.bind(this)
+        this.stop = this.stop.bind(this)
+        this.clear = this.clear.bind(this)
+        this.scan = this.scan.bind(this)
+        this.scanning = false
+        this.pending = false
+        this.timer = null
         render(template, this.shadowRoot)
     }
 
     static get observedAttributes() {
-        return ["data-value"]
+        return ["data-value", "data-mode"]
     }
 
     attributeChangedCallback(name, last, value) {
         if (last === value) return
+        if (name === "data-mode") {
+            this.syncMode()
+            return
+        }
         if (name === "data-value" && value && last !== value) this.render()
     }
 
+    connectedCallback() {
+        this.syncMode()
+    }
+
+    disconnectedCallback() {
+        this.detachScanner()
+    }
+
+    mode() {
+        return this.dataset.mode === "scan" ? "scan" : "encode"
+    }
+
+    syncMode() {
+        this.$qr = this.$qr || this.shadowRoot.querySelector("#qr")
+        this.$scanner = this.$scanner || this.shadowRoot.querySelector("#scanner")
+        const mode = this.mode()
+        this.$qr.hidden = mode !== "encode"
+        this.$scanner.hidden = mode !== "scan"
+        if (mode === "scan") this.attachScanner()
+        else this.detachScanner()
+    }
+
+    attachScanner() {
+        if (this._scannerAttached) return
+        this._scannerAttached = true
+        this.camera = this.shadowRoot.querySelector("#camera")
+        this.status = this.shadowRoot.querySelector("#status ui-context")
+        this.result = this.shadowRoot.querySelector("#result")
+        this.$start = this.shadowRoot.querySelector("#start")
+        this.$stop = this.shadowRoot.querySelector("#stop")
+        this.$clear = this.shadowRoot.querySelector("#clear")
+        this.$start.shadowRoot.querySelector("button").addEventListener("click", this.start)
+        this.$stop.shadowRoot.querySelector("button").addEventListener("click", this.stop)
+        this.$clear.shadowRoot.querySelector("button").addEventListener("click", this.clear)
+        this.camera.addEventListener("ready", this.onCameraReady)
+        this.camera.addEventListener("capture", this.onCameraCapture)
+        this.camera.addEventListener("resume", this.onCameraResume)
+        if (!this.camera?.stream) this.camera?.start?.()
+    }
+
+    detachScanner() {
+        this.stop()
+        if (!this._scannerAttached) return
+        this._scannerAttached = false
+        this.$start?.shadowRoot?.querySelector("button")?.removeEventListener("click", this.start)
+        this.$stop?.shadowRoot?.querySelector("button")?.removeEventListener("click", this.stop)
+        this.$clear?.shadowRoot?.querySelector("button")?.removeEventListener("click", this.clear)
+        this.camera?.removeEventListener("ready", this.onCameraReady)
+        this.camera?.removeEventListener("capture", this.onCameraCapture)
+        this.camera?.removeEventListener("resume", this.onCameraResume)
+        this.camera?.stop?.()
+    }
+
+    onCameraReady() {
+        this.setStatus("dictionary.cameraReadyScanning")
+        this.start()
+    }
+
+    onCameraCapture() {
+        this.setStatus("dictionary.capturedFrameLocked")
+        if (this.scanning) this.scan(true)
+    }
+
+    onCameraResume() {
+        this.setStatus("dictionary.liveCameraResumed")
+        if (this.scanning) this.schedule(0)
+    }
+
+    start() {
+        if (this.mode() !== "scan" || this.scanning) return
+        this.scanning = true
+        this.setStatus(this.camera?.isCaptured() ? "dictionary.scanningCapturedFrame" : "dictionary.scanningLiveFrames")
+        setupQRWorker({ alsoTryWithoutScanRegion: true }).catch((error) => this.setStatus(null, error.message || "Error"))
+        this.schedule(0)
+    }
+
+    stop() {
+        this.scanning = false
+        this.pending = false
+        if (this.timer) clearTimeout(this.timer)
+        this.timer = null
+        if (this.mode() === "scan") this.setStatus("dictionary.scanningStopped")
+    }
+
+    clear() {
+        if (!this.result) return
+        this.result.textContent = ""
+        this.setStatus(this.camera?.isCaptured() ? "dictionary.capturedFrameReady" : "dictionary.resultCleared")
+    }
+
+    setStatus(key, fallback) {
+        if (!this.status) return
+        if (key) this.status.dataset.key = key
+        else if (fallback) {
+            this.status.removeAttribute("data-key")
+            this.status.innerText = fallback
+        }
+    }
+
+    schedule(delay = 180) {
+        if (!this.scanning) return
+        if (this.timer) clearTimeout(this.timer)
+        this.timer = setTimeout(this.scan, delay)
+    }
+
+    async scan(force = false) {
+        if ((!this.scanning && !force) || this.pending || this.mode() !== "scan") return
+        const frame = await this.camera?.getFrame?.()
+        if (!frame) {
+            this.schedule(250)
+            return
+        }
+
+        this.pending = true
+        const transfer = frame.bitmap ? [frame.bitmap] : undefined
+        decodeQRFrame(frame, { transfer })
+            .then((response) => {
+                this.pending = false
+                if (response?.ok && response?.data) {
+                    if (this.result) this.result.textContent = response.data
+                    this.setStatus(frame.captured ? "dictionary.decodedFromCapturedFrame" : "dictionary.decodedFromLiveFrame")
+                    this.dispatchEvent(new CustomEvent("scan", {
+                        detail: response,
+                        bubbles: true,
+                        composed: true
+                    }))
+                    this.stop()
+                    return
+                }
+
+                if (response?.error) this.setStatus(null, response.error)
+                else this.setStatus(frame.captured ? "dictionary.noQrFoundInCapturedFrameYet" : "dictionary.scanningLiveFrames")
+
+                if (this.scanning) this.schedule(frame.captured ? 500 : 180)
+            })
+            .catch((error) => {
+                this.pending = false
+                this.setStatus(null, error.message || "Error")
+                if (this.scanning) this.schedule(400)
+            })
+    }
+
     render() {
+        if (this.mode() !== "encode") return
         const data = this.dataset.value
-        const qr = this.shadowRoot.querySelector("#qr")
+        const qr = this.$qr || this.shadowRoot.querySelector("#qr")
         if (!data) {
             qr.innerHTML = ""
             return
@@ -32,3 +191,7 @@ class QR extends HTMLElement {
 }
 
 customElements.define("ui-qr", QR)
+
+export { QR }
+
+export default QR

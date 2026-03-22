@@ -13,6 +13,7 @@ import typography from "./typography.js"
 import themes from "./themes.js"
 import notifications from "./notifications.js"
 import items from "./items.js"
+import cameraQR from "./camera-qr.js"
 
 export default [
     button,
@@ -29,5 +30,6 @@ export default [
     typography,
     themes,
     notifications,
-    items
+    items,
+    cameraQR
 ]
