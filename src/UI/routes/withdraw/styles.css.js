@@ -10,8 +10,10 @@ export const styles = css`
     :host {
         main {
             display: flex;
+            align-self: center;
             flex-direction: column;
             gap: var(--space);
+            max-width: var(--box-width);
         }
         #gas {
             font-size: 0.875em;

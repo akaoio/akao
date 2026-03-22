@@ -4,16 +4,10 @@ export const styles = css`
     :host {
         main {
             display: flex;
+            align-self: center;
             flex-direction: column;
             gap: var(--space);
-            #qr {
-                display: flex;
-                background: white;
-                padding: var(--space);
-                &:empty {
-                    display: none;
-                }
-            }
+            max-width: var(--box-width);
         }
     }
 `

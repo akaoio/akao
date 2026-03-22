@@ -64,31 +64,31 @@ export function filterData(data = {}, prefix = "") {
 }
 
 export function logic(exp, data) {
-    const isLogic = (_) => typeof _ === "object" && _ !== null && (_["AND"] || _["OR"] || _["&&"] || _["||"]) && !Array.isArray(_) && Object.keys(_).length === 1
+    const $logic = ($) => typeof $ === "object" && $ !== null && ($["&"] || $["|"]) && !Array.isArray($) && Object.keys($).length === 1
 
     const ops = {
-        AND: (arr) => {
+        // AND
+        "&": (arr) => {
             for (let item of arr) {
-                if (isLogic(item)) item = logic(item)
+                if ($logic(item)) item = logic(item, data)
                 if (item == false) return false
             }
             return true
         },
-        "&&": (arr) => ops["AND"](arr),
-        OR: (arr) => {
+        // OR
+        "|": (arr) => {
             for (let item of arr) {
-                if (isLogic(item)) item = logic(item)
+                if ($logic(item)) item = logic(item, data)
                 if (item == true) return true
             }
             return false
-        },
-        "||": (arr) => ops["OR"](arr)
+        }
     }
 
-    if (isLogic(exp)) {
+    if ($logic(exp)) {
         const op = Object.keys(exp)[0]
-        const data = exp[op]
-        return ops[op](data)
+        const v = exp[op]
+        return ops[op](v)
     }
     return !!exp
 }

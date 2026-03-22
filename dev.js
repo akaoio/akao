@@ -1,63 +1,392 @@
-import server from "live-server"
 import chokidar from "chokidar"
 import { spawn } from "child_process"
+import { promises as fs } from "fs"
+import path from "path"
+import http from "http"
+import { URL } from "url"
+import YAML from "yaml"
+import { sha256 } from "./src/core/Utils/crypto.js"
 
-// Watch for changes and rebuild
+const SRC_ROOT = "src"
+const BUILD_ROOT = "build"
+const BUILD_STATICS_ROOT = path.join(BUILD_ROOT, "statics")
+const HOST = "localhost"
+const PORT = 8080
+const DEV_EVENTS_PATH = "/__dev_events"
+const DEV_CLIENT_MARKER = "__shop_dev_sse_client__"
+
+const FULL_CORE_REBUILD_PATHS = [
+    /^src[\\/]index\.html$/,
+    /^src[\\/]UI[\\/]routes[\\/]/,
+    /^src[\\/]statics[\\/]i18n[\\/]/,
+    /^src[\\/]statics[\\/]locales\.ya?ml$/,
+    /^src[\\/]statics[\\/]system\.ya?ml$/,
+    /^src[\\/]statics[\\/]domains\.ya?ml$/
+]
+
+const cryptoPaths = /^src[\\/]statics[\\/](chains|ABIs)[\\/]/
+
 let buildInProgress = false
+const pendingChanges = new Map()
+const sseClients = new Set()
 
-const watcher = chokidar.watch("src/**/*", {
-    ignored: /(^|[\/\\])\../,
-    persistent: true
-})
+function normalizePath(filePath) {
+    return filePath.replace(/\\/g, "/").replace(/^\.\//, "")
+}
 
-// Patterns that require build:crypto in addition to build:core
-const cryptoPaths = /src[/\\]statics[/\\](chains|ABIs)[/\\]/
+function toPlatformPath(filePath) {
+    return filePath.replace(/\//g, path.sep)
+}
 
-watcher.on("change", (path) => {
-    if (buildInProgress) {
-        console.log(`⏳ Build in progress, queuing change: ${path}`)
-        return
+function shouldFullRebuild(normalizedPath) {
+    return FULL_CORE_REBUILD_PATHS.some(pattern => pattern.test(normalizedPath))
+}
+
+function isYamlFile(filePath) {
+    return /\.(yaml|yml)$/i.test(filePath)
+}
+
+function toJsonTargetPath(targetPath) {
+    return targetPath.replace(/\.(yaml|yml)$/i, ".json")
+}
+
+function toBuildPath(normalizedPath) {
+    if (normalizedPath === "importmap.json") return path.join(BUILD_ROOT, "importmap.json")
+    if (!normalizedPath.startsWith("src/")) return null
+    return path.join(BUILD_ROOT, toPlatformPath(normalizedPath.slice("src/".length)))
+}
+
+async function exists(filePath) {
+    try {
+        await fs.access(filePath)
+        return true
+    } catch {
+        return false
+    }
+}
+
+async function ensureDir(filePath) {
+    await fs.mkdir(path.dirname(filePath), { recursive: true })
+}
+
+async function writeJsonFromYaml(srcPath, destPath) {
+    const yamlContent = await fs.readFile(srcPath, "utf8")
+    const parsed = YAML.parse(yamlContent)
+    await ensureDir(destPath)
+    await fs.writeFile(destPath, `${JSON.stringify(parsed, null, 4)}\n`, "utf8")
+}
+
+async function copyOrConvert({ event, normalizedPath }) {
+    const srcPath = toPlatformPath(normalizedPath)
+    const rawDestPath = toBuildPath(normalizedPath)
+    if (!rawDestPath) return null
+
+    const withinStatics = normalizedPath.startsWith("src/statics/")
+    const outputPath = isYamlFile(normalizedPath) ? toJsonTargetPath(rawDestPath) : rawDestPath
+
+    if (event === "unlink") {
+        if (await exists(outputPath)) await fs.unlink(outputPath)
+        if (withinStatics && outputPath.endsWith(".json")) {
+            const hashPath = outputPath.replace(/\.json$/i, ".hash")
+            if (await exists(hashPath)) await fs.unlink(hashPath)
+            await updateDirectoryHashes(path.dirname(outputPath))
+        }
+        return outputPath
     }
 
-    const needsCrypto = cryptoPaths.test(path)
-    console.log(`🔨 File changed: ${path}, rebuilding${needsCrypto ? " (core + crypto)" : ""}...`)
-    buildInProgress = true
+    if (isYamlFile(normalizedPath)) {
+        await writeJsonFromYaml(srcPath, outputPath)
+    } else {
+        await ensureDir(outputPath)
+        await fs.copyFile(srcPath, outputPath)
+    }
 
-    const runBuild = (script, next) => {
+    if (withinStatics && outputPath.endsWith(".json")) {
+        await updateJsonHash(outputPath)
+        await updateDirectoryHashes(path.dirname(outputPath))
+    }
+
+    return outputPath
+}
+
+async function updateJsonHash(jsonPath) {
+    if (!(await exists(jsonPath))) return
+    const content = await fs.readFile(jsonPath, "utf8")
+    const parsed = JSON.parse(content)
+    const hash = sha256(JSON.stringify(parsed))
+    const hashPath = jsonPath.replace(/\.json$/i, ".hash")
+    await fs.writeFile(hashPath, hash, "utf8")
+}
+
+async function updateDirectoryHashes(startDir) {
+    let currentDir = startDir
+    const normalizedStatics = path.resolve(BUILD_STATICS_ROOT)
+
+    while (path.resolve(currentDir).startsWith(normalizedStatics) || path.resolve(currentDir) === path.resolve(BUILD_ROOT)) {
+        const entries = await fs.readdir(currentDir, { withFileTypes: true })
+        const childHashes = []
+
+        for (const entry of entries) {
+            const full = path.join(currentDir, entry.name)
+
+            if (entry.isFile()) {
+                if (entry.name === "_.hash") continue
+                if (!entry.name.endsWith(".hash")) continue
+                const value = (await fs.readFile(full, "utf8")).trim()
+                if (value) childHashes.push(value)
+            }
+
+            if (entry.isDirectory()) {
+                const subHash = path.join(full, "_.hash")
+                if (await exists(subHash)) {
+                    const value = (await fs.readFile(subHash, "utf8")).trim()
+                    if (value) childHashes.push(value)
+                }
+            }
+        }
+
+        const currentHashPath = path.join(currentDir, "_.hash")
+        if (childHashes.length > 0) {
+            const combinedHash = sha256(childHashes.sort().join(""))
+            await fs.writeFile(currentHashPath, combinedHash, "utf8")
+        } else if (await exists(currentHashPath)) {
+            await fs.unlink(currentHashPath)
+        }
+
+        const parent = path.dirname(currentDir)
+        if (path.resolve(currentDir) === path.resolve(BUILD_ROOT)) break
+        currentDir = parent
+    }
+}
+
+function runBuild(script) {
+    return new Promise((resolve, reject) => {
         const build = spawn("npm", ["run", script], { stdio: "inherit", shell: true })
         build.on("close", (code) => {
             if (code !== 0) {
-                console.error(`❌ ${script} failed with code ${code}`)
-                buildInProgress = false
+                reject(new Error(`${script} failed with code ${code}`))
                 return
             }
-            if (next) next()
-            else {
-                buildInProgress = false
-                console.log("✅ Build completed")
-            }
+            resolve()
         })
+    })
+}
+
+function injectDevClient(htmlContent) {
+    if (htmlContent.includes(DEV_CLIENT_MARKER)) return htmlContent
+
+    const injected = `<script data-dev-client="${DEV_CLIENT_MARKER}">(function(){\n  if (typeof window === "undefined" || !window.EventSource) return;\n  window.__devSseState = window.__devSseState || { connectedAt: null, lastMessageAt: null, messageCount: 0, readyState: null };\n  var source = new EventSource("${DEV_EVENTS_PATH}");\n  source.onopen = function(){\n    window.__devSseState.connectedAt = Date.now();\n    window.__devSseState.readyState = source.readyState;\n  };\n  source.onmessage = function(e){\n    window.__devSseState.messageCount += 1;\n    window.__devSseState.lastMessageAt = Date.now();\n    window.__devSseState.readyState = source.readyState;\n    if (e && e.data === "reload") {\n      try {\n        sessionStorage.setItem("__dev_last_reload_at", String(Date.now()));\n      } catch (_) {}\n      window.location.reload();\n    }\n  };\n  source.onerror = function(){\n    window.__devSseState.readyState = source.readyState;\n  };\n})();</script>`
+
+    if (/<\/body>/i.test(htmlContent)) return htmlContent.replace(/<\/body>/i, `${injected}</body>`)
+    if (/<\/head>/i.test(htmlContent)) return htmlContent.replace(/<\/head>/i, `${injected}</head>`)
+    return `${htmlContent}\n${injected}`
+}
+
+function broadcastReload() {
+    for (const client of sseClients) {
+        try {
+            client.write("data: reload\n\n")
+        } catch {
+            sseClients.delete(client)
+        }
+    }
+}
+
+function getMimeType(filePath) {
+    const ext = path.extname(filePath).toLowerCase()
+    const map = {
+        ".html": "text/html; charset=utf-8",
+        ".js": "text/javascript; charset=utf-8",
+        ".css": "text/css; charset=utf-8",
+        ".json": "application/json; charset=utf-8",
+        ".svg": "image/svg+xml",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".webp": "image/webp",
+        ".gif": "image/gif",
+        ".ico": "image/x-icon",
+        ".txt": "text/plain; charset=utf-8",
+        ".hash": "text/plain; charset=utf-8"
+    }
+    return map[ext] || "application/octet-stream"
+}
+
+async function resolveBuildFile(urlPathname) {
+    const pathname = decodeURIComponent(urlPathname)
+    let requestPath = pathname === "/" ? "/index.html" : pathname
+    if (requestPath.endsWith("/")) requestPath += "index.html"
+
+    const safeRelativePath = requestPath.replace(/^\/+/, "")
+    let absolutePath = path.resolve(BUILD_ROOT, safeRelativePath)
+    const buildRootResolved = path.resolve(BUILD_ROOT)
+
+    if (!absolutePath.startsWith(buildRootResolved)) return null
+
+    if (await exists(absolutePath)) {
+        const stats = await fs.stat(absolutePath)
+        if (stats.isDirectory()) {
+            const indexPath = path.join(absolutePath, "index.html")
+            if (await exists(indexPath)) absolutePath = indexPath
+        }
+        return absolutePath
     }
 
-    if (needsCrypto) {
-        runBuild("build:crypto", () => runBuild("build:core", null))
-    } else {
-        runBuild("build:core", null)
+    if (!path.extname(absolutePath)) {
+        const htmlPath = `${absolutePath}.html`
+        if (await exists(htmlPath)) return htmlPath
+        const indexPath = path.join(absolutePath, "index.html")
+        if (await exists(indexPath)) return indexPath
     }
+
+    return null
+}
+
+function startStaticServer() {
+    const server = http.createServer(async (req, res) => {
+        try {
+            const base = `http://${HOST}:${PORT}`
+            const requestUrl = new URL(req.url || "/", base)
+
+            if (requestUrl.pathname === "/__dev_reload") {
+                broadcastReload()
+                res.writeHead(204)
+                res.end()
+                return
+            }
+
+            if (requestUrl.pathname === DEV_EVENTS_PATH) {
+                res.writeHead(200, {
+                    "Content-Type": "text/event-stream",
+                    "Cache-Control": "no-cache, no-transform",
+                    Connection: "keep-alive"
+                })
+                res.write(": connected\n\n")
+                sseClients.add(res)
+
+                req.on("close", () => {
+                    sseClients.delete(res)
+                })
+                return
+            }
+
+            const filePath = await resolveBuildFile(requestUrl.pathname)
+
+            if (!filePath) {
+                res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" })
+                res.end("Not Found")
+                return
+            }
+
+            const mimeType = getMimeType(filePath)
+            if (mimeType.startsWith("text/html")) {
+                const content = await fs.readFile(filePath, "utf8")
+                const withClient = injectDevClient(content)
+                res.writeHead(200, { "Content-Type": mimeType })
+                res.end(withClient)
+                return
+            }
+
+            const content = await fs.readFile(filePath)
+            res.writeHead(200, { "Content-Type": mimeType })
+            res.end(content)
+        } catch {
+            res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" })
+            res.end("Internal Server Error")
+        }
+    })
+
+    server.listen(PORT, HOST)
+    return server
+}
+
+async function handleChange({ event, normalizedPath }) {
+    if (cryptoPaths.test(normalizedPath)) {
+        console.log(`⛓️ Crypto source changed (${normalizedPath}) -> running build:crypto...`)
+        await runBuild("build:crypto")
+        return
+    }
+
+    if (shouldFullRebuild(normalizedPath)) {
+        console.log(`🏗️ Global source changed (${normalizedPath}) -> running build:core...`)
+        await runBuild("build:core")
+        return
+    }
+
+    if (normalizedPath === "importmap.json" || normalizedPath.startsWith("src/")) {
+        const output = await copyOrConvert({ event, normalizedPath })
+        if (output) {
+            console.log(`⚡ Incremental ${event}: ${normalizedPath} -> ${normalizePath(output)}`)
+        }
+    }
+}
+
+function enqueueChange(event, filePath) {
+    const normalizedPath = normalizePath(filePath)
+
+    if (!normalizedPath.startsWith("src/") && normalizedPath !== "importmap.json") return
+
+    pendingChanges.set(normalizedPath, { event, normalizedPath })
+    void processQueue()
+}
+
+async function processQueue() {
+    if (buildInProgress || pendingChanges.size === 0) return
+    buildInProgress = true
+
+    try {
+        while (pendingChanges.size > 0) {
+            const batch = Array.from(pendingChanges.values())
+            pendingChanges.clear()
+            let batchChanged = false
+
+            const hasGlobalChange = batch.some(({ normalizedPath }) => shouldFullRebuild(normalizedPath))
+            if (hasGlobalChange) {
+                console.log("🏗️ Detected global changes in batch -> running build:core once...")
+                await runBuild("build:core")
+                batchChanged = true
+                if (batchChanged) broadcastReload()
+                continue
+            }
+
+            const hasCryptoChange = batch.some(({ normalizedPath }) => cryptoPaths.test(normalizedPath))
+            if (hasCryptoChange) {
+                console.log("⛓️ Detected crypto changes in batch -> running build:crypto once...")
+                await runBuild("build:crypto")
+                batchChanged = true
+            }
+
+            for (const change of batch) {
+                if (cryptoPaths.test(change.normalizedPath)) continue
+                await handleChange(change)
+                batchChanged = true
+            }
+
+            if (batchChanged) broadcastReload()
+        }
+        console.log("✅ Incremental rebuild completed")
+    } catch (error) {
+        console.error("❌ Rebuild failed:", error.message)
+    } finally {
+        buildInProgress = false
+        if (pendingChanges.size > 0) void processQueue()
+    }
+}
+
+const watcher = chokidar.watch(["src/**/*", "importmap.json"], {
+    ignored: /(^|[\/\\])\../,
+    persistent: true,
+    ignoreInitial: true
 })
+
+watcher.on("add", (filePath) => enqueueChange("add", filePath))
+watcher.on("change", (filePath) => enqueueChange("change", filePath))
+watcher.on("unlink", (filePath) => enqueueChange("unlink", filePath))
 
 // Start live-server with file watcher
-console.log("🚀 Starting development server with auto-rebuild...")
+console.log("🚀 Starting development server with incremental auto-rebuild...")
 
-server.start({
-    port: 8080,
-    host: "localhost",
-    root: "build",
-    open: true,
-    wait: 1000,
-    logLevel: 2,
-    ignore: "build/geo" // Ignore geo folder to prevent file watcher limit
-})
+startStaticServer()
 
-console.log("✅ Server running on http://localhost:8080")
-console.log("👀 Watching src/ for changes...")
+console.log(`✅ Server running on http://${HOST}:${PORT}`)
+console.log("👀 Watching src/ for file-based rebuilds...")

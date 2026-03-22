@@ -49,7 +49,7 @@ export const styles = css`
 
             .brand {
                 max-width: 8rem;
-                color: var(--neon-c);
+                color: var(--brand-color);
                 display: flex;
                 filter: drop-shadow(var(--glow-c, none));
             }
