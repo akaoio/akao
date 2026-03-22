@@ -503,6 +503,13 @@ export const styles = css`
 
         /* ── Responsive Breakpoints ── */
 
+        /* lg: Desktop (≥1280px) */
+        @media (min-width: 1280px) {
+            .catalog-grid {
+                grid-template-columns: repeat(auto-fill, minmax(414px, 1fr));
+            }
+        }
+
         /* md: Tablets (768–1023px) */
         @media (max-width: 1023px) {
             .game-hero {
