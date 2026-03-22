@@ -7,7 +7,6 @@ export const styles = css`
             top: 0;
             width: 100%;
             background: var(--header-background, var(--background));
-            border-bottom: var(--header-border-bottom, none);
             backdrop-filter: var(--header-backdrop, none);
             -webkit-backdrop-filter: var(--header-backdrop, none);
 
@@ -26,7 +25,7 @@ export const styles = css`
 
             .brand {
                 max-width: 8rem;
-                color: var(--neon-c);
+                color: var(--brand-color);
                 display: flex;
                 filter: drop-shadow(var(--glow-c, none));
             }
