@@ -311,6 +311,14 @@ await copyAssets([
     { src: ["node_modules", "ethers", "dist", "ethers.min.js"], dest: [...paths.build.core, "Ethers.js"], label: "ethers" }
 ])
 
+// Prepare ggwave as ESM module for worker imports
+const ggwaveCode = fs.readFileSync(path.join("node_modules", "ggwave", "ggwave.js"), "utf8")
+await write(
+    [...paths.build.core, "Wave.js"],
+    `${ggwaveCode}\n\nexport default ggwave_factory\n`
+)
+log.ok("Prepared ggwave → build/core/Wave.js")
+
 // Bundle qrcode for browser
 log.info("Bundling qrcode for browser...")
 const qrcodeBundle = await rollup({

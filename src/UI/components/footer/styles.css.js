@@ -10,10 +10,6 @@ export const styles = css`
             align-items: center;
             width: 100%;
             padding: var(--space) 0;
-            background: var(--footer-background, var(--background));
-            border-top: var(--footer-border-top, none);
-            backdrop-filter: var(--footer-backdrop, none);
-            -webkit-backdrop-filter: var(--footer-backdrop, none);
         }
     }
 `

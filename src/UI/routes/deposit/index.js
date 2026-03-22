@@ -1,7 +1,6 @@
 import template from "./template.js"
-import { render, html } from "/core/UI.js"
+import { render } from "/core/UI.js"
 import { Elements } from "/core/Stores.js"
-import QRCode from "/core/QR.js"
 
 export class DEPOSIT extends HTMLElement {
     constructor() {
@@ -15,10 +14,9 @@ export class DEPOSIT extends HTMLElement {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.subscriptions.push(
             this.$wallets.states.on("address", async ({ value }) => {
-                const $qr = this.shadowRoot.querySelector("#qr")
-                if (!value) return ($qr.innerHTML = "")
-                const code = await QRCode.toString(value, { type: "svg", margin: 0 })
-                render(html`${code}`, $qr)
+                const $qr = this.shadowRoot.querySelector("ui-qr")
+                if (!value) return
+                $qr.dataset.value = value
             }, true)
         )
         Elements.Access?.checkpoint()

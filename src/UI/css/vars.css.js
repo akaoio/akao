@@ -115,6 +115,7 @@ export const styles = css`
         /* Layout */
         --max-width: 80rem;
         --content-width: min(100% - var(--space-4), var(--max-width));
+        --box-width: calc((min(100vw, 100vh) - var(--space-4)) * 0.75);
 
         /* Font */
         --header-font: "Orbitron", system-ui, sans-serif;

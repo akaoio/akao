@@ -5,3 +5,4 @@ globalThis.reset = reset
 threads.register("main", { main: true, type: "module" })
 threads.register("update", { worker: true, type: "module" })
 threads.register("discovery", { worker: true, type: "module" })
+threads.register("wave", { worker: true, type: "module" })
