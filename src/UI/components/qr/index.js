@@ -1,4 +1,4 @@
-import QRCode from "/core/QR.js"
+import { renderSVG } from "/core/QR.js"
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
 
@@ -14,18 +14,19 @@ class QR extends HTMLElement {
         return ["data-value"]
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === "data-value") this.render()
+    attributeChangedCallback(name, last, value) {
+        if (last === value) return
+        if (name === "data-value" && value && last !== value) this.render()
     }
 
-    async render() {
+    render() {
         const data = this.dataset.value
         const qr = this.shadowRoot.querySelector("#qr")
         if (!data) {
             qr.innerHTML = ""
             return
         }
-        const code = await QRCode.toString(data, { type: "svg", margin: 0 })
+        const code = renderSVG(data, { border: 0 })
         render(html`${code}`, qr)
     }
 }

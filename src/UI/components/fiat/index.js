@@ -14,8 +14,8 @@ export class FIAT extends HTMLElement {
         return ["data-locale", "data-amount", "data-base", "data-quote"]
     }
 
-    attributeChangedCallback(name, old, value) {
-        if (["data-locale", "data-amount", "data-base", "data-quote"].includes(name) && old !== value) this.render()
+    attributeChangedCallback(name, last, value) {
+        if (["data-locale", "data-amount", "data-base", "data-quote"].includes(name) && last !== value) this.render()
     }
 
     connectedCallback() {

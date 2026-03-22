@@ -21,8 +21,8 @@ export class GEO extends HTMLElement {
         return ["data-id"]
     }
 
-    attributeChangedCallback(name, old, value) {
-        if (old === value) return
+    attributeChangedCallback(name, last, value) {
+        if (last === value) return
         this.states.set({ [name.replace("data-", "")]: Number(value) || null })
         this.render()
     }

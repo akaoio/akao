@@ -6,9 +6,6 @@ import { generateRoutes } from "./core/routes.js"
 import { processI18n } from "./core/i18n.js"
 import { generateHashFiles } from "./core/hash.js"
 import { Forex } from "../src/core/Forex.js"
-import { rollup } from "rollup"
-import commonjs from "@rollup/plugin-commonjs"
-import resolve from "@rollup/plugin-node-resolve"
 import fs from "fs"
 import path from "path"
 
@@ -319,16 +316,10 @@ await write(
 )
 log.ok("Prepared ggwave → build/core/Wave.js")
 
-// Bundle qrcode for browser
-log.info("Bundling qrcode for browser...")
-const qrcodeBundle = await rollup({
-    input: "node_modules/qrcode/lib/browser.js",
-    plugins: [resolve({ browser: true }), commonjs()]
-})
-const { output: qrcodeOutput } = await qrcodeBundle.generate({ format: "esm" })
-await write([...paths.build.core, "QR.js"], qrcodeOutput[0].code)
-await qrcodeBundle.close()
-log.ok("Bundled qrcode → build/core/QR.js")
+// Copy uqr ESM library
+log.info("Copying uqr to build...")
+await copy(["node_modules", "uqr", "dist", "index.mjs"], [...paths.build.core, "QR.js"])
+log.ok("Copied uqr → build/core/QR.js")
 
 // Copy gun library files to GDB folder
 log.info("Copying gun library to GDB...")
