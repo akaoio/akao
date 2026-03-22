@@ -1,4 +1,28 @@
 name: Diablo IV
+logo: /statics/games/diablo-4/logo.svg
+rarity_order:
+  - normal
+  - common
+  - uncommon
+  - magic
+  - rare
+  - legendary
+  - unique
+  - epic
+  - special
+  - mythic
+rarity_palette:
+  normal: "#c8c8c8"
+  common: "#c8c8c8"
+  magic: "#4444dd"
+  rare: "#dfc030"
+  legendary: "#c86818"
+  unique: "#b89040"
+  mythic: "#90c878"
+  uncommon: "#888888"
+  epic: "#9940cc"
+  special: "#cc78a0"
+color: "#cc1111"
 developer: Blizzard Entertainment
 publisher: Blizzard Entertainment
 release: 2023-06-01

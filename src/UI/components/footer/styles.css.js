@@ -11,7 +11,7 @@ export const styles = css`
             width: 100%;
             padding: var(--space) 0;
             background: var(--footer-background, var(--background));
-            border-top: var(--footer-border-top, none);
+            border-top: 1px solid var(--game-text-color, var(--game-primary, var(--neon-c)));
             backdrop-filter: var(--footer-backdrop, none);
             -webkit-backdrop-filter: var(--footer-backdrop, none);
         }

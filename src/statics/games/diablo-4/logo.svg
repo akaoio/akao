@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 48" fill="none">
+  <!-- Stylised gothic D -->
+  <path d="M10 8 L10 40 L22 40 Q38 40 38 24 Q38 8 22 8 Z" fill="#1a0005" stroke="#cc1111" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M17 15 L17 33 L21 33 Q29 33 29 24 Q29 15 21 15 Z" fill="#cc1111" opacity="0.85"/>
+  <!-- Left horn -->
+  <path d="M10 12 L5 4 L13 10" stroke="#cc1111" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right horn -->
+  <path d="M22 8 L26 2 L29 9" stroke="#cc1111" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- "DIABLO IV" label -->
+  <text x="44" y="28" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#cc1111" letter-spacing="1" opacity="0.95">DIABLO IV</text>
+</svg>

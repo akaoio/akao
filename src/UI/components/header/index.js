@@ -7,6 +7,12 @@ export class HEADER extends HTMLElement {
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
+
+    connectedCallback() {
+        this.shadowRoot.querySelector(".game-nav-btn")?.addEventListener("click", () => {
+            window.dispatchEvent(new CustomEvent("game-nav:open"))
+        })
+    }
 }
 
 customElements.define("ui-header", HEADER)

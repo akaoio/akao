@@ -138,17 +138,33 @@ export const styles = css`
         --footer-backdrop: blur(12px);
 
         /* Hero typography */
-        --hero-title-shadow:   0 0 30px #00e5ff44, 0 0 80px #00e5ff1a;
+        --hero-title-shadow: 0 0 30px #00e5ff44, 0 0 80px #00e5ff1a;
         --hero-eyebrow-shadow: var(--glow-g);
 
         /* Section headers */
-        --section-label-color:  var(--neon-g);
+        --section-label-color: var(--neon-g);
         --section-label-shadow: var(--glow-g);
 
         /* Item cards */
         --item-border-left: 3px solid var(--neon-c);
-        --item-name-color:  var(--neon-c);
+        --item-name-color: var(--neon-c);
         --item-name-shadow: var(--glow-c);
+
+        /* Rarity palette */
+        --rarity-legendary: var(--neon-y);
+        --rarity-unique: var(--neon-m);
+        --rarity-rare: var(--neon-c);
+        --rarity-magic: hsl(270, 70%, 68%);
+        --rarity-common: color-mix(in hsl, var(--color) 45%, transparent);
+        --rarity-special: var(--neon-g);
+        --rarity-normal: color-mix(in hsl, var(--color) 60%, transparent);
+        --rarity-uncommon: color-mix(in hsl, var(--neon-g) 60%, var(--color));
+        --rarity-epic: hsl(270, 70%, 68%);
+        --rarity-mythic: var(--neon-g);
+
+        --glow-legendary: var(--glow-y);
+        --glow-unique: var(--glow-m);
+        --glow-rare: var(--glow-c);
 
         /* Scrollbars */
         --scrollbar-size: var(--unit-4);
