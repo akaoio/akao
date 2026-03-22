@@ -22,6 +22,7 @@ export const template = html`
                 <ui-locales />
                 <ui-fiats />
                 <ui-themes />
+                <ui-icon data-icon="qr-code-scan" id="wave-auth" />
             </ui-navigator>
         </ui-navigator>
     </footer>

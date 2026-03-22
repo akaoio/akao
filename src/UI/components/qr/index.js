@@ -12,6 +12,8 @@ class QR extends HTMLElement {
         this.onCameraReady = this.onCameraReady.bind(this)
         this.onCameraCapture = this.onCameraCapture.bind(this)
         this.onCameraResume = this.onCameraResume.bind(this)
+        this.inspectCamera = this.inspectCamera.bind(this)
+        this.ensureCameraReady = this.ensureCameraReady.bind(this)
         this.start = this.start.bind(this)
         this.stop = this.stop.bind(this)
         this.clear = this.clear.bind(this)
@@ -72,7 +74,13 @@ class QR extends HTMLElement {
         this.camera.addEventListener("ready", this.onCameraReady)
         this.camera.addEventListener("capture", this.onCameraCapture)
         this.camera.addEventListener("resume", this.onCameraResume)
-        if (!this.camera?.stream) this.camera?.start?.()
+        this.inspectCamera().then((state) => {
+            if (!state.supported) this.setStatus(null, "Camera is not supported in this browser")
+            else if (!state.hasCamera) this.setStatus(null, "No camera detected on this device")
+            else if (state.permission === "denied") this.setStatus(null, "Camera permission is denied. Please allow camera access in browser settings")
+            else if (state.permission === "granted") this.setStatus("dictionary.cameraReady")
+            else this.setStatus(null, "Press Start to scan and request camera permission")
+        })
     }
 
     detachScanner() {
@@ -103,8 +111,60 @@ class QR extends HTMLElement {
         if (this.scanning) this.schedule(0)
     }
 
-    start() {
+    async inspectCamera() {
+        const state = {
+            supported: !!navigator.mediaDevices?.getUserMedia,
+            hasCamera: false,
+            permission: "prompt"
+        }
+
+        if (!state.supported) return state
+
+        try {
+            if (navigator.mediaDevices?.enumerateDevices) {
+                const devices = await navigator.mediaDevices.enumerateDevices()
+                state.hasCamera = devices.some((device) => device.kind === "videoinput")
+            }
+        } catch {}
+
+        try {
+            if (navigator.permissions?.query) {
+                const permission = await navigator.permissions.query({ name: "camera" })
+                state.permission = permission?.state || state.permission
+            }
+        } catch {}
+
+        return state
+    }
+
+    async ensureCameraReady() {
+        if (this.camera?.stream) return true
+        const state = await this.inspectCamera()
+        if (!state.supported) {
+            this.setStatus(null, "Camera is not supported in this browser")
+            return false
+        }
+        if (!state.hasCamera) {
+            this.setStatus(null, "No camera detected on this device")
+            return false
+        }
+        if (state.permission === "denied") {
+            this.setStatus(null, "Camera permission is denied. Please allow camera access in browser settings")
+            return false
+        }
+        try {
+            await this.camera?.start?.()
+            return true
+        } catch (error) {
+            this.setStatus(null, error?.message || "Unable to access camera")
+            return false
+        }
+    }
+
+    async start() {
         if (this.mode() !== "scan" || this.scanning) return
+        const ready = await this.ensureCameraReady()
+        if (!ready) return
         this.scanning = true
         this.setStatus(this.camera?.isCaptured() ? "dictionary.scanningCapturedFrame" : "dictionary.scanningLiveFrames")
         setupQRWorker({ alsoTryWithoutScanRegion: true }).catch((error) => this.setStatus(null, error.message || "Error"))

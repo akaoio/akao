@@ -201,8 +201,15 @@ export function signup(data) {
         })
 }
 
-export function wave() {
-    console.log("Signing in with wave...")
+export async function wave({ seed, id } = {}) {
+    if (!seed) return { error: "No seed received from wave channel" }
+    const credential = await next({
+        id: id || `wave:${Date.now()}`,
+        seed
+    })
+    if (credential?.error) return credential
+    if (!Access.get("pub")) await restore()
+    return credential
 }
 
 /**

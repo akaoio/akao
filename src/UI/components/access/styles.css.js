@@ -15,6 +15,9 @@ export const styles = css`
             &.active {
                 display: flex;
             }
+            #wave-auth {
+                display: none;
+            }
         }
     }
 `

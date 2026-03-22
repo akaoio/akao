@@ -14,6 +14,7 @@ import themes from "./themes.js"
 import notifications from "./notifications.js"
 import items from "./items.js"
 import cameraQR from "./camera-qr.js"
+import wave from "./wave.js"
 
 export default [
     button,
@@ -31,5 +32,6 @@ export default [
     themes,
     notifications,
     items,
-    cameraQR
+    cameraQR,
+    wave
 ]
