@@ -50,6 +50,14 @@ function expandRouteSegments(route = "", options = {}) {
 }
 
 export async function generateRoutes(locales, items, tags, games, indexContent, outputBase = "build", routePatterns = []) {
+    if (typeof outputBase !== "string" || !outputBase.trim()) {
+        throw new TypeError(`generateRoutes expected outputBase to be a non-empty string, got: ${JSON.stringify(outputBase)}`)
+    }
+
+    if (typeof indexContent !== "string") {
+        throw new TypeError(`generateRoutes expected indexContent to be a string, got: ${typeof indexContent}`)
+    }
+
     const dynamicPaths = outputBase === "build" ? paths : {
         ...paths,
         build: {

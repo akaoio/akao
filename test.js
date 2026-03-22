@@ -36,6 +36,7 @@ async function testCore() {
             statics: ["src", "statics"],
             items: ["src", "statics", "items"],
             sites: ["src", "statics", "sites"],
+            games: ["src", "statics", "games"],
             routes: ["src", "UI", "routes"],
             core: ["src", "core"],
             UI: ["src", "UI"],
@@ -76,6 +77,15 @@ async function testCore() {
         }
 
         log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} tags`)
+
+        // Load games
+        const gameDirs = await dir(paths.src.games)
+        const games = []
+
+        for (const name of gameDirs) {
+            const meta = await load([...paths.src.games, name, "meta.yaml"])
+            if (meta) games.push(name)
+        }
 
         // Build static files
         log.info("Building static files...")
@@ -122,7 +132,7 @@ async function testCore() {
             .map(p => p.replace(/\/index\.js$/, "")))).sort()
         await write([...paths.build.statics, "routes.json"], routeDirs)
         const indexContent = await load(paths.src.index)
-        const routeCount = await generateRoutes(locales, items, allTags, indexContent, outputBase, routeDirs)
+        const routeCount = await generateRoutes(locales, items, allTags, games, indexContent, outputBase, routeDirs)
         log.ok(`Created ${routeCount} route files`)
 
         // Generate hash files
