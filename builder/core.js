@@ -294,6 +294,7 @@ log.ok(`Built ${siteDirs.length} sites`)
 await copyAssets([
     { src: paths.src.core, dest: paths.build.core, label: "core folder" },
     { src: paths.src.UI, dest: paths.build.UI, label: "UI folder" },
+    { src: ["src", "test.html"], dest: [...paths.build.root, "test.html"], label: "test.html" },
     { src: paths.src.importmap, dest: [...paths.build.root, "importmap.json"], label: "importmap.json" },
     { src: ["node_modules", "bootstrap-icons", "icons"], dest: [...paths.build.root, "images", "icons"], label: "bootstrap icons" },
     { src: ["node_modules", "ethers", "dist", "ethers.min.js"], dest: [...paths.build.core, "Ethers.js"], label: "ethers" }

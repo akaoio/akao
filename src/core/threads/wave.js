@@ -11,7 +11,7 @@ const state = {
     params: null,
     decoder: typeof TextDecoder !== "undefined" ? new TextDecoder() : null,
     protocolId: null,
-    volume: 48,
+    volume: 72,
     sampleRate: 48000
 }
 

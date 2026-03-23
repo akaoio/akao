@@ -3,6 +3,7 @@ import { spawn } from "child_process"
 import { promises as fs } from "fs"
 import path from "path"
 import http from "http"
+import os from "os"
 import { URL } from "url"
 import YAML from "yaml"
 import { sha256 } from "./src/core/Utils/crypto.js"
@@ -10,7 +11,7 @@ import { sha256 } from "./src/core/Utils/crypto.js"
 const SRC_ROOT = "src"
 const BUILD_ROOT = "build"
 const BUILD_STATICS_ROOT = path.join(BUILD_ROOT, "statics")
-const HOST = "localhost"
+const HOST = process.env.HOST || "0.0.0.0"
 const PORT = 8080
 const DEV_EVENTS_PATH = "/__dev_events"
 const DEV_CLIENT_MARKER = "__shop_dev_sse_client__"
@@ -300,6 +301,21 @@ function startStaticServer() {
     return server
 }
 
+function getDevUrls() {
+    const interfaces = os.networkInterfaces()
+    const urls = new Set([`http://localhost:${PORT}`])
+
+    for (const list of Object.values(interfaces)) {
+        if (!Array.isArray(list)) continue
+        for (const net of list) {
+            if (!net || net.family !== "IPv4" || net.internal) continue
+            urls.add(`http://${net.address}:${PORT}`)
+        }
+    }
+
+    return Array.from(urls)
+}
+
 async function handleChange({ event, normalizedPath }) {
     if (cryptoPaths.test(normalizedPath)) {
         console.log(`⛓️ Crypto source changed (${normalizedPath}) -> running build:crypto...`)
@@ -388,5 +404,6 @@ console.log("🚀 Starting development server with incremental auto-rebuild...")
 
 startStaticServer()
 
-console.log(`✅ Server running on http://${HOST}:${PORT}`)
+console.log(`✅ Server listening on ${HOST}:${PORT}`)
+for (const url of getDevUrls()) console.log(`🌐 ${url}`)
 console.log("👀 Watching src/ for file-based rebuilds...")

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wave LAN Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 16px; background: #0f1220; color: #fff; }
+        .card { border: 1px solid #334; border-radius: 10px; padding: 12px; max-width: 860px; background: #151a2d; }
+        textarea, input { width: 100%; box-sizing: border-box; margin: 8px 0; padding: 8px; border-radius: 8px; border: 1px solid #445; background: #0c1020; color: #fff; }
+        .row { display: flex; gap: 8px; flex-wrap: wrap; }
+        button { border: 1px solid #556; background: #222b45; color: #fff; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+        #status { margin-top: 8px; color: #9fd3ff; white-space: pre-wrap; }
+    </style>
+</head>
+
+<body>
+    <h1>Wave LAN Test</h1>
+    <p>Open this page via LAN: <strong>http://YOUR_LAN_IP:8080/test.html</strong></p>
+
+    <div class="card">
+        <label>Message</label>
+        <textarea id="message" rows="4">HELLO-WAVE-LAN</textarea>
+        <label>Incoming</label>
+        <textarea id="incoming" rows="8" readonly></textarea>
+        <label>Capture gain (1-8)</label>
+        <input id="gain" type="number" min="1" max="8" step="0.1" value="2.5" />
+        <div class="row">
+            <button id="init">Init</button>
+            <button id="send">Send Once</button>
+            <button id="listen">Listen</button>
+            <button id="stop">Stop</button>
+        </div>
+        <div id="status">Idle</div>
+    </div>
+
+    <script type="module">
+        import { Wave } from "/core/Wave.js"
+
+        const wave = new Wave()
+        const state = {
+            module: null,
+            sender: null,
+            receiver: null,
+            params: null,
+            protocolId: null,
+            volume: 72,
+            sampleRate: 48000,
+            context: null,
+            stream: null,
+            source: null,
+            processor: null,
+            sink: null,
+            listening: false,
+            decoding: false,
+            queue: [],
+            last: ""
+        }
+
+        const $status = document.getElementById("status")
+        const $incoming = document.getElementById("incoming")
+        const $message = document.getElementById("message")
+        const $gain = document.getElementById("gain")
+
+        function status(text) { $status.textContent = text }
+        function log(message) {
+            const line = `${new Date().toISOString()}  ${message}`
+            $incoming.value = $incoming.value ? `${$incoming.value}\n${line}` : line
+            $incoming.scrollTop = $incoming.scrollHeight
+        }
+
+        function ensureContext() {
+            const AudioEngine = globalThis.AudioContext || globalThis.webkitAudioContext
+            if (!AudioEngine) throw new Error("Web Audio API not supported")
+            if (!state.context) state.context = new AudioEngine()
+            return state.context
+        }
+
+        async function ensureModule() {
+            if (!state.module) state.module = await wave.init()
+            if (state.protocolId == null) state.protocolId = state.module.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_NORMAL
+            return state.module
+        }
+
+        function defaultParams(overrides = {}) {
+            const d = state.module.getDefaultParameters()
+            return {
+                ...d,
+                ...overrides,
+                sampleRateInp: overrides.sampleRateInp || overrides.sampleRate || d.sampleRateInp,
+                sampleRateOut: overrides.sampleRateOut || overrides.sampleRate || d.sampleRateOut,
+                sampleRate: overrides.sampleRate || d.sampleRate,
+                sampleFormatInp: state.module.SampleFormat.GGWAVE_SAMPLE_FORMAT_I16,
+                sampleFormatOut: state.module.SampleFormat.GGWAVE_SAMPLE_FORMAT_I16,
+                operatingMode: overrides.operatingMode ?? d.operatingMode
+            }
+        }
+
+        function resetInstances(overrides = {}) {
+            if (state.receiver) try { state.module.free(state.receiver) } catch {}
+            if (state.sender) try { state.module.free(state.sender) } catch {}
+            state.params = defaultParams({ ...state.params, ...overrides })
+            state.sampleRate = state.params.sampleRateOut || state.params.sampleRate || state.sampleRate
+            state.receiver = state.module.init(state.params)
+            state.sender = state.module.init(state.params)
+        }
+
+        function floatToInt16Bytes(samples) {
+            const gain = Number($gain.value) || 2.5
+            const bytes = new Int8Array(samples.length * 2)
+            let offset = 0
+            for (let i = 0; i < samples.length; i++) {
+                const v = Math.max(-1, Math.min(1, samples[i] * gain))
+                const n = v < 0 ? v * 0x8000 : v * 0x7fff
+                const x = n | 0
+                bytes[offset++] = x & 0xff
+                bytes[offset++] = (x >> 8) & 0xff
+            }
+            return bytes
+        }
+
+        async function initWave(overrides = {}) {
+            await ensureModule()
+            resetInstances(overrides)
+            status(`Initialized (${state.params.sampleRateInp}Hz)`)
+        }
+
+        async function sendOnce() {
+            await ensureModule()
+            if (!state.sender) resetInstances()
+            const text = ($message.value || "").trim()
+            if (!text) throw new Error("Message is empty")
+            const bytes = state.module.encode(state.sender, text, state.protocolId, state.volume)
+            if (!bytes?.length) throw new Error("Encode failed")
+
+            const context = ensureContext()
+            if (context.state === "suspended") await context.resume()
+            const pcm = bytes instanceof Int8Array ? bytes : new Int8Array(bytes)
+            const samples = Math.floor(pcm.length / 2)
+            const buffer = context.createBuffer(1, samples, state.sampleRate)
+            const channel = buffer.getChannelData(0)
+            const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength)
+            for (let i = 0; i < samples; i++) channel[i] = view.getInt16(i * 2, true) / 32768
+
+            const source = context.createBufferSource()
+            const gain = context.createGain()
+            gain.gain.value = 1.9
+            source.buffer = buffer
+            source.connect(gain)
+            gain.connect(context.destination)
+            source.start()
+            status(`Sent ${bytes.length} bytes`)
+        }
+
+        async function pumpDecode() {
+            if (state.decoding || !state.listening) return
+            state.decoding = true
+            try {
+                while (state.listening && state.queue.length) {
+                    const bytes = state.queue.shift()
+                    const output = state.module.decode(state.receiver, bytes)
+                    if (!output?.length) continue
+                    const message = new TextDecoder().decode(output)
+                    if (!message || message === state.last) continue
+                    state.last = message
+                    log(message)
+                }
+            } finally {
+                state.decoding = false
+                if (state.listening && state.queue.length) pumpDecode()
+            }
+        }
+
+        async function listen() {
+            if (state.listening) return
+            await ensureModule()
+            const context = ensureContext()
+            if (context.state === "suspended") await context.resume()
+
+            try {
+                state.stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: false,
+                        channelCount: 1,
+                        sampleRate: context.sampleRate
+                    }
+                })
+            } catch {
+                state.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+            }
+
+            const track = state.stream.getAudioTracks?.()[0]
+            const settings = track?.getSettings ? track.getSettings() : {}
+            const sr = Number(settings?.sampleRate) || context.sampleRate || 48000
+            await initWave({ sampleRate: sr, sampleRateInp: sr, sampleRateOut: sr, samplesPerFrame: 1024, soundMarkerThreshold: 2 })
+
+            state.source = context.createMediaStreamSource(state.stream)
+            state.processor = context.createScriptProcessor(2048, 1, 1)
+            state.sink = context.createGain()
+            state.sink.gain.value = 0
+            state.processor.onaudioprocess = (event) => {
+                const input = event?.inputBuffer?.getChannelData?.(0)
+                if (!input?.length || !state.listening) return
+                state.queue.push(floatToInt16Bytes(input))
+                if (state.queue.length > 64) state.queue.shift()
+                pumpDecode()
+            }
+            state.source.connect(state.processor)
+            state.processor.connect(state.sink)
+            state.sink.connect(context.destination)
+            state.listening = true
+            status(`Listening (${sr}Hz)`)
+        }
+
+        function stop() {
+            state.listening = false
+            state.queue = []
+            state.decoding = false
+            if (state.processor) {
+                state.processor.onaudioprocess = null
+                state.processor.disconnect()
+            }
+            if (state.source) state.source.disconnect()
+            if (state.sink) state.sink.disconnect()
+            if (state.stream) state.stream.getTracks().forEach((t) => t.stop())
+            state.processor = null
+            state.source = null
+            state.sink = null
+            state.stream = null
+            status("Stopped")
+        }
+
+        document.getElementById("init").addEventListener("click", () => initWave().catch(e => status(e.message || String(e))))
+        document.getElementById("send").addEventListener("click", () => sendOnce().catch(e => status(e.message || String(e))))
+        document.getElementById("listen").addEventListener("click", () => listen().catch(e => status(e.message || String(e))))
+        document.getElementById("stop").addEventListener("click", stop)
+
+        initWave().catch(e => status(e.message || String(e)))
+    </script>
+</body>
+
+</html>

@@ -14,7 +14,11 @@ export class WAVE extends HTMLElement {
         this.stream = null
         this.source = null
         this.processor = null
+        this.sink = null
         this.pendingDecode = false
+        this.audioBacklog = []
+        this.audioBacklogBytes = 0
+        this.captureGain = 2.5
         this.running = false
         this.lastIncoming = ""
         this.onScan = this.onScan.bind(this)
@@ -67,7 +71,8 @@ export class WAVE extends HTMLElement {
         const bytes = new Int8Array(floatSamples.length * 2)
         let offset = 0
         for (let i = 0; i < floatSamples.length; i++) {
-            const sample = Math.max(-1, Math.min(1, floatSamples[i]))
+            const amplified = floatSamples[i] * this.captureGain
+            const sample = Math.max(-1, Math.min(1, amplified))
             const int = sample < 0 ? sample * 0x8000 : sample * 0x7fff
             const value = int | 0
             bytes[offset++] = value & 0xff
@@ -85,7 +90,14 @@ export class WAVE extends HTMLElement {
 
     async prepareWorker() {
         const context = this.ensureAudioContext()
-        await Wave.setup({ sampleRate: context.sampleRate, sampleRateInp: context.sampleRate, sampleRateOut: context.sampleRate, samplesPerFrame: 1024, volume: 48 })
+        await Wave.setup({
+            sampleRate: context.sampleRate,
+            sampleRateInp: context.sampleRate,
+            sampleRateOut: context.sampleRate,
+            samplesPerFrame: 1024,
+            volume: 72,
+            soundMarkerThreshold: 2
+        })
         return context
     }
 
@@ -96,31 +108,66 @@ export class WAVE extends HTMLElement {
             return false
         }
 
-        const context = await this.prepareWorker()
+        const context = this.ensureAudioContext()
         if (context.state === "suspended") await context.resume()
 
-        this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        const constraints = {
+            audio: {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false,
+                channelCount: 1,
+                sampleRate: context.sampleRate
+            }
+        }
+        try {
+            this.stream = await navigator.mediaDevices.getUserMedia(constraints)
+        } catch {
+            this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        }
+
+        const track = this.stream.getAudioTracks?.()[0]
+        const settings = track?.getSettings ? track.getSettings() : {}
+        const inputSampleRate = Number(settings?.sampleRate) || context.sampleRate || 48000
+
+        await Wave.setup({
+            sampleRate: inputSampleRate,
+            sampleRateInp: inputSampleRate,
+            sampleRateOut: inputSampleRate,
+            samplesPerFrame: 1024,
+            volume: 72,
+            soundMarkerThreshold: 2,
+            reset: true
+        })
+
         this.source = context.createMediaStreamSource(this.stream)
         this.processor = context.createScriptProcessor(2048, 1, 1)
+        this.sink = context.createGain()
+        this.sink.gain.value = 0
         this.processor.onaudioprocess = this.onAudio
         this.source.connect(this.processor)
-        this.processor.connect(context.destination)
+        this.processor.connect(this.sink)
+        this.sink.connect(context.destination)
         this.running = true
-        this.setStatus("Listening on wave + scanning QR")
+        this.setStatus(`Listening on wave + scanning QR (${settings?.sampleRate || context.sampleRate}Hz, ${settings?.channelCount || 1}ch, gain x${this.captureGain})`)
         return true
     }
 
     async stop() {
         this.running = false
         this.pendingDecode = false
+        this.audioBacklog = []
+        this.audioBacklogBytes = 0
         if (this.processor) {
             this.processor.onaudioprocess = null
             this.processor.disconnect()
         }
         if (this.source) this.source.disconnect()
+        if (this.sink) this.sink.disconnect()
         if (this.stream) this.stream.getTracks().forEach((track) => track.stop())
         this.processor = null
         this.source = null
+        this.sink = null
         this.stream = null
         this.role = null
         this.responseBuilder = null
@@ -128,20 +175,58 @@ export class WAVE extends HTMLElement {
         this.setStatus("Stopped")
     }
 
-    async onAudio(event) {
+    dequeueAudioBytes(maxChunks = 6) {
+        if (!this.audioBacklog?.length) return null
+        const chunks = []
+        let bytes = 0
+        for (let i = 0; i < maxChunks && this.audioBacklog.length; i++) {
+            const chunk = this.audioBacklog.shift()
+            if (!chunk?.length) continue
+            chunks.push(chunk)
+            bytes += chunk.byteLength
+            this.audioBacklogBytes -= chunk.byteLength
+        }
+        if (!chunks.length || !bytes) return null
+        if (chunks.length === 1) return chunks[0]
+        const merged = new Int8Array(bytes)
+        let offset = 0
+        for (const chunk of chunks) {
+            merged.set(chunk, offset)
+            offset += chunk.byteLength
+        }
+        return merged
+    }
+
+    async pumpDecode() {
         if (!this.running || this.pendingDecode) return
-        const input = event?.inputBuffer?.getChannelData?.(0)
-        if (!input?.length) return
         this.pendingDecode = true
-        const bytes = this.toAudioBytes(input)
         try {
-            const response = await Wave.decode({ bytes }, { transfer: [bytes.buffer] })
-            if (response?.found && response?.message) this.handleIncoming(response.message, "wave")
+            while (this.running) {
+                const bytes = this.dequeueAudioBytes(8)
+                if (!bytes?.length) break
+                const response = await Wave.decode({ bytes }, { transfer: [bytes.buffer] })
+                if (response?.found && response?.message) await this.handleIncoming(response.message, "wave")
+            }
         } catch (error) {
             this.setStatus(error?.message || String(error))
         } finally {
             this.pendingDecode = false
+            if (this.running && this.audioBacklogBytes > 0) this.pumpDecode()
         }
+    }
+
+    async onAudio(event) {
+        if (!this.running) return
+        const input = event?.inputBuffer?.getChannelData?.(0)
+        if (!input?.length) return
+        const bytes = this.toAudioBytes(input)
+        this.audioBacklog.push(bytes)
+        this.audioBacklogBytes += bytes.byteLength
+        if (this.audioBacklog.length > 64) {
+            const removed = this.audioBacklog.shift()
+            if (removed?.byteLength) this.audioBacklogBytes -= removed.byteLength
+        }
+        this.pumpDecode()
     }
 
     async play(bytes, sampleRate = 48000) {
