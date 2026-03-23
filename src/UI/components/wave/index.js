@@ -19,6 +19,9 @@ export class WAVE extends HTMLElement {
         this.audioBacklog = []
         this.audioBacklogBytes = 0
         this.captureGain = 2.5
+        this.maxWavePayloadSize = 140
+        this.chunkTtlMs = 60000
+        this.chunks = new Map()
         this.running = false
         this.lastIncoming = ""
         this.onScan = this.onScan.bind(this)
@@ -172,7 +175,72 @@ export class WAVE extends HTMLElement {
         this.role = null
         this.responseBuilder = null
         this.session = null
+        this.chunks.clear()
         this.setStatus("Stopped")
+    }
+
+    sleep(ms = 0) {
+        return new Promise((resolve) => setTimeout(resolve, ms))
+    }
+
+    createMessageId() {
+        return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+    }
+
+    cleanupChunks() {
+        const now = Date.now()
+        for (const [id, entry] of this.chunks.entries()) {
+            if (!entry?.updatedAt || now - entry.updatedAt > this.chunkTtlMs) this.chunks.delete(id)
+        }
+    }
+
+    async sendWaveFrame(text) {
+        const response = await Wave.encode({ message: text })
+        if (!response?.ok || !response?.bytes) throw new Error(response?.error || "Unable to encode payload")
+        this.setStatus("Broadcasting via wave")
+        await this.play(response.bytes, response.sampleRate)
+        const sampleRate = response.sampleRate || 48000
+        const durationMs = Math.ceil((response.bytes.length / 2 / sampleRate) * 1000)
+        await this.sleep(Math.min(240, Math.max(90, durationMs + 50)))
+        return response
+    }
+
+    async sendChunked(text) {
+        const total = Math.ceil(text.length / this.maxWavePayloadSize)
+        const id = this.createMessageId()
+        for (let index = 0; index < total; index++) {
+            const from = index * this.maxWavePayloadSize
+            const part = text.slice(from, from + this.maxWavePayloadSize)
+            const envelope = JSON.stringify({ __waveChunk: 1, id, index, total, part })
+            await this.sendWaveFrame(envelope)
+            this.setStatus(`Broadcasting chunk ${index + 1}/${total}`)
+        }
+    }
+
+    async consumeChunk(message = {}, channel = "wave") {
+        this.cleanupChunks()
+        const id = message?.id
+        const index = Number(message?.index)
+        const total = Number(message?.total)
+        const part = message?.part
+        if (!id || !Number.isInteger(index) || !Number.isInteger(total) || total <= 0 || index < 0 || index >= total || typeof part !== "string") return
+
+        const current = this.chunks.get(id) || { total, parts: new Array(total).fill(null), updatedAt: Date.now() }
+        if (!Array.isArray(current.parts) || current.parts.length !== total) {
+            current.parts = new Array(total).fill(null)
+            current.total = total
+        }
+
+        current.parts[index] = part
+        current.updatedAt = Date.now()
+        this.chunks.set(id, current)
+
+        if (current.parts.some((value) => typeof value !== "string")) return
+
+        this.chunks.delete(id)
+        const payload = current.parts.join("")
+        this.appendIncoming(`[${channel}] [reassembled ${total} chunks]`)
+        await this.handleIncoming(payload, channel)
     }
 
     dequeueAudioBytes(maxChunks = 6) {
@@ -255,10 +323,8 @@ export class WAVE extends HTMLElement {
         if (!text) return null
         if (this.outgoingQR) this.outgoingQR.dataset.value = text
         if (this.input && this.input.value !== text) this.input.value = text
-        const response = await Wave.encode({ message: text })
-        if (!response?.ok || !response?.bytes) throw new Error(response?.error || "Unable to encode payload")
-        this.setStatus("Broadcasting via wave")
-        await this.play(response.bytes, response.sampleRate)
+        if (text.length > this.maxWavePayloadSize) await this.sendChunked(text)
+        else await this.sendWaveFrame(text)
         return text
     }
 
@@ -272,10 +338,16 @@ export class WAVE extends HTMLElement {
     }
 
     async handleIncoming(message, channel = "wave") {
-        if (!message || message === this.lastIncoming) return
+        if (!message) return
+        const parsed = this.parseMessage(message)
+        if (parsed?.__waveChunk === 1) {
+            await this.consumeChunk(parsed, channel)
+            return
+        }
+
+        if (message === this.lastIncoming) return
         this.lastIncoming = message
         this.appendIncoming(`[${channel}] ${message}`)
-        const parsed = this.parseMessage(message)
         if (!parsed || typeof parsed !== "object") return
 
         if (this.role === "sender" && parsed?.[":"] === "auth" && parsed?.["~"] && typeof this.responseBuilder === "function") {
