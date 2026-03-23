@@ -11,7 +11,7 @@ const state = {
     params: null,
     decoder: typeof TextDecoder !== "undefined" ? new TextDecoder() : null,
     protocolId: null,
-    volume: 72,
+    volume: 25,
     sampleRate: 48000
 }
 
@@ -38,7 +38,7 @@ function ensureParams(overrides = {}) {
         sampleRateInp: overrides?.sampleRateInp || overrides?.sampleRate || defaults.sampleRateInp,
         sampleRateOut: overrides?.sampleRateOut || overrides?.sampleRate || defaults.sampleRateOut,
         sampleRate: overrides?.sampleRate || defaults.sampleRate,
-        sampleFormatInp: state.module.SampleFormat.GGWAVE_SAMPLE_FORMAT_I16,
+        sampleFormatInp: state.module.SampleFormat.GGWAVE_SAMPLE_FORMAT_F32,
         sampleFormatOut: state.module.SampleFormat.GGWAVE_SAMPLE_FORMAT_I16,
         operatingMode: overrides?.operatingMode ?? defaults.operatingMode
     }
@@ -56,6 +56,13 @@ function normalizePayload(payload = "") {
 async function ensureModule() {
     if (!wave) wave = new Wave()
     if (!state.module) state.module = await wave.init()
+    if (state.protocolId == null) state.protocolId = state.module.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_NORMAL
+    for (const [name, id] of Object.entries(state.module.ProtocolId)) {
+        if (typeof id !== "number" || !name.startsWith("GGWAVE_PROTOCOL_")) continue
+        const enabled = id === state.protocolId ? 1 : 0
+        state.module.rxToggleProtocol(id, enabled)
+        state.module.txToggleProtocol(id, enabled)
+    }
     return state.module
 }
 
@@ -64,7 +71,6 @@ function ensureInstances(overrides = {}) {
     const params = ensureParams({ ...state.params, ...overrides })
     state.params = params
     state.sampleRate = params.sampleRateOut || params.sampleRate || state.sampleRate
-    if (state.protocolId == null) state.protocolId = state.module.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_NORMAL
 
     if (!state.receiver) state.receiver = state.module.init(params)
     if (!state.sender) state.sender = state.module.init(params)

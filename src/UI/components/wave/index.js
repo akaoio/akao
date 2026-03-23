@@ -18,7 +18,6 @@ export class WAVE extends HTMLElement {
         this.pendingDecode = false
         this.audioBacklog = []
         this.audioBacklogBytes = 0
-        this.captureGain = 2.5
         this.maxWavePayloadSize = 140
         this.chunkTtlMs = 60000
         this.chunks = new Map()
@@ -71,23 +70,14 @@ export class WAVE extends HTMLElement {
     }
 
     toAudioBytes(floatSamples) {
-        const bytes = new Int8Array(floatSamples.length * 2)
-        let offset = 0
-        for (let i = 0; i < floatSamples.length; i++) {
-            const amplified = floatSamples[i] * this.captureGain
-            const sample = Math.max(-1, Math.min(1, amplified))
-            const int = sample < 0 ? sample * 0x8000 : sample * 0x7fff
-            const value = int | 0
-            bytes[offset++] = value & 0xff
-            bytes[offset++] = (value >> 8) & 0xff
-        }
-        return bytes
+        const copy = new Float32Array(floatSamples)
+        return new Int8Array(copy.buffer)
     }
 
     ensureAudioContext() {
         const AudioEngine = globalThis.AudioContext || globalThis.webkitAudioContext
         if (!AudioEngine) throw new Error("Web Audio API is not supported in this browser")
-        if (!this.audioContext) this.audioContext = new AudioEngine()
+        if (!this.audioContext) this.audioContext = new AudioEngine({ sampleRate: 48000 })
         return this.audioContext
     }
 
@@ -98,8 +88,7 @@ export class WAVE extends HTMLElement {
             sampleRateInp: context.sampleRate,
             sampleRateOut: context.sampleRate,
             samplesPerFrame: 1024,
-            volume: 72,
-            soundMarkerThreshold: 2
+            volume: 25
         })
         return context
     }
@@ -131,20 +120,19 @@ export class WAVE extends HTMLElement {
 
         const track = this.stream.getAudioTracks?.()[0]
         const settings = track?.getSettings ? track.getSettings() : {}
-        const inputSampleRate = Number(settings?.sampleRate) || context.sampleRate || 48000
+        const inputSampleRate = context.sampleRate || 48000
 
         await Wave.setup({
             sampleRate: inputSampleRate,
             sampleRateInp: inputSampleRate,
             sampleRateOut: inputSampleRate,
             samplesPerFrame: 1024,
-            volume: 72,
-            soundMarkerThreshold: 2,
+            volume: 25,
             reset: true
         })
 
         this.source = context.createMediaStreamSource(this.stream)
-        this.processor = context.createScriptProcessor(2048, 1, 1)
+        this.processor = context.createScriptProcessor(1024, 1, 1)
         this.sink = context.createGain()
         this.sink.gain.value = 0
         this.processor.onaudioprocess = this.onAudio
@@ -152,7 +140,7 @@ export class WAVE extends HTMLElement {
         this.processor.connect(this.sink)
         this.sink.connect(context.destination)
         this.running = true
-        this.setStatus(`Listening on wave + scanning QR (${settings?.sampleRate || context.sampleRate}Hz, ${settings?.channelCount || 1}ch, gain x${this.captureGain})`)
+        this.setStatus(`Listening on wave + scanning QR (context ${context.sampleRate}Hz, track ${settings?.sampleRate || "unknown"}Hz, ${settings?.channelCount || 1}ch)`)
         return true
     }
 
@@ -309,7 +297,7 @@ export class WAVE extends HTMLElement {
         for (let i = 0; i < samples; i++) channel[i] = view.getInt16(i * 2, true) / 32768
         const source = context.createBufferSource()
         const gain = context.createGain()
-        gain.gain.value = 1.9
+        gain.gain.value = 1.0
         source.buffer = audio
         source.connect(gain)
         gain.connect(context.destination)

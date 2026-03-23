@@ -42,6 +42,7 @@
     "test:geo": "node test.js geo",
     "test:browser": "node test-browser.js",
     "dev": "node dev.js",
+    "dev:https": "node dev.js --https",
     "format": "prettier --write \"src/**/*.js\"",
     "lint": "eslint \"src/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.js\" --fix"
@@ -56,6 +57,7 @@
     "ggwave": "^0.4.0",
     "prettier": "^3.7.2",
     "qr-scanner": "^1.4.2",
+    "selfsigned": "^5.5.0",
     "uqr": "^0.1.2",
     "yaml": "^2.8.2"
   }

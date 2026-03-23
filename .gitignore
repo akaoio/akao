@@ -26,6 +26,7 @@ node_modules/
 # Project specific ignores
 /geo/
 /temp/
+/.certs/
 
 CLAUDE.md
 .claude

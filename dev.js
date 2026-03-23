@@ -1,11 +1,13 @@
 import chokidar from "chokidar"
 import { spawn } from "child_process"
-import { promises as fs } from "fs"
+import { promises as fs, readFileSync, existsSync, mkdirSync, writeFileSync } from "fs"
 import path from "path"
 import http from "http"
+import https from "https"
 import os from "os"
 import { URL } from "url"
 import YAML from "yaml"
+import selfsigned from "selfsigned"
 import { sha256 } from "./src/core/Utils/crypto.js"
 
 const SRC_ROOT = "src"
@@ -13,6 +15,14 @@ const BUILD_ROOT = "build"
 const BUILD_STATICS_ROOT = path.join(BUILD_ROOT, "statics")
 const HOST = process.env.HOST || "0.0.0.0"
 const PORT = 8080
+const CLI_ARGS = process.argv.slice(2)
+const HAS_HTTPS_FLAG = CLI_ARGS.includes("--https")
+const HTTPS_ENABLED = HAS_HTTPS_FLAG || ["1", "true", "yes", "on"].includes((process.env.HTTPS || "").toLowerCase())
+const SSL_KEY = process.env.SSL_KEY || process.env.HTTPS_KEY || (CLI_ARGS.find(arg => arg.startsWith("--ssl-key=")) || "").split("=").slice(1).join("=")
+const SSL_CERT = process.env.SSL_CERT || process.env.HTTPS_CERT || (CLI_ARGS.find(arg => arg.startsWith("--ssl-cert=")) || "").split("=").slice(1).join("=")
+const DEV_CERT_DIR = ".certs"
+const DEV_CERT_KEY_PATH = path.join(DEV_CERT_DIR, "dev-key.pem")
+const DEV_CERT_CERT_PATH = path.join(DEV_CERT_DIR, "dev-cert.pem")
 const DEV_EVENTS_PATH = "/__dev_events"
 const DEV_CLIENT_MARKER = "__shop_dev_sse_client__"
 
@@ -213,6 +223,70 @@ function getMimeType(filePath) {
     return map[ext] || "application/octet-stream"
 }
 
+function getAllLanIPs() {
+    const interfaces = os.networkInterfaces()
+    const ips = new Set(["127.0.0.1"])
+
+    for (const list of Object.values(interfaces)) {
+        if (!Array.isArray(list)) continue
+        for (const net of list) {
+            if (!net || net.family !== "IPv4") continue
+            ips.add(net.address)
+        }
+    }
+
+    return Array.from(ips)
+}
+
+async function loadHttpsCredentials() {
+    if (SSL_KEY && SSL_CERT) {
+        return {
+            key: readFileSync(path.resolve(SSL_KEY)),
+            cert: readFileSync(path.resolve(SSL_CERT)),
+            source: "env"
+        }
+    }
+
+    const resolvedKeyPath = path.resolve(DEV_CERT_KEY_PATH)
+    const resolvedCertPath = path.resolve(DEV_CERT_CERT_PATH)
+
+    if (existsSync(resolvedKeyPath) && existsSync(resolvedCertPath)) {
+        return {
+            key: readFileSync(resolvedKeyPath),
+            cert: readFileSync(resolvedCertPath),
+            source: "cache"
+        }
+    }
+
+    if (!existsSync(path.resolve(DEV_CERT_DIR))) {
+        mkdirSync(path.resolve(DEV_CERT_DIR), { recursive: true })
+    }
+
+    const altNames = [
+        { type: 2, value: "localhost" },
+        ...getAllLanIPs().map(ip => ({ type: 7, ip }))
+    ]
+
+    const generated = await selfsigned.generate(
+        [{ name: "commonName", value: "localhost" }],
+        {
+            keySize: 2048,
+            algorithm: "sha256",
+            days: 365,
+            extensions: [{ name: "subjectAltName", altNames }]
+        }
+    )
+
+    writeFileSync(resolvedKeyPath, generated.private, "utf8")
+    writeFileSync(resolvedCertPath, generated.cert, "utf8")
+
+    return {
+        key: Buffer.from(generated.private, "utf8"),
+        cert: Buffer.from(generated.cert, "utf8"),
+        source: "generated"
+    }
+}
+
 async function resolveBuildFile(urlPathname) {
     const pathname = decodeURIComponent(urlPathname)
     let requestPath = pathname === "/" ? "/index.html" : pathname
@@ -243,7 +317,7 @@ async function resolveBuildFile(urlPathname) {
     return null
 }
 
-function startStaticServer() {
+async function startStaticServer() {
     const server = http.createServer(async (req, res) => {
         try {
             const base = `http://${HOST}:${PORT}`
@@ -297,19 +371,28 @@ function startStaticServer() {
         }
     })
 
+    const protocol = HTTPS_ENABLED ? "https" : "http"
+
+    if (HTTPS_ENABLED) {
+        const { key, cert, source } = await loadHttpsCredentials()
+        const secureServer = https.createServer({ key, cert }, server.listeners("request")[0])
+        secureServer.listen(PORT, HOST)
+        return { server: secureServer, protocol, httpsSource: source }
+    }
+
     server.listen(PORT, HOST)
-    return server
+    return { server, protocol, httpsSource: null }
 }
 
-function getDevUrls() {
+function getDevUrls(protocol = "http") {
     const interfaces = os.networkInterfaces()
-    const urls = new Set([`http://localhost:${PORT}`])
+    const urls = new Set([`${protocol}://localhost:${PORT}`])
 
     for (const list of Object.values(interfaces)) {
         if (!Array.isArray(list)) continue
         for (const net of list) {
             if (!net || net.family !== "IPv4" || net.internal) continue
-            urls.add(`http://${net.address}:${PORT}`)
+            urls.add(`${protocol}://${net.address}:${PORT}`)
         }
     }
 
@@ -402,8 +485,17 @@ watcher.on("unlink", (filePath) => enqueueChange("unlink", filePath))
 // Start live-server with file watcher
 console.log("🚀 Starting development server with incremental auto-rebuild...")
 
-startStaticServer()
+const { protocol, httpsSource } = await startStaticServer()
 
-console.log(`✅ Server listening on ${HOST}:${PORT}`)
-for (const url of getDevUrls()) console.log(`🌐 ${url}`)
+console.log(`✅ Server listening on ${HOST}:${PORT} (${protocol.toUpperCase()})`)
+if (HTTPS_ENABLED) {
+    console.log("🔐 HTTPS enabled (secure context)")
+    if (httpsSource === "generated") {
+        console.log(`🧪 Generated local dev certificate at ${DEV_CERT_CERT_PATH}`)
+    }
+    if (httpsSource === "cache") {
+        console.log(`📄 Using cached local dev certificate at ${DEV_CERT_CERT_PATH}`)
+    }
+}
+for (const url of getDevUrls(protocol)) console.log(`🌐 ${url}`)
 console.log("👀 Watching src/ for file-based rebuilds...")
