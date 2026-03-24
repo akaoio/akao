@@ -1,21 +1,29 @@
-export async function request() {
-    if (!navigator?.mediaDevices?.getUserMedia) {
-        console.warn("Microphone is not supported in this browser")
-        return false
-    }
+import { threads } from "/core/Threads.js"
 
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                echoCancellation: false,
-                noiseSuppression: false,
-                autoGainControl: false,
-                channelCount: 1
+export function request({ method, params, transfer, timeout = 12000 } = {}) {
+    return new Promise((resolve, reject) => {
+        let settled = false
+        const timer = setTimeout(() => {
+            if (settled) return
+            settled = true
+            reject(new Error(`Wave worker timeout: ${method}`))
+        }, timeout)
+
+        threads.queue({
+            thread: "wave",
+            method,
+            params,
+            transfer,
+            callback: (response, error) => {
+                if (settled) return
+                settled = true
+                clearTimeout(timer)
+                if (error) {
+                    reject(new Error(error?.message || String(error)))
+                    return
+                }
+                resolve(response)
             }
         })
-        stream.getTracks().forEach(track => track.stop())
-        return true
-    } catch {
-        return false
-    }
+    })
 }

@@ -166,7 +166,7 @@ class $QR extends HTMLElement {
         if (!ready) return
         this.scanning = true
         this.setStatus(this.camera?.isCaptured() ? "dictionary.scanningCapturedFrame" : "dictionary.scanningLiveFrames")
-        QR.setup({ alsoTryWithoutScanRegion: true }).catch((error) => this.setStatus(null, error.message || "Error"))
+        QR.request({method: "configure", params: { alsoTryWithoutScanRegion: true }}).catch((error) => this.setStatus(null, error.message || "Error"))
         this.schedule(0)
     }
 

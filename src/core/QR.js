@@ -31,17 +31,9 @@ class QR {
             })
         })
     }
-
-    static async setup(params = {}) {
-        return await this.request({ method: "configure", params })
-    }
     
     static async decode(params = {}, options = {}) {
         return await this.request({ method: "scan", params, transfer: options.transfer, timeout: options.timeout })
-    }
-    
-    static async dispose() {
-        return await this.request({ method: "destroy" })
     }
 
     static encode = encode

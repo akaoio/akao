@@ -551,4 +551,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-**Built with ❤️ using pure Web Components**
+**Built with ❤️ from 🇻🇳 Vietnam 🏯🌸🪷🐉🍜🪭**

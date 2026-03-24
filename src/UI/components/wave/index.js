@@ -85,12 +85,15 @@ export class WAVE extends HTMLElement {
 
     async prepareWorker() {
         const context = this.ensureAudioContext()
-        await Wave.setup({
-            sampleRate: context.sampleRate,
-            sampleRateInp: context.sampleRate,
-            sampleRateOut: context.sampleRate,
-            samplesPerFrame: 1024,
-            volume: 25
+        await Wave.request({
+            method: "configure",
+            params: {
+                sampleRate: context.sampleRate,
+                sampleRateInp: context.sampleRate,
+                sampleRateOut: context.sampleRate,
+                samplesPerFrame: 1024,
+                volume: 25
+            }
         })
         return context
     }
@@ -124,13 +127,16 @@ export class WAVE extends HTMLElement {
         const settings = track?.getSettings ? track.getSettings() : {}
         const inputSampleRate = context.sampleRate || 48000
 
-        await Wave.setup({
-            sampleRate: inputSampleRate,
-            sampleRateInp: inputSampleRate,
-            sampleRateOut: inputSampleRate,
-            samplesPerFrame: 1024,
-            volume: 25,
-            reset: true
+        await Wave.request({
+            method: "configure",
+            params:{
+                sampleRate: inputSampleRate,
+                sampleRateInp: inputSampleRate,
+                sampleRateOut: inputSampleRate,
+                samplesPerFrame: 1024,
+                volume: 25,
+                reset: true
+            }
         })
 
         this.source = context.createMediaStreamSource(this.stream)
