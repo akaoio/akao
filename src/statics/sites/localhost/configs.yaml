@@ -1,7 +1,7 @@
 name: localhost
 brand:
-  text: /statics/sites/localhost/images/akao-text.svg
-  symbol: /statics/sites/localhost/images/akao-symbol.svg
+  text: /statics/sites/localhost/images/text.svg
+  symbol: /statics/sites/localhost/images/symbol.svg
 favicon: /statics/sites/localhost/images/favicon.svg
 env: development
 locale: en

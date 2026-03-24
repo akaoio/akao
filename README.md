@@ -533,8 +533,9 @@ mystore.com: mystore
 ## 📚 Documentation
 
 - [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) — Why no framework?
-- [WebAuthn PRF Extension](docs/WebAuthn-PRF-Extension.md) — Passkey deep-dive
+- [WebAuthn PRF Extension](docs/thoughts/webauthn-prf-extension.md) — Passkey deep-dive
 - [White Paper Draft](docs/thoughts/white-paper-draft.md) — 4-party escrow design
+- [Chat](docs/thoughts/chat.md) — escrow chat protocol
 
 ## 🤝 Contributing
 
