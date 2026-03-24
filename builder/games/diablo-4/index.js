@@ -32,15 +32,42 @@ function catalogMapper(raw) {
     }
 }
 
+function detailMapper(raw) {
+    const normalized = catalogMapper(raw)
+    return {
+        meta: {
+            game: "diablo-4",
+            type: "item",
+            tags: ["diablo-4", normalized.rarity?.toLowerCase(), (normalized.type || "").toLowerCase()].filter(Boolean),
+            rarity: normalized.rarity,
+            itemTypeName: raw.itemTypeName || null,
+            classes: normalized.classes,
+            slots: normalized.slots,
+            value: normalized.value,
+        },
+        locale: {
+            name: raw.name,
+            description: "",
+        },
+    }
+}
+
 export const gameDiablo4 = {
     id: "diablo-4",
     catalogMapper,
+    detailMapper,
+    /** Maps a raw item to its source image filename(s) in games/diablo-4/images/. */
+    imageResolver(raw) {
+        return raw.icon != null ? [`${raw.icon}.webp`] : []
+    },
     async build(context) {
         const summary = await crawlDiablo4Items({
             output: context.output,
             dryRun: context.dryRun,
         })
 
-        log.info(summary.message)
+        log.ok(
+            `Diablo 4: ${summary.totalItems} items, ${summary.pagesFetched} pages, ${summary.downloadedImages} new images`,
+        )
     },
 }

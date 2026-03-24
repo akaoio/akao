@@ -19,7 +19,16 @@ export class ITEM extends HTMLElement {
         const description = this.shadowRoot.querySelector("#description")
         const price = this.shadowRoot.querySelector("#price")
         const sale = this.shadowRoot.querySelector("#sale")
-        this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = `/item/${this.dataset.key}`
+
+        // Support 2-tier keys ("game-id/item-id") and flat keys ("item-id")
+        const key = this.dataset.key
+        const parts = key.includes("/") ? key.split("/") : null
+        const dbMetaPath = parts
+            ? ["statics", "items", ...parts, "meta.json"]
+            : ["statics", "items", key, "meta.json"]
+        const routePath = parts ? `/item/${parts.join("/")}` : `/item/${key}`
+
+        this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = routePath
         this.subscriptions.push(
             Context.on("locale", this.render),
             this.states.on("name", [name, "textContent"]),
@@ -31,7 +40,7 @@ export class ITEM extends HTMLElement {
                 sale.dataset.base = value
             })
         )
-        const data = await DB.get(["statics", "items", this.dataset.key, "meta.json"])
+        const data = await DB.get(dbMetaPath)
         if (data) this.states.set(data)
         if (!this.states.has(["name", "price"])) this.render()
     }
@@ -41,7 +50,12 @@ export class ITEM extends HTMLElement {
     }
 
     async render() {
-        const data = await DB.get(["statics", "items", this.dataset.key, `${Context.get("locale").code}.json`])
+        const key = this.dataset.key
+        const parts = key.includes("/") ? key.split("/") : null
+        const dbLocalePath = parts
+            ? ["statics", "items", ...parts, `${Context.get("locale").code}.json`]
+            : ["statics", "items", key, `${Context.get("locale").code}.json`]
+        const data = await DB.get(dbLocalePath)
         this.states.set(data)
     }
 }

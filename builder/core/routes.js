@@ -28,8 +28,27 @@ function getParamValues(name = "", { items = [], tags = [], games = [] } = {}) {
 }
 
 function expandRouteSegments(route = "", options = {}) {
+    const { gameItems = {} } = options
     const segments = normalizeRoute(route).split("/").filter(Boolean)
     if (!segments.length) return [[]]
+
+    // Special case: route with consecutive [game]/[item] dynamic segments
+    // Expand from gameItems map (pairs), not cartesian product
+    const firstDynIndex = segments.findIndex(isDynamicSegment)
+    if (firstDynIndex !== -1 && firstDynIndex + 1 < segments.length) {
+        const a = getParamName(segments[firstDynIndex])
+        const b = getParamName(segments[firstDynIndex + 1])
+        if (a === "game" && b === "item") {
+            if (Object.keys(gameItems).length === 0) return []
+            // Build prefix of fixed segments before [game]
+            const prefix = segments.slice(0, firstDynIndex)
+            const suffix = segments.slice(firstDynIndex + 2)
+            const pairs = Object.entries(gameItems).flatMap(([gameId, itemIds]) =>
+                itemIds.map((itemId) => [...prefix, gameId, itemId, ...suffix])
+            )
+            return pairs
+        }
+    }
 
     let expanded = [[]]
     for (const segment of segments) {
@@ -49,7 +68,7 @@ function expandRouteSegments(route = "", options = {}) {
     return expanded
 }
 
-export async function generateRoutes(locales, items, tags, games, indexContent, outputBase = "build", routePatterns = []) {
+export async function generateRoutes(locales, items, tags, games, indexContent, outputBase = "build", routePatterns = [], gameItems = {}) {
     if (typeof outputBase !== "string" || !outputBase.trim()) {
         throw new TypeError(`generateRoutes expected outputBase to be a non-empty string, got: ${JSON.stringify(outputBase)}`)
     }
@@ -89,7 +108,7 @@ export async function generateRoutes(locales, items, tags, games, indexContent, 
                 routeTargets.add([...dynamicPaths.build.root, locale, ...staticPrefix, "index.html"].join("/"))
             }
 
-            const expanded = expandRouteSegments(route, { items, tags: tagList, games: gameList })
+            const expanded = expandRouteSegments(route, { items, tags: tagList, games: gameList, gameItems })
             if (!expanded.length) {
                 if (parts.some(isDynamicSegment)) console.warn(`Skipped dynamic route '${route}' because no values were found`)
                 continue

@@ -26,8 +26,9 @@
   "type": "module",
   "scripts": {
     "start": "node build.js core && node dev.js",
-    "build": "node build.js crypto && node build.js core && node build.js geo",
+    "build": "node build.js crypto && node build.js core && node build.js index && node build.js geo",
     "build:core": "node build.js core",
+    "build:index": "node build.js index",
     "build:crypto": "node build.js crypto",
     "build:geo": "node build.js geo",
     "build:games": "node build.js games",
