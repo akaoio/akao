@@ -1,9 +1,8 @@
-import { renderSVG } from "/core/QR/encode.js"
+import QR from "/core/QR.js"
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
-import { setup as setupQRWorker, decode as decodeQRFrame } from "/core/QR/worker.js"
 
-class QR extends HTMLElement {
+class $QR extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -167,7 +166,7 @@ class QR extends HTMLElement {
         if (!ready) return
         this.scanning = true
         this.setStatus(this.camera?.isCaptured() ? "dictionary.scanningCapturedFrame" : "dictionary.scanningLiveFrames")
-        setupQRWorker({ alsoTryWithoutScanRegion: true }).catch((error) => this.setStatus(null, error.message || "Error"))
+        QR.setup({ alsoTryWithoutScanRegion: true }).catch((error) => this.setStatus(null, error.message || "Error"))
         this.schedule(0)
     }
 
@@ -210,7 +209,7 @@ class QR extends HTMLElement {
 
         this.pending = true
         const transfer = frame.bitmap ? [frame.bitmap] : undefined
-        decodeQRFrame(frame, { transfer })
+        QR.decode(frame, { transfer })
             .then((response) => {
                 this.pending = false
                 if (response?.ok && response?.data) {
@@ -245,13 +244,13 @@ class QR extends HTMLElement {
             qr.innerHTML = ""
             return
         }
-        const code = renderSVG(data, { border: 0 })
+        const code = QR.render(data, { border: 0 })
         render(html`${code}`, qr)
     }
 }
 
-customElements.define("ui-qr", QR)
+customElements.define("ui-qr", $QR)
 
-export { QR }
+export { $QR as QR }
 
-export default QR
+export default $QR

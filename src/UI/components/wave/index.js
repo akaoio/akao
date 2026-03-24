@@ -15,6 +15,7 @@ export class WAVE extends HTMLElement {
         this.source = null
         this.processor = null
         this.sink = null
+        this.micTemporarilyDisabled = false
         this.pendingDecode = false
         this.audioBacklog = []
         this.audioBacklogBytes = 0
@@ -22,6 +23,7 @@ export class WAVE extends HTMLElement {
         this.chunkTtlMs = 60000
         this.chunks = new Map()
         this.running = false
+        this.sending = false
         this.lastIncoming = ""
         this.onScan = this.onScan.bind(this)
         this.onAudio = this.onAudio.bind(this)
@@ -147,6 +149,7 @@ export class WAVE extends HTMLElement {
     async stop() {
         this.running = false
         this.pendingDecode = false
+        this.sending = false
         this.audioBacklog = []
         this.audioBacklogBytes = 0
         if (this.processor) {
@@ -169,6 +172,14 @@ export class WAVE extends HTMLElement {
 
     sleep(ms = 0) {
         return new Promise((resolve) => setTimeout(resolve, ms))
+    }
+
+    setMicEnabled(enabled) {
+        const tracks = this.stream?.getAudioTracks?.()
+        if (!Array.isArray(tracks) || !tracks.length) return
+        tracks.forEach((track) => {
+            track.enabled = Boolean(enabled)
+        })
     }
 
     createMessageId() {
@@ -254,10 +265,10 @@ export class WAVE extends HTMLElement {
     }
 
     async pumpDecode() {
-        if (!this.running || this.pendingDecode) return
+        if (!this.running || this.pendingDecode || this.sending) return
         this.pendingDecode = true
         try {
-            while (this.running) {
+            while (this.running && !this.sending) {
                 const bytes = this.dequeueAudioBytes(8)
                 if (!bytes?.length) break
                 const response = await Wave.decode({ bytes }, { transfer: [bytes.buffer] })
@@ -267,7 +278,7 @@ export class WAVE extends HTMLElement {
             this.setStatus(error?.message || String(error))
         } finally {
             this.pendingDecode = false
-            if (this.running && this.audioBacklogBytes > 0) this.pumpDecode()
+            if (this.running && !this.sending && this.audioBacklogBytes > 0) this.pumpDecode()
         }
     }
 
@@ -301,7 +312,16 @@ export class WAVE extends HTMLElement {
         source.buffer = audio
         source.connect(gain)
         gain.connect(context.destination)
+        this.micTemporarilyDisabled = true
+        this.setMicEnabled(false)
         source.start()
+        await new Promise((resolve) => {
+            source.onended = resolve
+        })
+        this.setMicEnabled(true)
+        this.micTemporarilyDisabled = false
+        this.audioBacklog = []
+        this.audioBacklogBytes = 0
         return true
     }
 
@@ -339,8 +359,17 @@ export class WAVE extends HTMLElement {
         if (!parsed || typeof parsed !== "object") return
 
         if (this.role === "sender" && parsed?.[":"] === "auth" && parsed?.["~"] && typeof this.responseBuilder === "function") {
-            const reply = await this.responseBuilder(parsed["~"], parsed)
-            if (reply) await this.send(reply)
+            if (this.sending) return
+            this.sending = true
+            try {
+                const reply = await this.responseBuilder(parsed["~"], parsed)
+                if (reply) await this.send(reply)
+            } finally {
+                this.sending = false
+                // Flush audio captured during playback to prevent self-loopback decode
+                this.audioBacklog = []
+                this.audioBacklogBytes = 0
+            }
             return
         }
 
@@ -386,7 +415,7 @@ export class WAVE extends HTMLElement {
     onScan(event) {
         const message = event?.detail?.data
         if (!message) return
-        this.handleIncoming(message, "qr")
+        this.handleIncoming(message, "qr").catch((error) => this.setStatus(error?.message || String(error)))
     }
 
     onSend() {

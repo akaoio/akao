@@ -307,13 +307,13 @@ log.ok("Prepared ggwave → build/core/Wave/ggwave.js")
 
 // Copy uqr ESM library
 log.info("Copying uqr to build...")
-await copy(["node_modules", "uqr", "dist", "index.mjs"], [...paths.build.core, "QR", "encode.js"])
-log.ok("Copied uqr → build/core/QR/encode.js")
+await copy(["node_modules", "uqr", "dist", "index.mjs"], [...paths.build.core, "QR", "encoder.js"])
+log.ok("Copied uqr → build/core/QR/encoder.js")
 
 // Copy qr-scanner ESM library
 log.info("Copying qr-scanner to build...")
-await copy(["node_modules", "qr-scanner", "qr-scanner.min.js"], [...paths.build.core, "QR", "scan.js"])
-log.ok("Copied qr-scanner → build/core/QR/scan.js")
+await copy(["node_modules", "qr-scanner", "qr-scanner.min.js"], [...paths.build.core, "QR", "decoder.js"])
+log.ok("Copied qr-scanner → build/core/QR/decoder.js")
 await copy(["node_modules", "qr-scanner", "qr-scanner-worker.min.js"], [...paths.build.core, "QR", "qr-scanner-worker.min.js"])
 log.ok("Copied qr-scanner worker → build/core/QR/qr-scanner-worker.min.js")
 
