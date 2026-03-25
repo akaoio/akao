@@ -125,10 +125,11 @@ export class GAME extends HTMLElement {
         if (raritySelect) {
             raritySelect.value = activeRarity || ""
             raritySelect.classList.toggle("active", !!activeRarity)
+            const rarityWrap = raritySelect.parentElement
             if (activeRarity) {
                 const key = activeRarity.toLowerCase().replace(/\s+/g, "-")
-                raritySelect.style.setProperty("--select-accent", `var(--rarity-${key}, var(--neon-c))`)
-            } else raritySelect.style.removeProperty("--select-accent")
+                rarityWrap.style.setProperty("--select-accent", `var(--rarity-${key}, var(--neon-c))`)
+            } else rarityWrap.style.removeProperty("--select-accent")
         }
         this.shadowRoot.querySelectorAll(".sort-bar button[data-sort-key]").forEach((btn) => {
             const isAsc = sort === btn.dataset.sortAsc

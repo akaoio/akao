@@ -19,12 +19,12 @@ export const template = html`
                 <div class="filter-group">
                     <span class="filter-group__label">Type</span>
                     <div class="type-tabs" id="type-tabs"></div>
-                    <select class="filter-select" id="type-select"></select>
+                    <span class="filter-select-wrap"><select class="filter-select" id="type-select"></select></span>
                 </div>
                 <div class="filter-group">
                     <span class="filter-group__label">Rarity</span>
                     <div class="rarity-pills" id="rarity-pills"></div>
-                    <select class="filter-select" id="rarity-select"></select>
+                    <span class="filter-select-wrap"><select class="filter-select" id="rarity-select"></select></span>
                 </div>
             </nav>
 
