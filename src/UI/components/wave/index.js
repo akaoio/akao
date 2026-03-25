@@ -194,9 +194,9 @@ export class WAVE extends HTMLElement {
 
     cleanupChunks() {
         const now = Date.now()
-        for (const [id, entry] of this.chunks.entries()) {
+        for (const [id, entry] of this.chunks.entries()) 
             if (!entry?.updatedAt || now - entry.updatedAt > this.chunkTtlMs) this.chunks.delete(id)
-        }
+        
     }
 
     async sendWaveFrame(text) {

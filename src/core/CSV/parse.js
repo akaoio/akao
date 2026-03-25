@@ -68,25 +68,25 @@ export function parse(text, { delimiter = ",", quote = '"', headers = true, skip
         if (commentPrefix && trimmed.startsWith(commentPrefix)) continue // Skip comment lines
         
         const row = parseRow(line, delimiter, quote)
-        if (row && row.length > 0) {
+        if (row && row.length > 0) 
             rows.push(row)
-        }
+        
     }
     
     if (rows.length === 0) return []
     
     // Handle headers
-    if (headers === false) {
+    if (headers === false) 
         return rows
-    }
     
-    if (Array.isArray(headers)) {
+    
+    if (Array.isArray(headers)) 
         // Custom headers provided
         headerRow = headers
-    } else if (!headerRow) {
+     else if (!headerRow) 
         // No header found in comments, use first data row
         headerRow = rows.shift()
-    }
+    
     
     if (!headerRow || headerRow.length === 0) return []
     
@@ -95,9 +95,9 @@ export function parse(text, { delimiter = ",", quote = '"', headers = true, skip
         const obj = {}
         for (let i = 0; i < headerRow.length; i++) {
             const key = headerRow[i].trim()
-            if (key) { // Only add non-empty keys
+            if (key)  // Only add non-empty keys
                 obj[key] = row[i] !== undefined ? row[i] : ""
-            }
+            
         }
         return obj
     })
@@ -123,7 +123,7 @@ function parseRow(line, delimiter, quote) {
         const char = line[i]
         const next = line[i + 1]
         
-        if (char === quote) {
+        if (char === quote) 
             if (inQuotes && next === quote) {
                 // Escaped quote (double quote)
                 field += quote
@@ -133,15 +133,15 @@ function parseRow(line, delimiter, quote) {
                 inQuotes = !inQuotes
                 i++
             }
-        } else if (char === delimiter && !inQuotes) {
+         else if (char === delimiter && !inQuotes) {
             // End of field
             fields.push(field.trim())
             field = ""
             i++
-        } else if ((char === "\r" || char === "\n") && !inQuotes) {
+        } else if ((char === "\r" || char === "\n") && !inQuotes) 
             // End of line outside quotes
             break
-        } else {
+         else {
             // Regular character
             field += char
             i++

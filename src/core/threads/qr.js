@@ -78,9 +78,9 @@ thread.scan = async function ({ bitmap, imageData, width, height, scanRegion, al
         return { ok: true, found: true, data: result.data, cornerPoints: result.cornerPoints }
     } catch (error) {
         const message = normalizeError(error)
-        if (message === QR.scan.NO_QR_CODE_FOUND || /no qr code found/i.test(message)) {
+        if (message === QR.scan.NO_QR_CODE_FOUND || /no qr code found/i.test(message)) 
             return { ok: false, found: false }
-        }
+        
         return { ok: false, found: false, error: message }
     } finally {
         if (bitmap && typeof bitmap.close === "function") bitmap.close()

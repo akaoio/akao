@@ -91,7 +91,7 @@ export async function download(url, path = []) {
             console.error("Error downloading file:", error)
             return
         }
-    } else if (BROWSER) {
+    } else if (BROWSER) 
         // Browser environment - use fetch API
         try {
             const response = await fetch(url)
@@ -120,5 +120,5 @@ export async function download(url, path = []) {
             console.error("Error downloading from:", url, error)
             return
         }
-    }
+    
 }

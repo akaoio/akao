@@ -152,9 +152,9 @@ thread.listenForNewBlocks = () => {
     Object.entries(Statics.chains).forEach(([id, configs]) => {
         const chain = Chains[id]
         // Skip if no WebSocket connection available
-        if (!chain?.wss) {
+        if (!chain?.wss) 
             return console.log(`No WebSocket connection available for chain ${id}`)
-        }
+        
 
         // This part is working but commented out just for now, we are dealing with other problems.
         // chain.wss.eth.subscribe('newBlockHeaders')

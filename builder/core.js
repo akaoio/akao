@@ -153,8 +153,8 @@ const system = (await load([...paths.src.statics, "system.yaml"])) || { paginati
 
 // Load items metadata — distinguish core-managed (flat) from game-derived (nested)
 const itemDirs = await dir(paths.src.items)
-const coreItems = []          // flat item-ids under src/statics/items/<item-id>/
-const gameItemsMap = {}       // { gameId: [item-id, ...] }
+const coreItems = [] // flat item-ids under src/statics/items/<item-id>/
+const gameItemsMap = {} // { gameId: [item-id, ...] }
 const allTags = new Set()
 
 for (const name of itemDirs) {
@@ -168,7 +168,7 @@ for (const name of itemDirs) {
         // No meta.yaml → check if it's a game namespace containing item subdirs
         const subDirs = await dir([...paths.src.items, name])
         const nested = []
-        for (const sub of subDirs) {
+        for (const sub of subDirs)
             if (await isDirectory([...paths.src.items, name, sub])) {
                 const subMeta = await load([...paths.src.items, name, sub, "meta.yaml"])
                 if (subMeta) {
@@ -176,7 +176,7 @@ for (const name of itemDirs) {
                     normalizeTags(subMeta.tags).forEach((tag) => allTags.add(tag))
                 }
             }
-        }
+
         if (nested.length > 0) gameItemsMap[name] = nested
     }
 }
@@ -221,13 +221,8 @@ log.ok(`Built ${domainCount} domain mappings`)
 
 // Build core-managed items (YAML → JSON, flat structure only)
 log.info("Building core-managed items (YAML → JSON)...")
-for (const itemId of coreItems) {
-    await processYamlDirectory(
-        [...paths.src.items, itemId],
-        [...paths.build.statics, "items", itemId],
-        { recursive: false }
-    )
-}
+for (const itemId of coreItems) await processYamlDirectory([...paths.src.items, itemId], [...paths.build.statics, "items", itemId], { recursive: false })
+
 for (const itemId of coreItems) {
     const metaPath = [...paths.build.statics, "items", itemId, "meta.json"]
     const meta = await load(metaPath)
@@ -243,10 +238,7 @@ log.info("Skipping game-derived item emission in build:core (owned by build:game
 log.info("Generating items pagination...")
 const pagination = system.pagination
 
-const allItemKeys = [
-    ...coreItems,
-    ...Object.entries(gameItemsMap).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => `${gameId}/${itemId}`))
-].sort((a, b) => a.localeCompare(b))
+const allItemKeys = [...coreItems, ...Object.entries(gameItemsMap).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => `${gameId}/${itemId}`))].sort((a, b) => a.localeCompare(b))
 
 // Clean legacy/previous pagination outputs while preserving item directories
 const itemsRoot = [...paths.build.statics, "items"]
@@ -257,9 +249,7 @@ if (await exist(itemsRoot)) {
             await remove([...itemsRoot, entry])
             continue
         }
-        if (entry === "meta.json" || /^\d+\.json$/.test(entry)) {
-            await remove([...itemsRoot, entry])
-        }
+        if (entry === "meta.json" || /^\d+\.json$/.test(entry)) await remove([...itemsRoot, entry])
     }
 }
 
@@ -366,12 +356,12 @@ const found = await dir(paths.src.routes, /index\.js$/)
 const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, ""))))
     .filter((route) => route !== "tag/[tag]")
     .sort((a, b) => {
-    const aFirstDynamic = a.split("/")[0]?.startsWith("[")
-    const bFirstDynamic = b.split("/")[0]?.startsWith("[")
-    if (aFirstDynamic && !bFirstDynamic) return 1
-    if (!aFirstDynamic && bFirstDynamic) return -1
-    return a.localeCompare(b)
-})
+        const aFirstDynamic = a.split("/")[0]?.startsWith("[")
+        const bFirstDynamic = b.split("/")[0]?.startsWith("[")
+        if (aFirstDynamic && !bFirstDynamic) return 1
+        if (!aFirstDynamic && bFirstDynamic) return -1
+        return a.localeCompare(b)
+    })
 await write([...paths.build.statics, "routes.json"], routeDirs)
 log.ok(`Built routes list with ${routeDirs.length} routes`)
 

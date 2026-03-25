@@ -12,8 +12,8 @@ export const EVM = {
         const retries = 3
 
         // Try to get latest blocks with retries
-        if (this?.https) {
-            for (let attempt = 1; attempt <= retries; attempt++) {
+        if (this?.https) 
+            for (let attempt = 1; attempt <= retries; attempt++) 
                 try {
                     const latestBlock = await Promise.race([this.https.getBlock("latest"), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), timeout))])
                     this.watch(latestBlock)
@@ -22,16 +22,16 @@ export const EVM = {
                     this.watch(previousBlock)
                     break // Success, exit retry loop
                 } catch (error) {
-                    if (attempt === retries) {
+                    if (attempt === retries) 
                         console.error("Failed to fetch initial blocks after retries:", error)
-                    }
+                    
                 }
-            }
-        }
+            
+        
 
         // Try to setup WebSocket subscription with retries
-        if (this?.wss) {
-            for (let attempt = 1; attempt <= retries; attempt++) {
+        if (this?.wss) 
+            for (let attempt = 1; attempt <= retries; attempt++) 
                 try {
                     this.wss.on("block", (block) => this.watch(block))
                     this.wss.on("error", (error) => {
@@ -40,12 +40,12 @@ export const EVM = {
                     })
                     break // Success, exit retry loop
                 } catch (error) {
-                    if (attempt === retries) {
+                    if (attempt === retries) 
                         console.error("Failed to establish WebSocket connection after retries:", error)
-                    }
+                    
                 }
-            }
-        }
+            
+        
     },
     _Contract: function ({ address, ABI }) {
         return new this.connector.Contract(address, ABI, this.https)
@@ -57,9 +57,9 @@ export const EVM = {
             chainId: parseInt(this.id),
             name: `chain-${this.id}`
         }
-        if (RPC.startsWith("ws")) {
+        if (RPC.startsWith("ws")) 
             return new this.connector.WebSocketProvider(RPC, network)
-        }
+        
         return new this.connector.JsonRpcProvider(RPC, network)
     },
     private: function (seed) {
@@ -95,13 +95,13 @@ export const EVM = {
                 balance = await token.contract.balanceOf(address)
 
                 // Get decimals if not provided
-                if (decimals === undefined) {
-                    if (token.configs?.decimals) {
+                if (decimals === undefined) 
+                    if (token.configs?.decimals) 
                         decimals = token.configs.decimals
-                    } else {
+                     else 
                         decimals = await token.contract.decimals()
-                    }
-                }
+                    
+                
             }
             balance = new BigNumber(balance.toString()).dividedBy(new BigNumber(10).pow(decimals)).toNumber()
             return balance
@@ -153,13 +153,13 @@ export const EVM = {
                 token.contract = new ethers.Contract(token.configs.address, token.ABI, this.https)
 
                 // Get decimals if not provided
-                if (decimals === undefined) {
-                    if (token.configs?.decimals) {
+                if (decimals === undefined) 
+                    if (token.configs?.decimals) 
                         decimals = token.configs.decimals
-                    } else {
+                     else 
                         decimals = await token.contract.decimals()
-                    }
-                }
+                    
+                
 
                 const data = token.contract.interface.encodeFunctionData("transfer", [to, amount])
                 estimateContent = {
@@ -171,9 +171,9 @@ export const EVM = {
 
             // Convert amount to chain units
             amount = new BigNumber(amount).multipliedBy(new BigNumber(10).pow(decimals)).toString(10)
-            if (estimateContent.value !== undefined) {
+            if (estimateContent.value !== undefined) 
                 estimateContent.value = amount
-            }
+            
 
             return await this.https.estimateGas(estimateContent)
         } catch (error) {
@@ -222,13 +222,13 @@ export const EVM = {
                 token.contract = new ethers.Contract(token.configs.address, token.ABI, this.https)
 
                 // Get decimals if not provided
-                if (decimals === undefined) {
-                    if (token.configs?.decimals) {
+                if (decimals === undefined) 
+                    if (token.configs?.decimals) 
                         decimals = token.configs.decimals
-                    } else {
+                     else 
                         decimals = await token.contract.decimals()
-                    }
-                }
+                    
+                
 
                 const data = token.contract.interface.encodeFunctionData("transfer", [to, amount])
                 content = {
@@ -241,9 +241,9 @@ export const EVM = {
 
             // Convert amount to chain units
             amount = new BigNumber(amount).multipliedBy(new BigNumber(10).pow(decimals)).toString(10)
-            if (content.value !== undefined) {
+            if (content.value !== undefined) 
                 content.value = amount
-            }
+            
 
             // Create wallet and sign transaction
             const wallet = new ethers.Wallet(key, this.https)
