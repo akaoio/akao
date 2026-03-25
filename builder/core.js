@@ -5,6 +5,8 @@ import { log } from "./core/logger.js"
 import { generateRoutes } from "./core/routes.js"
 import { processI18n } from "./core/i18n.js"
 import { generateHashFiles } from "./core/hash.js"
+import { processGamesCatalog } from "./core/games-statics.js"
+import { gameRegistry } from "./games/index.js"
 import { Forex } from "../src/core/Forex.js"
 import fs from "fs"
 
@@ -309,6 +311,9 @@ for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
     }
 }
 log.ok(`Generated per-game item pagination for ${Object.keys(gameItemsMap).length} game namespace(s)`)
+
+// Generate per-game catalog files
+await processGamesCatalog(games, gameRegistry)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")
