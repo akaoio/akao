@@ -8,11 +8,10 @@ import os from "os"
 import { URL } from "url"
 import YAML from "yaml"
 import selfsigned from "selfsigned"
-import { sha256 } from "./src/core/Utils/crypto.js"
 
 const SRC_ROOT = "src"
 const BUILD_ROOT = "build"
-const BUILD_STATICS_ROOT = path.join(BUILD_ROOT, "statics")
+
 const HOST = process.env.HOST || "0.0.0.0"
 const PORT = 8080
 const CLI_ARGS = process.argv.slice(2)
@@ -28,12 +27,11 @@ const DEV_CLIENT_MARKER = "__shop_dev_sse_client__"
 
 const FULL_CORE_REBUILD_PATHS = [
     /^src[\\/]index\.html$/,
-    /^src[\\/]UI[\\/]routes[\\/]/,
-    /^src[\\/]statics[\\/]i18n[\\/]/,
     /^src[\\/]statics[\\/]locales\.ya?ml$/,
     /^src[\\/]statics[\\/]system\.ya?ml$/,
     /^src[\\/]statics[\\/]domains\.ya?ml$/
 ]
+
 
 const cryptoPaths = /^src[\\/]statics[\\/](chains|ABIs)[\\/]/
 
@@ -52,6 +50,8 @@ function toPlatformPath(filePath) {
 function shouldFullRebuild(normalizedPath) {
     return FULL_CORE_REBUILD_PATHS.some(pattern => pattern.test(normalizedPath))
 }
+
+
 
 function isYamlFile(filePath) {
     return /\.(yaml|yml)$/i.test(filePath)
@@ -92,16 +92,10 @@ async function copyOrConvert({ event, normalizedPath }) {
     const rawDestPath = toBuildPath(normalizedPath)
     if (!rawDestPath) return null
 
-    const withinStatics = normalizedPath.startsWith("src/statics/")
     const outputPath = isYamlFile(normalizedPath) ? toJsonTargetPath(rawDestPath) : rawDestPath
 
     if (event === "unlink") {
         if (await exists(outputPath)) await fs.unlink(outputPath)
-        if (withinStatics && outputPath.endsWith(".json")) {
-            const hashPath = outputPath.replace(/\.json$/i, ".hash")
-            if (await exists(hashPath)) await fs.unlink(hashPath)
-            await updateDirectoryHashes(path.dirname(outputPath))
-        }
         return outputPath
     }
 
@@ -112,62 +106,7 @@ async function copyOrConvert({ event, normalizedPath }) {
         await fs.copyFile(srcPath, outputPath)
     }
 
-    if (withinStatics && outputPath.endsWith(".json")) {
-        await updateJsonHash(outputPath)
-        await updateDirectoryHashes(path.dirname(outputPath))
-    }
-
     return outputPath
-}
-
-async function updateJsonHash(jsonPath) {
-    if (!(await exists(jsonPath))) return
-    const content = await fs.readFile(jsonPath, "utf8")
-    const parsed = JSON.parse(content)
-    const hash = sha256(JSON.stringify(parsed))
-    const hashPath = jsonPath.replace(/\.json$/i, ".hash")
-    await fs.writeFile(hashPath, hash, "utf8")
-}
-
-async function updateDirectoryHashes(startDir) {
-    let currentDir = startDir
-    const normalizedStatics = path.resolve(BUILD_STATICS_ROOT)
-
-    while (path.resolve(currentDir).startsWith(normalizedStatics) || path.resolve(currentDir) === path.resolve(BUILD_ROOT)) {
-        const entries = await fs.readdir(currentDir, { withFileTypes: true })
-        const childHashes = []
-
-        for (const entry of entries) {
-            const full = path.join(currentDir, entry.name)
-
-            if (entry.isFile()) {
-                if (entry.name === "_.hash") continue
-                if (!entry.name.endsWith(".hash")) continue
-                const value = (await fs.readFile(full, "utf8")).trim()
-                if (value) childHashes.push(value)
-            }
-
-            if (entry.isDirectory()) {
-                const subHash = path.join(full, "_.hash")
-                if (await exists(subHash)) {
-                    const value = (await fs.readFile(subHash, "utf8")).trim()
-                    if (value) childHashes.push(value)
-                }
-            }
-        }
-
-        const currentHashPath = path.join(currentDir, "_.hash")
-        if (childHashes.length > 0) {
-            const combinedHash = sha256(childHashes.sort().join(""))
-            await fs.writeFile(currentHashPath, combinedHash, "utf8")
-        } else if (await exists(currentHashPath)) {
-            await fs.unlink(currentHashPath)
-        }
-
-        const parent = path.dirname(currentDir)
-        if (path.resolve(currentDir) === path.resolve(BUILD_ROOT)) break
-        currentDir = parent
-    }
 }
 
 function runBuild(script) {
@@ -312,6 +251,10 @@ async function resolveBuildFile(urlPathname) {
         if (await exists(htmlPath)) return htmlPath
         const indexPath = path.join(absolutePath, "index.html")
         if (await exists(indexPath)) return indexPath
+
+        // SPA fallback: unmatched page routes serve root index.html
+        const fallback = path.join(buildRootResolved, "index.html")
+        if (await exists(fallback)) return fallback
     }
 
     return null

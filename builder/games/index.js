@@ -1,7 +1,7 @@
 import path from "node:path"
 import fsNative from "node:fs"
 import { log } from "../core/logger.js"
-import { syncGameItems, hashGameItems, pruneGameItems } from "./sync.js"
+import { syncGameItems, pruneGameItems } from "./sync.js"
 import { gameArcRaiders } from "./arc-raiders/index.js"
 import { gameDiablo4 } from "./diablo-4/index.js"
 
@@ -111,9 +111,7 @@ export async function buildGames(options = {}) {
                 await pruneGameItems(game.id, syncResult.itemIds)
             }
 
-            // Step 8: Hash game item build output
-            log.info(`  Hashing game item build output...`)
-            await hashGameItems(game.id)
+            // Hash generation moved to standalone build:hash step
         }
     }
 

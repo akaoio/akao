@@ -4,7 +4,7 @@ import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
 import { generateRoutes } from "./core/routes.js"
 import { processI18n } from "./core/i18n.js"
-import { generateHashFiles } from "./core/hash.js"
+
 import { Forex } from "../src/core/Forex.js"
 import fs from "fs"
 
@@ -376,19 +376,15 @@ const localeCount = await processI18n(locales)
 log.ok(`Created ${localeCount} locale files`)
 
 // Generate routes
-log.info("Generating routes...")
+const devMode = process.argv.includes("--dev")
+log.info(devMode ? "Generating routes (dev mode — static prefixes only)..." : "Generating routes...")
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap)
+const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic: devMode })
 log.ok(`Created ${routeCount} route files`)
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
 
 // Note: geo metadata (countries, features) is built by geo:build to build/geo/
-
-// Generate hash files for all JSON files in build directory (excluding geo)
-log.info("Generating hash files...")
-const hashResult = await generateHashFiles(paths.build.root, ["geo"])
-log.ok(`Created ${hashResult.hashFiles} hash files`)
 
 // Summary
 log.section("========================================")
@@ -399,7 +395,6 @@ console.log(`${icons.done} ${color.ok("Items (Total)")}: ${totalItemCount}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)
-console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashResult.hashFiles}`)
 if (await exist(geoPath)) console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
 
 log.section("========================================")

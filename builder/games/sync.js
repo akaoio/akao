@@ -6,7 +6,6 @@
  *   - write raw.yaml per item (crawler data, icon field stripped)
  *   - sync YAML sources to src/ (non-destructive: patch meta.yaml, create locale only if missing)
  *   - compile JSON to build/ (non-destructive: patch meta.json, create locale only if missing)
- *   - hash build/statics/items/<game-id>/ after writing
  *
  * NOT responsible for:
  *   - pagination (owned by build:core)
@@ -18,7 +17,6 @@ import fsNative from "node:fs"
 import pathNative from "node:path"
 import { write, load, exist, dir, copy, isDirectory } from "../../src/core/FS.js"
 import { sha256 } from "../../src/core/Utils/crypto.js"
-import { generateHashFiles } from "../core/hash.js"
 import { paths } from "../core/config.js"
 import { log } from "../core/logger.js"
 
@@ -493,17 +491,4 @@ export async function pruneGameItems(gameId, itemIds) {
     return { removedSrc, removedBuild, removedTotal }
 }
 
-/**
- * Hash build/statics/items/<gameId>/ after sync.
- * Called by build:games after all items are synced.
- */
-export async function hashGameItems(gameId) {
-    const gameBuildDir = [...paths.build.statics, "items", gameId]
-    if (!(await exist(gameBuildDir))) {
-        log.info(`  ${gameId}: no build output to hash, skipping`)
-        return 0
-    }
-    const result = await generateHashFiles(gameBuildDir, [])
-    log.ok(`  ${gameId}: generated ${result.hashFiles} hash files`)
-    return result.hashFiles
-}
+// Hash generation removed — now handled by standalone build:hash step

@@ -3,13 +3,10 @@
 /**
  * DB - Hash-validated static file loader
  *
- * Wraps Indexes (IndexedDB cache) with a hash-check layer to prevent stale data.
- * Before returning cached data, DB fetches the corresponding `.hash` file and
- * compares it against the stored hash. If they match, the cached value is returned
- * without a network round-trip. If they differ (or no cache exists), the file is
- * re-fetched, stored, and the hash is updated.
+ * Production: validates cache freshness via .hash files before serving cached data.
+ * Dev mode (localhost): skips hash validation, always loads fresh files directly.
  *
- * Flow:
+ * Production flow:
  *   1. Check Indexes.Hashes for the cached hash of the requested path
  *   2. Load the `.hash` file from the server (lightweight, always fresh)
  *   3. If hashes match → serve from Indexes.Statics (no re-fetch)
@@ -17,9 +14,13 @@
  */
 import { load } from "./FS.js"
 import { Indexes } from "./Stores.js"
+import { DEV } from "./Utils/environment.js"
 
 export class DB {
     static async get(path = []) {
+        // Dev mode: skip hash validation, always load fresh
+        if (DEV) return load(path)
+
         let type = path.at?.(-1)?.endsWith?.(".hash") ? "hash" : "data"
         const memory = await Indexes.Hashes.get(path).once()
         const hash = await load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
