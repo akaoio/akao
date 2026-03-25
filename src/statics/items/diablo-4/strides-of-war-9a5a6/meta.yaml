@@ -1,0 +1,24 @@
+id: strides-of-war-9a5a6
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Barbarian
+slots:
+  - Legs
+value: 17
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,22 @@
+id: elixir-of-shadow-resistance-331a6
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - normal
+  - elixir
+rarity: Normal
+itemTypeName: Elixir
+classes: null
+slots: null
+value: 22
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

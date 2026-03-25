@@ -1,0 +1,24 @@
+id: orphan-maker-929e8
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - crossbow
+rarity: Legendary
+itemTypeName: Crossbow
+classes:
+  - Rogue
+slots:
+  - Main Hand
+value: 74
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

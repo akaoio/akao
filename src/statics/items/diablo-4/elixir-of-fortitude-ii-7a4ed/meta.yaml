@@ -1,0 +1,22 @@
+id: elixir-of-fortitude-ii-7a4ed
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - common
+  - elixir
+rarity: Common
+itemTypeName: Elixir
+classes: null
+slots: null
+value: 37
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

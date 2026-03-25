@@ -1,0 +1,38 @@
+id: ferro-iii-cee1d
+game: arc-raiders
+type: item
+tags:
+  - common
+  - weapon
+rarity: Common
+subtype: null
+value: 2000
+stat_block:
+  range: 53.1
+  damage: 40
+  weight: 8
+  agility: 31.1
+  stealth: 8
+  fireRate: 6.6
+  stability: 78.1
+  magazineSize: 1
+  reducedReloadTime: 26
+  reducedDurabilityBurnRate: 51
+loadout_slots: []
+workbench: Weapon Bench I
+flavor_text: Very effective against ARC armor plating
+ammo_type: "heavy "
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

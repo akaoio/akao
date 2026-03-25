@@ -1,0 +1,23 @@
+id: bloodied-gloves-62fec
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - gloves
+rarity: Special
+itemTypeName: Gloves
+classes: null
+slots:
+  - Hands
+value: 31
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

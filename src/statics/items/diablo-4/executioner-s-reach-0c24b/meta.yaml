@@ -1,0 +1,24 @@
+id: executioner-s-reach-0c24b
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - bow
+rarity: Special
+itemTypeName: Bow
+classes:
+  - Rogue
+slots:
+  - Main Hand
+value: 15
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,27 @@
+id: two-handed-mace-11a68
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - two-handed mace
+rarity: Special
+itemTypeName: Two-Handed Mace
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+value: 110
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

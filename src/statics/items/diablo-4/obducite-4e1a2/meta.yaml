@@ -1,0 +1,22 @@
+id: obducite-4e1a2
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - common
+  - crafting material
+rarity: Common
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 52
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

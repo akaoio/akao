@@ -1,0 +1,24 @@
+id: ph-barb-uniq-99-pants-ee9cb
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Barbarian
+slots:
+  - Legs
+value: 20
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

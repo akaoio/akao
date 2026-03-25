@@ -1,0 +1,36 @@
+id: stable-stock-iii-f269c
+game: arc-raiders
+type: item
+tags:
+  - rare
+  - modification
+rarity: Rare
+subtype: null
+value: 5000
+stat_block:
+  weight: 0.75
+  compatibleWeapons: Rattler, Kettle, Ferro, Renegade, Hullcracker
+  increasedEquipTime: 20
+  increasedUnequipTime: 20
+  reducedRecoilRecoveryTime: 50
+  reducedDispersionRecoveryTime: 50
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

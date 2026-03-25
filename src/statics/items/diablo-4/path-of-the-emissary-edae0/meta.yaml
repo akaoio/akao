@@ -1,0 +1,24 @@
+id: path-of-the-emissary-edae0
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Spiritborn
+slots:
+  - Feet
+value: 100
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

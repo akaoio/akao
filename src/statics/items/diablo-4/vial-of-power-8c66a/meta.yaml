@@ -1,0 +1,24 @@
+id: vial-of-power-8c66a
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - focus
+rarity: Rare
+itemTypeName: Focus
+classes:
+  - Sorcerer
+slots:
+  - Off-Hand
+value: 26
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

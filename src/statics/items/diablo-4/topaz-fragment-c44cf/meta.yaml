@@ -1,0 +1,22 @@
+id: topaz-fragment-c44cf
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - normal
+  - crafting material
+rarity: Normal
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 24
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

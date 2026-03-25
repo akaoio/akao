@@ -1,0 +1,31 @@
+id: blue-gate-confiscation-room-key-6c647
+game: arc-raiders
+type: item
+tags:
+  - epic
+  - key
+rarity: Epic
+subtype: null
+value: 100
+stat_block:
+  weight: 0.25
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations:
+  - id: c06cf051-078c-41c4-8e16-3a5146781ece
+    map: dam
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

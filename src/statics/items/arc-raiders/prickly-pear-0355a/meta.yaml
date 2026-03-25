@@ -1,0 +1,32 @@
+id: prickly-pear-0355a
+game: arc-raiders
+type: item
+tags:
+  - common
+  - nature
+rarity: Common
+subtype: null
+value: 640
+stat_block:
+  weight: 0.2
+  stamina: 20
+  useTime: 1
+  stackSize: 10
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Nature
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

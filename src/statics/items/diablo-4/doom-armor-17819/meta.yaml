@@ -1,0 +1,23 @@
+id: doom-armor-17819
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - chest armor
+rarity: Unique
+itemTypeName: Chest Armor
+classes: null
+slots:
+  - Torso
+value: 39
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

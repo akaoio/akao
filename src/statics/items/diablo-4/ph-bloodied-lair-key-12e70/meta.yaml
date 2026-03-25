@@ -1,0 +1,22 @@
+id: ph-bloodied-lair-key-12e70
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - "[ph] bloodied key"
+rarity: Special
+itemTypeName: "[PH] Bloodied Key"
+classes: null
+slots: null
+value: 25
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

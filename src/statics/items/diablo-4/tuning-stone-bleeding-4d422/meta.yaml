@@ -1,0 +1,22 @@
+id: tuning-stone-bleeding-4d422
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - epic
+  - seneschal utility module
+rarity: Epic
+itemTypeName: Seneschal Utility Module
+classes: null
+slots: null
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

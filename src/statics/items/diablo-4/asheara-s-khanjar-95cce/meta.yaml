@@ -1,0 +1,25 @@
+id: asheara-s-khanjar-95cce
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - dagger
+rarity: Legendary
+itemTypeName: Dagger
+classes:
+  - Rogue
+slots:
+  - Main Hand
+  - Off-Hand
+value: 51
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

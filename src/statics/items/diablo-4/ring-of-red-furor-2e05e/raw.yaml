@@ -1,0 +1,10 @@
+id: 2414431
+icon: 832960533
+name: Ring of Red Furor
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Feet
+popularity: 18

@@ -1,0 +1,24 @@
+id: staff-of-lam-esen-5505a
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - chest armor
+rarity: Legendary
+itemTypeName: Chest Armor
+classes:
+  - Sorcerer
+slots:
+  - Torso
+value: 18
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

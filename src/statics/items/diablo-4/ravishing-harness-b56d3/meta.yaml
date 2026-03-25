@@ -1,0 +1,24 @@
+id: ravishing-harness-b56d3
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - chest armor
+rarity: Special
+itemTypeName: Chest Armor
+classes:
+  - Rogue
+slots:
+  - Torso
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

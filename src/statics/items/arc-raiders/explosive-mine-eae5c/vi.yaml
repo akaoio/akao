@@ -1,0 +1,3 @@
+name: Explosive Mine
+description: A proximity triggered mine that pops up and explodes, dealing
+  damage to anything within its radius.

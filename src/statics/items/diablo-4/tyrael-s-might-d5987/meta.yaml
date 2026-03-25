@@ -1,0 +1,23 @@
+id: tyrael-s-might-d5987
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - mythic
+  - chest armor
+rarity: Mythic
+itemTypeName: Chest Armor
+classes: null
+slots:
+  - Torso
+value: 344
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

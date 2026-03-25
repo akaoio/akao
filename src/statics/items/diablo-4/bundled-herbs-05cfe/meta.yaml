@@ -1,0 +1,22 @@
+id: bundled-herbs-05cfe
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - normal
+  - crafting material
+rarity: Normal
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 33
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

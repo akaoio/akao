@@ -1,0 +1,37 @@
+id: hullcracker-iii-98c7e
+game: arc-raiders
+type: item
+tags:
+  - epic
+  - weapon
+rarity: Epic
+subtype: Special
+value: 17000
+stat_block:
+  range: 38.9
+  damage: 100
+  weight: 7
+  agility: 67.9
+  stealth: 1
+  fireRate: 20.3
+  stability: 97.2
+  magazineSize: 5
+  increasedFireRate: 35
+loadout_slots: []
+workbench: Gunsmith III
+flavor_text: null
+ammo_type: launcher
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

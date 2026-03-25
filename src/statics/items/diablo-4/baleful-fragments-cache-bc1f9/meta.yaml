@@ -1,0 +1,22 @@
+id: baleful-fragments-cache-bc1f9
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - bartering cache
+rarity: Unique
+itemTypeName: Bartering Cache
+classes: null
+slots: null
+value: 17
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

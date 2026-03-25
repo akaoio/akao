@@ -1,0 +1,10 @@
+id: 2410366
+icon: 2247802302
+name: Condemnation
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Legs
+popularity: 17

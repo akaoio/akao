@@ -1,0 +1,10 @@
+id: 2418717
+icon: 1328719373
+name: Ring of the Sacrilegious Soul
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Torso
+popularity: 20

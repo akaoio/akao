@@ -1,0 +1,24 @@
+id: eggcecutioner-a6cdf
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - two-handed scythe
+rarity: Legendary
+itemTypeName: Two-Handed Scythe
+classes:
+  - Necromancer
+slots:
+  - Main Hand
+value: 15
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,23 @@
+id: khazra-barding-e8187
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - normal
+  - cat armor
+rarity: Normal
+itemTypeName: Cat Armor
+classes: null
+slots:
+  - Mount Armor
+value: 35
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,28 @@
+id: mohlon-s-fang-e3a23
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - dagger
+rarity: Rare
+itemTypeName: Dagger
+classes:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 21
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

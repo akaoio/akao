@@ -1,0 +1,70 @@
+id: torrente-ii
+name: Torrente II
+description: "Has large ammo capacity, but is only accurate while crouched. "
+item_type: Weapon
+loadout_slots: []
+icon: https://cdn.metaforge.app/arc-raiders/icons/torrente-ii.webp
+rarity: Rare
+value: 10000
+workbench: Weapon Bench I
+stat_block:
+  range: 49.9
+  damage: 8
+  health: 0
+  radius: 0
+  shield: 0
+  weight: 12
+  agility: 37.7
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  stealth: 1
+  useTime: 0
+  duration: 0
+  fireRate: 58.3
+  stability: 74.2
+  stackSize: 0
+  damageMult: 0
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  magazineSize: 70
+  reducedNoise: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  movementPenalty: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  reducedEquipTime: 0
+  staminaPerSecond: 0
+  increasedADSSpeed: 0
+  increasedFireRate: 0
+  reducedReloadTime: 15
+  illuminationRadius: 0
+  increasedEquipTime: 0
+  reducedUnequipTime: 0
+  shieldCompatibility: ""
+  increasedUnequipTime: 0
+  reducedVerticalRecoil: 0
+  increasedBulletVelocity: 0
+  increasedVerticalRecoil: 0
+  reducedMaxShotDispersion: 0
+  reducedPerShotDispersion: 0
+  reducedDurabilityBurnRate: 23
+  reducedRecoilRecoveryTime: 0
+  increasedRecoilRecoveryTime: 0
+  reducedDispersionRecoveryTime: 0
+flavor_text: Somewhat effective against ARC armor plating
+subcategory: ""
+created_at: 2025-10-08T19:48:00.335699+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+shield_type: ""
+loot_area: ""
+sources: null
+ammo_type: medium
+locations: []
+guide_links: []

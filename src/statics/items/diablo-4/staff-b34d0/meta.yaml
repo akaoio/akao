@@ -1,0 +1,25 @@
+id: staff-b34d0
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - staff
+rarity: Special
+itemTypeName: Staff
+classes:
+  - Druid
+  - Sorcerer
+slots:
+  - Main Hand
+value: 62
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

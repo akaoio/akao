@@ -1,0 +1,22 @@
+id: rank-i-capstone-cache-4aab3
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - season ranking cache
+rarity: Rare
+itemTypeName: Season Ranking Cache
+classes: null
+slots: null
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

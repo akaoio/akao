@@ -1,0 +1,22 @@
+id: resplendent-spark-3fb99
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - mythic
+  - crafting material
+rarity: Mythic
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 167
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

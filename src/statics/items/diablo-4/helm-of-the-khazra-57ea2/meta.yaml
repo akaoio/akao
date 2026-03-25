@@ -1,0 +1,23 @@
+id: helm-of-the-khazra-57ea2
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - helm
+rarity: Special
+itemTypeName: Helm
+classes: null
+slots:
+  - Head
+value: 37
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

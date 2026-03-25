@@ -1,0 +1,22 @@
+id: alkor-7ea41
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - normal
+  - pet
+rarity: Normal
+itemTypeName: Pet
+classes: null
+slots: null
+value: 18
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

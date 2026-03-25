@@ -1,0 +1,24 @@
+id: deathspeaker-s-pendant-2b314
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes:
+  - Necromancer
+slots:
+  - Neck
+value: 44
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

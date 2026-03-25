@@ -1,0 +1,32 @@
+id: red-coral-jewelry-3116b
+game: arc-raiders
+type: item
+tags:
+  - rare
+  - trinket
+rarity: Rare
+subtype: null
+value: 5000
+stat_block:
+  weight: 0.3
+  stackSize: 3
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Old World, Residential, Commercial
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

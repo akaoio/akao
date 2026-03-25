@@ -1,0 +1,9 @@
+id: 1029138
+icon: null
+name: "Glyph: Spirit"
+itemTypeName: Paragon Glyph
+quality: 3
+playerClassNames:
+  - Druid
+slotNames: []
+popularity: 23

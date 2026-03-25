@@ -1,0 +1,34 @@
+id: extended-shotgun-mag-ii-95b36
+game: arc-raiders
+type: item
+tags:
+  - uncommon
+  - modification
+rarity: Uncommon
+subtype: null
+value: 2000
+stat_block:
+  value: 2000
+  weight: 0.5
+  stackSize: 1
+  magazineSize: 4
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Gunsmith II
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

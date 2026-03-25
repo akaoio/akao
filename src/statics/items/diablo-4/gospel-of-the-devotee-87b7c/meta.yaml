@@ -1,0 +1,24 @@
+id: gospel-of-the-devotee-87b7c
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - chest armor
+rarity: Legendary
+itemTypeName: Chest Armor
+classes:
+  - Necromancer
+slots:
+  - Torso
+value: 17
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

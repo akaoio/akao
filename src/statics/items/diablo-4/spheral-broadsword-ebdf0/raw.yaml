@@ -1,0 +1,12 @@
+id: 1641305
+icon: 587952414
+name: Spheral Broadsword
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 18

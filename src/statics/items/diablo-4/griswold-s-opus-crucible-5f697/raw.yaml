@@ -1,0 +1,11 @@
+id: 2602293
+icon: 3772429999
+name: Griswold's Opus (Crucible)
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 45

@@ -1,0 +1,30 @@
+id: painted-box-62537
+game: arc-raiders
+type: item
+tags:
+  - uncommon
+  - trinket
+rarity: Uncommon
+subtype: null
+value: 2000
+stat_block:
+  weight: 0.3
+  stackSize: 3
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Old World
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

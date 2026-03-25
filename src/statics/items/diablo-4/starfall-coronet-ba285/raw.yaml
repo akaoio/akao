@@ -1,0 +1,10 @@
+id: 2407665
+icon: 289378155
+name: Starfall Coronet
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 19

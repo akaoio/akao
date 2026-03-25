@@ -1,0 +1,24 @@
+id: fractured-winterglass-35799
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes:
+  - Sorcerer
+slots:
+  - Neck
+value: 95
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

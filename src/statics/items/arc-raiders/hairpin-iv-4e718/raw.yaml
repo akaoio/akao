@@ -1,0 +1,71 @@
+id: hairpin-iv
+name: Hairpin IV
+description: Single-action pistol with a built-in silencer. Great for stealth,
+  but tricky in combat.
+item_type: Weapon
+loadout_slots: []
+icon: https://cdn.metaforge.app/arc-raiders/icons/hairpin-iv.webp
+rarity: Common
+value: 2900
+workbench: Weapon Bench
+stat_block:
+  range: 38.6
+  damage: 20
+  health: 0
+  radius: 0
+  shield: 0
+  weight: 3
+  agility: 78.3
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  stealth: 70
+  useTime: 0
+  duration: 0
+  fireRate: 9
+  stability: 90.9
+  stackSize: 0
+  damageMult: 0
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  magazineSize: 8
+  reducedNoise: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  movementPenalty: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  reducedEquipTime: 0
+  staminaPerSecond: 0
+  increasedADSSpeed: 0
+  increasedFireRate: 30
+  reducedReloadTime: 40
+  illuminationRadius: 0
+  increasedEquipTime: 0
+  reducedUnequipTime: 0
+  shieldCompatibility: ""
+  increasedUnequipTime: 0
+  reducedVerticalRecoil: 0
+  increasedBulletVelocity: 0
+  increasedVerticalRecoil: 0
+  reducedMaxShotDispersion: 0
+  reducedPerShotDispersion: 0
+  reducedDurabilityBurnRate: 0
+  reducedRecoilRecoveryTime: 0
+  increasedRecoilRecoveryTime: 0
+  reducedDispersionRecoveryTime: 0
+flavor_text: Weak against ARC armor plating
+subcategory: Pistol
+created_at: 2025-10-09T12:12:14.516869+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+shield_type: ""
+loot_area: ""
+sources: null
+ammo_type: light
+locations: []
+guide_links: []

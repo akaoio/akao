@@ -1,0 +1,10 @@
+id: 2418758
+icon: 3688425354
+name: The Basilisk
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Head
+popularity: 19

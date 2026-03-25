@@ -1,0 +1,11 @@
+id: 2602321
+icon: 1634459017
+name: Condemnation (Crucible)
+itemTypeName: Dagger
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 16

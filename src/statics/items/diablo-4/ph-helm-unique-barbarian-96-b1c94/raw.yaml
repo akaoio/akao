@@ -1,0 +1,10 @@
+id: 2303145
+icon: 258762099
+name: "[PH] Helm_Unique_Barbarian_96"
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 15

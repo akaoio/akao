@@ -1,0 +1,23 @@
+id: mage-clan-signet-ba714
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - ring
+rarity: Special
+itemTypeName: Ring
+classes: null
+slots:
+  - Ring
+value: 29
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

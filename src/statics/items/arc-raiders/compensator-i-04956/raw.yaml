@@ -1,0 +1,55 @@
+id: compensator-i
+name: Compensator I
+description: Slightly reduces per-shot dispersion.
+item_type: Modification
+loadout_slots:
+  - backpack
+  - safePocket
+icon: https://cdn.metaforge.app/arc-raiders/icons/compensator-i.webp
+rarity: Common
+value: 640
+workbench: Gunsmith
+stat_block:
+  range: 0
+  damage: 0
+  health: 0
+  radius: 0
+  shield: 0
+  weight: 0.25
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  useTime: 0
+  duration: 0
+  fireRate: 0
+  stability: 0
+  stackSize: 0
+  damageMult: 0
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  staminaPerSecond: 0
+  reducedReloadTime: 0
+  illuminationRadius: 0
+  shieldCompatibility: ""
+  reducedMaxShotDispersion: 0
+  reducedPerShotDispersion: 20
+  reducedDurabilityBurnRate: 0
+flavor_text: 10% Reduced Max Shot Dispersion
+subcategory: null
+created_at: 2025-09-23T18:21:03.51415+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+shield_type: null
+loot_area: null
+sources: null
+ammo_type: null
+locations: []
+guide_links: []

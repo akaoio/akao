@@ -1,0 +1,24 @@
+id: cathedral-s-song-9849a
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - shield
+rarity: Legendary
+itemTypeName: Shield
+classes:
+  - Paladin
+slots:
+  - Off-Hand
+value: 140
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

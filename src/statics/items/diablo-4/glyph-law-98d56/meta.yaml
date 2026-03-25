@@ -1,0 +1,22 @@
+id: glyph-law-98d56
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - paragon glyph
+rarity: Rare
+itemTypeName: Paragon Glyph
+classes:
+  - Paladin
+slots: null
+value: 19
+images: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

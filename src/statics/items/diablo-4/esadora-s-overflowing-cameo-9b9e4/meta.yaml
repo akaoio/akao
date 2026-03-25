@@ -1,0 +1,24 @@
+id: esadora-s-overflowing-cameo-9b9e4
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes:
+  - Sorcerer
+slots:
+  - Head
+value: 33
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

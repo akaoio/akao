@@ -1,0 +1,11 @@
+id: 2469878
+icon: 1012726267
+name: Gravebloom
+itemTypeName: Mace
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 564

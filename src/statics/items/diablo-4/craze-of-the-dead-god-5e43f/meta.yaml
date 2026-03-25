@@ -1,0 +1,24 @@
+id: craze-of-the-dead-god-5e43f
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Spiritborn
+slots:
+  - Hands
+value: 45
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

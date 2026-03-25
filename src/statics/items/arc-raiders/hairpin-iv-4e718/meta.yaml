@@ -1,0 +1,38 @@
+id: hairpin-iv-4e718
+game: arc-raiders
+type: item
+tags:
+  - common
+  - weapon
+rarity: Common
+subtype: Pistol
+value: 2900
+stat_block:
+  range: 38.6
+  damage: 20
+  weight: 3
+  agility: 78.3
+  stealth: 70
+  fireRate: 9
+  stability: 90.9
+  magazineSize: 8
+  increasedFireRate: 30
+  reducedReloadTime: 40
+loadout_slots: []
+workbench: Weapon Bench
+flavor_text: Weak against ARC armor plating
+ammo_type: light
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

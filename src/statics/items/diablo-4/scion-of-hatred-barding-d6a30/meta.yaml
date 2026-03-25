@@ -1,0 +1,23 @@
+id: scion-of-hatred-barding-d6a30
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - cat armor
+rarity: Special
+itemTypeName: Cat Armor
+classes: null
+slots:
+  - Mount Armor
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

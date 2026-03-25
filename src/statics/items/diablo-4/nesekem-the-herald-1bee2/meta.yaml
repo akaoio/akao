@@ -1,0 +1,24 @@
+id: nesekem-the-herald-1bee2
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - mythic
+  - glaive
+rarity: Mythic
+itemTypeName: Glaive
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 120
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,38 @@
+id: bettina-iii-0afeb
+game: arc-raiders
+type: item
+tags:
+  - epic
+  - weapon
+rarity: Epic
+subtype: Assault Rifle
+value: 14000
+stat_block:
+  range: 51.3
+  damage: 14
+  weight: 11
+  agility: 48.2
+  stealth: 14
+  fireRate: 32
+  stability: 76.4
+  magazineSize: 20
+  increasedFireRate: 10
+  reducedReloadTime: 22.2
+loadout_slots: []
+workbench: Weapon Bench
+flavor_text: null
+ammo_type: heavy
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

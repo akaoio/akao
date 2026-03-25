@@ -1,0 +1,24 @@
+id: crossbow-f6586
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - crossbow
+rarity: Special
+itemTypeName: Crossbow
+classes:
+  - Rogue
+slots:
+  - Main Hand
+value: 38
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

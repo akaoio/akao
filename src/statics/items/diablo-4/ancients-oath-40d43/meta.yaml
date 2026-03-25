@@ -1,0 +1,24 @@
+id: ancients-oath-40d43
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - two-handed axe
+rarity: Legendary
+itemTypeName: Two-Handed Axe
+classes:
+  - Barbarian
+slots:
+  - Main Hand
+value: 55
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

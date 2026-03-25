@@ -1,0 +1,24 @@
+id: bane-of-ahjad-den-76e88
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Barbarian
+slots:
+  - Hands
+value: 79
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

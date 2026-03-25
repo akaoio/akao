@@ -16,7 +16,7 @@
 import crypto from "node:crypto"
 import fsNative from "node:fs"
 import pathNative from "node:path"
-import { write, load, exist, dir, copy } from "../../src/core/FS.js"
+import { write, load, exist, dir, copy, isDirectory } from "../../src/core/FS.js"
 import { sha256 } from "../../src/core/Utils/crypto.js"
 import { generateHashFiles } from "../core/hash.js"
 import { paths } from "../core/config.js"
@@ -27,6 +27,12 @@ const LOCALES_PATH = [...paths.src.statics, "locales.yaml"]
 const VALID_TYPES = new Set(["item", "service", "account", "currency"])
 const FORBIDDEN_META_FIELDS = ["price", "sale", "currency"]
 const WARNED_UNKNOWN_TYPES = new Set()
+
+const DEFAULT_CONFIGS = Object.freeze({
+    min: { quantity: null, value: null },
+    max: { quantity: null, value: null },
+    step: null,
+})
 
 function stableStringify(value) {
     if (value === null || typeof value !== "object") return JSON.stringify(value)
@@ -52,6 +58,40 @@ function buildCanonicalItemId(raw, localeData) {
     const hash = sha256(rawBlock)
     const suffix = hash.slice(-5)
     return `${namedSlug}-${suffix}`
+}
+
+function ensureConfigs(meta = {}) {
+    const current = meta.configs || {}
+    const currentMin = current.min || {}
+    const currentMax = current.max || {}
+
+    return {
+        ...meta,
+        configs: {
+            min: {
+                quantity: currentMin.quantity ?? DEFAULT_CONFIGS.min.quantity,
+                value: currentMin.value ?? DEFAULT_CONFIGS.min.value,
+            },
+            max: {
+                quantity: currentMax.quantity ?? DEFAULT_CONFIGS.max.quantity,
+                value: currentMax.value ?? DEFAULT_CONFIGS.max.value,
+            },
+            step: current.step ?? DEFAULT_CONFIGS.step,
+        },
+    }
+}
+
+function normalizeLocaleData(locale = {}, fallback = {}) {
+    let source = locale
+
+    if (source && typeof source === "object" && !Array.isArray(source) && source.en && typeof source.en === "object") {
+        source = source.en
+    }
+
+    const name = source?.name ?? fallback?.name ?? ""
+    const description = source?.description ?? fallback?.description ?? ""
+
+    return { name, description }
 }
 
 function enforceType(type, itemId) {
@@ -80,6 +120,7 @@ function mergeMeta(existing, incoming) {
     // Fields that belong to the dev — never overwrite
     const preserved = {}
     if (existing.tags !== undefined) preserved.tags = existing.tags
+    if (existing.configs !== undefined) preserved.configs = existing.configs
 
     // Custom fields not in the system set are also preserved
     const systemFields = new Set(["id", "game", "type", "images", "icon"])
@@ -224,14 +265,14 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
     // ── meta.yaml (patch/create) ──
     const srcMetaPath = [...srcDir, "meta.yaml"]
     const existingMeta = (await exist(srcMetaPath)) ? await load(srcMetaPath) : null
-    const mergedMeta = mergeMeta(existingMeta, normalizedMeta)
+    const mergedMeta = ensureConfigs(mergeMeta(existingMeta, normalizedMeta))
     for (const field of FORBIDDEN_META_FIELDS) delete mergedMeta[field]
     await write(srcMetaPath, mergedMeta)
 
     // ── meta.json (patch/create) ──
     const buildMetaPath = [...buildDir, "meta.json"]
     const existingBuildMeta = (await exist(buildMetaPath)) ? await load(buildMetaPath) : null
-    const mergedBuildMeta = mergeMeta(existingBuildMeta, normalizedMeta)
+    const mergedBuildMeta = ensureConfigs(mergeMeta(existingBuildMeta, normalizedMeta))
     for (const field of FORBIDDEN_META_FIELDS) delete mergedBuildMeta[field]
     await write(buildMetaPath, mergedBuildMeta)
 
@@ -239,29 +280,95 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
     else stats.metaPatched++
 
     // ── locale files: en first, then seed others from en.yaml ──
+    const localeSeed = normalizeLocaleData(localeData)
     const enSrcPath = [...srcDir, "en.yaml"]
     const enBuildPath = [...buildDir, "en.json"]
-    if (!(await exist(enSrcPath))) {
-        await write(enSrcPath, localeData)
-        stats.locales++
-    }
-    if (!(await exist(enBuildPath))) {
-        await write(enBuildPath, localeData)
-    }
-    // Seed non-en locales from en.yaml so names/descriptions stay consistent
-    const enSeed = (await exist(enSrcPath)) ? await load(enSrcPath) : localeData
+
+    const existingEn = (await exist(enSrcPath)) ? await load(enSrcPath) : null
+    const enSeed = normalizeLocaleData(existingEn, localeSeed)
+
+    if (!(await exist(enSrcPath))) stats.locales++
+    await write(enSrcPath, enSeed)
+    await write(enBuildPath, enSeed)
+
+    // Seed and sanitize non-en locales from canonical locale shape
     for (const code of localeCodes) {
         if (code === "en") continue
         const srcLocalePath = [...srcDir, `${code}.yaml`]
-        if (!(await exist(srcLocalePath))) {
-            await write(srcLocalePath, enSeed)
-            stats.locales++
-        }
+        const existingLocale = (await exist(srcLocalePath)) ? await load(srcLocalePath) : null
+        const nextLocale = normalizeLocaleData(existingLocale, enSeed)
+        if (!(await exist(srcLocalePath))) stats.locales++
+        await write(srcLocalePath, nextLocale)
+
         const buildLocalePath = [...buildDir, `${code}.json`]
-        if (!(await exist(buildLocalePath))) {
-            await write(buildLocalePath, enSeed)
+        await write(buildLocalePath, nextLocale)
+    }
+}
+
+async function sanitizeExistingGameItems(gameId, localeCodes) {
+    const gameSrcDir = [...paths.src.items, gameId]
+    if (!(await exist(gameSrcDir))) return { items: 0, locales: 0, metaPatched: 0, imagesSeeded: 0, itemIds: new Set() }
+
+    const entries = await dir(gameSrcDir)
+    const itemIds = new Set()
+    let metaPatched = 0
+
+    for (const entry of entries) {
+        const itemDir = [...gameSrcDir, entry]
+        if (!(await isDirectory(itemDir))) continue
+
+        itemIds.add(entry)
+
+        const srcMetaPath = [...itemDir, "meta.yaml"]
+        if (await exist(srcMetaPath)) {
+            const srcMeta = await load(srcMetaPath)
+            if (srcMeta && typeof srcMeta === "object") {
+                const patched = ensureConfigs({ ...srcMeta })
+                delete patched.icon
+                for (const field of FORBIDDEN_META_FIELDS) delete patched[field]
+                await write(srcMetaPath, patched)
+                metaPatched++
+
+                const buildMetaPath = [...paths.build.statics, "items", gameId, entry, "meta.json"]
+                if (await exist(buildMetaPath)) {
+                    const buildMeta = await load(buildMetaPath)
+                    if (buildMeta && typeof buildMeta === "object") {
+                        const patchedBuildMeta = ensureConfigs({ ...buildMeta })
+                        delete patchedBuildMeta.icon
+                        for (const field of FORBIDDEN_META_FIELDS) delete patchedBuildMeta[field]
+                        await write(buildMetaPath, patchedBuildMeta)
+                    }
+                }
+            }
+        }
+
+        const enSrcPath = [...itemDir, "en.yaml"]
+        const enExisting = (await exist(enSrcPath)) ? await load(enSrcPath) : null
+        const enSeed = normalizeLocaleData(enExisting, { name: "", description: "" })
+        if (await exist(enSrcPath)) await write(enSrcPath, enSeed)
+
+        const enBuildPath = [...paths.build.statics, "items", gameId, entry, "en.json"]
+        if (await exist(enBuildPath)) await write(enBuildPath, enSeed)
+
+        for (const code of localeCodes) {
+            if (code === "en") continue
+            const srcLocalePath = [...itemDir, `${code}.yaml`]
+            if (await exist(srcLocalePath)) {
+                const existingLocale = await load(srcLocalePath)
+                const nextLocale = normalizeLocaleData(existingLocale, enSeed)
+                await write(srcLocalePath, nextLocale)
+            }
+
+            const buildLocalePath = [...paths.build.statics, "items", gameId, entry, `${code}.json`]
+            if (await exist(buildLocalePath)) {
+                const existingBuildLocale = await load(buildLocalePath)
+                const nextBuildLocale = normalizeLocaleData(existingBuildLocale, enSeed)
+                await write(buildLocalePath, nextBuildLocale)
+            }
         }
     }
+
+    return { items: 0, locales: 0, metaPatched, imagesSeeded: 0, itemIds }
 }
 
 /**
@@ -276,19 +383,19 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
 export async function syncGameItems(gameId, detailMapper, imageResolver = null) {
     if (!detailMapper) {
         log.info(`  ${gameId}: no detailMapper, skipping sync`)
-        return { items: 0, locales: 0, metaPatched: 0, imagesSeeded: 0, itemIds: new Set() }
+        return sanitizeExistingGameItems(gameId, await getLocaleCodes())
     }
 
     const rawItemsPath = ["games", gameId, "items.json"]
     if (!(await exist(rawItemsPath))) {
         log.info(`  ${gameId}: games/${gameId}/items.json not found, skipping sync`)
-        return { items: 0, locales: 0, metaPatched: 0, imagesSeeded: 0, itemIds: new Set() }
+        return sanitizeExistingGameItems(gameId, await getLocaleCodes())
     }
 
     const rawItems = await load(rawItemsPath)
     if (!Array.isArray(rawItems) || rawItems.length === 0) {
         log.info(`  ${gameId}: no items in crawl output, skipping sync`)
-        return { items: 0, locales: 0, metaPatched: 0, imagesSeeded: 0, itemIds: new Set() }
+        return sanitizeExistingGameItems(gameId, await getLocaleCodes())
     }
 
     const localeCodes = await getLocaleCodes()

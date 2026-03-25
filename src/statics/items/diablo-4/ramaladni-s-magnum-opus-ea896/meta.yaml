@@ -1,0 +1,25 @@
+id: ramaladni-s-magnum-opus-ea896
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - sword
+rarity: Legendary
+itemTypeName: Sword
+classes:
+  - Barbarian
+slots:
+  - Main Hand
+  - Off-Hand
+value: 254
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

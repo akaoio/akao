@@ -1,0 +1,24 @@
+id: ward-of-the-white-dove-4e2cb
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - shield
+rarity: Legendary
+itemTypeName: Shield
+classes:
+  - Paladin
+slots:
+  - Off-Hand
+value: 1033
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

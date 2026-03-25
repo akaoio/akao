@@ -1,0 +1,10 @@
+id: 1530788
+icon: 2293987712
+name: Robes of the Recluse
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Legs
+popularity: 16

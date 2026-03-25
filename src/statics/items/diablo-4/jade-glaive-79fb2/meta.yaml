@@ -1,0 +1,24 @@
+id: jade-glaive-79fb2
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - glaive
+rarity: Unique
+itemTypeName: Glaive
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 25
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

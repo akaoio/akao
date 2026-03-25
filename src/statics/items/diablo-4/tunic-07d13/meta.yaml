@@ -1,0 +1,23 @@
+id: tunic-07d13
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - chest armor
+rarity: Special
+itemTypeName: Chest Armor
+classes: null
+slots:
+  - Torso
+value: 197
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

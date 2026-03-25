@@ -1,0 +1,10 @@
+id: 344413
+icon: 2591328072
+name: Hellhammer
+itemTypeName: Two-Handed Mace
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Main Hand
+popularity: 48

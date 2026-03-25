@@ -1,0 +1,23 @@
+id: soulwatch-hoop-db6cf
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - ring
+rarity: Unique
+itemTypeName: Ring
+classes: null
+slots:
+  - Ring
+value: 140
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

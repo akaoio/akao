@@ -1,0 +1,10 @@
+id: 2411578
+icon: 2247802302
+name: Grasp of Shadow
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Legs
+popularity: 20

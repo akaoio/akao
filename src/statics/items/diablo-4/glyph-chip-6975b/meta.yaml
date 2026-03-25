@@ -1,0 +1,22 @@
+id: glyph-chip-6975b
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - paragon glyph
+rarity: Rare
+itemTypeName: Paragon Glyph
+classes:
+  - Rogue
+slots: null
+value: 21
+images: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

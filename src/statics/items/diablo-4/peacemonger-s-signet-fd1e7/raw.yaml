@@ -1,0 +1,10 @@
+id: 2389130
+icon: 1345251379
+name: Peacemonger's Signet
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Feet
+popularity: 16

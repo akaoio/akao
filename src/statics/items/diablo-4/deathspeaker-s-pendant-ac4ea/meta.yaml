@@ -1,0 +1,24 @@
+id: deathspeaker-s-pendant-ac4ea
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - chest armor
+rarity: Legendary
+itemTypeName: Chest Armor
+classes:
+  - Necromancer
+slots:
+  - Torso
+value: 19
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

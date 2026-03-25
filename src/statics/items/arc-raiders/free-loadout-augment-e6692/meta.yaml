@@ -1,0 +1,33 @@
+id: free-loadout-augment-e6692
+game: arc-raiders
+type: item
+tags:
+  - common
+  - augment
+rarity: Common
+subtype: null
+value: 100
+stat_block:
+  weightLimit: 35
+  backpackSlots: 14
+  quickUseSlots: 4
+  weightLimitKg: 35
+  shieldCompatibility: Light
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

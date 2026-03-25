@@ -1,0 +1,28 @@
+id: a-mother-s-reproach-2eacb
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - flail
+rarity: Special
+itemTypeName: Flail
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 18
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

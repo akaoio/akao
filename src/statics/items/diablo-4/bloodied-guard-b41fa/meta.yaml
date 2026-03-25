@@ -1,0 +1,23 @@
+id: bloodied-guard-b41fa
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - trophy
+rarity: Special
+itemTypeName: Trophy
+classes: null
+slots:
+  - Trophy
+value: 51
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

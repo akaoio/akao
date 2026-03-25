@@ -1,0 +1,22 @@
+id: scattered-prism-07637
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - crafting material
+rarity: Unique
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 176
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

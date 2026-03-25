@@ -1,0 +1,12 @@
+id: 2602331
+icon: 3269931145
+name: War Crest (Crucible)
+itemTypeName: Polearm
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 27

@@ -1,0 +1,34 @@
+id: angled-grip-iii-58ece
+game: arc-raiders
+type: item
+tags:
+  - rare
+  - modification
+rarity: Rare
+subtype: null
+value: 5000
+stat_block:
+  weight: 0.5
+  stackSize: 1
+  compatibleWeapons: Ferro, Kettle, Rattler, Stitcher, Arpeggio, II toro, Venator,
+    Bettina, Bobcat, Tempest, Vulcano, Aphelion
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: 40% Reduced Horizontal Recoil - 30% Reduced ADS Speed
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,22 @@
+id: stygian-stone-c029a
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - common
+  - lair boss key
+rarity: Common
+itemTypeName: Lair Boss Key
+classes: null
+slots: null
+value: 48
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
