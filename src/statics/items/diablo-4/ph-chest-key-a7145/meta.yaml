@@ -1,6 +1,6 @@
 id: ph-chest-key-a7145
 game: diablo-4
-type: item
+type: Area Item
 tags:
   - diablo-4
   - legendary
@@ -10,8 +10,6 @@ itemTypeName: Area Item
 classes: null
 slots: null
 value: 15
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

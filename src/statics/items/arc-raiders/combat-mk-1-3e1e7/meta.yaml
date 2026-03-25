@@ -1,6 +1,6 @@
 id: combat-mk-1-3e1e7
 game: arc-raiders
-type: item
+type: Augment
 tags:
   - uncommon
   - augment
@@ -22,8 +22,6 @@ shield_type: null
 loot_area: null
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -32,3 +30,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: glyph-deadraiser-fd59b
 game: diablo-4
-type: item
+type: Paragon Glyph
 tags:
   - diablo-4
   - rare
@@ -11,7 +11,6 @@ classes:
   - Necromancer
 slots: null
 value: 17
-images: []
 configs:
   min:
     quantity: null
@@ -20,3 +19,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

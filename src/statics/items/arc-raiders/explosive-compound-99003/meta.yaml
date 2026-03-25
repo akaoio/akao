@@ -1,6 +1,6 @@
 id: explosive-compound-99003
 game: arc-raiders
-type: item
+type: Refined Material
 tags:
   - rare
   - refined material
@@ -18,8 +18,6 @@ shield_type: null
 loot_area: Security, Industrial
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -28,3 +26,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

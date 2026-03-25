@@ -1,6 +1,6 @@
 id: exquisite-blood-79a06
 game: diablo-4
-type: item
+type: Lair Boss Key
 tags:
   - diablo-4
   - special
@@ -10,8 +10,6 @@ itemTypeName: Lair Boss Key
 classes: null
 slots: null
 value: 452
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: rod-of-kepeleke-4da4f
 game: diablo-4
-type: item
+type: Quarterstaff
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Main Hand
 value: 328
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

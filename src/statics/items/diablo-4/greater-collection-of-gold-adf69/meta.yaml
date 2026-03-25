@@ -1,6 +1,6 @@
 id: greater-collection-of-gold-adf69
 game: diablo-4
-type: item
+type: Grand Cache
 tags:
   - diablo-4
   - unique
@@ -10,8 +10,6 @@ itemTypeName: Grand Cache
 classes: null
 slots: null
 value: 25
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

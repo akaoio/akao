@@ -1,6 +1,6 @@
 id: something-super-cool-4df0a
 game: diablo-4
-type: item
+type: Quest Item
 tags:
   - diablo-4
   - legendary
@@ -10,7 +10,6 @@ itemTypeName: Quest Item
 classes: null
 slots: null
 value: 15
-images: []
 configs:
   min:
     quantity: null
@@ -19,3 +18,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

@@ -1,6 +1,6 @@
 id: bloated-tuna-can-4427b
 game: arc-raiders
-type: item
+type: Trinket
 tags:
   - common
   - trinket
@@ -22,8 +22,6 @@ shield_type: null
 loot_area: Commercial, Residential
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -32,3 +30,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

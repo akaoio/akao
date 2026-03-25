@@ -1,6 +1,6 @@
 id: patrol-car-key-facd6
 game: arc-raiders
-type: item
+type: Key
 tags:
   - uncommon
   - key
@@ -19,8 +19,6 @@ sources: null
 locations:
   - id: ca792d5687618106082c5a2271b8c042
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -29,3 +27,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: galvanic-azurite-65eb2
 game: diablo-4
-type: item
+type: Ring
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Ring
 value: 500
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

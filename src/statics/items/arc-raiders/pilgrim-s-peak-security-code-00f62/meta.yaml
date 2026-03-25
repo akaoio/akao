@@ -1,6 +1,6 @@
 id: pilgrim-s-peak-security-code-00f62
 game: arc-raiders
-type: item
+type: Key
 tags:
   - common
   - key
@@ -17,8 +17,6 @@ shield_type: null
 loot_area: null
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -27,3 +25,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

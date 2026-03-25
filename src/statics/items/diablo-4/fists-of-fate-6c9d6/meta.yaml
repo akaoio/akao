@@ -1,6 +1,6 @@
 id: fists-of-fate-6c9d6
 game: diablo-4
-type: item
+type: Pants
 tags:
   - diablo-4
   - legendary
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Legs
 value: 20
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

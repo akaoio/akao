@@ -1,6 +1,6 @@
 id: agave-d23be
 game: arc-raiders
-type: item
+type: Nature
 tags:
   - uncommon
   - nature
@@ -21,8 +21,6 @@ shield_type: null
 loot_area: Nature
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -31,3 +29,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

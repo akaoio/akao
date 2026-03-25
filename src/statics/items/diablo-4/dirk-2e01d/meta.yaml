@@ -1,6 +1,6 @@
 id: dirk-2e01d
 game: diablo-4
-type: item
+type: Dagger
 tags:
   - diablo-4
   - rare
@@ -16,8 +16,6 @@ slots:
   - Main Hand
   - Off-Hand
 value: 15
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -26,3 +24,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

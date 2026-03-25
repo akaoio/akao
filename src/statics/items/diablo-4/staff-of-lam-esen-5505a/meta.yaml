@@ -1,6 +1,6 @@
 id: staff-of-lam-esen-5505a
 game: diablo-4
-type: item
+type: Chest Armor
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Torso
 value: 18
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

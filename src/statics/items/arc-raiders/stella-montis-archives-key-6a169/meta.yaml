@@ -1,6 +1,6 @@
 id: stella-montis-archives-key-6a169
 game: arc-raiders
-type: item
+type: Key
 tags:
   - epic
   - key
@@ -20,8 +20,6 @@ sources: null
 locations:
   - id: 49d3c2d8-759b-41ec-98af-65206785ef40
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -30,3 +28,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: dam-control-center-tower-key-8ba4d
 game: arc-raiders
-type: item
+type: Key
 tags:
   - epic
   - key
@@ -20,8 +20,6 @@ sources: null
 locations:
   - id: d094e9c6-1638-7895-ba8f-b0b38aa455c2
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -30,3 +28,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

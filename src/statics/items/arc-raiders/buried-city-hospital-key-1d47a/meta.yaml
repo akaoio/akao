@@ -1,6 +1,6 @@
 id: buried-city-hospital-key-1d47a
 game: arc-raiders
-type: item
+type: Key
 tags:
   - rare
   - key
@@ -20,8 +20,6 @@ sources: null
 locations:
   - id: d7758838-8f7e-0f74-2faa-b009ed37245b
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -30,3 +28,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -37,7 +37,7 @@ function detailMapper(raw) {
     return {
         meta: {
             game: "diablo-4",
-            type: "item",
+            type: normalized.type || "Misc",
             tags: ["diablo-4", normalized.rarity?.toLowerCase(), (normalized.type || "").toLowerCase()].filter(Boolean),
             rarity: normalized.rarity,
             itemTypeName: raw.itemTypeName || null,

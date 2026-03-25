@@ -1,6 +1,6 @@
 id: gravehorn-s-barding-0a7f7
 game: diablo-4
-type: item
+type: Horse Armor
 tags:
   - diablo-4
   - special
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Mount Armor
 value: 22
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

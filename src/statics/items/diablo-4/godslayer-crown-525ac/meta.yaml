@@ -1,6 +1,6 @@
 id: godslayer-crown-525ac
 game: diablo-4
-type: item
+type: Pants
 tags:
   - diablo-4
   - legendary
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Legs
 value: 86
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

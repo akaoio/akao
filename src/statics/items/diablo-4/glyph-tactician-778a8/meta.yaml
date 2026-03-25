@@ -1,6 +1,6 @@
 id: glyph-tactician-778a8
 game: diablo-4
-type: item
+type: Paragon Glyph
 tags:
   - diablo-4
   - rare
@@ -11,7 +11,6 @@ classes:
   - Sorcerer
 slots: null
 value: 28
-images: []
 configs:
   min:
     quantity: null
@@ -20,3 +19,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

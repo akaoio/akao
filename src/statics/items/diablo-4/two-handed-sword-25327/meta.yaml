@@ -1,6 +1,6 @@
 id: two-handed-sword-25327
 game: diablo-4
-type: item
+type: Two-Handed Sword
 tags:
   - diablo-4
   - special
@@ -14,8 +14,6 @@ classes:
 slots:
   - Main Hand
 value: 53
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -24,3 +22,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

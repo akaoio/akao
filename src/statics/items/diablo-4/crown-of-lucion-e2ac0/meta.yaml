@@ -1,6 +1,6 @@
 id: crown-of-lucion-e2ac0
 game: diablo-4
-type: item
+type: Boots
 tags:
   - diablo-4
   - legendary
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Feet
 value: 27
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

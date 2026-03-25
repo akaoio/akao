@@ -1,6 +1,6 @@
 id: glyph-devious-32dc9
 game: diablo-4
-type: item
+type: Paragon Glyph
 tags:
   - diablo-4
   - rare
@@ -11,7 +11,6 @@ classes:
   - Rogue
 slots: null
 value: 15
-images: []
 configs:
   min:
     quantity: null
@@ -20,3 +19,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

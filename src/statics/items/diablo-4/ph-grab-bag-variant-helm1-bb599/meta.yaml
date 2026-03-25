@@ -1,6 +1,6 @@
 id: ph-grab-bag-variant-helm1-bb599
 game: diablo-4
-type: item
+type: Helm
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Head
 value: 18
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

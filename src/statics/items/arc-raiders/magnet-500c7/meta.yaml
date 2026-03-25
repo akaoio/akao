@@ -1,6 +1,6 @@
 id: magnet-500c7
 game: arc-raiders
-type: item
+type: Topside Material
 tags:
   - uncommon
   - topside material
@@ -18,8 +18,6 @@ shield_type: null
 loot_area: Exodus
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -28,3 +26,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

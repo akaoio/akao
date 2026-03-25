@@ -1,6 +1,6 @@
 id: vial-of-power-8c66a
 game: diablo-4
-type: item
+type: Focus
 tags:
   - diablo-4
   - rare
@@ -12,8 +12,6 @@ classes:
 slots:
   - Off-Hand
 value: 26
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

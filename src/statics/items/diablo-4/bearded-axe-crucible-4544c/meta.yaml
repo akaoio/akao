@@ -1,6 +1,6 @@
 id: bearded-axe-crucible-4544c
 game: diablo-4
-type: item
+type: Axe
 tags:
   - diablo-4
   - unique
@@ -16,8 +16,6 @@ slots:
   - Main Hand
   - Off-Hand
 value: 20
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -26,3 +24,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

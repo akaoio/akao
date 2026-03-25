@@ -1,6 +1,6 @@
 id: rogue-persistence-legacy-b2204
 game: diablo-4
-type: item
+type: Temper Manual
 tags:
   - diablo-4
   - rare
@@ -10,8 +10,6 @@ itemTypeName: Temper Manual
 classes: null
 slots: null
 value: 20
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

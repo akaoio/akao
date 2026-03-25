@@ -1,6 +1,6 @@
 id: dns-d242c
 game: diablo-4
-type: item
+type: Two-Handed Mace
 tags:
   - diablo-4
   - legendary
@@ -15,8 +15,6 @@ classes:
 slots:
   - Main Hand
 value: 16
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -25,3 +23,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: electrical-components-73d1a
 game: arc-raiders
-type: item
+type: Refined Material
 tags:
   - uncommon
   - refined material
@@ -21,8 +21,6 @@ shield_type: null
 loot_area: Electrical
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -31,3 +29,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

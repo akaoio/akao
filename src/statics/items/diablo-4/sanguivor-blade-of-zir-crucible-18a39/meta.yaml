@@ -1,6 +1,6 @@
 id: sanguivor-blade-of-zir-crucible-18a39
 game: diablo-4
-type: item
+type: Two-Handed Sword
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Main Hand
 value: 25
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp
