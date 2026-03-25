@@ -11,6 +11,10 @@ function camelToLabel(key) {
     return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim()
 }
 
+function resolveDisplayType(meta = {}) {
+    return meta.type || meta.itemTypeName || meta.configs?.type || ""
+}
+
 export class GAME_ITEM_ROUTE extends HTMLElement {
     constructor() {
         super()
@@ -82,8 +86,9 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
         rarityBadge.style.display = meta.rarity ? "" : "none"
 
         const typeBadge = root.querySelector("#type-badge")
-        typeBadge.textContent = meta.type || ""
-        typeBadge.style.display = meta.type ? "" : "none"
+        const displayType = resolveDisplayType(meta)
+        typeBadge.textContent = displayType
+        typeBadge.style.display = displayType ? "" : "none"
 
         const subtypeBadge = root.querySelector("#subtype-badge")
         subtypeBadge.textContent = meta.subtype || ""

@@ -1,6 +1,6 @@
 id: glyph-chip-e6cf8
 game: diablo-4
-type: item
+type: Paragon Glyph
 tags:
   - diablo-4
   - rare
@@ -10,7 +10,6 @@ itemTypeName: Paragon Glyph
 classes: null
 slots: null
 value: 17
-images: []
 configs:
   min:
     quantity: null
@@ -19,3 +18,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

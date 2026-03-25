@@ -1,6 +1,6 @@
 id: dam-utility-key-6eca3
 game: arc-raiders
-type: item
+type: Quest Item
 tags:
   - uncommon
   - quest item
@@ -18,8 +18,6 @@ shield_type: null
 loot_area: null
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -28,3 +26,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

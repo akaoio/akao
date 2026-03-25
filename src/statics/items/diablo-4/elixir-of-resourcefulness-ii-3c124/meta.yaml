@@ -1,6 +1,6 @@
 id: elixir-of-resourcefulness-ii-3c124
 game: diablo-4
-type: item
+type: Elixir
 tags:
   - diablo-4
   - common
@@ -10,8 +10,6 @@ itemTypeName: Elixir
 classes: null
 slots: null
 value: 29
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

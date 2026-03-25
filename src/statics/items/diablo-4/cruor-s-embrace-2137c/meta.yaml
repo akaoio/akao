@@ -1,6 +1,6 @@
 id: cruor-s-embrace-2137c
 game: diablo-4
-type: item
+type: Gloves
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Hands
 value: 93
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

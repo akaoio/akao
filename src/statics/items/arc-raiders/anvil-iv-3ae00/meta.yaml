@@ -1,6 +1,6 @@
 id: anvil-iv-3ae00
 game: arc-raiders
-type: item
+type: Weapon
 tags:
   - uncommon
   - weapon
@@ -27,8 +27,6 @@ shield_type: null
 loot_area: null
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -37,3 +35,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

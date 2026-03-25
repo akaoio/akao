@@ -1,6 +1,6 @@
 id: two-handed-mace-11a68
 game: diablo-4
-type: item
+type: Two-Handed Mace
 tags:
   - diablo-4
   - special
@@ -15,8 +15,6 @@ classes:
 slots:
   - Main Hand
 value: 110
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -25,3 +23,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

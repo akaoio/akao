@@ -1,6 +1,6 @@
 id: legendary-test-chest-e8bb6
 game: diablo-4
-type: item
+type: Chest Armor
 tags:
   - diablo-4
   - unique
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Torso
 value: 20
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

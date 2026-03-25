@@ -1,6 +1,6 @@
 id: spaceport-trench-tower-key-caf74
 game: arc-raiders
-type: item
+type: Key
 tags:
   - uncommon
   - key
@@ -20,8 +20,6 @@ sources: null
 locations:
   - id: df181189-9c4b-266b-a3d9-da0b620b49ee
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -30,3 +28,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

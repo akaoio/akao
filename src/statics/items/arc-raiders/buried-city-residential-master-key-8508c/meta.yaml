@@ -1,6 +1,6 @@
 id: buried-city-residential-master-key-8508c
 game: arc-raiders
-type: item
+type: Key
 tags:
   - uncommon
   - key
@@ -24,8 +24,6 @@ locations:
     map: dam
   - id: 156e3357-24bd-4470-8257-899eb7f4c2c8
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -34,3 +32,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

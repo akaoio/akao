@@ -1,6 +1,6 @@
 id: aura-innovation-55260
 game: diablo-4
-type: item
+type: Temper Manual
 tags:
   - diablo-4
   - unique
@@ -11,8 +11,6 @@ classes:
   - Paladin
 slots: null
 value: 52
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

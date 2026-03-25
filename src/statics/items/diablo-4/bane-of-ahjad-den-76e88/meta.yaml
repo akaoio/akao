@@ -1,6 +1,6 @@
 id: bane-of-ahjad-den-76e88
 game: diablo-4
-type: item
+type: Gloves
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Hands
 value: 79
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

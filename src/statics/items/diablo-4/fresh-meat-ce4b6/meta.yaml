@@ -1,6 +1,6 @@
 id: fresh-meat-ce4b6
 game: diablo-4
-type: item
+type: Crafting Material
 tags:
   - diablo-4
   - rare
@@ -10,8 +10,6 @@ itemTypeName: Crafting Material
 classes: null
 slots: null
 value: 123
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

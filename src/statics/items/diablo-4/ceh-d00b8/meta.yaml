@@ -1,6 +1,6 @@
 id: ceh-d00b8
 game: diablo-4
-type: item
+type: Rune of Invocation
 tags:
   - diablo-4
   - common
@@ -10,8 +10,6 @@ itemTypeName: Rune of Invocation
 classes: null
 slots: null
 value: 326
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

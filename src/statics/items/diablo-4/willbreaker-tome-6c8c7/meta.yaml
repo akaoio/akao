@@ -1,6 +1,6 @@
 id: willbreaker-tome-6c8c7
 game: diablo-4
-type: item
+type: Crafting Recipe
 tags:
   - diablo-4
   - legendary
@@ -10,8 +10,6 @@ itemTypeName: Crafting Recipe
 classes: null
 slots: null
 value: 15
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

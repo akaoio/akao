@@ -1,6 +1,6 @@
 id: tribute-of-refinement-e7229
 game: diablo-4
-type: item
+type: Nightmare Sigil
 tags:
   - diablo-4
   - rare
@@ -10,8 +10,6 @@ itemTypeName: Nightmare Sigil
 classes: null
 slots: null
 value: 156
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

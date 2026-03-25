@@ -1,6 +1,6 @@
 id: dns-565b9
 game: diablo-4
-type: item
+type: Sword
 tags:
   - diablo-4
   - legendary
@@ -18,7 +18,6 @@ slots:
   - Main Hand
   - Off-Hand
 value: 15
-images: []
 configs:
   min:
     quantity: null
@@ -27,3 +26,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

@@ -1,6 +1,6 @@
 id: umir-s-touch-6112c
 game: diablo-4
-type: item
+type: Gloves
 tags:
   - diablo-4
   - special
@@ -12,8 +12,6 @@ classes:
 slots:
   - Hands
 value: 16
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

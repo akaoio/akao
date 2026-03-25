@@ -1,6 +1,6 @@
 id: disciple-innovation-88925
 game: diablo-4
-type: item
+type: Temper Manual
 tags:
   - diablo-4
   - rare
@@ -11,8 +11,6 @@ classes:
   - Paladin
 slots: null
 value: 51
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

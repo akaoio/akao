@@ -1,6 +1,6 @@
 id: breathtaking-snow-globe-83881
 game: arc-raiders
-type: item
+type: Trinket
 tags:
   - epic
   - trinket
@@ -18,8 +18,6 @@ shield_type: null
 loot_area: Residential, Old World, Commercial
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -28,3 +26,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

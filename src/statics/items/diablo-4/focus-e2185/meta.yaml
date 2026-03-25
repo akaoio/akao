@@ -1,6 +1,6 @@
 id: focus-e2185
 game: diablo-4
-type: item
+type: Focus
 tags:
   - diablo-4
   - special
@@ -13,8 +13,6 @@ classes:
 slots:
   - Off-Hand
 value: 148
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -23,3 +21,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

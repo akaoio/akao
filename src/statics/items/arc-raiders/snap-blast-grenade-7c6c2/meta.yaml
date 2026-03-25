@@ -1,6 +1,6 @@
 id: snap-blast-grenade-7c6c2
 game: arc-raiders
-type: item
+type: Quick Use
 tags:
   - uncommon
   - quick use
@@ -22,8 +22,6 @@ shield_type: null
 loot_area: null
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -32,3 +30,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

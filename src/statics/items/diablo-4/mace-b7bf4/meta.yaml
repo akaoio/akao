@@ -1,6 +1,6 @@
 id: mace-b7bf4
 game: diablo-4
-type: item
+type: Mace
 tags:
   - diablo-4
   - special
@@ -17,8 +17,6 @@ slots:
   - Main Hand
   - Off-Hand
 value: 56
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -27,3 +25,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

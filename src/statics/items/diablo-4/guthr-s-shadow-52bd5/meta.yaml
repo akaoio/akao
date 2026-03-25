@@ -1,6 +1,6 @@
 id: guthr-s-shadow-52bd5
 game: diablo-4
-type: item
+type: Two-Handed Axe
 tags:
   - diablo-4
   - special
@@ -15,8 +15,6 @@ classes:
 slots:
   - Main Hand
 value: 21
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -25,3 +23,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: buried-city-town-hall-key-4873d
 game: arc-raiders
-type: item
+type: Key
 tags:
   - epic
   - key
@@ -19,8 +19,6 @@ sources: null
 locations:
   - id: cf1ec7a8-a7d9-9a01-7968-a72683433955
     map: buried-city
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -29,3 +27,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

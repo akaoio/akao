@@ -1,2 +1,1 @@
-export { template } from "/UI/routes/item/[item]/template.js"
-export default template
+export { template, template as default } from "/UI/routes/item/[item]/template.js"

@@ -32,6 +32,7 @@ const DEFAULT_CONFIGS = Object.freeze({
     min: { quantity: null, value: null },
     max: { quantity: null, value: null },
     step: null,
+    type: null,
 })
 
 function stableStringify(value) {
@@ -77,6 +78,7 @@ function ensureConfigs(meta = {}) {
                 value: currentMax.value ?? DEFAULT_CONFIGS.max.value,
             },
             step: current.step ?? DEFAULT_CONFIGS.step,
+            type: current.type ?? DEFAULT_CONFIGS.type,
         },
     }
 }
@@ -94,14 +96,46 @@ function normalizeLocaleData(locale = {}, fallback = {}) {
     return { name, description }
 }
 
-function enforceType(type, itemId) {
-    if (VALID_TYPES.has(type)) return type
-    const unknownType = String(type)
-    if (!WARNED_UNKNOWN_TYPES.has(unknownType)) {
-        WARNED_UNKNOWN_TYPES.add(unknownType)
-        log.info(`    warn: unknown type "${unknownType}" (first seen at ${itemId}), falling back to "item"`)
+function mergeConfigs(existing, incoming) {
+    const existingConfigs = existing && typeof existing === "object" ? existing : {}
+    const incomingConfigs = incoming && typeof incoming === "object" ? incoming : {}
+    const incomingType = incomingConfigs.type
+    const existingType = existingConfigs.type
+
+    return {
+        ...incomingConfigs,
+        ...existingConfigs,
+        min: {
+            ...(incomingConfigs.min || {}),
+            ...(existingConfigs.min || {}),
+        },
+        max: {
+            ...(incomingConfigs.max || {}),
+            ...(existingConfigs.max || {}),
+        },
+        type: incomingType ?? existingType ?? DEFAULT_CONFIGS.type,
     }
-    return "item"
+}
+
+function normalizeShopMeta(meta = {}, itemId) {
+    const normalizedMeta = { ...meta }
+    const rawType = normalizedMeta.type
+    const gameType = rawType == null || rawType === "" ? null : String(rawType)
+    const rawShopType = normalizedMeta.configs?.type ?? normalizedMeta.shopType
+    const shopTypeCandidate = rawShopType ?? "item"
+    const shopType = VALID_TYPES.has(shopTypeCandidate) ? shopTypeCandidate : "item"
+
+    normalizedMeta.type = gameType || "item"
+    normalizedMeta.configs = mergeConfigs(normalizedMeta.configs, { type: shopType })
+    delete normalizedMeta.shopType
+
+    if (!VALID_TYPES.has(shopTypeCandidate) && !WARNED_UNKNOWN_TYPES.has(String(shopTypeCandidate))) {
+        const unknownType = String(shopTypeCandidate)
+        WARNED_UNKNOWN_TYPES.add(unknownType)
+        log.info(`    warn: invalid shop type "${unknownType}" (first seen at ${itemId}), using configs.type "item"`)
+    }
+
+    return normalizedMeta
 }
 
 async function getLocaleCodes() {
@@ -120,7 +154,9 @@ function mergeMeta(existing, incoming) {
     // Fields that belong to the dev — never overwrite
     const preserved = {}
     if (existing.tags !== undefined) preserved.tags = existing.tags
-    if (existing.configs !== undefined) preserved.configs = existing.configs
+    if (existing.configs !== undefined || incoming.configs !== undefined) {
+        preserved.configs = mergeConfigs(existing.configs, incoming.configs)
+    }
 
     // Custom fields not in the system set are also preserved
     const systemFields = new Set(["id", "game", "type", "images", "icon"])
@@ -250,8 +286,7 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
 
     // ── build canonical meta ──
     const normalizedMeta = {
-        ...meta,
-        type: enforceType(meta.type, itemId),
+        ...normalizeShopMeta(meta, itemId),
         images: imageNames,
     }
     delete normalizedMeta.icon
@@ -323,7 +358,7 @@ async function sanitizeExistingGameItems(gameId, localeCodes) {
         if (await exist(srcMetaPath)) {
             const srcMeta = await load(srcMetaPath)
             if (srcMeta && typeof srcMeta === "object") {
-                const patched = ensureConfigs({ ...srcMeta })
+                const patched = ensureConfigs(normalizeShopMeta({ ...srcMeta }, entry))
                 delete patched.icon
                 for (const field of FORBIDDEN_META_FIELDS) delete patched[field]
                 await write(srcMetaPath, patched)
@@ -333,7 +368,7 @@ async function sanitizeExistingGameItems(gameId, localeCodes) {
                 if (await exist(buildMetaPath)) {
                     const buildMeta = await load(buildMetaPath)
                     if (buildMeta && typeof buildMeta === "object") {
-                        const patchedBuildMeta = ensureConfigs({ ...buildMeta })
+                        const patchedBuildMeta = ensureConfigs(normalizeShopMeta({ ...buildMeta }, entry))
                         delete patchedBuildMeta.icon
                         for (const field of FORBIDDEN_META_FIELDS) delete patchedBuildMeta[field]
                         await write(buildMetaPath, patchedBuildMeta)

@@ -1,6 +1,6 @@
 id: wings-of-the-celestine-templar-6e5b8
 game: diablo-4
-type: item
+type: Back Trophy
 tags:
   - diablo-4
   - special
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Back Trophy
 value: 30
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

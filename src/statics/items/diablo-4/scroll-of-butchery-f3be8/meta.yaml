@@ -1,6 +1,6 @@
 id: scroll-of-butchery-f3be8
 game: diablo-4
-type: item
+type: Scroll
 tags:
   - diablo-4
   - uncommon
@@ -10,8 +10,6 @@ itemTypeName: Scroll
 classes: null
 slots: null
 value: 137
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

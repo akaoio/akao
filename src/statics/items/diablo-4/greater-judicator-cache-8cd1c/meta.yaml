@@ -1,6 +1,6 @@
 id: greater-judicator-cache-8cd1c
 game: diablo-4
-type: item
+type: Cache
 tags:
   - diablo-4
   - unique
@@ -11,8 +11,6 @@ classes:
   - Paladin
 slots: null
 value: 17
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

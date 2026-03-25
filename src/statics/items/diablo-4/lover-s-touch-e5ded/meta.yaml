@@ -1,6 +1,6 @@
 id: lover-s-touch-e5ded
 game: diablo-4
-type: item
+type: Gloves
 tags:
   - diablo-4
   - special
@@ -12,7 +12,6 @@ classes:
 slots:
   - Hands
 value: 16
-images: []
 configs:
   min:
     quantity: null
@@ -21,3 +20,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

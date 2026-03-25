@@ -1,6 +1,6 @@
 id: esadora-s-overflowing-cameo-1508e
 game: diablo-4
-type: item
+type: Amulet
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Neck
 value: 628
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

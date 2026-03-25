@@ -1,6 +1,6 @@
 id: dam-staff-room-key-20a4c
 game: arc-raiders
-type: item
+type: Key
 tags:
   - uncommon
   - key
@@ -20,8 +20,6 @@ sources: null
 locations:
   - id: 5ff5069c-aae7-6b4b-18d0-c6973283c2ea
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -30,3 +28,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

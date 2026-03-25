@@ -1,6 +1,6 @@
 id: governing-stone-impale-50e16
 game: diablo-4
-type: item
+type: Senechal Power Module
 tags:
   - diablo-4
   - unique
@@ -10,8 +10,6 @@ itemTypeName: Senechal Power Module
 classes: null
 slots: null
 value: 19
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

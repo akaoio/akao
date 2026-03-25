@@ -1,6 +1,6 @@
 id: dark-citadel-challenger-s-cache-6e67f
 game: diablo-4
-type: item
+type: Citadel Cache
 tags:
   - diablo-4
   - unique
@@ -10,8 +10,6 @@ itemTypeName: Citadel Cache
 classes: null
 slots: null
 value: 35
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

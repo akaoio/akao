@@ -5,6 +5,8 @@
 
 import fs from "node:fs/promises"
 import path from "node:path"
+import { spawnSync } from "node:child_process"
+import YAML from "yaml"
 
 async function fileExists(filePath) {
     try {
@@ -26,6 +28,96 @@ function normalizeRawItem(item) {
         slotNames: item.slotNames || [],
         popularity: item.popularity || 0,
     }
+}
+
+function isProtectionPage(html = "") {
+    return /AwsWafIntegration|verify that you're not a robot|JavaScript is disabled/i.test(html)
+}
+
+function runGit(args) {
+    const result = spawnSync("git", args, {
+        encoding: "utf8",
+        maxBuffer: 64 * 1024 * 1024,
+        windowsHide: true,
+    })
+
+    if (result.status !== 0) return null
+    return result.stdout
+}
+
+async function loadItemsFromSourceStatics(gameId) {
+    const root = path.join("src", "statics", "items", gameId)
+    if (!(await fileExists(root))) return []
+
+    let entries = []
+    try {
+        entries = await fs.readdir(root, { withFileTypes: true })
+    } catch {
+        return []
+    }
+
+    const items = []
+    for (const entry of entries) {
+        if (!entry.isDirectory()) continue
+        const rawPath = path.join(root, entry.name, "raw.yaml")
+        if (!(await fileExists(rawPath))) continue
+
+        try {
+            const raw = await fs.readFile(rawPath, "utf8")
+            const parsed = YAML.parse(raw)
+            if (parsed?.id != null) items.push(normalizeRawItem(parsed))
+        } catch {
+            // ignore invalid raw file and continue
+        }
+    }
+
+    return items
+}
+
+async function loadItemsFromGitSource(gameId) {
+    const root = `src/statics/items/${gameId}`
+    const tree = runGit(["ls-tree", "-r", "--name-only", "HEAD", root])
+    if (!tree) return []
+
+    const rawPaths = tree
+        .split(/\r?\n/u)
+        .map((line) => line.trim())
+        .filter((line) => line.endsWith("/raw.yaml"))
+
+    if (rawPaths.length === 0) return []
+
+    const items = []
+    for (const rawPath of rawPaths) {
+        const raw = runGit(["show", `HEAD:${rawPath}`])
+        if (!raw) continue
+
+        try {
+            const parsed = YAML.parse(raw)
+            if (parsed?.id != null) items.push(normalizeRawItem(parsed))
+        } catch {
+            // ignore invalid git object and continue
+        }
+    }
+
+    return items
+}
+
+async function recoverItemsFromFallbacks(output, gameId) {
+    const sources = [
+        { label: "saved page files", load: () => loadItemsFromSavedPages(output) },
+        { label: "existing items.json", load: () => loadExistingItems(output) },
+        { label: "src/statics raw.yaml", load: () => loadItemsFromSourceStatics(gameId) },
+        { label: "git HEAD raw.yaml", load: () => loadItemsFromGitSource(gameId) },
+    ]
+
+    for (const source of sources) {
+        const items = await source.load()
+        if (items.length > 0) {
+            return { items, source: source.label }
+        }
+    }
+
+    return { items: [], source: null }
 }
 
 async function loadItemsFromSavedPages(output) {
@@ -80,6 +172,7 @@ async function loadExistingItems(output) {
 export async function crawlDiablo4Items(options = {}) {
     const output = options.output ? path.resolve(options.output) : path.resolve("games", "diablo-4")
     const dryRun = !!options.dryRun
+    const gameId = options.gameId || "diablo-4"
     const maxPages = options.maxPages || 5
     const limit = options.limit || Infinity
     const concurrency = options.concurrency || 8
@@ -94,6 +187,8 @@ export async function crawlDiablo4Items(options = {}) {
     let pagesFetched = 0
     let duplicateItemsSkipped = 0
     let previousPageIds = null
+    let blockedByProtection = false
+    let recoverySource = null
 
     try {
         const pagesDir = `${output}/pages`
@@ -105,7 +200,14 @@ export async function crawlDiablo4Items(options = {}) {
             console.log(`[D4] Fetching page ${pageNum}...`)
             const pageUrl = `https://www.wowhead.com/diablo-4/items${pageNum > 0 ? `?page=${pageNum}` : ""}`
 
-            const pageItems = await fetchPageItems(pageUrl, pageNum)
+            const pageResult = await fetchPageItems(pageUrl, pageNum)
+            const pageItems = pageResult.items
+
+            if (pageResult.blocked) {
+                blockedByProtection = true
+                console.log(`[D4] Page ${pageNum} returned a verification page; switching to fallback sources`)
+                break
+            }
 
             if (!pageItems || pageItems.length === 0) {
                 console.log(`[D4] No items on page ${pageNum}, stopping`)
@@ -168,29 +270,22 @@ export async function crawlDiablo4Items(options = {}) {
         }
 
         if (items.length === 0 && !dryRun) {
-            const pageFallbackItems = await loadItemsFromSavedPages(output)
-            if (pageFallbackItems.length > 0) {
-                items.push(...pageFallbackItems)
-                for (const item of pageFallbackItems) {
+            const recovered = await recoverItemsFromFallbacks(output, gameId)
+            if (recovered.items.length > 0) {
+                recoverySource = recovered.source
+                items.push(...recovered.items)
+                for (const item of recovered.items) {
                     seenItemIds.add(item.id)
                     if (item.icon && !imageUrls.has(item.icon)) {
                         imageUrls.set(item.icon, buildIconUrl(item.icon))
                     }
                 }
-                console.log(`[D4] Fallback: recovered ${items.length} item(s) from saved page files`)
-            } else {
-                const existingItems = await loadExistingItems(output)
-                if (existingItems.length > 0) {
-                    items.push(...existingItems)
-                    for (const item of existingItems) {
-                        seenItemIds.add(item.id)
-                        if (item.icon && !imageUrls.has(item.icon)) {
-                            imageUrls.set(item.icon, buildIconUrl(item.icon))
-                        }
-                    }
-                    console.log(`[D4] Fallback: reusing existing items.json with ${items.length} item(s)`)
-                }
+                console.log(`[D4] Fallback: recovered ${items.length} item(s) from ${recoverySource}`)
             }
+        }
+
+        if (items.length === 0 && blockedByProtection) {
+            console.log("[D4] No fallback data available after verification page; preserving existing files")
         }
 
         console.log(`[D4] Fetched ${pagesFetched} page(s) with ${items.length} unique items`)
@@ -244,6 +339,8 @@ export async function crawlDiablo4Items(options = {}) {
                 downloadedImages,
                 cachedImages,
                 missingImages,
+                blockedByProtection,
+                recoverySource,
             }
             await fs.writeFile(
                 path.join(output, "summary.json"),
@@ -266,6 +363,8 @@ export async function crawlDiablo4Items(options = {}) {
             downloadedImages,
             cachedImages,
             missingImages,
+            blockedByProtection,
+            recoverySource,
             args: options,
         }
     } catch (error) {
@@ -283,10 +382,14 @@ async function fetchPageItems(url, pageNum) {
         const response = await fetch(url)
         if (!response.ok) {
             console.log(`[D4] HTTP ${response.status} for page ${pageNum}`)
-            return []
+            return { items: [], blocked: false }
         }
 
         const html = await response.text()
+
+        if (isProtectionPage(html)) {
+            return { items: [], blocked: true }
+        }
 
         const lines = html.split("\n")
         let jsonLine = null
@@ -300,14 +403,14 @@ async function fetchPageItems(url, pageNum) {
 
         if (!jsonLine) {
             console.log(`[D4] No items script found on page ${pageNum}`)
-            return []
+            return { items: [], blocked: false }
         }
 
         try {
             const arrayStart = jsonLine.indexOf("[{")
             if (arrayStart === -1) {
                 console.log(`[D4] Could not find array start on page ${pageNum}`)
-                return []
+                return { items: [], blocked: false }
             }
 
             const jsonStr = jsonLine.substring(arrayStart)
@@ -330,7 +433,7 @@ async function fetchPageItems(url, pageNum) {
 
             if (!parsed) {
                 console.log(`[D4] Could not parse JSON from page ${pageNum}: ${lastError?.message}`)
-                return []
+                return { items: [], blocked: false }
             }
 
             let items = []
@@ -343,14 +446,14 @@ async function fetchPageItems(url, pageNum) {
             }
 
             console.log(`[D4] Page ${pageNum}: found ${items.length} items`)
-            return items
+            return { items, blocked: false }
         } catch (e) {
             console.log(`[D4] JSON parse error on page ${pageNum}: ${e.message}`)
-            return []
+            return { items: [], blocked: false }
         }
     } catch (error) {
         console.log(`[D4] Failed to fetch page ${pageNum}: ${error.message}`)
-        return []
+        return { items: [], blocked: false }
     }
 }
 

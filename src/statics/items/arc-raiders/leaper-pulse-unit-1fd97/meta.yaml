@@ -1,6 +1,6 @@
 id: leaper-pulse-unit-1fd97
 game: arc-raiders
-type: item
+type: Throwable
 tags:
   - epic
   - throwable
@@ -19,8 +19,6 @@ shield_type: null
 loot_area: ARC
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -29,3 +27,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

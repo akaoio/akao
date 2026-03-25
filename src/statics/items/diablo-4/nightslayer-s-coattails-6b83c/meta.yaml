@@ -1,6 +1,6 @@
 id: nightslayer-s-coattails-6b83c
 game: diablo-4
-type: item
+type: Pants
 tags:
   - diablo-4
   - special
@@ -12,8 +12,6 @@ classes:
 slots:
   - Legs
 value: 16
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: shield-crest-of-exile-a378f
 game: diablo-4
-type: item
+type: Trophy
 tags:
   - diablo-4
   - normal
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Trophy
 value: 26
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

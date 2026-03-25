@@ -1,6 +1,6 @@
 id: glyph-arbiter-628d5
 game: diablo-4
-type: item
+type: Paragon Glyph
 tags:
   - diablo-4
   - rare
@@ -11,7 +11,6 @@ classes:
   - Paladin
 slots: null
 value: 93
-images: []
 configs:
   min:
     quantity: null
@@ -20,3 +19,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

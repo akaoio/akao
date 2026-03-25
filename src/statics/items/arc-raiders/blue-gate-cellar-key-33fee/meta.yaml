@@ -1,6 +1,6 @@
 id: blue-gate-cellar-key-33fee
 game: arc-raiders
-type: item
+type: Key
 tags:
   - rare
   - key
@@ -21,8 +21,6 @@ locations:
     map: dam
   - id: 874f5724-f8f2-c909-83b7-f73d85733e21
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -31,3 +29,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: bison-driver-6ed86
 game: arc-raiders
-type: item
+type: Recyclable
 tags:
   - rare
   - recyclable
@@ -22,8 +22,6 @@ shield_type: null
 loot_area: ARC
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -32,3 +30,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

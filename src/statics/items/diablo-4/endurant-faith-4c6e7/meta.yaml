@@ -1,6 +1,6 @@
 id: endurant-faith-4c6e7
 game: diablo-4
-type: item
+type: Helm
 tags:
   - diablo-4
   - legendary
@@ -11,8 +11,6 @@ classes: null
 slots:
   - Head
 value: 20
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -21,3 +19,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

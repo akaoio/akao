@@ -1,6 +1,6 @@
 id: wand-6a0ed
 game: diablo-4
-type: item
+type: Wand
 tags:
   - diablo-4
   - special
@@ -13,8 +13,6 @@ classes:
 slots:
   - Main Hand
 value: 35
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -23,3 +21,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

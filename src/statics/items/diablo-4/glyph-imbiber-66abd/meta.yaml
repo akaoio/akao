@@ -1,6 +1,6 @@
 id: glyph-imbiber-66abd
 game: diablo-4
-type: item
+type: Paragon Glyph
 tags:
   - diablo-4
   - rare
@@ -14,7 +14,6 @@ classes:
   - Sorcerer
 slots: null
 value: 46
-images: []
 configs:
   min:
     quantity: null
@@ -23,3 +22,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

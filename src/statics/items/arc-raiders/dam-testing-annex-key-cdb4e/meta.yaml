@@ -1,6 +1,6 @@
 id: dam-testing-annex-key-cdb4e
 game: arc-raiders
-type: item
+type: Key
 tags:
   - rare
   - key
@@ -22,8 +22,6 @@ locations:
     map: dam
   - id: f1802dc6-c712-6365-157a-148be50724d6
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -32,3 +30,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

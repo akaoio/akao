@@ -1,6 +1,6 @@
 id: mythic-unique-cache-a51c1
 game: diablo-4
-type: item
+type: Crafted Cache
 tags:
   - diablo-4
   - mythic
@@ -10,8 +10,6 @@ itemTypeName: Crafted Cache
 classes: null
 slots: null
 value: 44
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

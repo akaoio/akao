@@ -1,6 +1,6 @@
 id: mephisto-s-corruption-243d2
 game: diablo-4
-type: item
+type: Area Item
 tags:
   - diablo-4
   - special
@@ -10,7 +10,6 @@ itemTypeName: Area Item
 classes: null
 slots: null
 value: 37
-images: []
 configs:
   min:
     quantity: null
@@ -19,3 +18,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

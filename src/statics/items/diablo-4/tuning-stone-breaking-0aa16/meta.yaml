@@ -1,6 +1,6 @@
 id: tuning-stone-breaking-0aa16
 game: diablo-4
-type: item
+type: Seneschal Utility Module
 tags:
   - diablo-4
   - unique
@@ -10,8 +10,6 @@ itemTypeName: Seneschal Utility Module
 classes: null
 slots: null
 value: 18
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

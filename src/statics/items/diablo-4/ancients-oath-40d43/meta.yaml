@@ -1,6 +1,6 @@
 id: ancients-oath-40d43
 game: diablo-4
-type: item
+type: Two-Handed Axe
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Main Hand
 value: 55
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

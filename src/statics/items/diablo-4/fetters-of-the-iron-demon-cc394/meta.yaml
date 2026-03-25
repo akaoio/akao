@@ -1,6 +1,6 @@
 id: fetters-of-the-iron-demon-cc394
 game: diablo-4
-type: item
+type: Boots
 tags:
   - diablo-4
   - special
@@ -12,8 +12,6 @@ classes:
 slots:
   - Feet
 value: 16
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

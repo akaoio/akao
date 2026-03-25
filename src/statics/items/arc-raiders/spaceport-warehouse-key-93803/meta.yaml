@@ -1,6 +1,6 @@
 id: spaceport-warehouse-key-93803
 game: arc-raiders
-type: item
+type: Key
 tags:
   - uncommon
   - key
@@ -20,8 +20,6 @@ sources: null
 locations:
   - id: 99789e89-e7cf-3eb8-f80b-387f75e05d78
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -30,3 +28,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: shattered-vow-c724f
 game: diablo-4
-type: item
+type: Polearm
 tags:
   - diablo-4
   - mythic
@@ -14,8 +14,6 @@ classes:
 slots:
   - Main Hand
 value: 212
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -24,3 +22,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: hooves-of-the-mountain-god-9d287
 game: diablo-4
-type: item
+type: Boots
 tags:
   - diablo-4
   - legendary
@@ -12,8 +12,6 @@ classes:
 slots:
   - Feet
 value: 103
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -22,3 +20,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

@@ -1,6 +1,6 @@
 id: nahantu-tiger-6fd5f
 game: diablo-4
-type: item
+type: Mount
 tags:
   - diablo-4
   - special
@@ -10,8 +10,6 @@ itemTypeName: Mount
 classes: null
 slots: null
 value: 39
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -20,3 +18,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

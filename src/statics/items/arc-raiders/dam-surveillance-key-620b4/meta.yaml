@@ -1,6 +1,6 @@
 id: dam-surveillance-key-620b4
 game: arc-raiders
-type: item
+type: Key
 tags:
   - uncommon
   - key
@@ -19,8 +19,6 @@ sources: null
 locations:
   - id: dac93007-171c-a466-719d-cd820d0c878f
     map: dam
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -29,3 +27,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp

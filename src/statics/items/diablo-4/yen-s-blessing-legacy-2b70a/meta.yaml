@@ -1,6 +1,6 @@
 id: yen-s-blessing-legacy-2b70a
 game: diablo-4
-type: item
+type: Boots
 tags:
   - diablo-4
   - legendary
@@ -11,7 +11,6 @@ classes: null
 slots:
   - Feet
 value: 76
-images: []
 configs:
   min:
     quantity: null
@@ -20,3 +19,5 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images: []

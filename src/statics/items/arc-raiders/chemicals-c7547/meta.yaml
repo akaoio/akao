@@ -1,6 +1,6 @@
 id: chemicals-c7547
 game: arc-raiders
-type: item
+type: Basic Material
 tags:
   - common
   - basic material
@@ -20,8 +20,6 @@ shield_type: null
 loot_area: Mechanical, Residential, Medical
 sources: null
 locations: []
-images:
-  - 0.webp
 configs:
   min:
     quantity: null
@@ -30,3 +28,6 @@ configs:
     quantity: null
     value: null
   step: null
+  type: item
+images:
+  - 0.webp
