@@ -1,0 +1,22 @@
+id: khazra-horn-74d1f
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - currency
+rarity: Special
+itemTypeName: Currency
+classes: null
+slots: null
+value: 40
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,22 @@
+id: governing-stone-autodefense-77890
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - senechal power module
+rarity: Unique
+itemTypeName: Senechal Power Module
+classes: null
+slots: null
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

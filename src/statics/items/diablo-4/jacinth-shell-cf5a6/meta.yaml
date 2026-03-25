@@ -1,0 +1,24 @@
+id: jacinth-shell-cf5a6
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - chest armor
+rarity: Legendary
+itemTypeName: Chest Armor
+classes:
+  - Spiritborn
+slots:
+  - Torso
+value: 78
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

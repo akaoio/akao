@@ -1,0 +1,23 @@
+id: boneweave-gauntlets-1e161
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - gloves
+rarity: Unique
+itemTypeName: Gloves
+classes: null
+slots:
+  - Hands
+value: 21
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

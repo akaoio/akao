@@ -1,0 +1,24 @@
+id: okun-s-catalyst-c1216
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - focus
+rarity: Legendary
+itemTypeName: Focus
+classes:
+  - Sorcerer
+slots:
+  - Off-Hand
+value: 182
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,24 @@
+id: tantalizing-leathers-f5a64
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - pants
+rarity: Special
+itemTypeName: Pants
+classes:
+  - Rogue
+slots:
+  - Legs
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

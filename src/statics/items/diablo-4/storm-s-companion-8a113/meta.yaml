@@ -1,0 +1,24 @@
+id: storm-s-companion-8a113
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Druid
+slots:
+  - Legs
+value: 96
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

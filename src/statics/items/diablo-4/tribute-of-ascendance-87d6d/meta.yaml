@@ -1,0 +1,22 @@
+id: tribute-of-ascendance-87d6d
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - nightmare sigil
+rarity: Legendary
+itemTypeName: Nightmare Sigil
+classes: null
+slots: null
+value: 190
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,23 @@
+id: tymn-echo-of-the-spire-97d8e
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - back trophy
+rarity: Special
+itemTypeName: Back Trophy
+classes: null
+slots:
+  - Back Trophy
+value: 27
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,10 @@
+id: 1788901
+icon: 3520552153
+name: Ugly Bastard Helm
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 162

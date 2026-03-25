@@ -1,0 +1,10 @@
+id: 2407629
+icon: 406001947
+name: Starfall Coronet
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 18

@@ -1,0 +1,30 @@
+id: durable-cloth-9b978
+game: arc-raiders
+type: item
+tags:
+  - uncommon
+  - refined material
+rarity: Uncommon
+subtype: null
+value: 640
+stat_block:
+  weight: 0.25
+  stackSize: 10
+loadout_slots: []
+workbench: Refiner
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Commercial, Medical
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

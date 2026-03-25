@@ -1,0 +1,24 @@
+id: sunstained-war-crozier-6eddf
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - quarterstaff
+rarity: Legendary
+itemTypeName: Quarterstaff
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 46
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

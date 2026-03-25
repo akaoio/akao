@@ -1,0 +1,30 @@
+id: sword-uniq22-e179b
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - sword
+rarity: Special
+itemTypeName: Sword
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 17
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

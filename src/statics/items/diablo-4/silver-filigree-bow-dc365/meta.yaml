@@ -1,0 +1,24 @@
+id: silver-filigree-bow-dc365
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - bow
+rarity: Unique
+itemTypeName: Bow
+classes:
+  - Rogue
+slots:
+  - Main Hand
+value: 22
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

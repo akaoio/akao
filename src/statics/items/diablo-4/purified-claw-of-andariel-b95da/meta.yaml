@@ -1,0 +1,22 @@
+id: purified-claw-of-andariel-b95da
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - purified essence
+rarity: Legendary
+itemTypeName: Purified Essence
+classes: null
+slots: null
+value: 19
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

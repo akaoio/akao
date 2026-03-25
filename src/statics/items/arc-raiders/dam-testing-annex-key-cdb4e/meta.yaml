@@ -1,0 +1,34 @@
+id: dam-testing-annex-key-cdb4e
+game: arc-raiders
+type: item
+tags:
+  - rare
+  - key
+rarity: Rare
+subtype: null
+value: 100
+stat_block:
+  weight: 0.25
+  stackSize: 1
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations:
+  - id: 25fe39be-619a-e75c-332e-3e9b730d66cd
+    map: dam
+  - id: f1802dc6-c712-6365-157a-148be50724d6
+    map: dam
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

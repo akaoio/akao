@@ -1,0 +1,24 @@
+id: staff-of-lam-esen-6c570
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - staff
+rarity: Legendary
+itemTypeName: Staff
+classes:
+  - Sorcerer
+slots:
+  - Main Hand
+value: 81
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

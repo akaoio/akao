@@ -1,0 +1,24 @@
+id: blood-moon-breeches-0a5a5
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Necromancer
+slots:
+  - Legs
+value: 320
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

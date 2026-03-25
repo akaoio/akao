@@ -1,0 +1,30 @@
+id: akarat-s-song-68d97
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - sword
+rarity: Unique
+itemTypeName: Sword
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 61
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

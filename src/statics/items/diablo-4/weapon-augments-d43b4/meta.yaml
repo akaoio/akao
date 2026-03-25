@@ -1,0 +1,23 @@
+id: weapon-augments-d43b4
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - temper manual
+rarity: Unique
+itemTypeName: Temper Manual
+classes:
+  - Barbarian
+slots: null
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

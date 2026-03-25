@@ -1,0 +1,38 @@
+id: arpeggio-ii-e4d77
+game: arc-raiders
+type: item
+tags:
+  - uncommon
+  - weapon
+rarity: Uncommon
+subtype: Assault Rifle
+value: 8000
+stat_block:
+  range: 55.9
+  damage: 9.5
+  weight: 6
+  agility: 57.3
+  stealth: 14
+  fireRate: 18.3
+  stability: 78
+  magazineSize: 24
+  increasedFireRate: 20
+  reducedReloadTime: 12.5
+loadout_slots: []
+workbench: Weapon Bench I
+flavor_text: Somewhat effective against ARC armor plating
+ammo_type: Medium
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

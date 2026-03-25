@@ -1,0 +1,30 @@
+id: processor-9e208
+game: arc-raiders
+type: item
+tags:
+  - rare
+  - topside material
+rarity: Rare
+subtype: null
+value: 500
+stat_block:
+  weight: 0.2
+  stackSize: 5
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Technological
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

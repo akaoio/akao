@@ -1,0 +1,23 @@
+id: blood-mad-idol-dcfcf
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes: null
+slots:
+  - Neck
+value: 309
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

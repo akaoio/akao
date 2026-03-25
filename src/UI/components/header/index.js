@@ -9,7 +9,7 @@ export class HEADER extends HTMLElement {
     }
 
     connectedCallback() {
-        this.shadowRoot.querySelector(".game-nav-btn")?.addEventListener("click", () => {
+        this.shadowRoot.querySelector(".games")?.addEventListener("click", () => {
             window.dispatchEvent(new CustomEvent("game-nav:open"))
         })
     }

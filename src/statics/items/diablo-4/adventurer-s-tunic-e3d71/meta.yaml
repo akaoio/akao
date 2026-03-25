@@ -1,0 +1,23 @@
+id: adventurer-s-tunic-e3d71
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - chest armor
+rarity: Rare
+itemTypeName: Chest Armor
+classes: null
+slots:
+  - Torso
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

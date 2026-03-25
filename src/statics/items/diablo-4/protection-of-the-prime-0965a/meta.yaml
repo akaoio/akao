@@ -1,0 +1,24 @@
+id: protection-of-the-prime-0965a
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Spiritborn
+slots:
+  - Legs
+value: 28
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

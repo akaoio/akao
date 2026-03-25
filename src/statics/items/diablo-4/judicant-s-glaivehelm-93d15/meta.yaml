@@ -1,0 +1,24 @@
+id: judicant-s-glaivehelm-93d15
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes:
+  - Paladin
+slots:
+  - Head
+value: 184
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

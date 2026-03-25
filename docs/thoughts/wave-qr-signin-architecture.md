@@ -24,15 +24,13 @@ Worker chuyên trách codec ggwave:
 - `destroy()`
   - Cleanup toàn bộ instance/module reference.
 
-### 2) `src/core/Wave.js` + `src/core/Wave/worker.js`
+### 2) `src/core/Wave.js`
 - `Wave` vẫn giữ instance API cho worker side (`init/check/request`).
 - Thêm static API cho main thread (không `new Wave()` ở UI):
-  - `Wave.setup()`
   - `Wave.encode()`
   - `Wave.decode()`
   - `Wave.reset()`
-  - `Wave.dispose()`
-- `src/core/Wave/worker.js` là cầu nối queue/callback đến thread `wave`.
+- `src/core/Wave.js` là cầu nối queue/callback đến thread `wave`.
 
 ### 3) `src/UI/components/wave/*`
 `ui-wave` là orchestrator giữa:

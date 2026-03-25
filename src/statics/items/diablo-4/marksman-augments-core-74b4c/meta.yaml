@@ -1,0 +1,23 @@
+id: marksman-augments-core-74b4c
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - common
+  - temper manual
+rarity: Common
+itemTypeName: Temper Manual
+classes:
+  - Rogue
+slots: null
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

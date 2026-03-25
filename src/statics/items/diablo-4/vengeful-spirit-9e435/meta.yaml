@@ -1,0 +1,22 @@
+id: vengeful-spirit-9e435
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - witch power
+rarity: Legendary
+itemTypeName: Witch Power
+classes: null
+slots: null
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

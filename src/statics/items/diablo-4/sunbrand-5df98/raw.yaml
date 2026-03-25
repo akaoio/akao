@@ -1,0 +1,11 @@
+id: 2513539
+icon: 1245922631
+name: Sunbrand
+itemTypeName: Flail
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 121

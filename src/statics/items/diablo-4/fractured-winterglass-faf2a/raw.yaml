@@ -1,0 +1,10 @@
+id: 2403757
+icon: 289378155
+name: Fractured Winterglass
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 16

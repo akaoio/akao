@@ -1,0 +1,24 @@
+id: march-of-the-stalwart-soul-3cd0f
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Paladin
+slots:
+  - Feet
+value: 146
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

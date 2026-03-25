@@ -1,0 +1,22 @@
+id: glimmering-herb-supply-d61b4
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - reputation cache
+rarity: Legendary
+itemTypeName: Reputation Cache
+classes: null
+slots: null
+value: 19
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

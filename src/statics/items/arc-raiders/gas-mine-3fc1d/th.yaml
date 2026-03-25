@@ -1,0 +1,3 @@
+name: Gas Mine
+description: A proximity-triggered mine that pops up and deploys a gas cloud
+  that rapidly drains stamina

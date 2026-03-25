@@ -1,0 +1,10 @@
+id: 2389445
+icon: 1228627587
+name: Sepazontec
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Torso
+popularity: 28

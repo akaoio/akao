@@ -1,0 +1,23 @@
+id: harlequin-crest-9bf65
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - mythic
+  - helm
+rarity: Mythic
+itemTypeName: Helm
+classes: null
+slots:
+  - Head
+value: 426
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

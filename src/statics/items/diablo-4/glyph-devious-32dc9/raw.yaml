@@ -1,0 +1,9 @@
+id: 1029575
+icon: null
+name: "Glyph: Devious"
+itemTypeName: Paragon Glyph
+quality: 3
+playerClassNames:
+  - Rogue
+slotNames: []
+popularity: 15

@@ -1,0 +1,10 @@
+id: 291609
+icon: 2952066818
+name: Fields of Crimson
+itemTypeName: Two-Handed Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Main Hand
+popularity: 83

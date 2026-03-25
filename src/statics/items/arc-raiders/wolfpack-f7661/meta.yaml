@@ -1,0 +1,35 @@
+id: wolfpack-f7661
+game: arc-raiders
+type: item
+tags:
+  - epic
+  - quick use
+rarity: Epic
+subtype: null
+value: 6000
+stat_block:
+  damage: 166
+  radius: 100
+  weight: 1
+  stackSize: 1
+  damageMult: 12
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Explosives Bench III
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

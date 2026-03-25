@@ -1,0 +1,24 @@
+id: ringmaster-s-word-5fc9c
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - staff
+rarity: Special
+itemTypeName: Staff
+classes:
+  - Sorcerer
+slots:
+  - Main Hand
+value: 19
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

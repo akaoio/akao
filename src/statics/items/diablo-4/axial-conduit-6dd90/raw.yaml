@@ -1,0 +1,10 @@
+id: 2425286
+icon: 289378155
+name: Axial Conduit
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 15

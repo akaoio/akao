@@ -1,0 +1,10 @@
+id: 2242304
+icon: 2403703981
+name: Ophidian Iris
+itemTypeName: Amulet
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Neck
+popularity: 218

@@ -1,0 +1,24 @@
+id: wushe-nak-pa-a6b9b
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - glaive
+rarity: Legendary
+itemTypeName: Glaive
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 501
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

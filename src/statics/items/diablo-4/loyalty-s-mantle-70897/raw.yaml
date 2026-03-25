@@ -1,0 +1,10 @@
+id: 2388444
+icon: 1345251379
+name: Loyalty's Mantle
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Feet
+popularity: 23

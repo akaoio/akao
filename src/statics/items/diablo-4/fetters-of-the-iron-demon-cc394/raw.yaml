@@ -1,0 +1,10 @@
+id: 2150759
+icon: 3298652844
+name: Fetters of the Iron Demon
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Feet
+popularity: 16

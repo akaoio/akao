@@ -1,0 +1,28 @@
+id: dagger-b5370
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - dagger
+rarity: Special
+itemTypeName: Dagger
+classes:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 95
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

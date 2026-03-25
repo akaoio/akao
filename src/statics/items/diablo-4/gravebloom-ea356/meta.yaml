@@ -1,0 +1,25 @@
+id: gravebloom-ea356
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - mace
+rarity: Legendary
+itemTypeName: Mace
+classes:
+  - Necromancer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 564
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

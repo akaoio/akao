@@ -1,0 +1,34 @@
+id: vertical-grip-iii-889f7
+game: arc-raiders
+type: item
+tags:
+  - rare
+  - modification
+rarity: Rare
+subtype: null
+value: 5000
+stat_block:
+  value: 5000
+  weight: 0.75
+  stackSize: 1
+  reducedVerticalRecoil: 40
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Gunsmith III
+flavor_text: 30% Reduced ADS Speed
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

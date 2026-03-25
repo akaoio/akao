@@ -1,0 +1,13 @@
+id: 1645926
+icon: 1285106153
+name: The Dragon's Courage
+itemTypeName: Two-Handed Axe
+quality: 1
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 40

@@ -1,0 +1,23 @@
+id: alchemist-control-6231f
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - temper manual
+rarity: Rare
+itemTypeName: Temper Manual
+classes:
+  - Rogue
+slots: null
+value: 18
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

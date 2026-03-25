@@ -1,0 +1,35 @@
+id: looting-mk-3-survivor-2aa0c
+game: arc-raiders
+type: item
+tags:
+  - epic
+  - augment
+rarity: Epic
+subtype: null
+value: 5000
+stat_block:
+  weight: 4
+  backpackSlots: 20
+  quickUseSlots: 5
+  weightLimitKg: 80
+  safePocketSlots: 3
+  utilityItemSlots: 1
+  shieldCompatibility: Medium, Light
+loadout_slots: []
+workbench: null
+flavor_text: While downed and stationary, health regenerates up to 75% of max downed health.
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

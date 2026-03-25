@@ -1,0 +1,22 @@
+id: artificer-s-stone-20d63
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - crafting material
+rarity: Special
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 123
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,10 @@
+id: 2389468
+icon: 4257349547
+name: Sunstained War-Crozier
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Head
+popularity: 15

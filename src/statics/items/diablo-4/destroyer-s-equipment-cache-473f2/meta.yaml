@@ -1,0 +1,22 @@
+id: destroyer-s-equipment-cache-473f2
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - season ranking cache
+rarity: Legendary
+itemTypeName: Season Ranking Cache
+classes: null
+slots: null
+value: 24
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

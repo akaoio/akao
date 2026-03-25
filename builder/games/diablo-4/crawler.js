@@ -6,6 +6,77 @@
 import fs from "node:fs/promises"
 import path from "node:path"
 
+async function fileExists(filePath) {
+    try {
+        await fs.access(filePath)
+        return true
+    } catch {
+        return false
+    }
+}
+
+function normalizeRawItem(item) {
+    return {
+        id: item.id,
+        icon: item.icon,
+        name: item.name,
+        itemTypeName: item.itemTypeName,
+        quality: item.quality,
+        playerClassNames: item.playerClassNames || [],
+        slotNames: item.slotNames || [],
+        popularity: item.popularity || 0,
+    }
+}
+
+async function loadItemsFromSavedPages(output) {
+    const pagesDir = path.join(output, "pages")
+    if (!(await fileExists(pagesDir))) return []
+
+    let files = []
+    try {
+        files = await fs.readdir(pagesDir)
+    } catch {
+        return []
+    }
+
+    const pageFiles = files
+        .filter((name) => /^page-\d+\.json$/.test(name))
+        .sort((a, b) => Number(a.match(/\d+/)?.[0] || 0) - Number(b.match(/\d+/)?.[0] || 0))
+
+    if (!pageFiles.length) return []
+
+    const byId = new Map()
+    for (const file of pageFiles) {
+        try {
+            const raw = await fs.readFile(path.join(pagesDir, file), "utf8")
+            const parsed = JSON.parse(raw)
+            const data = Array.isArray(parsed?.data) ? parsed.data : []
+            for (const item of data) {
+                if (item?.id == null) continue
+                byId.set(item.id, normalizeRawItem(item))
+            }
+        } catch {
+            // ignore corrupt page file and continue
+        }
+    }
+
+    return [...byId.values()]
+}
+
+async function loadExistingItems(output) {
+    const filePath = path.join(output, "items.json")
+    if (!(await fileExists(filePath))) return []
+
+    try {
+        const raw = await fs.readFile(filePath, "utf8")
+        const parsed = JSON.parse(raw)
+        if (!Array.isArray(parsed)) return []
+        return parsed.filter((item) => item?.id != null)
+    } catch {
+        return []
+    }
+}
+
 export async function crawlDiablo4Items(options = {}) {
     const output = options.output ? path.resolve(options.output) : path.resolve("games", "diablo-4")
     const dryRun = !!options.dryRun
@@ -85,16 +156,7 @@ export async function crawlDiablo4Items(options = {}) {
 
                 seenItemIds.add(item.id)
 
-                items.push({
-                    id: item.id,
-                    icon: item.icon,
-                    name: item.name,
-                    itemTypeName: item.itemTypeName,
-                    quality: item.quality,
-                    playerClassNames: item.playerClassNames || [],
-                    slotNames: item.slotNames || [],
-                    popularity: item.popularity || 0,
-                })
+                items.push(normalizeRawItem(item))
 
                 if (item.icon && !imageUrls.has(item.icon)) {
                     const url = buildIconUrl(item.icon)
@@ -103,6 +165,32 @@ export async function crawlDiablo4Items(options = {}) {
             }
 
             pagesFetched++
+        }
+
+        if (items.length === 0 && !dryRun) {
+            const pageFallbackItems = await loadItemsFromSavedPages(output)
+            if (pageFallbackItems.length > 0) {
+                items.push(...pageFallbackItems)
+                for (const item of pageFallbackItems) {
+                    seenItemIds.add(item.id)
+                    if (item.icon && !imageUrls.has(item.icon)) {
+                        imageUrls.set(item.icon, buildIconUrl(item.icon))
+                    }
+                }
+                console.log(`[D4] Fallback: recovered ${items.length} item(s) from saved page files`)
+            } else {
+                const existingItems = await loadExistingItems(output)
+                if (existingItems.length > 0) {
+                    items.push(...existingItems)
+                    for (const item of existingItems) {
+                        seenItemIds.add(item.id)
+                        if (item.icon && !imageUrls.has(item.icon)) {
+                            imageUrls.set(item.icon, buildIconUrl(item.icon))
+                        }
+                    }
+                    console.log(`[D4] Fallback: reusing existing items.json with ${items.length} item(s)`)
+                }
+            }
         }
 
         console.log(`[D4] Fetched ${pagesFetched} page(s) with ${items.length} unique items`)
@@ -136,11 +224,15 @@ export async function crawlDiablo4Items(options = {}) {
         if (!dryRun) {
             await fs.mkdir(output, { recursive: true })
 
-            await fs.writeFile(
-                path.join(output, "items.json"),
-                JSON.stringify(items, null, 2),
-                "utf8"
-            )
+            if (items.length > 0) {
+                await fs.writeFile(
+                    path.join(output, "items.json"),
+                    JSON.stringify(items, null, 2),
+                    "utf8"
+                )
+            } else {
+                console.log("[D4] No items resolved; skip writing empty items.json")
+            }
 
             const summary = {
                 source: "https://www.wowhead.com/diablo-4/items",

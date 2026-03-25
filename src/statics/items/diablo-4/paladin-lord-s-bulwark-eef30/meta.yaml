@@ -1,0 +1,25 @@
+id: paladin-lord-s-bulwark-eef30
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - shield
+rarity: Rare
+itemTypeName: Shield
+classes:
+  - Necromancer
+  - Paladin
+slots:
+  - Off-Hand
+value: 84
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

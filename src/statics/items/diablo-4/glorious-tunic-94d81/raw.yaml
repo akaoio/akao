@@ -1,0 +1,10 @@
+id: 495807
+icon: 3593705927
+name: Glorious Tunic
+itemTypeName: Chest Armor
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Torso
+popularity: 24

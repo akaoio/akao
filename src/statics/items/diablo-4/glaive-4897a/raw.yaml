@@ -1,0 +1,10 @@
+id: 2048526
+icon: 1819698087
+name: Glaive
+itemTypeName: Glaive
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 30

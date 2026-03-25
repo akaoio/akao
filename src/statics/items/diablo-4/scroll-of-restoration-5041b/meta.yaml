@@ -1,0 +1,22 @@
+id: scroll-of-restoration-5041b
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - crafting material
+rarity: Rare
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 22
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

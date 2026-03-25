@@ -1,0 +1,24 @@
+id: dawnfire-bbaa7
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Paladin
+slots:
+  - Hands
+value: 1446
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

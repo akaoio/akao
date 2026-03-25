@@ -1,0 +1,24 @@
+id: vasily-s-prayer-c65e4
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Druid
+slots:
+  - Feet
+value: 15
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

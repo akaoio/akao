@@ -1,0 +1,24 @@
+id: judgment-of-auriel-3529d
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes:
+  - Paladin
+slots:
+  - Neck
+value: 140
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

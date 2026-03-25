@@ -1,0 +1,30 @@
+id: wires-3c0d8
+game: arc-raiders
+type: item
+tags:
+  - uncommon
+  - topside material
+rarity: Uncommon
+subtype: null
+value: 200
+stat_block:
+  weight: 0.25
+  stackSize: 15
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Electrical, Technological
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

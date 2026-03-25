@@ -1,0 +1,24 @@
+id: ophidian-iris-66c28
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Sorcerer
+slots:
+  - Legs
+value: 23
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

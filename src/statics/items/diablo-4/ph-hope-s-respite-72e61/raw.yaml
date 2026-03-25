@@ -1,0 +1,10 @@
+id: 2123362
+icon: 1596380387
+name: "[ph_Hope's Respite]"
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Hands
+popularity: 19

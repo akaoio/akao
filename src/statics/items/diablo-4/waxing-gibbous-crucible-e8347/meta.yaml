@@ -1,0 +1,25 @@
+id: waxing-gibbous-crucible-e8347
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - axe
+rarity: Legendary
+itemTypeName: Axe
+classes:
+  - Druid
+slots:
+  - Main Hand
+  - Off-Hand
+value: 16
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

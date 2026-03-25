@@ -1,0 +1,33 @@
+id: snap-hook-8cdf7
+game: arc-raiders
+type: item
+tags:
+  - legendary
+  - quick use
+rarity: Legendary
+subtype: null
+value: 14000
+stat_block:
+  range: 20
+  weight: 5
+  stackSize: 1
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Utility Bench 3
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

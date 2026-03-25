@@ -1,0 +1,23 @@
+id: moonpath-cinch-33ee6
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - pants
+rarity: Special
+itemTypeName: Pants
+classes: null
+slots:
+  - Legs
+value: 15
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

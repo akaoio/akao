@@ -1,0 +1,24 @@
+id: loyalty-s-mantle-b7adc
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Spiritborn
+slots:
+  - Hands
+value: 33
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

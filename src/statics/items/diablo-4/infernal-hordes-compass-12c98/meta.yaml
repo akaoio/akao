@@ -1,0 +1,22 @@
+id: infernal-hordes-compass-12c98
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - rare
+  - nightmare sigil
+rarity: Rare
+itemTypeName: Nightmare Sigil
+classes: null
+slots: null
+value: 19
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

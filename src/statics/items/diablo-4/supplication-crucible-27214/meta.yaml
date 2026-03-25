@@ -1,0 +1,25 @@
+id: supplication-crucible-27214
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - sword
+rarity: Legendary
+itemTypeName: Sword
+classes:
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 20
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

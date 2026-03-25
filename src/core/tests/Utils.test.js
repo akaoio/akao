@@ -287,20 +287,30 @@ Test.describe("Utils — merge", () => {
 
 Test.describe("Utils — logic", () => {
 
-    Test.it("AND returns false when any element is false", () => {
-        Test.assert.equal(logic({ AND: [true, false, true] }), false)
+    Test.it("'&' returns false when any element is false", () => {
+        Test.assert.equal(logic({ "&": [true, false, true] }), false)
     })
 
-    Test.it("AND returns true when all elements are true", () => {
-        Test.assert.equal(logic({ AND: [true, true, true] }), true)
+    Test.it("'&' returns true when all elements are true", () => {
+        Test.assert.equal(logic({ "&": [true, true, true] }), true)
     })
 
-    Test.it("OR returns true when any element is true", () => {
-        Test.assert.equal(logic({ OR: [false, true, false] }), true)
+    Test.it("'|' returns true when any element is true", () => {
+        Test.assert.equal(logic({ "|": [false, true, false] }), true)
     })
 
-    Test.it("OR returns false when all elements are false", () => {
-        Test.assert.equal(logic({ OR: [false, false] }), false)
+    Test.it("'|' returns false when all elements are false", () => {
+        Test.assert.equal(logic({ "|": [false, false] }), false)
+    })
+
+    Test.it("supports nested expressions", () => {
+        const exp = { "&": [true, { "|": [false, true] }, { "&": [1, "x"] }] }
+        Test.assert.equal(logic(exp), true)
+    })
+
+    Test.it("nested expression inside OR can evaluate to false", () => {
+        const exp = { "|": [false, { "&": [true, 0] }] }
+        Test.assert.equal(logic(exp), false)
     })
 
     Test.it("truthy scalar returns true", () => {
@@ -311,12 +321,8 @@ Test.describe("Utils — logic", () => {
         Test.assert.equal(logic(0), false)
     })
 
-    Test.it("&& alias works like AND", () => {
-        Test.assert.equal(logic({ "&&": [true, false] }), false)
-    })
-
-    Test.it("|| alias works like OR", () => {
-        Test.assert.equal(logic({ "||": [false, true] }), true)
+    Test.it("non-logic object falls back to truthiness", () => {
+        Test.assert.equal(logic({ AND: [true, false] }), true)
     })
 
 })

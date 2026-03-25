@@ -1,0 +1,22 @@
+id: hateshard-core-8db3d
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - misc
+rarity: Legendary
+itemTypeName: null
+classes: null
+slots: null
+value: 28
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

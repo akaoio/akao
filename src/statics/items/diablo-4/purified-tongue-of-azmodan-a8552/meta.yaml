@@ -1,0 +1,22 @@
+id: purified-tongue-of-azmodan-a8552
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - purified essence
+rarity: Legendary
+itemTypeName: Purified Essence
+classes: null
+slots: null
+value: 25
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

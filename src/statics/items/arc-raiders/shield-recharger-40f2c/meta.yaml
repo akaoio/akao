@@ -1,0 +1,35 @@
+id: shield-recharger-40f2c
+game: arc-raiders
+type: item
+tags:
+  - uncommon
+  - quick use
+rarity: Uncommon
+subtype: null
+value: 520
+stat_block:
+  weight: 0.15
+  useTime: 2
+  duration: 10
+  stackSize: 5
+loadout_slots:
+  - backpack
+  - quickUse
+  - safePocket
+workbench: Equipment Bench
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

@@ -1,0 +1,23 @@
+id: flickerstep-f0882
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes: null
+slots:
+  - Head
+value: 22
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

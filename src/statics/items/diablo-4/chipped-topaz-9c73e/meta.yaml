@@ -1,0 +1,22 @@
+id: chipped-topaz-9c73e
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - special
+  - gem
+rarity: Special
+itemTypeName: Gem
+classes: null
+slots: null
+value: 15
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

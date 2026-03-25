@@ -1,0 +1,24 @@
+id: unbroken-chain-9963b
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes:
+  - Barbarian
+slots:
+  - Neck
+value: 49
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

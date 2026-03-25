@@ -1,0 +1,24 @@
+id: sepazontec-7f610
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes:
+  - Spiritborn
+slots:
+  - Head
+value: 29
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

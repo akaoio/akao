@@ -1,0 +1,23 @@
+id: treasure-beast-barding-fb3f8
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - normal
+  - horse armor
+rarity: Normal
+itemTypeName: Horse Armor
+classes: null
+slots:
+  - Mount Armor
+value: 21
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

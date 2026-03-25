@@ -1,0 +1,24 @@
+id: airidah-s-inexorable-will-04197
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - ring
+rarity: Legendary
+itemTypeName: Ring
+classes:
+  - Druid
+slots:
+  - Ring
+value: 120
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

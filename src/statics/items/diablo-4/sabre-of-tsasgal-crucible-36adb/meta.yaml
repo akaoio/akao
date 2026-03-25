@@ -1,0 +1,25 @@
+id: sabre-of-tsasgal-crucible-36adb
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - sword
+rarity: Legendary
+itemTypeName: Sword
+classes:
+  - Barbarian
+slots:
+  - Main Hand
+  - Off-Hand
+value: 19
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

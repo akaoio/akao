@@ -1,0 +1,24 @@
+id: ph-46264
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes:
+  - Necromancer
+slots:
+  - Head
+value: 17
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

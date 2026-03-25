@@ -1,0 +1,22 @@
+id: vex-f045e
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - rune of invocation
+rarity: Unique
+itemTypeName: Rune of Invocation
+classes: null
+slots: null
+value: 349
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

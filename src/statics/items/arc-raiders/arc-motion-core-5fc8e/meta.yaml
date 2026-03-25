@@ -1,0 +1,32 @@
+id: arc-motion-core-5fc8e
+game: arc-raiders
+type: item
+tags:
+  - rare
+  - topside material
+rarity: Rare
+subtype: null
+value: 1000
+stat_block:
+  weight: 0.3
+  stackSize: 5
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Refiner II
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: ARC
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

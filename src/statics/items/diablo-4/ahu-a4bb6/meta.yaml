@@ -1,0 +1,22 @@
+id: ahu-a4bb6
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - rune of ritual
+rarity: Unique
+itemTypeName: Rune of Ritual
+classes: null
+slots: null
+value: 402
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

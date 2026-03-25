@@ -1,0 +1,23 @@
+id: breeches-of-baleful-intent-566e0
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - unique
+  - pants
+rarity: Unique
+itemTypeName: Pants
+classes: null
+slots:
+  - Legs
+value: 17
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

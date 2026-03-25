@@ -1,0 +1,25 @@
+id: fleshrender-2f78f
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - mace
+rarity: Legendary
+itemTypeName: Mace
+classes:
+  - Druid
+slots:
+  - Main Hand
+  - Off-Hand
+value: 53
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

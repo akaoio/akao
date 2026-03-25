@@ -63,20 +63,32 @@ async function testCore() {
         const locales = localesConfig.map(locale => locale.code)
         const system = await load([...paths.src.statics, "system.yaml"]) || { pagination: 10 }
 
-        // Load items
+        // Load items — 2-level aware (core-managed flat + game-derived nested)
         const itemDirs = await dir(paths.src.items)
-        const items = []
+        const coreItems = []
+        const gameItemsMap = {}
         const allTags = new Set()
 
         for (const name of itemDirs) {
             const meta = await load([...paths.src.items, name, 'meta.yaml'])
             if (meta) {
-                items.push(name)
+                coreItems.push(name)
                 meta.tags?.forEach(tag => allTags.add(tag))
+            } else {
+                const subDirs = await dir([...paths.src.items, name])
+                const nested = []
+                for (const sub of subDirs) {
+                    if (await isDirectory([...paths.src.items, name, sub])) {
+                        const subMeta = await load([...paths.src.items, name, sub, 'meta.yaml'])
+                        if (subMeta) { nested.push(sub); subMeta.tags?.forEach(t => allTags.add(t)) }
+                    }
+                }
+                if (nested.length > 0) gameItemsMap[name] = nested
             }
         }
+        const items = coreItems // alias for legacy references below
 
-        log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} tags`)
+        log.ok(`Loaded: ${locales.length} locales, ${coreItems.length} items, ${allTags.size} tags`)
 
         // Load games
         const gameDirs = await dir(paths.src.games)
@@ -100,15 +112,27 @@ async function testCore() {
         }
         log.ok(`Built ${yamlFiles.length} static files`)
 
-        // Build items
+        // Build items (core-managed flat + game-derived nested)
         log.info("Building items...")
-        for (const item of items) {
+        for (const item of coreItems) {
             const itemFiles = await dir([...paths.src.items, item])
             for (const file of itemFiles) {
                 const data = await load([...paths.src.items, item, file])
                 if (data) {
                     const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
                     await write([...paths.build.statics, "items", item, jsonName], data)
+                }
+            }
+        }
+        for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
+            for (const itemId of itemIds) {
+                const itemFiles = await dir([...paths.src.items, gameId, itemId])
+                for (const file of itemFiles) {
+                    const data = await load([...paths.src.items, gameId, itemId, file])
+                    if (data) {
+                        const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
+                        await write([...paths.build.statics, "items", gameId, itemId, jsonName], data)
+                    }
                 }
             }
         }
@@ -129,10 +153,16 @@ async function testCore() {
         const routeFiles = await dir(paths.src.routes, /index\.js$/)
         const routeDirs = Array.from(new Set(routeFiles
             .filter(p => p.endsWith("index.js"))
-            .map(p => p.replace(/\/index\.js$/, "")))).sort()
+            .map(p => p.replace(/\/index\.js$/, "")))).sort((a, b) => {
+                const aDyn = a.split("/")[0]?.startsWith("[")
+                const bDyn = b.split("/")[0]?.startsWith("[")
+                if (aDyn && !bDyn) return 1
+                if (!aDyn && bDyn) return -1
+                return a.localeCompare(b)
+            })
         await write([...paths.build.statics, "routes.json"], routeDirs)
         const indexContent = await load(paths.src.index)
-        const routeCount = await generateRoutes(locales, items, allTags, games, indexContent, outputBase, routeDirs)
+        const routeCount = await generateRoutes(locales, items, allTags, games, indexContent, outputBase, routeDirs, gameItemsMap)
         log.ok(`Created ${routeCount} route files`)
 
         // Generate hash files

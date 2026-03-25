@@ -1,0 +1,24 @@
+id: sundered-night-84544
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - two-handed axe
+rarity: Legendary
+itemTypeName: Two-Handed Axe
+classes:
+  - Paladin
+slots:
+  - Main Hand
+value: 1369
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

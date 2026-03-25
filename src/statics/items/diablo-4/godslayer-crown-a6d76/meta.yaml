@@ -1,0 +1,23 @@
+id: godslayer-crown-a6d76
+game: diablo-4
+type: item
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes: null
+slots:
+  - Head
+value: 1326
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null

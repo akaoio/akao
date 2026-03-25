@@ -1,0 +1,16 @@
+id: 2336452
+icon: 3772430000
+name: Shaderaze
+itemTypeName: Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 22

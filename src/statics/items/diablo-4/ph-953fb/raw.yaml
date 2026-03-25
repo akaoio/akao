@@ -1,0 +1,10 @@
+id: 2120729
+icon: 3576244765
+name: "[PH]"
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 17

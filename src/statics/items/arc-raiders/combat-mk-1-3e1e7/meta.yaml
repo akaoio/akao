@@ -1,0 +1,34 @@
+id: combat-mk-1-3e1e7
+game: arc-raiders
+type: item
+tags:
+  - uncommon
+  - augment
+rarity: Uncommon
+subtype: null
+value: 640
+stat_block:
+  weight: 2
+  weightLimit: 45
+  backpackSlots: 16
+  quickUseSlots: 4
+  safePocketSlots: 1
+  shieldCompatibility: Light, Medium
+loadout_slots: []
+workbench: Equipment Bench
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+images:
+  - 0.webp
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
