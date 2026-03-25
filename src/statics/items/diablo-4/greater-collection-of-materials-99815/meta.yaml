@@ -1,0 +1,23 @@
+id: greater-collection-of-materials-99815
+game: diablo-4
+type: Grand Cache
+tags:
+  - diablo-4
+  - unique
+  - grand cache
+rarity: Unique
+itemTypeName: Grand Cache
+classes: null
+slots: null
+value: 31
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

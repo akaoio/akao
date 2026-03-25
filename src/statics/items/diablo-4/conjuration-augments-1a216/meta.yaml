@@ -1,0 +1,24 @@
+id: conjuration-augments-1a216
+game: diablo-4
+type: Temper Manual
+tags:
+  - diablo-4
+  - common
+  - temper manual
+rarity: Common
+itemTypeName: Temper Manual
+classes:
+  - Sorcerer
+slots: null
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

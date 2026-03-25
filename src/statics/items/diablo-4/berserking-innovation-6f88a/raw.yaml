@@ -1,0 +1,9 @@
+id: 1924913
+icon: 3001443825
+name: Berserking Innovation
+itemTypeName: Temper Manual
+quality: 3
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 16

@@ -32,7 +32,6 @@ function detailMapper(raw) {
             rarity: raw.rarity || "Common",
             type: normalizeString(raw.item_type) || "Misc",
             subtype: normalizeString(raw.subcategory),
-            icon: raw.icon || null,
             value: raw.value ?? 0,
             stat_block: sparseStat(raw.stat_block),
             loadout_slots: raw.loadout_slots || [],

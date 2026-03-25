@@ -1,0 +1,27 @@
+id: shattered-vow-c724f
+game: diablo-4
+type: Polearm
+tags:
+  - diablo-4
+  - mythic
+  - polearm
+rarity: Mythic
+itemTypeName: Polearm
+classes:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slots:
+  - Main Hand
+value: 212
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

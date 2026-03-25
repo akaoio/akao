@@ -1,0 +1,10 @@
+id: 2303147
+icon: 2422907539
+name: "[PH] Pants_Unique_Barbarian_96"
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Legs
+popularity: 17

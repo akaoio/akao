@@ -1,0 +1,23 @@
+id: glyph-jagged-plume-0e5a0
+game: diablo-4
+type: Paragon Glyph
+tags:
+  - diablo-4
+  - rare
+  - paragon glyph
+rarity: Rare
+itemTypeName: Paragon Glyph
+classes:
+  - Spiritborn
+slots: null
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

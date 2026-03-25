@@ -1,0 +1,33 @@
+id: barricade-kit-1dac0
+game: arc-raiders
+type: Quick Use
+tags:
+  - uncommon
+  - quick use
+rarity: Uncommon
+subtype: null
+value: 640
+stat_block:
+  weight: 0.4
+  stackSize: 3
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Utility Bench 1
+flavor_text: "Health: 500"
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

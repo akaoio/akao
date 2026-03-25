@@ -1,0 +1,9 @@
+id: 1026906
+icon: null
+name: "Glyph: Tactician"
+itemTypeName: Paragon Glyph
+quality: 3
+playerClassNames:
+  - Sorcerer
+slotNames: []
+popularity: 28

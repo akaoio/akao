@@ -1,0 +1,22 @@
+id: mephisto-s-corruption-243d2
+game: diablo-4
+type: Area Item
+tags:
+  - diablo-4
+  - special
+  - area item
+rarity: Special
+itemTypeName: Area Item
+classes: null
+slots: null
+value: 37
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

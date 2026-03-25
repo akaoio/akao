@@ -1,0 +1,10 @@
+id: 2411499
+icon: 306742607
+name: Cowl of the Nameless
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Feet
+popularity: 15

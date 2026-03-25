@@ -1,0 +1,35 @@
+id: broken-handcuffs
+name: Broken Handcuffs
+description: Can be recycled into crafting materials.
+item_type: Recyclable
+loadout_slots: []
+icon: https://cdn.metaforge.app/arc-raiders/icons/broken-handcuffs.webp
+rarity: Uncommon
+value: 270
+workbench: null
+stat_block:
+  range: 0
+  damage: 0
+  weight: 0.8
+  agility: 0
+  healing: 0
+  stamina: 0
+  stealth: 0
+  useTime: 0
+  duration: 0
+  fireRate: 0
+  stability: 0
+  stackSize: 5
+  increasedFireRate: 0
+  reducedReloadTime: 0
+  reducedDurabilityBurnRate: 0
+flavor_text: ""
+subcategory: ""
+created_at: 2025-10-08T15:29:17.10787+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+shield_type: ""
+loot_area: Security
+sources: null
+ammo_type: ""
+locations: []
+guide_links: []

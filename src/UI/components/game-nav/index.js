@@ -4,6 +4,7 @@ import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
 import "/UI/components/a/index.js"
+import "/UI/components/svg/index.js"
 
 export class GAME_NAV extends HTMLElement {
     constructor() {
@@ -68,7 +69,7 @@ export class GAME_NAV extends HTMLElement {
                     <a is="ui-a" data-to="/game/${game.id}" class="game-nav__item${game.id === currentId ? " active" : ""}">
                         ${game.logo
                             ? html`
-                                  <img src="${game.logo}" alt="${game.name || game.id}" class="game-nav__item-logo" loading="lazy" />
+                                  <ui-svg data-src="${game.logo}" alt="${game.name || game.id}" class="game-nav__item-logo" />
                               `
                             : ""}
                         <span class="game-nav__item-info">

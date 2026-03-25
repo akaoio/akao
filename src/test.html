@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wave LAN Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 16px; background: #0f1220; color: #fff; }
+        .card { border: 1px solid #334; border-radius: 10px; padding: 12px; max-width: 860px; background: #151a2d; }
+        textarea, input { width: 100%; box-sizing: border-box; margin: 8px 0; padding: 8px; border-radius: 8px; border: 1px solid #445; background: #0c1020; color: #fff; }
+        .row { display: flex; gap: 8px; flex-wrap: wrap; }
+        button { border: 1px solid #556; background: #222b45; color: #fff; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+        #status { margin-top: 8px; color: #9fd3ff; white-space: pre-wrap; }
+        .debug { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+        .metric { border: 1px solid #2e3a66; border-radius: 8px; padding: 10px; background: #10162b; }
+        .metric strong { display: block; color: #7fb7ff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+        .metric span { font-family: Consolas, monospace; font-size: 14px; }
+        .warn { color: #ffd479; }
+        .bad { color: #ff8f8f; }
+        .good { color: #99e2a0; }
+    </style>
+</head>
+
+<body>
+    <h1>Wave LAN Test</h1>
+    <p>Open this page via LAN: <strong>http://YOUR_LAN_IP:8080/test.html</strong></p>
+
+    <div class="card">
+        <label>Message</label>
+        <textarea id="message" rows="4">HELLO-WAVE-LAN</textarea>
+        <label>Incoming</label>
+        <textarea id="incoming" rows="8" readonly></textarea>
+        <div class="row">
+            <button id="init">Init</button>
+            <button id="send">Send Once</button>
+            <button id="listen">Listen</button>
+            <button id="stop">Stop</button>
+        </div>
+        <div id="status">Idle</div>
+        <div class="debug">
+            <div class="metric"><strong>Context / Track</strong><span id="dbg-sample-rate">-</span></div>
+            <div class="metric"><strong>Signal RMS</strong><span id="dbg-rms">-</span></div>
+            <div class="metric"><strong>Signal Peak</strong><span id="dbg-peak">-</span></div>
+            <div class="metric"><strong>Queue / Chunks</strong><span id="dbg-queue">-</span></div>
+            <div class="metric"><strong>Decode</strong><span id="dbg-decode">-</span></div>
+            <div class="metric"><strong>Health</strong><span id="dbg-health">-</span></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Wave } from "/core/Wave.js"
+
+        const wave = new Wave()
+        const state = {
+            module: null,
+            sender: null,
+            receiver: null,
+            params: null,
+            protocolId: null,
+            volume: 25,
+            sampleRate: 48000,
+            context: null,
+            stream: null,
+            source: null,
+            processor: null,
+            sink: null,
+            listening: false,
+            decoding: false,
+            queue: [],
+            last: "",
+            debug: {
+                rms: 0,
+                peak: 0,
+                chunksSeen: 0,
+                chunksPerSecond: 0,
+                decodedBytes: 0,
+                decodedMessages: 0,
+                lastDecodeBytes: 0,
+                lastError: "",
+                queueMax: 0,
+                trackRate: "unknown",
+                contextRate: 48000,
+                clipRatio: 0,
+                intervalId: null,
+                lastChunkMark: performance.now(),
+                chunksSinceMark: 0
+            }
+        }
+
+        const $status = document.getElementById("status")
+        const $incoming = document.getElementById("incoming")
+        const $message = document.getElementById("message")
+        const $dbgSampleRate = document.getElementById("dbg-sample-rate")
+        const $dbgRms = document.getElementById("dbg-rms")
+        const $dbgPeak = document.getElementById("dbg-peak")
+        const $dbgQueue = document.getElementById("dbg-queue")
+        const $dbgDecode = document.getElementById("dbg-decode")
+        const $dbgHealth = document.getElementById("dbg-health")
+
+        function status(text) { $status.textContent = text }
+        function log(message) {
+            const line = `${new Date().toISOString()}  ${message}`
+            $incoming.value = $incoming.value ? `${$incoming.value}\n${line}` : line
+            $incoming.scrollTop = $incoming.scrollHeight
+        }
+
+        function formatNumber(value, digits = 4) {
+            return Number.isFinite(value) ? value.toFixed(digits) : "-"
+        }
+
+        function classifyHealth() {
+            const { rms, peak, clipRatio, lastError } = state.debug
+            if (clipRatio > 0.02 || peak > 0.98) return { text: "likely clipping", cls: "bad" }
+            if (rms < 0.003) return { text: "signal too weak", cls: "warn" }
+            if (lastError) return { text: lastError, cls: "warn" }
+            return { text: "signal looks usable", cls: "good" }
+        }
+
+        function renderDebug() {
+            const health = classifyHealth()
+            $dbgSampleRate.textContent = `ctx ${state.debug.contextRate}Hz / track ${state.debug.trackRate}Hz`
+            $dbgRms.textContent = `${formatNumber(state.debug.rms)}${state.debug.rms < 0.003 ? " low" : ""}`
+            $dbgPeak.textContent = `${formatNumber(state.debug.peak)} | clip ${formatNumber(state.debug.clipRatio * 100, 1)}%`
+            $dbgQueue.textContent = `${state.queue.length} queued | ${state.debug.chunksPerSecond}/s | max ${state.debug.queueMax}`
+            $dbgDecode.textContent = `${state.debug.decodedMessages} msg | ${state.debug.decodedBytes} bytes | last ${state.debug.lastDecodeBytes}`
+            $dbgHealth.className = health.cls
+            $dbgHealth.textContent = health.text
+        }
+
+        function startDebugLoop() {
+            if (state.debug.intervalId) return
+            state.debug.intervalId = setInterval(renderDebug, 250)
+            renderDebug()
+        }
+
+        function stopDebugLoop() {
+            if (!state.debug.intervalId) return
+            clearInterval(state.debug.intervalId)
+            state.debug.intervalId = null
+        }
+
+        function updateSignalStats(samples) {
+            let sumSquares = 0
+            let peak = 0
+            let clips = 0
+            for (let index = 0; index < samples.length; index++) {
+                const value = Math.abs(samples[index])
+                sumSquares += value * value
+                if (value > peak) peak = value
+                if (value >= 0.995) clips += 1
+            }
+
+            const rms = Math.sqrt(sumSquares / samples.length)
+            state.debug.rms = state.debug.rms * 0.7 + rms * 0.3
+            state.debug.peak = Math.max(peak, state.debug.peak * 0.6)
+            state.debug.clipRatio = clips / samples.length
+            state.debug.queueMax = Math.max(state.debug.queueMax, state.queue.length)
+            state.debug.chunksSeen += 1
+            state.debug.chunksSinceMark += 1
+
+            const now = performance.now()
+            const elapsed = now - state.debug.lastChunkMark
+            if (elapsed >= 1000) {
+                state.debug.chunksPerSecond = Math.round((state.debug.chunksSinceMark * 1000) / elapsed)
+                state.debug.lastChunkMark = now
+                state.debug.chunksSinceMark = 0
+            }
+        }
+
+        function ensureContext() {
+            const AudioEngine = globalThis.AudioContext || globalThis.webkitAudioContext
+            if (!AudioEngine) throw new Error("Web Audio API not supported")
+            if (!state.context) state.context = new AudioEngine({ sampleRate: 48000 })
+            return state.context
+        }
+
+        async function ensureModule() {
+            if (!state.module) state.module = await wave.init()
+            if (state.protocolId == null) state.protocolId = state.module.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_NORMAL
+            for (const [name, id] of Object.entries(state.module.ProtocolId)) {
+                if (typeof id !== "number" || !name.startsWith("GGWAVE_PROTOCOL_")) continue
+                const enabled = id === state.protocolId ? 1 : 0
+                state.module.rxToggleProtocol(id, enabled)
+                state.module.txToggleProtocol(id, enabled)
+            }
+            return state.module
+        }
+
+        function defaultParams(overrides = {}) {
+            const d = state.module.getDefaultParameters()
+            return {
+                ...d,
+                ...overrides,
+                sampleRateInp: overrides.sampleRateInp || overrides.sampleRate || d.sampleRateInp,
+                sampleRateOut: overrides.sampleRateOut || overrides.sampleRate || d.sampleRateOut,
+                sampleRate: overrides.sampleRate || d.sampleRate,
+                sampleFormatInp: state.module.SampleFormat.GGWAVE_SAMPLE_FORMAT_F32,
+                sampleFormatOut: state.module.SampleFormat.GGWAVE_SAMPLE_FORMAT_I16,
+                operatingMode: overrides.operatingMode ?? d.operatingMode
+            }
+        }
+
+        function resetInstances(overrides = {}) {
+            if (state.receiver) try { state.module.free(state.receiver) } catch {}
+            if (state.sender) try { state.module.free(state.sender) } catch {}
+            state.params = defaultParams({ ...state.params, ...overrides })
+            state.sampleRate = state.params.sampleRateOut || state.params.sampleRate || state.sampleRate
+            state.receiver = state.module.init(state.params)
+            state.sender = state.module.init(state.params)
+        }
+
+        function floatToF32Bytes(samples) {
+            const copy = new Float32Array(samples)
+            return new Int8Array(copy.buffer)
+        }
+
+        async function initWave(overrides = {}) {
+            await ensureModule()
+            resetInstances(overrides)
+            state.debug.lastError = ""
+            status(`Initialized (${state.params.sampleRateInp}Hz context)`)
+            renderDebug()
+        }
+
+        async function sendOnce() {
+            await ensureModule()
+            if (!state.sender) resetInstances()
+            const text = ($message.value || "").trim()
+            if (!text) throw new Error("Message is empty")
+            const bytes = state.module.encode(state.sender, text, state.protocolId, state.volume)
+            if (!bytes?.length) throw new Error("Encode failed")
+
+            const context = ensureContext()
+            if (context.state === "suspended") await context.resume()
+            const pcm = bytes instanceof Int8Array ? bytes : new Int8Array(bytes)
+            const samples = Math.floor(pcm.length / 2)
+            const buffer = context.createBuffer(1, samples, state.sampleRate)
+            const channel = buffer.getChannelData(0)
+            const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength)
+            for (let i = 0; i < samples; i++) channel[i] = view.getInt16(i * 2, true) / 32768
+
+            const source = context.createBufferSource()
+            const gain = context.createGain()
+            gain.gain.value = 1.0
+            source.buffer = buffer
+            source.connect(gain)
+            gain.connect(context.destination)
+            source.start()
+            status(`Sent ${bytes.length} bytes using Audibile Normal @ volume ${state.volume}`)
+            renderDebug()
+        }
+
+        async function pumpDecode() {
+            if (state.decoding || !state.listening) return
+            state.decoding = true
+            try {
+                while (state.listening && state.queue.length) {
+                    const bytes = state.queue.shift()
+                    const output = state.module.decode(state.receiver, bytes)
+                    if (!output?.length) continue
+                    state.debug.lastDecodeBytes = output.length
+                    state.debug.decodedBytes += output.length
+                    state.debug.decodedMessages += 1
+                    state.debug.lastError = ""
+                    const message = new TextDecoder().decode(output)
+                    if (!message || message === state.last) continue
+                    state.last = message
+                    log(message)
+                }
+            } catch (error) {
+                state.debug.lastError = error?.message || String(error)
+                throw error
+            } finally {
+                state.decoding = false
+                renderDebug()
+                if (state.listening && state.queue.length) pumpDecode()
+            }
+        }
+
+        async function listen() {
+            if (state.listening) return
+            await ensureModule()
+            const context = ensureContext()
+            if (context.state === "suspended") await context.resume()
+
+            try {
+                state.stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: false,
+                        channelCount: 1,
+                        sampleRate: context.sampleRate
+                    }
+                })
+            } catch {
+                state.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+            }
+
+            const track = state.stream.getAudioTracks?.()[0]
+            const settings = track?.getSettings ? track.getSettings() : {}
+            const sr = context.sampleRate || 48000
+            state.debug.contextRate = sr
+            state.debug.trackRate = settings?.sampleRate || "unknown"
+            state.debug.lastError = ""
+            await initWave({ sampleRate: sr, sampleRateInp: sr, sampleRateOut: sr })
+
+            const processorName = `wave-processor-${Date.now()}`
+            const workletSrc = `
+class WaveProcessor extends AudioWorkletProcessor {
+    constructor() { super(); this._buf = new Float32Array(1024); this._n = 0 }
+    process(inputs) {
+        const ch = inputs[0]?.[0]
+        if (!ch?.length) return true
+        let i = 0
+        while (i < ch.length) {
+            const take = Math.min(1024 - this._n, ch.length - i)
+            this._buf.set(ch.subarray(i, i + take), this._n)
+            this._n += take; i += take
+            if (this._n >= 1024) {
+                this.port.postMessage(this._buf.buffer, [this._buf.buffer])
+                this._buf = new Float32Array(1024); this._n = 0
+            }
+        }
+        return true
+    }
+}
+registerProcessor('${processorName}', WaveProcessor)`
+            const blob = new Blob([workletSrc], { type: 'application/javascript' })
+            const url = URL.createObjectURL(blob)
+            await context.audioWorklet.addModule(url)
+            URL.revokeObjectURL(url)
+
+            state.source = context.createMediaStreamSource(state.stream)
+            state.processor = new AudioWorkletNode(context, processorName)
+            state.sink = context.createGain()
+            state.sink.gain.value = 0
+            state.processor.port.onmessage = (event) => {
+                if (!state.listening) return
+                const chunk = new Float32Array(event.data)
+                updateSignalStats(chunk)
+                state.queue.push(new Int8Array(chunk.buffer))
+                if (state.queue.length > 64) state.queue.shift()
+                pumpDecode()
+            }
+            state.source.connect(state.processor)
+            state.processor.connect(state.sink)
+            state.sink.connect(context.destination)
+            state.listening = true
+            startDebugLoop()
+            renderDebug()
+            status(`Listening (context ${sr}Hz, track ${settings?.sampleRate || "unknown"}Hz, ${settings?.channelCount || 1}ch) - AudioWorklet`)
+        }
+
+        function stop() {
+            state.listening = false
+            state.queue = []
+            state.decoding = false
+            stopDebugLoop()
+            if (state.processor) {
+                if (state.processor.port) state.processor.port.onmessage = null
+                state.processor.disconnect()
+            }
+            if (state.source) state.source.disconnect()
+            if (state.sink) state.sink.disconnect()
+            if (state.stream) state.stream.getTracks().forEach((t) => t.stop())
+            state.processor = null
+            state.source = null
+            state.sink = null
+            state.stream = null
+            state.debug.rms = 0
+            state.debug.peak = 0
+            state.debug.chunksPerSecond = 0
+            state.debug.lastChunkMark = performance.now()
+            state.debug.chunksSinceMark = 0
+            status("Stopped")
+            renderDebug()
+        }
+
+        document.getElementById("init").addEventListener("click", () => initWave().catch(e => status(e.message || String(e))))
+        document.getElementById("send").addEventListener("click", () => sendOnce().catch(e => status(e.message || String(e))))
+        document.getElementById("listen").addEventListener("click", () => listen().catch(e => status(e.message || String(e))))
+        document.getElementById("stop").addEventListener("click", stop)
+
+        initWave().catch(e => status(e.message || String(e)))
+    </script>
+</body>
+
+</html>

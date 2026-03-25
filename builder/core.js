@@ -1,6 +1,4 @@
 import { write, load, copy, dir, remove, isDirectory, exist } from "../src/core/FS.js"
-import { processGamesCatalog } from "./core/games-statics.js"
-import { gameRegistry } from "./games/index.js"
 import { color, icons } from "../src/core/Colors.js"
 import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
@@ -46,6 +44,11 @@ async function processYamlDirectory(srcPath, destPath, { recursive = false, filt
                 } else await copy(fullSubPath, [...destPath, file, subFile])
             }
         } else {
+            if (await isDirectory(fullSrcPath)) {
+                await copy(fullSrcPath, [...destPath, file])
+                continue
+            }
+
             const data = await load(fullSrcPath)
             if (data) {
                 const jsonName = file.replace(/\.(yaml|yml)$/, ".json")
@@ -56,6 +59,17 @@ async function processYamlDirectory(srcPath, destPath, { recursive = false, filt
     }
 
     return { total: filtered.length, processed }
+}
+
+function normalizeTag(tag = "") {
+    return String(tag || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+}
+
+function normalizeTags(tags = []) {
+    return [...new Set((tags || []).map(normalizeTag).filter(Boolean))].sort()
 }
 
 // ============ Main Build Process ============
@@ -86,13 +100,16 @@ const hasGeo = await exist(geoPath)
 
 // Crypto-generated directories inside build/statics
 const cryptoDirs = ["ABIs", "chains"]
+const preservedStaticsDirs = [...cryptoDirs, "items"]
 const hasCryptoDirs = (await Promise.all(cryptoDirs.map((d) => exist([...paths.build.statics, d])))).some(Boolean)
+const hasItemsDir = await exist([...paths.build.statics, "items"])
 const hasCryptoImages = await exist([...paths.build.root, "images", "cryptos"])
 
-if (hasGeo || hasCryptoDirs) {
+if (hasGeo || hasCryptoDirs || hasItemsDir) {
     const preserved = []
     if (hasGeo) preserved.push("geo")
     if (hasCryptoDirs) preserved.push("statics (crypto data)")
+    if (hasItemsDir) preserved.push("statics/items")
     if (hasCryptoImages) preserved.push("images/cryptos")
     log.info(`Preserving: ${preserved.join(", ")}, cleaning other build files...`)
 
@@ -100,11 +117,11 @@ if (hasGeo || hasCryptoDirs) {
     for (const item of buildItems) {
         if (item === "geo" && hasGeo) continue
 
-        if (item === "statics" && hasCryptoDirs) {
-            // Clean statics selectively, preserving crypto-generated subdirs
+        if (item === "statics" && (hasCryptoDirs || hasItemsDir)) {
+            // Clean statics selectively, preserving configured subdirs
             const staticsItems = await dir(paths.build.statics)
             for (const staticsItem of staticsItems) {
-                if (cryptoDirs.includes(staticsItem)) continue
+                if (preservedStaticsDirs.includes(staticsItem)) continue
                 await remove([...paths.build.statics, staticsItem])
             }
             continue
@@ -132,20 +149,38 @@ const localesConfig = await load([...paths.src.statics, "locales.yaml"])
 const locales = localesConfig.map((locale) => locale.code)
 const system = (await load([...paths.src.statics, "system.yaml"])) || { pagination: 10 }
 
-// Load items metadata
+// Load items metadata — distinguish core-managed (flat) from game-derived (nested)
 const itemDirs = await dir(paths.src.items)
-const items = []
+const coreItems = []          // flat item-ids under src/statics/items/<item-id>/
+const gameItemsMap = {}       // { gameId: [item-id, ...] }
 const allTags = new Set()
 
 for (const name of itemDirs) {
-    const meta = await load([...paths.src.items, name, "meta.yaml"])
+    const rootMetaPath = [...paths.src.items, name, "meta.yaml"]
+    const meta = (await exist(rootMetaPath)) ? await load(rootMetaPath) : null
     if (meta) {
-        items.push(name)
-        meta.tags?.forEach((tag) => allTags.add(tag))
+        // Has meta.yaml directly → core-managed item
+        coreItems.push(name)
+        normalizeTags(meta.tags).forEach((tag) => allTags.add(tag))
+    } else {
+        // No meta.yaml → check if it's a game namespace containing item subdirs
+        const subDirs = await dir([...paths.src.items, name])
+        const nested = []
+        for (const sub of subDirs) {
+            if (await isDirectory([...paths.src.items, name, sub])) {
+                const subMeta = await load([...paths.src.items, name, sub, "meta.yaml"])
+                if (subMeta) {
+                    nested.push(sub)
+                    normalizeTags(subMeta.tags).forEach((tag) => allTags.add(tag))
+                }
+            }
+        }
+        if (nested.length > 0) gameItemsMap[name] = nested
     }
 }
 
-log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} unique tags`)
+const totalItemCount = coreItems.length + Object.values(gameItemsMap).reduce((s, a) => s + a.length, 0)
+log.ok(`Loaded: ${locales.length} locales, ${coreItems.length} core items, ${Object.keys(gameItemsMap).length} game namespaces (${totalItemCount} total), ${allTags.size} unique tags`)
 
 // Load games metadata
 const gameDirs = await dir(paths.src.games)
@@ -182,63 +217,63 @@ for (const [domain, value] of Object.entries(domainsData)) {
 }
 log.ok(`Built ${domainCount} domain mappings`)
 
-// Build items
-log.info("Building items (YAML → JSON)...")
-await processYamlDirectory(paths.src.items, [...paths.build.statics, "items"], { recursive: true })
-log.ok(`Built ${items.length} items`)
+// Build core-managed items (YAML → JSON, flat structure only)
+log.info("Building core-managed items (YAML → JSON)...")
+for (const itemId of coreItems) {
+    await processYamlDirectory(
+        [...paths.src.items, itemId],
+        [...paths.build.statics, "items", itemId],
+        { recursive: false }
+    )
+}
+for (const itemId of coreItems) {
+    const metaPath = [...paths.build.statics, "items", itemId, "meta.json"]
+    const meta = await load(metaPath)
+    if (meta?.tags) await write(metaPath, { ...meta, tags: normalizeTags(meta.tags) })
+}
+log.ok(`Built ${coreItems.length} core-managed items`)
+
+// Game-derived item JSON output in build/statics/items/<game-id>/<item-id>/ is owned by build:games.
+// build:core only consumes gameItemsMap for indexes/pagination/routes and does not re-emit this subtree.
+log.info("Skipping game-derived item emission in build:core (owned by build:games)")
 
 // Generate items pagination
 log.info("Generating items pagination...")
 const pagination = system.pagination
-const totalItemPages = Math.ceil(items.length / pagination)
+
+const allItemKeys = [
+    ...coreItems,
+    ...Object.entries(gameItemsMap).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => `${gameId}/${itemId}`))
+].sort((a, b) => a.localeCompare(b))
+
+// Clean legacy/previous pagination outputs while preserving item directories
+const itemsRoot = [...paths.build.statics, "items"]
+if (await exist(itemsRoot)) {
+    const entries = await dir(itemsRoot)
+    for (const entry of entries) {
+        if (entry === "all") {
+            await remove([...itemsRoot, entry])
+            continue
+        }
+        if (entry === "meta.json" || /^\d+\.json$/.test(entry)) {
+            await remove([...itemsRoot, entry])
+        }
+    }
+}
+
+const totalAllItemPages = Math.ceil(allItemKeys.length / pagination)
 await write([...paths.build.statics, "items", "meta.json"], {
-    children: items.length,
-    pages: totalItemPages
+    children: allItemKeys.length,
+    pages: Math.max(1, totalAllItemPages)
 })
-for (let page = 1; page <= totalItemPages; page++) {
+for (let page = 1; page <= Math.max(1, totalAllItemPages); page++) {
     const start = (page - 1) * pagination
-    const pageItems = items.slice(start, start + pagination)
+    const pageItems = allItemKeys.slice(start, start + pagination)
     await write([...paths.build.statics, "items", `${page}.json`], pageItems)
 }
-log.ok(`Generated ${totalItemPages} item pages`)
+log.ok(`Generated ${Math.max(1, totalAllItemPages)} item page(s) (${allItemKeys.length} items)`)
 
-// Generate tags pagination
-log.info("Generating tags pagination...")
-const tagsList = Array.from(allTags).sort()
-const totalTagPages = Math.ceil(tagsList.length / pagination)
-await write([...paths.build.statics, "tags", "meta.json"], {
-    children: tagsList.length,
-    pages: totalTagPages
-})
-
-// Generate paginated tag list files
-for (let page = 1; page <= totalTagPages; page++) {
-    const start = (page - 1) * pagination
-    const pageTags = tagsList.slice(start, start + pagination)
-    await write([...paths.build.statics, "tags", `${page}.json`], pageTags)
-}
-
-// Generate per-tag item lists with pagination
-for (const tag of tagsList) {
-    const tagItems = []
-    for (const itemName of items) {
-        const meta = await load([...paths.build.statics, "items", itemName, "meta.json"])
-        if (meta?.tags?.includes(tag)) tagItems.push(itemName)
-    }
-
-    const tagPages = Math.ceil(tagItems.length / pagination)
-    await write([...paths.build.statics, "tags", tag, "meta.json"], {
-        children: tagItems.length,
-        pages: tagPages
-    })
-
-    for (let page = 1; page <= tagPages; page++) {
-        const start = (page - 1) * pagination
-        const pageItems = tagItems.slice(start, start + pagination)
-        await write([...paths.build.statics, "tags", tag, `${page}.json`], pageItems)
-    }
-}
-log.ok(`Generated ${totalTagPages} tag pages and ${tagsList.length} tag-specific pagination structures`)
+log.info("Skipping tags build in core (moved to build:index)")
 
 // Build games
 log.info("Building games (YAML → JSON)...")
@@ -259,30 +294,21 @@ for (let page = 1; page <= totalGamePages; page++) {
 }
 log.ok(`Generated ${totalGamePages} game pages`)
 
-// Generate per-game item lists with pagination
-for (const game of games) {
-    const gameItems = []
-    for (const itemName of items) {
-        const meta = await load([...paths.build.statics, "items", itemName, "meta.json"])
-        if (meta?.taxonomy?.game === game) gameItems.push(itemName)
-    }
-
-    const gameItemPages = Math.ceil(gameItems.length / pagination)
-    await write([...paths.build.statics, "games", game, "items", "meta.json"], {
-        children: gameItems.length,
-        pages: gameItemPages
+// Generate per-game item pagination (from discovered gameItemsMap, owned by build:core)
+log.info("Generating per-game item pagination...")
+for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
+    const totalGameItemPages = Math.ceil(itemIds.length / pagination)
+    await write([...paths.build.statics, "games", gameId, "items", "meta.json"], {
+        children: itemIds.length,
+        pages: Math.max(1, totalGameItemPages)
     })
-
-    for (let page = 1; page <= gameItemPages; page++) {
+    for (let page = 1; page <= Math.max(1, totalGameItemPages); page++) {
         const start = (page - 1) * pagination
-        const pageItems = gameItems.slice(start, start + pagination)
-        await write([...paths.build.statics, "games", game, "items", `${page}.json`], pageItems)
+        const pageItems = itemIds.slice(start, start + pagination)
+        await write([...paths.build.statics, "games", gameId, "items", `${page}.json`], pageItems)
     }
 }
-log.ok(`Generated per-game item pagination for ${games.length} games`)
-
-// Build game catalogs (from raw crawled game data)
-await processGamesCatalog(games, gameRegistry)
+log.ok(`Generated per-game item pagination for ${Object.keys(gameItemsMap).length} game namespace(s)`)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")
@@ -294,6 +320,7 @@ log.ok(`Built ${siteDirs.length} sites`)
 await copyAssets([
     { src: paths.src.core, dest: paths.build.core, label: "core folder" },
     { src: paths.src.UI, dest: paths.build.UI, label: "UI folder" },
+    { src: ["src", "test.html"], dest: [...paths.build.root, "test.html"], label: "test.html" },
     { src: paths.src.importmap, dest: [...paths.build.root, "importmap.json"], label: "importmap.json" },
     { src: ["node_modules", "bootstrap-icons", "icons"], dest: [...paths.build.root, "images", "icons"], label: "bootstrap icons" },
     { src: ["node_modules", "ethers", "dist", "ethers.min.js"], dest: [...paths.build.core, "Ethers.js"], label: "ethers" }
@@ -306,13 +333,13 @@ log.ok("Prepared ggwave → build/core/Wave/ggwave.js")
 
 // Copy uqr ESM library
 log.info("Copying uqr to build...")
-await copy(["node_modules", "uqr", "dist", "index.mjs"], [...paths.build.core, "QR", "encode.js"])
-log.ok("Copied uqr → build/core/QR/encode.js")
+await copy(["node_modules", "uqr", "dist", "index.mjs"], [...paths.build.core, "QR", "encoder.js"])
+log.ok("Copied uqr → build/core/QR/encoder.js")
 
 // Copy qr-scanner ESM library
 log.info("Copying qr-scanner to build...")
-await copy(["node_modules", "qr-scanner", "qr-scanner.min.js"], [...paths.build.core, "QR", "scan.js"])
-log.ok("Copied qr-scanner → build/core/QR/scan.js")
+await copy(["node_modules", "qr-scanner", "qr-scanner.min.js"], [...paths.build.core, "QR", "decoder.js"])
+log.ok("Copied qr-scanner → build/core/QR/decoder.js")
 await copy(["node_modules", "qr-scanner", "qr-scanner-worker.min.js"], [...paths.build.core, "QR", "qr-scanner-worker.min.js"])
 log.ok("Copied qr-scanner worker → build/core/QR/qr-scanner-worker.min.js")
 
@@ -330,7 +357,16 @@ log.ok(`Copied gun files to GDB`)
 log.info("Building routes list...")
 const found = await dir(paths.src.routes, /index\.js$/)
 // Keep only directories that have index.js by stripping the suffix
-const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, "")))).sort()
+// Sort: fixed-first-segment routes before fully-dynamic ones to ensure correct Router matching order
+const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, ""))))
+    .filter((route) => route !== "tag/[tag]")
+    .sort((a, b) => {
+    const aFirstDynamic = a.split("/")[0]?.startsWith("[")
+    const bFirstDynamic = b.split("/")[0]?.startsWith("[")
+    if (aFirstDynamic && !bFirstDynamic) return 1
+    if (!aFirstDynamic && bFirstDynamic) return -1
+    return a.localeCompare(b)
+})
 await write([...paths.build.statics, "routes.json"], routeDirs)
 log.ok(`Built routes list with ${routeDirs.length} routes`)
 
@@ -342,7 +378,7 @@ log.ok(`Created ${localeCount} locale files`)
 // Generate routes
 log.info("Generating routes...")
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, items, allTags, games, indexContent, "build", routeDirs)
+const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap)
 log.ok(`Created ${routeCount} route files`)
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
@@ -357,7 +393,9 @@ log.ok(`Created ${hashResult.hashFiles} hash files`)
 // Summary
 log.section("========================================")
 console.log(`${icons.done} ${color.ok("Locales")}: ${locales.length}`)
-console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
+console.log(`${icons.done} ${color.ok("Core Items")}: ${coreItems.length}`)
+console.log(`${icons.done} ${color.ok("Game Namespaces")}: ${Object.keys(gameItemsMap).length} (${totalItemCount} items)`)
+console.log(`${icons.done} ${color.ok("Items (Total)")}: ${totalItemCount}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)

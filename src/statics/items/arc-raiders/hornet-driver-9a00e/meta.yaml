@@ -1,0 +1,36 @@
+id: hornet-driver-9a00e
+game: arc-raiders
+type: Recyclable
+tags:
+  - rare
+  - recyclable
+rarity: Rare
+subtype: null
+value: 1000
+stat_block:
+  radius: 6
+  weight: 0.75
+  arcStun: 10
+  stackSize: 3
+  raiderStun: 0.5
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: ARC
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

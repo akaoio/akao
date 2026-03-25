@@ -1,0 +1,23 @@
+id: idol-from-below-tome-882b9
+game: diablo-4
+type: Crafting Recipe
+tags:
+  - diablo-4
+  - legendary
+  - crafting recipe
+rarity: Legendary
+itemTypeName: Crafting Recipe
+classes: null
+slots: null
+value: 27
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

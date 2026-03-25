@@ -1,0 +1,25 @@
+id: black-river-e93b8
+game: diablo-4
+type: Scythe
+tags:
+  - diablo-4
+  - legendary
+  - scythe
+rarity: Legendary
+itemTypeName: Scythe
+classes:
+  - Necromancer
+slots:
+  - Main Hand
+value: 55
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,40 @@
+id: renegade-iv-44f6d
+game: arc-raiders
+type: Weapon
+tags:
+  - rare
+  - weapon
+rarity: Rare
+subtype: null
+value: 17000
+stat_block:
+  range: 68.8
+  damage: 35
+  weight: 10
+  agility: 55.8
+  stealth: 16
+  fireRate: 21
+  stability: 85.7
+  magazineSize: 8
+  increasedFireRate: 75
+  reducedDurabilityBurnRate: 70
+  reducedDispersionRecoveryTime: 50
+loadout_slots: []
+workbench: Weapon Bench I
+flavor_text: Somewhat effective against ARC armor plating
+ammo_type: Medium
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

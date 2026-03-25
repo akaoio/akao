@@ -1,0 +1,10 @@
+id: 2414406
+icon: 2247802302
+name: Scoundrel's Leathers
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Legs
+popularity: 15

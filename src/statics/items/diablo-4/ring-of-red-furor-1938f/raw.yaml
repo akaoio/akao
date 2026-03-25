@@ -1,0 +1,10 @@
+id: 2414424
+icon: 1910051925
+name: Ring of Red Furor
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Hands
+popularity: 19

@@ -1,0 +1,10 @@
+id: 2081143
+icon: 235533145
+name: Hail of Verglas
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Head
+popularity: 150

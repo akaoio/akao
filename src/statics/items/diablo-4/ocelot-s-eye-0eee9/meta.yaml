@@ -1,0 +1,24 @@
+id: ocelot-s-eye-0eee9
+game: diablo-4
+type: Amulet
+tags:
+  - diablo-4
+  - unique
+  - amulet
+rarity: Unique
+itemTypeName: Amulet
+classes: null
+slots:
+  - Neck
+value: 185
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

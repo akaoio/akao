@@ -1,0 +1,10 @@
+id: 2458289
+icon: 289378155
+name: Staff of Endless Rage
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 19

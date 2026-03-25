@@ -1,0 +1,14 @@
+id: 2608354
+icon: 1634459017
+name: Crucible Dagger
+itemTypeName: Dagger
+quality: null
+playerClassNames:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 29

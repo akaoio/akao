@@ -1,0 +1,10 @@
+id: 1990382
+icon: 3408472719
+name: Loyalty's Mantle
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Head
+popularity: 337

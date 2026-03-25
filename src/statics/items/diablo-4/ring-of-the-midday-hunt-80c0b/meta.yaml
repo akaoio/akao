@@ -1,0 +1,25 @@
+id: ring-of-the-midday-hunt-80c0b
+game: diablo-4
+type: Helm
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes:
+  - Spiritborn
+slots:
+  - Head
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

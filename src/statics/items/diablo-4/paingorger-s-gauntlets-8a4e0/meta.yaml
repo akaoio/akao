@@ -1,0 +1,24 @@
+id: paingorger-s-gauntlets-8a4e0
+game: diablo-4
+type: Gloves
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes: null
+slots:
+  - Hands
+value: 387
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

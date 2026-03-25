@@ -1,0 +1,56 @@
+id: anvil-splitter
+name: Anvil Splitter
+description: "Compatible with: Anvil  - Tech mod for the Anvil that replaces its
+  bullets with ones that split into 4 weaker projectiles."
+item_type: Modification
+loadout_slots: []
+icon: https://cdn.metaforge.app/arc-raiders/icons/anvil-splitter.webp
+rarity: Legendary
+value: 7000
+workbench: Gunsmith III
+stat_block:
+  range: 0
+  damage: 0
+  health: 0
+  radius: 0
+  shield: 0
+  weight: 0.5
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  useTime: 0
+  duration: 0
+  fireRate: 0
+  stability: 0
+  stackSize: 1
+  damageMult: 0
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  staminaPerSecond: 0
+  compatibleWeapons: Anvil
+  reducedReloadTime: 0
+  illuminationRadius: 0
+  projectilesPerShot: 3
+  shieldCompatibility: ""
+  reducedProjectileDamage: 70
+  reducedMaxShotDispersion: 0
+  reducedDurabilityBurnRate: 0
+flavor_text: ""
+subcategory: ""
+created_at: 2025-10-09T07:54:31.061732+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+shield_type: ""
+loot_area: ""
+sources: null
+ammo_type: ""
+locations: []
+guide_links: []

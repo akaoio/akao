@@ -1,0 +1,24 @@
+id: lamplighter-s-lantern-staff-d5c12
+game: diablo-4
+type: Trophy
+tags:
+  - diablo-4
+  - normal
+  - trophy
+rarity: Normal
+itemTypeName: Trophy
+classes: null
+slots:
+  - Trophy
+value: 24
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

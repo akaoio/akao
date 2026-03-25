@@ -1,0 +1,10 @@
+id: 2418756
+icon: 1853418578
+name: The Basilisk
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Hands
+popularity: 15

@@ -1,0 +1,23 @@
+id: natural-finesse-7c578
+game: diablo-4
+type: Temper Manual
+tags:
+  - diablo-4
+  - unique
+  - temper manual
+rarity: Unique
+itemTypeName: Temper Manual
+classes: null
+slots: null
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2430686
+icon: 3988898302
+name: Ward of the White Dove
+itemTypeName: Shield
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 1033

@@ -1,0 +1,23 @@
+id: tattered-missive-8eae0
+game: diablo-4
+type: Lorebook
+tags:
+  - diablo-4
+  - common
+  - lorebook
+rarity: Common
+itemTypeName: Lorebook
+classes: null
+slots: null
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,23 @@
+id: eternal-journey-chapter-5-cache-01c30
+game: diablo-4
+type: Journey Cache
+tags:
+  - diablo-4
+  - legendary
+  - journey cache
+rarity: Legendary
+itemTypeName: Journey Cache
+classes: null
+slots: null
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

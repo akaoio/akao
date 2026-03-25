@@ -1,0 +1,10 @@
+id: 2411554
+icon: 306742607
+name: Grasp of Shadow
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Feet
+popularity: 22

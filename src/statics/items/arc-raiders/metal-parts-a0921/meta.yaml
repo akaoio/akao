@@ -1,0 +1,33 @@
+id: metal-parts-a0921
+game: arc-raiders
+type: Basic Material
+tags:
+  - common
+  - basic material
+rarity: Common
+subtype: null
+value: 75
+stat_block:
+  weight: 0.15
+  stackSize: 50
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Mechanical, Industrial, Electrical, Technological
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

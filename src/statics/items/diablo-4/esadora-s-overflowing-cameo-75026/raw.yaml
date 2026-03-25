@@ -1,0 +1,10 @@
+id: 2458249
+icon: 1483093339
+name: Esadora's Overflowing Cameo
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Hands
+popularity: 15

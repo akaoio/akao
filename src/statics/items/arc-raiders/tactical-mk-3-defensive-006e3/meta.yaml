@@ -1,0 +1,35 @@
+id: tactical-mk-3-defensive-006e3
+game: arc-raiders
+type: Augment
+tags:
+  - epic
+  - augment
+rarity: Epic
+subtype: null
+value: 5000
+stat_block:
+  weight: 5
+  backpackSlots: 20
+  quickUseSlots: 5
+  weightLimitKg: 60
+  safePocketSlots: 1
+  shieldCompatibility: Light, Medium, Heavy
+loadout_slots: []
+workbench: Gear Bench III
+flavor_text: Allows Shield Rechargers to be used while running.
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

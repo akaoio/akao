@@ -1,0 +1,11 @@
+id: 2205926
+icon: 413333782
+name: Confession Beacon
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 16

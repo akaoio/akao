@@ -1,0 +1,28 @@
+id: dns-9e39b
+game: diablo-4
+type: Flail
+tags:
+  - diablo-4
+  - legendary
+  - flail
+rarity: Legendary
+itemTypeName: Flail
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 21
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

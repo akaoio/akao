@@ -1,0 +1,10 @@
+id: 2416007
+icon: 3218840775
+name: Skyhunter
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Head
+popularity: 20

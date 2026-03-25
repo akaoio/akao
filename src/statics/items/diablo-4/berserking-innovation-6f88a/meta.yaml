@@ -1,0 +1,24 @@
+id: berserking-innovation-6f88a
+game: diablo-4
+type: Temper Manual
+tags:
+  - diablo-4
+  - rare
+  - temper manual
+rarity: Rare
+itemTypeName: Temper Manual
+classes:
+  - Barbarian
+slots: null
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

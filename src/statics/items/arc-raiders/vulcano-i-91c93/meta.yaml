@@ -1,0 +1,40 @@
+id: vulcano-i-91c93
+game: arc-raiders
+type: Weapon
+tags:
+  - epic
+  - weapon
+rarity: Epic
+subtype: Shotgun
+value: 10000
+stat_block:
+  ammo: shotgun
+  range: 22
+  damage: 49.5
+  weight: 8
+  agility: 66.3
+  stealth: 15
+  fireRate: 26.3
+  stability: 64.6
+  firingMode: Single
+  magazineSize: 6
+loadout_slots:
+  - weapon
+workbench: Weapon Bench 3
+flavor_text: Somewhat effective against ARC armor plating
+ammo_type: Shotgun
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2458253
+icon: 2347061642
+name: Esadora's Overflowing Cameo
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Legs
+popularity: 41

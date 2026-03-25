@@ -1,0 +1,25 @@
+id: ebonpiercer-adc9e
+game: diablo-4
+type: Amulet
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes:
+  - Necromancer
+slots:
+  - Neck
+value: 146
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

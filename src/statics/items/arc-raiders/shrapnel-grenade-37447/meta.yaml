@@ -1,0 +1,33 @@
+id: shrapnel-grenade-37447
+game: arc-raiders
+type: Throwable
+tags:
+  - uncommon
+  - throwable
+rarity: Uncommon
+subtype: null
+value: 800
+stat_block:
+  damage: 60
+  radius: 6
+  weight: 0.15
+  stackSize: 5
+loadout_slots: []
+workbench: Explosives Bench
+flavor_text: Weak against ARC armor plating.
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

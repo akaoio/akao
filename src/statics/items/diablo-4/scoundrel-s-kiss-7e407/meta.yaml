@@ -1,0 +1,25 @@
+id: scoundrel-s-kiss-7e407
+game: diablo-4
+type: Gloves
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Rogue
+slots:
+  - Hands
+value: 23
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

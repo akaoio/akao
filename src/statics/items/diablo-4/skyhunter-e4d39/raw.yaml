@@ -1,0 +1,10 @@
+id: 2415987
+icon: 306742607
+name: Skyhunter
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Feet
+popularity: 18

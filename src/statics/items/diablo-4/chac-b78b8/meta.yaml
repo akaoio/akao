@@ -1,0 +1,23 @@
+id: chac-b78b8
+game: diablo-4
+type: Rune of Invocation
+tags:
+  - diablo-4
+  - rare
+  - rune of invocation
+rarity: Rare
+itemTypeName: Rune of Invocation
+classes: null
+slots: null
+value: 22
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

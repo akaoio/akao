@@ -1,0 +1,25 @@
+id: rage-of-harrogath-ed0a0
+game: diablo-4
+type: Helm
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes:
+  - Barbarian
+slots:
+  - Head
+value: 18
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

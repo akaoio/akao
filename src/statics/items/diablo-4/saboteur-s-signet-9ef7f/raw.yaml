@@ -1,0 +1,10 @@
+id: 2411762
+icon: 190118815
+name: Saboteur's Signet
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 17

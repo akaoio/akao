@@ -1,0 +1,25 @@
+id: airidah-s-inexorable-will-e89e6
+game: diablo-4
+type: Chest Armor
+tags:
+  - diablo-4
+  - legendary
+  - chest armor
+rarity: Legendary
+itemTypeName: Chest Armor
+classes:
+  - Druid
+slots:
+  - Torso
+value: 21
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

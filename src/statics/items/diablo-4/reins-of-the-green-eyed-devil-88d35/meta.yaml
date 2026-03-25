@@ -1,0 +1,23 @@
+id: reins-of-the-green-eyed-devil-88d35
+game: diablo-4
+type: Mount
+tags:
+  - diablo-4
+  - special
+  - mount
+rarity: Special
+itemTypeName: Mount
+classes: null
+slots: null
+value: 15
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

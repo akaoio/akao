@@ -1,0 +1,10 @@
+id: 1944513
+icon: 1241072967
+name: Vox Omnium
+itemTypeName: Staff
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 68

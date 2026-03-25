@@ -1,0 +1,33 @@
+id: spaceport-container-storage-key-3b45c
+game: arc-raiders
+type: Key
+tags:
+  - rare
+  - key
+rarity: Rare
+subtype: null
+value: 100
+stat_block:
+  weight: 0.25
+  stackSize: 1
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations:
+  - id: 1ebe649f-b624-e966-3154-939bf766141f
+    map: dam
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

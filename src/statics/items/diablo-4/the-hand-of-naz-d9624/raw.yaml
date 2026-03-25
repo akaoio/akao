@@ -1,0 +1,10 @@
+id: 2242301
+icon: 1763195273
+name: The Hand of Naz
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Hands
+popularity: 256

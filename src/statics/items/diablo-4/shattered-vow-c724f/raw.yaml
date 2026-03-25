@@ -1,0 +1,12 @@
+id: 2059813
+icon: 3423790504
+name: Shattered Vow
+itemTypeName: Polearm
+quality: 8
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 212

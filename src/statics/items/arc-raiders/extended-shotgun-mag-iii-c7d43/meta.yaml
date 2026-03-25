@@ -1,0 +1,35 @@
+id: extended-shotgun-mag-iii-c7d43
+game: arc-raiders
+type: Modification
+tags:
+  - rare
+  - modification
+rarity: Rare
+subtype: null
+value: 5000
+stat_block:
+  value: 5000
+  weight: 0.75
+  stackSize: 1
+  magazineSize: 6
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: "Compatible with: Il Toro, Vulcano"
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

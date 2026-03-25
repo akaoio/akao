@@ -1,0 +1,10 @@
+id: 1706660
+icon: 3564293650
+name: Ring of the Sacrilegious Soul
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Ring
+popularity: 132

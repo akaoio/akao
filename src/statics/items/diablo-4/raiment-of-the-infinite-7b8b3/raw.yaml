@@ -1,0 +1,10 @@
+id: 2404294
+icon: 1483093339
+name: Raiment of the Infinite
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Hands
+popularity: 17

@@ -1,0 +1,11 @@
+id: 2602303
+icon: 3115512833
+name: Waxing Gibbous (Crucible)
+itemTypeName: Axe
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 16

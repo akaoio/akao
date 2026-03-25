@@ -1,0 +1,14 @@
+id: 1244603
+icon: 2153830654
+name: Mohlon's Fang
+itemTypeName: Dagger
+quality: 3
+playerClassNames:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 21

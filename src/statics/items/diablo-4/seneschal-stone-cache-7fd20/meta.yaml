@@ -1,0 +1,23 @@
+id: seneschal-stone-cache-7fd20
+game: diablo-4
+type: Quest Reward Cache
+tags:
+  - diablo-4
+  - normal
+  - quest reward cache
+rarity: Normal
+itemTypeName: Quest Reward Cache
+classes: null
+slots: null
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

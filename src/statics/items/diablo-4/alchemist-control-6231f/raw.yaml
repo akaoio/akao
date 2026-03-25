@@ -1,0 +1,9 @@
+id: 1928193
+icon: 3001443825
+name: Alchemist Control
+itemTypeName: Temper Manual
+quality: 3
+playerClassNames:
+  - Rogue
+slotNames: []
+popularity: 18

@@ -1,0 +1,23 @@
+id: glyph-resplendence-d7971
+game: diablo-4
+type: Paragon Glyph
+tags:
+  - diablo-4
+  - rare
+  - paragon glyph
+rarity: Rare
+itemTypeName: Paragon Glyph
+classes:
+  - Paladin
+slots: null
+value: 88
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

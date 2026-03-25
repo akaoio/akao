@@ -1,0 +1,10 @@
+id: 460168
+icon: 3679339226
+name: Sturdy Hood
+itemTypeName: Helm
+quality: 3
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 15

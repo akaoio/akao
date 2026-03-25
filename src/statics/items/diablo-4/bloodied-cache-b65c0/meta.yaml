@@ -1,0 +1,23 @@
+id: bloodied-cache-b65c0
+game: diablo-4
+type: Reputation Cache
+tags:
+  - diablo-4
+  - rare
+  - reputation cache
+rarity: Rare
+itemTypeName: Reputation Cache
+classes: null
+slots: null
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

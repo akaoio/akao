@@ -1,0 +1,24 @@
+id: crown-of-lucion-64431
+game: diablo-4
+type: Pants
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes: null
+slots:
+  - Legs
+value: 22
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

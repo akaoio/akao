@@ -1,0 +1,35 @@
+id: compensator-ii-ce325
+game: arc-raiders
+type: Modification
+tags:
+  - uncommon
+  - modification
+rarity: Uncommon
+subtype: null
+value: 2000
+stat_block:
+  weight: 0.5
+  compatibleWeapons: Ferro, Kettle, Rattler, Stitcher, Anvil, Arpeggio, Burletta,
+    Osprey, Renegade, Torrente, Venator, Bettina, Bobcat, Tempest
+  reducedPerShotDispersion: 40
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Gunsmith II
+flavor_text: 20% Reduced Max Shot Dispersion
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

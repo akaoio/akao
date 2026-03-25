@@ -1,0 +1,25 @@
+id: eaglehorn-3a9b6
+game: diablo-4
+type: Bow
+tags:
+  - diablo-4
+  - legendary
+  - bow
+rarity: Legendary
+itemTypeName: Bow
+classes:
+  - Rogue
+slots:
+  - Main Hand
+value: 43
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

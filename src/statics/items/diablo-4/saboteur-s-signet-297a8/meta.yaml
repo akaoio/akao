@@ -1,0 +1,25 @@
+id: saboteur-s-signet-297a8
+game: diablo-4
+type: Boots
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Rogue
+slots:
+  - Feet
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

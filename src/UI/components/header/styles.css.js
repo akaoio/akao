@@ -48,23 +48,8 @@ export const styles = css`
                 filter: drop-shadow(var(--glow-c, none));
             }
 
-            .game-nav-btn {
+            .games {
                 display: none;
-                background: transparent;
-                border: none;
-                color: var(--color);
-                cursor: pointer;
-                width: var(--icon-md);
-                height: var(--icon-md);
-                align-items: center;
-                justify-content: center;
-                padding: 0;
-                transition: color var(--speed);
-
-                &:hover {
-                    color: var(--neon-c);
-                }
-
                 @media (max-width: 767px) {
                     display: flex;
                 }

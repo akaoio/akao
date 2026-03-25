@@ -1,0 +1,23 @@
+id: proof-of-might-4c154
+game: diablo-4
+type: Quest Glyph
+tags:
+  - diablo-4
+  - special
+  - quest glyph
+rarity: Special
+itemTypeName: Quest Glyph
+classes: null
+slots: null
+value: 20
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

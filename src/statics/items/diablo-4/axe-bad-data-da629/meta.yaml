@@ -1,0 +1,23 @@
+id: axe-bad-data-da629
+game: diablo-4
+type: Gold
+tags:
+  - diablo-4
+  - unique
+  - gold
+rarity: Unique
+itemTypeName: Gold
+classes: null
+slots: null
+value: 22
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

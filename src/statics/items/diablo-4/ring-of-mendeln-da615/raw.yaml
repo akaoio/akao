@@ -1,0 +1,10 @@
+id: 2418662
+icon: 1445343165
+name: Ring of Mendeln
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Feet
+popularity: 21

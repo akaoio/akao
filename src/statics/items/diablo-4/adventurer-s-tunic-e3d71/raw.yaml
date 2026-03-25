@@ -1,0 +1,9 @@
+id: 459980
+icon: 2452802707
+name: Adventurer's Tunic
+itemTypeName: Chest Armor
+quality: 3
+playerClassNames: []
+slotNames:
+  - Torso
+popularity: 16

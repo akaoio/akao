@@ -1,0 +1,10 @@
+id: 1489566
+icon: 3033665540
+name: Tuskhelm of Joritz the Mighty
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 167

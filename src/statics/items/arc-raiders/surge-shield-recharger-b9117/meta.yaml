@@ -1,0 +1,33 @@
+id: surge-shield-recharger-b9117
+game: arc-raiders
+type: Quick Use
+tags:
+  - rare
+  - quick use
+rarity: Rare
+subtype: null
+value: 1200
+stat_block:
+  weight: 0.2
+  useTime: 5
+  stackSize: 5
+  shieldCharge: 50
+loadout_slots: []
+workbench: Medical Lab II
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

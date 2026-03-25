@@ -1,0 +1,25 @@
+id: ph-hope-s-respite-37cd8
+game: diablo-4
+type: Boots
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Sorcerer
+slots:
+  - Feet
+value: 18
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

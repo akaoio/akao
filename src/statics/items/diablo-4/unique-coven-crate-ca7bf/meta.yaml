@@ -1,0 +1,23 @@
+id: unique-coven-crate-ca7bf
+game: diablo-4
+type: Reputation Cache
+tags:
+  - diablo-4
+  - legendary
+  - reputation cache
+rarity: Legendary
+itemTypeName: Reputation Cache
+classes: null
+slots: null
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp
