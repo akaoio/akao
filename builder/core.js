@@ -375,12 +375,17 @@ log.info("Processing i18n files...")
 const localeCount = await processI18n(locales)
 log.ok(`Created ${localeCount} locale files`)
 
-// Generate routes
-const devMode = process.argv.includes("--dev")
-log.info(devMode ? "Generating routes (dev mode — static prefixes only)..." : "Generating routes...")
+// Generate routes — always skipDynamic, SPA fallback handles dynamic routes
+// Dev: dev server serves index.html for unmatched extensionless URLs
+// Production: Netlify _redirects handles SPA fallback
+log.info("Generating routes (static prefixes only)...")
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic: devMode })
+const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic: true })
 log.ok(`Created ${routeCount} route files`)
+
+// Generate _redirects for Netlify SPA fallback
+await write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
+log.ok("Created _redirects for Netlify SPA fallback")
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
 
