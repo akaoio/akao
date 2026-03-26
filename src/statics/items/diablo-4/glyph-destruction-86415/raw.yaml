@@ -1,0 +1,9 @@
+id: 1026925
+icon: null
+name: "Glyph: Destruction"
+itemTypeName: Paragon Glyph
+quality: 3
+playerClassNames:
+  - Sorcerer
+slotNames: []
+popularity: 17

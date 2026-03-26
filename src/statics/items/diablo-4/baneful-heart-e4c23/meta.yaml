@@ -1,0 +1,23 @@
+id: baneful-heart-e4c23
+game: diablo-4
+type: Currency
+tags:
+  - diablo-4
+  - special
+  - currency
+rarity: Special
+itemTypeName: Currency
+classes: null
+slots: null
+value: 61
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

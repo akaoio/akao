@@ -1,0 +1,24 @@
+id: fists-of-fate-6c9d6
+game: diablo-4
+type: Pants
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes: null
+slots:
+  - Legs
+value: 20
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,23 @@
+id: greater-bloodied-cache-d64fd
+game: diablo-4
+type: Reputation Cache
+tags:
+  - diablo-4
+  - unique
+  - reputation cache
+rarity: Unique
+itemTypeName: Reputation Cache
+classes: null
+slots: null
+value: 44
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

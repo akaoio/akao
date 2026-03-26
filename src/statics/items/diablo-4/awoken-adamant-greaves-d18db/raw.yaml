@@ -1,0 +1,10 @@
+id: 1638089
+icon: 433909423
+name: Awoken Adamant Greaves
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Feet
+popularity: 16

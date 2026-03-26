@@ -1,0 +1,23 @@
+id: lum-ed25b
+game: diablo-4
+type: Rune of Invocation
+tags:
+  - diablo-4
+  - common
+  - rune of invocation
+rarity: Common
+itemTypeName: Rune of Invocation
+classes: null
+slots: null
+value: 135
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

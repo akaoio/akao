@@ -26,8 +26,15 @@ node_modules/
 # Project specific ignores
 /geo/
 /temp/
+/.certs/
 
 CLAUDE.md
 .claude
 
 /src/statics/forex.yaml
+/games/
+
+# BMADT
+_bmad-output/
+_bmad/
+.cursor/

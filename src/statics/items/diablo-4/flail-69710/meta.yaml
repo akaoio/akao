@@ -1,0 +1,29 @@
+id: flail-69710
+game: diablo-4
+type: Flail
+tags:
+  - diablo-4
+  - special
+  - flail
+rarity: Special
+itemTypeName: Flail
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 39
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

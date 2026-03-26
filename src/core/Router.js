@@ -68,11 +68,11 @@ export class Router {
             }
         }
         // Merge search params into params (path params take precedence)
-        if (search) {
-            for (const [key, value] of new URLSearchParams(search)) {
+        if (search) 
+            for (const [key, value] of new URLSearchParams(search)) 
                 if (!(key in result.params)) result.params[key] = value
-            }
-        }
+            
+        
         // Create new path including locale
         result.path = `/${[result.locale.code, ...segments].join("/")}/`
         return result

@@ -1,0 +1,10 @@
+id: 2415993
+icon: 190118815
+name: Skyhunter
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 15

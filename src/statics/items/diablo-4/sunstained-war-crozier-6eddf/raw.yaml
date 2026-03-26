@@ -1,0 +1,10 @@
+id: 2024115
+icon: 518597482
+name: Sunstained War-Crozier
+itemTypeName: Quarterstaff
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 46

@@ -1,28 +1,37 @@
 import chokidar from "chokidar"
 import { spawn } from "child_process"
-import { promises as fs } from "fs"
+import { promises as fs, readFileSync, existsSync, mkdirSync, writeFileSync } from "fs"
 import path from "path"
 import http from "http"
+import https from "https"
+import os from "os"
 import { URL } from "url"
 import YAML from "yaml"
-import { sha256 } from "./src/core/Utils/crypto.js"
+import selfsigned from "selfsigned"
 
 const SRC_ROOT = "src"
 const BUILD_ROOT = "build"
-const BUILD_STATICS_ROOT = path.join(BUILD_ROOT, "statics")
-const HOST = "localhost"
+
+const HOST = process.env.HOST || "0.0.0.0"
 const PORT = 8080
+const CLI_ARGS = process.argv.slice(2)
+const HAS_HTTPS_FLAG = CLI_ARGS.includes("--https")
+const HTTPS_ENABLED = HAS_HTTPS_FLAG || ["1", "true", "yes", "on"].includes((process.env.HTTPS || "").toLowerCase())
+const SSL_KEY = process.env.SSL_KEY || process.env.HTTPS_KEY || (CLI_ARGS.find(arg => arg.startsWith("--ssl-key=")) || "").split("=").slice(1).join("=")
+const SSL_CERT = process.env.SSL_CERT || process.env.HTTPS_CERT || (CLI_ARGS.find(arg => arg.startsWith("--ssl-cert=")) || "").split("=").slice(1).join("=")
+const DEV_CERT_DIR = ".certs"
+const DEV_CERT_KEY_PATH = path.join(DEV_CERT_DIR, "dev-key.pem")
+const DEV_CERT_CERT_PATH = path.join(DEV_CERT_DIR, "dev-cert.pem")
 const DEV_EVENTS_PATH = "/__dev_events"
 const DEV_CLIENT_MARKER = "__shop_dev_sse_client__"
 
 const FULL_CORE_REBUILD_PATHS = [
     /^src[\\/]index\.html$/,
-    /^src[\\/]UI[\\/]routes[\\/]/,
-    /^src[\\/]statics[\\/]i18n[\\/]/,
     /^src[\\/]statics[\\/]locales\.ya?ml$/,
     /^src[\\/]statics[\\/]system\.ya?ml$/,
     /^src[\\/]statics[\\/]domains\.ya?ml$/
 ]
+
 
 const cryptoPaths = /^src[\\/]statics[\\/](chains|ABIs)[\\/]/
 
@@ -41,6 +50,8 @@ function toPlatformPath(filePath) {
 function shouldFullRebuild(normalizedPath) {
     return FULL_CORE_REBUILD_PATHS.some(pattern => pattern.test(normalizedPath))
 }
+
+
 
 function isYamlFile(filePath) {
     return /\.(yaml|yml)$/i.test(filePath)
@@ -81,16 +92,10 @@ async function copyOrConvert({ event, normalizedPath }) {
     const rawDestPath = toBuildPath(normalizedPath)
     if (!rawDestPath) return null
 
-    const withinStatics = normalizedPath.startsWith("src/statics/")
     const outputPath = isYamlFile(normalizedPath) ? toJsonTargetPath(rawDestPath) : rawDestPath
 
     if (event === "unlink") {
         if (await exists(outputPath)) await fs.unlink(outputPath)
-        if (withinStatics && outputPath.endsWith(".json")) {
-            const hashPath = outputPath.replace(/\.json$/i, ".hash")
-            if (await exists(hashPath)) await fs.unlink(hashPath)
-            await updateDirectoryHashes(path.dirname(outputPath))
-        }
         return outputPath
     }
 
@@ -101,62 +106,7 @@ async function copyOrConvert({ event, normalizedPath }) {
         await fs.copyFile(srcPath, outputPath)
     }
 
-    if (withinStatics && outputPath.endsWith(".json")) {
-        await updateJsonHash(outputPath)
-        await updateDirectoryHashes(path.dirname(outputPath))
-    }
-
     return outputPath
-}
-
-async function updateJsonHash(jsonPath) {
-    if (!(await exists(jsonPath))) return
-    const content = await fs.readFile(jsonPath, "utf8")
-    const parsed = JSON.parse(content)
-    const hash = sha256(JSON.stringify(parsed))
-    const hashPath = jsonPath.replace(/\.json$/i, ".hash")
-    await fs.writeFile(hashPath, hash, "utf8")
-}
-
-async function updateDirectoryHashes(startDir) {
-    let currentDir = startDir
-    const normalizedStatics = path.resolve(BUILD_STATICS_ROOT)
-
-    while (path.resolve(currentDir).startsWith(normalizedStatics) || path.resolve(currentDir) === path.resolve(BUILD_ROOT)) {
-        const entries = await fs.readdir(currentDir, { withFileTypes: true })
-        const childHashes = []
-
-        for (const entry of entries) {
-            const full = path.join(currentDir, entry.name)
-
-            if (entry.isFile()) {
-                if (entry.name === "_.hash") continue
-                if (!entry.name.endsWith(".hash")) continue
-                const value = (await fs.readFile(full, "utf8")).trim()
-                if (value) childHashes.push(value)
-            }
-
-            if (entry.isDirectory()) {
-                const subHash = path.join(full, "_.hash")
-                if (await exists(subHash)) {
-                    const value = (await fs.readFile(subHash, "utf8")).trim()
-                    if (value) childHashes.push(value)
-                }
-            }
-        }
-
-        const currentHashPath = path.join(currentDir, "_.hash")
-        if (childHashes.length > 0) {
-            const combinedHash = sha256(childHashes.sort().join(""))
-            await fs.writeFile(currentHashPath, combinedHash, "utf8")
-        } else if (await exists(currentHashPath)) {
-            await fs.unlink(currentHashPath)
-        }
-
-        const parent = path.dirname(currentDir)
-        if (path.resolve(currentDir) === path.resolve(BUILD_ROOT)) break
-        currentDir = parent
-    }
 }
 
 function runBuild(script) {
@@ -212,8 +162,73 @@ function getMimeType(filePath) {
     return map[ext] || "application/octet-stream"
 }
 
+function getAllLanIPs() {
+    const interfaces = os.networkInterfaces()
+    const ips = new Set(["127.0.0.1"])
+
+    for (const list of Object.values(interfaces)) {
+        if (!Array.isArray(list)) continue
+        for (const net of list) {
+            if (!net || net.family !== "IPv4") continue
+            ips.add(net.address)
+        }
+    }
+
+    return Array.from(ips)
+}
+
+async function loadHttpsCredentials() {
+    if (SSL_KEY && SSL_CERT) {
+        return {
+            key: readFileSync(path.resolve(SSL_KEY)),
+            cert: readFileSync(path.resolve(SSL_CERT)),
+            source: "env"
+        }
+    }
+
+    const resolvedKeyPath = path.resolve(DEV_CERT_KEY_PATH)
+    const resolvedCertPath = path.resolve(DEV_CERT_CERT_PATH)
+
+    if (existsSync(resolvedKeyPath) && existsSync(resolvedCertPath)) {
+        return {
+            key: readFileSync(resolvedKeyPath),
+            cert: readFileSync(resolvedCertPath),
+            source: "cache"
+        }
+    }
+
+    if (!existsSync(path.resolve(DEV_CERT_DIR))) {
+        mkdirSync(path.resolve(DEV_CERT_DIR), { recursive: true })
+    }
+
+    const altNames = [
+        { type: 2, value: "localhost" },
+        ...getAllLanIPs().map(ip => ({ type: 7, ip }))
+    ]
+
+    const generated = await selfsigned.generate(
+        [{ name: "commonName", value: "localhost" }],
+        {
+            keySize: 2048,
+            algorithm: "sha256",
+            days: 365,
+            extensions: [{ name: "subjectAltName", altNames }]
+        }
+    )
+
+    writeFileSync(resolvedKeyPath, generated.private, "utf8")
+    writeFileSync(resolvedCertPath, generated.cert, "utf8")
+
+    return {
+        key: Buffer.from(generated.private, "utf8"),
+        cert: Buffer.from(generated.cert, "utf8"),
+        source: "generated"
+    }
+}
+
 async function resolveBuildFile(urlPathname) {
     const pathname = decodeURIComponent(urlPathname)
+    const extensionlessRequest = !path.extname(pathname)
     let requestPath = pathname === "/" ? "/index.html" : pathname
     if (requestPath.endsWith("/")) requestPath += "index.html"
 
@@ -232,17 +247,21 @@ async function resolveBuildFile(urlPathname) {
         return absolutePath
     }
 
-    if (!path.extname(absolutePath)) {
+    if (extensionlessRequest) {
         const htmlPath = `${absolutePath}.html`
         if (await exists(htmlPath)) return htmlPath
         const indexPath = path.join(absolutePath, "index.html")
         if (await exists(indexPath)) return indexPath
+
+        // SPA fallback: unmatched page routes serve root index.html
+        const fallback = path.join(buildRootResolved, "index.html")
+        if (await exists(fallback)) return fallback
     }
 
     return null
 }
 
-function startStaticServer() {
+async function startStaticServer() {
     const server = http.createServer(async (req, res) => {
         try {
             const base = `http://${HOST}:${PORT}`
@@ -296,8 +315,32 @@ function startStaticServer() {
         }
     })
 
+    const protocol = HTTPS_ENABLED ? "https" : "http"
+
+    if (HTTPS_ENABLED) {
+        const { key, cert, source } = await loadHttpsCredentials()
+        const secureServer = https.createServer({ key, cert }, server.listeners("request")[0])
+        secureServer.listen(PORT, HOST)
+        return { server: secureServer, protocol, httpsSource: source }
+    }
+
     server.listen(PORT, HOST)
-    return server
+    return { server, protocol, httpsSource: null }
+}
+
+function getDevUrls(protocol = "http") {
+    const interfaces = os.networkInterfaces()
+    const urls = new Set([`${protocol}://localhost:${PORT}`])
+
+    for (const list of Object.values(interfaces)) {
+        if (!Array.isArray(list)) continue
+        for (const net of list) {
+            if (!net || net.family !== "IPv4" || net.internal) continue
+            urls.add(`${protocol}://${net.address}:${PORT}`)
+        }
+    }
+
+    return Array.from(urls)
 }
 
 async function handleChange({ event, normalizedPath }) {
@@ -386,7 +429,17 @@ watcher.on("unlink", (filePath) => enqueueChange("unlink", filePath))
 // Start live-server with file watcher
 console.log("🚀 Starting development server with incremental auto-rebuild...")
 
-startStaticServer()
+const { protocol, httpsSource } = await startStaticServer()
 
-console.log(`✅ Server running on http://${HOST}:${PORT}`)
+console.log(`✅ Server listening on ${HOST}:${PORT} (${protocol.toUpperCase()})`)
+if (HTTPS_ENABLED) {
+    console.log("🔐 HTTPS enabled (secure context)")
+    if (httpsSource === "generated") {
+        console.log(`🧪 Generated local dev certificate at ${DEV_CERT_CERT_PATH}`)
+    }
+    if (httpsSource === "cache") {
+        console.log(`📄 Using cached local dev certificate at ${DEV_CERT_CERT_PATH}`)
+    }
+}
+for (const url of getDevUrls(protocol)) console.log(`🌐 ${url}`)
 console.log("👀 Watching src/ for file-based rebuilds...")

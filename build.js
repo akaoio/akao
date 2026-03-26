@@ -3,12 +3,14 @@
 const args = process.argv.slice(2)
 const target = args[0]
 
-if (!target || !["core", "crypto", "geo", "games"].includes(target)) {
-    console.error("Usage: node build.js <core|crypto|geo|games> [options]")
-    console.error("  core - Build core application (items, routes, i18n, etc.)")
+if (!target || !["core", "crypto", "geo", "games", "index", "hash"].includes(target)) {
+    console.error("Usage: node build.js <core|crypto|geo|games|index|hash> [options]")
+    console.error("  core   - Build core application (items, routes, i18n, etc.)")
     console.error("  crypto - Build crypto statics (ABIs, chains, contracts)")
-    console.error("  geo  - Build geo data from GeoNames")
-    console.error("  games - Build game datasets using per-game crawlers")
+    console.error("  geo    - Build geo data from GeoNames")
+    console.error("  games  - Build game datasets using per-game crawlers")
+    console.error("  index  - Build tags and tag routes")
+    console.error("  hash   - Generate hash files for cache validation (production)")
     console.error("")
     console.error("Examples:")
     console.error("  node build.js core")
@@ -16,14 +18,15 @@ if (!target || !["core", "crypto", "geo", "games"].includes(target)) {
     console.error("  node build.js geo --country=US")
     console.error("  node build.js games")
     console.error("  node build.js games --game=arc-raiders")
+    console.error("  node build.js index")
+    console.error("  node build.js hash")
     process.exit(1)
 }
 
 const modulePath = `./builder/${target}.js`
 
-if (target === "geo" && !args.includes("--build") && !args.includes("--fix")) {
-    process.argv.push("--build")
-}
+if (target === "geo" && !args.includes("--build") && !args.includes("--fix")) process.argv.push("--build")
+
 
 // Re-execute with the appropriate module
 import(modulePath)

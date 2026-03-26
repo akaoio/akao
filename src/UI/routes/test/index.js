@@ -46,9 +46,9 @@ export class TEST extends HTMLElement {
         // Load test modules fresh (import cache — no re-run needed, Test.reset() handles state)
         const { default: Test } = await import("/core/Test.js")
         Test.reset()
-        for (const mod of TEST_MODULES) {
+        for (const mod of TEST_MODULES) 
             try { await import(mod) } catch (e) { console.error("Failed to load", mod, e) }
-        }
+        
 
         await Test.run(filter || null, (suiteResult) => {
             this._onSuiteComplete(suiteResult)
@@ -68,11 +68,11 @@ export class TEST extends HTMLElement {
 
     _onSuiteComplete(suiteResult) {
         const existing = this._results.findIndex(s => s.name === suiteResult.name)
-        if (existing >= 0) {
+        if (existing >= 0) 
             this._results[existing] = suiteResult
-        } else {
+         else 
             this._results.push(suiteResult)
-        }
+        
 
         for (const t of suiteResult.tests) {
             if (t.status === "pass") this._totals.passed++
@@ -174,9 +174,9 @@ export class TEST extends HTMLElement {
                 <span class="name">${this._esc(test.name)}</span>
             `
 
-            if (test.interactive) {
+            if (test.interactive) 
                 inner += `<button class="run-btn" data-test="${this._esc(test.name)}">Run</button>`
-            }
+            
 
             if (test.status === "fail" && test.error) {
                 const msg = this._esc(test.error.message || String(test.error))

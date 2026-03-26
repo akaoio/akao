@@ -1,0 +1,25 @@
+id: snake-glaive-e233e
+game: diablo-4
+type: Glaive
+tags:
+  - diablo-4
+  - legendary
+  - glaive
+rarity: Legendary
+itemTypeName: Glaive
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

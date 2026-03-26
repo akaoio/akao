@@ -1,0 +1,10 @@
+id: 1821789
+icon: 2578341227
+name: Jade Glaive
+itemTypeName: Glaive
+quality: 5
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 25

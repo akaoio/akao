@@ -1,0 +1,23 @@
+id: ear-12bb3
+game: diablo-4
+type: Ear
+tags:
+  - diablo-4
+  - special
+  - ear
+rarity: Special
+itemTypeName: Ear
+classes: null
+slots: null
+value: 49
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

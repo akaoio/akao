@@ -1,0 +1,25 @@
+id: glorious-tunic-94d81
+game: diablo-4
+type: Chest Armor
+tags:
+  - diablo-4
+  - rare
+  - chest armor
+rarity: Rare
+itemTypeName: Chest Armor
+classes:
+  - Necromancer
+slots:
+  - Torso
+value: 24
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 1958796
+icon: 121881281
+name: Ringmaster's Word
+itemTypeName: Staff
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 19

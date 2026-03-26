@@ -1,0 +1,10 @@
+id: 1955503
+icon: 1218422357
+name: "[PH] "
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Head
+popularity: 17

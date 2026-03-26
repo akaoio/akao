@@ -1,0 +1,23 @@
+id: slaughterhouse-2c55a
+game: diablo-4
+type: Nightmare Sigil
+tags:
+  - diablo-4
+  - special
+  - nightmare sigil
+rarity: Special
+itemTypeName: Nightmare Sigil
+classes: null
+slots: null
+value: 46
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

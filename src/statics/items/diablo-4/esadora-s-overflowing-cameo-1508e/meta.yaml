@@ -1,0 +1,25 @@
+id: esadora-s-overflowing-cameo-1508e
+game: diablo-4
+type: Amulet
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes:
+  - Sorcerer
+slots:
+  - Neck
+value: 628
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

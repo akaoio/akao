@@ -1,0 +1,23 @@
+id: whispering-key-4dae5
+game: diablo-4
+type: Misc
+tags:
+  - diablo-4
+  - special
+  - misc
+rarity: Special
+itemTypeName: null
+classes: null
+slots: null
+value: 74
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

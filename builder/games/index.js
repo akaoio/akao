@@ -1,5 +1,7 @@
 import path from "node:path"
+import fsNative from "node:fs"
 import { log } from "../core/logger.js"
+import { syncGameItems, pruneGameItems } from "./sync.js"
 import { gameArcRaiders } from "./arc-raiders/index.js"
 import { gameDiablo4 } from "./diablo-4/index.js"
 
@@ -16,6 +18,8 @@ export function parseGamesBuildArgs(argv) {
     const options = {
         games: [],
         dryRun: false,
+        force: false,
+        prune: false,
     }
 
     for (let i = 0; i < argv.length; i += 1) {
@@ -35,6 +39,16 @@ export function parseGamesBuildArgs(argv) {
 
         if (token === "--dry-run") {
             options.dryRun = true
+            continue
+        }
+
+        if (token === "--force") {
+            options.force = true
+            continue
+        }
+
+        if (token === "--prune") {
+            options.prune = true
         }
     }
 
@@ -62,11 +76,43 @@ export async function buildGames(options = {}) {
 
     for (const game of targets) {
         log.section(`Game: ${game.id}`)
-        await game.build({
-            id: game.id,
-            output: path.resolve("games", game.id),
-            dryRun: !!options.dryRun,
-        })
+
+        // Crawl gate: skip if items.json already has data (unless --force)
+        let shouldCrawl = true
+        if (!options.force && !options.dryRun) {
+            try {
+                const rawItemsPath = path.join("games", game.id, "items.json")
+                const existing = JSON.parse(fsNative.readFileSync(rawItemsPath, "utf8"))
+                if (Array.isArray(existing) && existing.length > 0) {
+                    log.info(`  ${game.id}: items.json exists (${existing.length} items) — skipping crawl. Use --force to re-crawl.`)
+                    shouldCrawl = false
+                }
+            } catch {
+                // File missing or invalid — proceed with crawl
+            }
+        }
+
+        // Step 1-2: Crawl raw data → games/<game-id>/items.json
+        if (shouldCrawl) {
+            await game.build({
+                id: game.id,
+                output: path.resolve("games", game.id),
+                dryRun: !!options.dryRun,
+            })
+        }
+
+        // Step 3-7: Sync to src/statics/items/<game-id>/<item-id>/ (non-destructive YAML + JSON)
+        if (!options.dryRun) {
+            log.info(`  Syncing items to src/ and build/...`)
+            const syncResult = await syncGameItems(game.id, game.detailMapper ?? null, game.imageResolver ?? null)
+
+            if (options.prune) {
+                log.info(`  Pruning orphan item folders...`)
+                await pruneGameItems(game.id, syncResult.itemIds)
+            }
+
+            // Hash generation moved to standalone build:hash step
+        }
     }
 
     log.start("Games build completed successfully!")

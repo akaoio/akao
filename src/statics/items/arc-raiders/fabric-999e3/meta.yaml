@@ -1,0 +1,36 @@
+id: fabric-999e3
+game: arc-raiders
+type: Basic Material
+tags:
+  - common
+  - basic material
+rarity: Common
+subtype: null
+value: 50
+stat_block:
+  weight: 0.1
+  useTime: 1
+  duration: 25
+  stackSize: 50
+  healingPerSecond: 0.4
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Commercial, Residential, Medical
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

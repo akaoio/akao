@@ -1,0 +1,10 @@
+id: 1905115
+icon: 3619227779
+name: "[PH] Unique Barb Gloves 99"
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Hands
+popularity: 18

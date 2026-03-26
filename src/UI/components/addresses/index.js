@@ -92,11 +92,11 @@ export class ADDRESSES extends HTMLElement {
         const encrypted = await gun.get(`~${pair.pub}`).get("addresses").get(id)
         const data = await sea.decrypt(encrypted, pair)
         this.form.querySelectorAll("input").forEach((input) => {
-            if (input.name in data) {
+            if (input.name in data) 
                 if (input.type === "checkbox") input.checked = data[input.name]
                 else if (input.type === "radio" && input.value === data[input.name]) input.checked = true
                 else input.value = data[input.name]
-            }
+            
         })
         const billing = await gun.get(`~${pair.pub}`).get("billing")
         const shipping = await gun.get(`~${pair.pub}`).get("shipping")

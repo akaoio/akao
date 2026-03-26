@@ -1,0 +1,12 @@
+id: 1738466
+icon: 2952066856
+name: Beleth's Bane
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 16

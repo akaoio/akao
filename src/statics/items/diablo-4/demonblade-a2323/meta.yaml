@@ -1,0 +1,27 @@
+id: demonblade-a2323
+game: diablo-4
+type: Two-Handed Sword
+tags:
+  - diablo-4
+  - unique
+  - two-handed sword
+rarity: Unique
+itemTypeName: Two-Handed Sword
+classes:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+value: 61
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

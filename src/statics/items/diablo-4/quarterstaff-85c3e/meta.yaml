@@ -1,0 +1,25 @@
+id: quarterstaff-85c3e
+game: diablo-4
+type: Quarterstaff
+tags:
+  - diablo-4
+  - legendary
+  - quarterstaff
+rarity: Legendary
+itemTypeName: Quarterstaff
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 22
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

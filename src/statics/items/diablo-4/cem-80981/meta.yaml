@@ -1,0 +1,23 @@
+id: cem-80981
+game: diablo-4
+type: Rune of Ritual
+tags:
+  - diablo-4
+  - common
+  - rune of ritual
+rarity: Common
+itemTypeName: Rune of Ritual
+classes: null
+slots: null
+value: 148
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

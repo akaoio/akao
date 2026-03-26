@@ -1,0 +1,24 @@
+id: wendigo-brand-5bea0
+game: diablo-4
+type: Ring
+tags:
+  - diablo-4
+  - legendary
+  - ring
+rarity: Legendary
+itemTypeName: Ring
+classes: null
+slots:
+  - Ring
+value: 254
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

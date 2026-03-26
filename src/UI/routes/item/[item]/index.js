@@ -11,6 +11,10 @@ function camelToLabel(key) {
     return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim()
 }
 
+function resolveDisplayType(meta = {}) {
+    return meta.type || meta.itemTypeName || meta.configs?.type || ""
+}
+
 export class ITEM extends HTMLElement {
     constructor() {
         super()
@@ -65,9 +69,9 @@ export class ITEM extends HTMLElement {
             icon.src = meta.icon
             icon.alt = meta.name || ""
             icon.style.display = ""
-        } else {
+        } else 
             icon.style.display = "none"
-        }
+        
 
         // Rarity + type badges
         const rarityKey = (meta.rarity || "common").toLowerCase().replace(/\s+/g, "-")
@@ -80,8 +84,9 @@ export class ITEM extends HTMLElement {
         rarityBadge.style.display = meta.rarity ? "" : "none"
 
         const typeBadge = root.querySelector("#type-badge")
-        typeBadge.textContent = meta.type || ""
-        typeBadge.style.display = meta.type ? "" : "none"
+        const displayType = resolveDisplayType(meta)
+        typeBadge.textContent = displayType
+        typeBadge.style.display = displayType ? "" : "none"
 
         const subtypeBadge = root.querySelector("#subtype-badge")
         subtypeBadge.textContent = meta.subtype || ""
@@ -93,9 +98,9 @@ export class ITEM extends HTMLElement {
             backLink.textContent = meta.game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
             backLink.dataset.to = `/game/${meta.game}`
             root.querySelector("#breadcrumb").style.display = ""
-        } else {
+        } else 
             root.querySelector("#breadcrumb").style.display = "none"
-        }
+        
 
         // Flavor text
         const flavorEl = root.querySelector("#flavor-text")
@@ -110,9 +115,9 @@ export class ITEM extends HTMLElement {
             )
             render(rows, statBlock)
             root.querySelector("#stats").style.display = ""
-        } else if (!meta.stat_block) {
+        } else if (!meta.stat_block) 
             root.querySelector("#stats").style.display = "none"
-        }
+        
 
         // Loadout slots
         const slotsEl = root.querySelector("#loadout-slots")
@@ -122,9 +127,9 @@ export class ITEM extends HTMLElement {
             )
             render(chips, slotsEl)
             root.querySelector("#slots").style.display = ""
-        } else if (!meta.loadout_slots?.length) {
+        } else if (!meta.loadout_slots?.length) 
             root.querySelector("#slots").style.display = "none"
-        }
+        
     }
 
     async render() {

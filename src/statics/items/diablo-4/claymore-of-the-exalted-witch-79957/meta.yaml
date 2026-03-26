@@ -1,0 +1,27 @@
+id: claymore-of-the-exalted-witch-79957
+game: diablo-4
+type: Two-Handed Sword
+tags:
+  - diablo-4
+  - special
+  - two-handed sword
+rarity: Special
+itemTypeName: Two-Handed Sword
+classes:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+value: 15
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2418640
+icon: 62474037
+name: Ring of Mendeln
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Head
+popularity: 20

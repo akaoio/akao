@@ -1,0 +1,38 @@
+id: il-toro-iii-eedae
+game: arc-raiders
+type: Weapon
+tags:
+  - uncommon
+  - weapon
+rarity: Uncommon
+subtype: null
+value: 10000
+stat_block:
+  range: 20
+  damage: 67.5
+  weight: 8
+  agility: 61.1
+  stealth: 18
+  fireRate: 14.3
+  stability: 80.6
+  magazineSize: 7
+  increasedFireRate: 35
+loadout_slots: []
+workbench: Weapon Bench
+flavor_text: " Somewhat effective against ARC armor plating"
+ammo_type: shotgun
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

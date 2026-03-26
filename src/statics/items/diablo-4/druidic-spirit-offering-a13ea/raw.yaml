@@ -1,0 +1,9 @@
+id: 681014
+icon: 2135376199
+name: Druidic Spirit Offering
+itemTypeName: Quest Item
+quality: null
+playerClassNames:
+  - Druid
+slotNames: []
+popularity: 31

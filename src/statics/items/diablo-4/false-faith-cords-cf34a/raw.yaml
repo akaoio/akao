@@ -1,0 +1,10 @@
+id: 1198494
+icon: 137409602
+name: False-faith Cords
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Legs
+popularity: 19

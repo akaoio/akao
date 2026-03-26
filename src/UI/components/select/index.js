@@ -24,10 +24,10 @@ export class SELECT extends HTMLElement {
         this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")
         if (name === "data-name") this.select.setAttribute("name", value)
         else if (name === "data-placeholder") this.placeholder.forEach(e => e.dataset.key = value)
-        else if (name === "data-required") {
+        else if (name === "data-required") 
             if (value !== null) this.select.setAttribute("required", "required")
             else this.select.removeAttribute("required")
-        }
+        
         if (name === "data-selected") {
             this.states.set({ selected: value })
             this.select.value = value

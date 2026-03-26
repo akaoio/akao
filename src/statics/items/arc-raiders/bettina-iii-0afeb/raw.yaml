@@ -1,0 +1,70 @@
+id: bettina-iii
+name: Bettina III
+description: Has slow fire rate and high damage output.
+item_type: Weapon
+loadout_slots: []
+icon: https://cdn.metaforge.app/arc-raiders/icons/bettina-iii.webp
+rarity: Epic
+value: 14000
+workbench: Weapon Bench
+stat_block:
+  range: 51.3
+  damage: 14
+  health: 0
+  radius: 0
+  shield: 0
+  weight: 11
+  agility: 48.2
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  stealth: 14
+  useTime: 0
+  duration: 0
+  fireRate: 32
+  stability: 76.4
+  stackSize: 0
+  damageMult: 0
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  magazineSize: 20
+  reducedNoise: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  movementPenalty: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  reducedEquipTime: 0
+  staminaPerSecond: 0
+  increasedADSSpeed: 0
+  increasedFireRate: 10
+  reducedReloadTime: 22.2
+  illuminationRadius: 0
+  increasedEquipTime: 0
+  reducedUnequipTime: 0
+  shieldCompatibility: ""
+  increasedUnequipTime: 0
+  reducedVerticalRecoil: 0
+  increasedBulletVelocity: 0
+  increasedVerticalRecoil: 0
+  reducedMaxShotDispersion: 0
+  reducedPerShotDispersion: 0
+  reducedDurabilityBurnRate: 0
+  reducedRecoilRecoveryTime: 0
+  increasedRecoilRecoveryTime: 0
+  reducedDispersionRecoveryTime: 0
+flavor_text: ""
+subcategory: Assault Rifle
+created_at: 2025-11-04T01:04:52.789475+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+shield_type: ""
+loot_area: ""
+sources: null
+ammo_type: heavy
+locations: []
+guide_links: []

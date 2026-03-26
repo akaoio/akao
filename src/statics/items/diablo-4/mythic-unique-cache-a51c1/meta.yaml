@@ -1,0 +1,23 @@
+id: mythic-unique-cache-a51c1
+game: diablo-4
+type: Crafted Cache
+tags:
+  - diablo-4
+  - mythic
+  - crafted cache
+rarity: Mythic
+itemTypeName: Crafted Cache
+classes: null
+slots: null
+value: 44
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

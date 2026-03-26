@@ -1,0 +1,23 @@
+id: scroll-of-butchery-742ea
+game: diablo-4
+type: Scroll
+tags:
+  - diablo-4
+  - unique
+  - scroll
+rarity: Unique
+itemTypeName: Scroll
+classes: null
+slots: null
+value: 36
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

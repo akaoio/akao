@@ -1,0 +1,25 @@
+id: the-oculus-d26b9
+game: diablo-4
+type: Wand
+tags:
+  - diablo-4
+  - legendary
+  - wand
+rarity: Legendary
+itemTypeName: Wand
+classes:
+  - Sorcerer
+slots:
+  - Main Hand
+value: 104
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,26 @@
+id: orsivane-64442
+game: diablo-4
+type: Mace
+tags:
+  - diablo-4
+  - legendary
+  - mace
+rarity: Legendary
+itemTypeName: Mace
+classes:
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 1193
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

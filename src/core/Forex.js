@@ -38,7 +38,7 @@ export class Forex {
 
     // Cleans and validates rate data from APIs
     filter(data) {
-        if (typeof data === "object") {
+        if (typeof data === "object") 
             for (const [code, value] of Object.entries(data)) {
                 // Remove currencies not in our supported fiats list
                 const fiat = this.fiats.find((e) => e.code == code)
@@ -49,7 +49,7 @@ export class Forex {
                 // Convert string values to numbers
                 if (typeof value === "string") data[code] = Number(value)
             }
-        }
+        
         return data
     }
 

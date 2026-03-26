@@ -1,0 +1,25 @@
+id: sepazontec-719a3
+game: diablo-4
+type: Pants
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Spiritborn
+slots:
+  - Legs
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

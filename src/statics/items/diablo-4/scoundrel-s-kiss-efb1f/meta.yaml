@@ -1,0 +1,25 @@
+id: scoundrel-s-kiss-efb1f
+game: diablo-4
+type: Ring
+tags:
+  - diablo-4
+  - legendary
+  - ring
+rarity: Legendary
+itemTypeName: Ring
+classes:
+  - Rogue
+slots:
+  - Ring
+value: 42
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

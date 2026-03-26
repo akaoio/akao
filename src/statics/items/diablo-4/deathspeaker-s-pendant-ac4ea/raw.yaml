@@ -1,0 +1,10 @@
+id: 2417732
+icon: 1328719373
+name: Deathspeaker's Pendant
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Torso
+popularity: 19

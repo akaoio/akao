@@ -15,29 +15,29 @@ export function stringify(data, { delimiter = ",", quote = '"', headers = true }
     
     // Determine headers
     let headerRow = null
-    if (headers === true && isObjects) {
+    if (headers === true && isObjects) 
         // Auto-generate from object keys
         headerRow = Object.keys(data[0])
-    } else if (Array.isArray(headers)) {
+     else if (Array.isArray(headers)) 
         // Custom headers provided
         headerRow = headers
-    }
+    
     
     // Add header line
-    if (headerRow) {
+    if (headerRow) 
         lines.push(stringifyRow(headerRow, delimiter, quote))
-    }
+    
     
     // Add data rows
     for (const item of data) {
         let row
-        if (isObjects) {
+        if (isObjects) 
             // Convert object to array using header order
             row = headerRow ? headerRow.map((key) => formatValue(item[key])) : Object.values(item).map(formatValue)
-        } else {
+         else 
             // Already an array
             row = item.map(formatValue)
-        }
+        
         lines.push(stringifyRow(row, delimiter, quote))
     }
     

@@ -1,0 +1,10 @@
+id: 2411574
+icon: 3218840775
+name: Grasp of Shadow
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Head
+popularity: 27

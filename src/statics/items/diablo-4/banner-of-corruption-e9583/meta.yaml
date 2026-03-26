@@ -1,0 +1,24 @@
+id: banner-of-corruption-e9583
+game: diablo-4
+type: Trophy
+tags:
+  - diablo-4
+  - special
+  - trophy
+rarity: Special
+itemTypeName: Trophy
+classes: null
+slots:
+  - Trophy
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

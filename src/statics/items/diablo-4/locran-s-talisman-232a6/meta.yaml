@@ -1,0 +1,24 @@
+id: locran-s-talisman-232a6
+game: diablo-4
+type: Amulet
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes: null
+slots:
+  - Neck
+value: 114
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

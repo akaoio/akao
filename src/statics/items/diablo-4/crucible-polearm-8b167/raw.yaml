@@ -1,0 +1,12 @@
+id: 2608359
+icon: 3269931145
+name: Crucible Polearm
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 40

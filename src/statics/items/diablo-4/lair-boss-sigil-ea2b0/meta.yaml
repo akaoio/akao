@@ -1,0 +1,23 @@
+id: lair-boss-sigil-ea2b0
+game: diablo-4
+type: Nightmare Sigil
+tags:
+  - diablo-4
+  - special
+  - nightmare sigil
+rarity: Special
+itemTypeName: Nightmare Sigil
+classes: null
+slots: null
+value: 30
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

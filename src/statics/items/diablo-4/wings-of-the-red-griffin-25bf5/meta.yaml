@@ -1,0 +1,24 @@
+id: wings-of-the-red-griffin-25bf5
+game: diablo-4
+type: Back Trophy
+tags:
+  - diablo-4
+  - special
+  - back trophy
+rarity: Special
+itemTypeName: Back Trophy
+classes: null
+slots:
+  - Back Trophy
+value: 35
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,25 @@
+id: hesha-e-kesungi-fe4f2
+game: diablo-4
+type: Boots
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Spiritborn
+slots:
+  - Feet
+value: 41
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

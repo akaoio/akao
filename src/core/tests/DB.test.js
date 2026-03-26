@@ -45,9 +45,9 @@ Test.describe("DB — path()", () => {
 
     Test.it("all segments are strings", () => {
         const segments = DB.path(12345)
-        for (const seg of segments) {
+        for (const seg of segments) 
             Test.assert.equal(typeof seg, "string")
-        }
+        
     })
 
 })

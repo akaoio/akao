@@ -1,0 +1,10 @@
+id: 2425819
+icon: 1228627587
+name: Hesha e Kesungi
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Torso
+popularity: 24

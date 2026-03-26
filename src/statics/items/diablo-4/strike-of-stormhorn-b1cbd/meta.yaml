@@ -1,0 +1,25 @@
+id: strike-of-stormhorn-b1cbd
+game: diablo-4
+type: Focus
+tags:
+  - diablo-4
+  - legendary
+  - focus
+rarity: Legendary
+itemTypeName: Focus
+classes:
+  - Sorcerer
+slots:
+  - Off-Hand
+value: 125
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

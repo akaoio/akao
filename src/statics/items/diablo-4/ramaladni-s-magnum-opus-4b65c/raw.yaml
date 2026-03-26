@@ -1,0 +1,10 @@
+id: 2458176
+icon: 3753360148
+name: Ramaladni's Magnum Opus
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 16

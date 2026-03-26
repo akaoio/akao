@@ -1,0 +1,25 @@
+id: confessor-s-habit-4e32d
+game: diablo-4
+type: Chest Armor
+tags:
+  - diablo-4
+  - special
+  - chest armor
+rarity: Special
+itemTypeName: Chest Armor
+classes:
+  - Necromancer
+slots:
+  - Torso
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

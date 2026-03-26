@@ -5,15 +5,15 @@ export default {
     stories: [
         {
             name: "Brand text",
-            code: `<ui-svg data-src="/statics/sites/localhost/images/akao-text.svg" class="svg-lg svg-color"></ui-svg>`
+            code: `<ui-svg data-src="/statics/sites/localhost/images/text.svg" class="svg-lg svg-color"></ui-svg>`
         },
         {
             name: "Brand symbol",
-            code: `<ui-svg data-src="/statics/sites/localhost/images/akao-symbol.svg" class="svg-md svg-color"></ui-svg>`
+            code: `<ui-svg data-src="/statics/sites/localhost/images/symbol.svg" class="svg-md svg-color"></ui-svg>`
         },
         {
             name: "Neon accent",
-            code: `<ui-svg data-src="/statics/sites/localhost/images/akao-symbol.svg" class="svg-md svg-color-accent"></ui-svg>`
+            code: `<ui-svg data-src="/statics/sites/localhost/images/symbol.svg" class="svg-md svg-color-accent"></ui-svg>`
         },
         {
             name: "Bootstrap icon inline",

@@ -31,17 +31,17 @@ Test.describe("WebAuthn — passkey lifecycle", () => {
     }, { interactive: true, browser: true })
 
     Test.it("authenticate() — verify existing passkey", async () => {
-        if (!_credential) {
+        if (!_credential) 
             throw new Error("Run the register test first")
-        }
+        
         const result = await webauthn.authenticate({ id: _credential.id })
         Test.assert.truthy(result, "authentication result should be truthy")
     }, { interactive: true, browser: true })
 
     Test.it("sign() — sign data with passkey", async () => {
-        if (!_credential) {
+        if (!_credential) 
             throw new Error("Run the register test first")
-        }
+        
         const data = "hello-world"
         const result = await webauthn.sign({ id: _credential.id, data })
         Test.assert.truthy(result, "signed result should exist")
@@ -49,9 +49,9 @@ Test.describe("WebAuthn — passkey lifecycle", () => {
 
     Test.it("create() produces deterministic hash from same credential", async () => {
         // Verify that sha256 of the credential ID is deterministic
-        if (!_credential) {
+        if (!_credential) 
             throw new Error("Run the register test first")
-        }
+        
         const h1 = sha256(_credential.id)
         const h2 = sha256(_credential.id)
         Test.assert.equal(h1, h2)

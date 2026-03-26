@@ -1,0 +1,25 @@
+id: awoken-adamant-sallet-e0097
+game: diablo-4
+type: Helm
+tags:
+  - diablo-4
+  - special
+  - helm
+rarity: Special
+itemTypeName: Helm
+classes:
+  - Sorcerer
+slots:
+  - Head
+value: 15
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

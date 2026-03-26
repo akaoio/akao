@@ -1,0 +1,23 @@
+id: elemental-brand-fbb7d
+game: diablo-4
+type: Horadric Jewel
+tags:
+  - diablo-4
+  - legendary
+  - horadric jewel
+rarity: Legendary
+itemTypeName: Horadric Jewel
+classes: null
+slots: null
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

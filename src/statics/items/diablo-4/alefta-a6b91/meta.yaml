@@ -1,0 +1,23 @@
+id: alefta-a6b91
+game: diablo-4
+type: Pet
+tags:
+  - diablo-4
+  - normal
+  - pet
+rarity: Normal
+itemTypeName: Pet
+classes: null
+slots: null
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

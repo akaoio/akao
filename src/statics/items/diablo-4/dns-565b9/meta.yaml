@@ -1,0 +1,30 @@
+id: dns-565b9
+game: diablo-4
+type: Sword
+tags:
+  - diablo-4
+  - legendary
+  - sword
+rarity: Legendary
+itemTypeName: Sword
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 15
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

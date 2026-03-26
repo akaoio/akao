@@ -1,0 +1,12 @@
+id: 2420838
+icon: 2952066882
+name: (DNS)
+itemTypeName: Two-Handed Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 15

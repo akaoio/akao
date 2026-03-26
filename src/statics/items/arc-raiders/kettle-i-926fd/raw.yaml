@@ -1,0 +1,74 @@
+id: kettle-i
+name: Kettle I
+description: Semi-automatic assault rifle. Quick and accurate, but has low
+  bullet velocity and takes a long time reload.
+item_type: Weapon
+loadout_slots:
+  - weapon
+icon: https://cdn.metaforge.app/arc-raiders/icons/kettle-i.webp
+rarity: Common
+value: 840
+workbench: Weapon Bench
+stat_block:
+  ammo: light
+  range: 42.8
+  damage: 10
+  health: 0
+  radius: 0
+  shield: 0
+  weight: 7
+  agility: 58.5
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  stealth: 26
+  useTime: 0
+  duration: 0
+  fireRate: 28
+  stability: 69.8
+  stackSize: 0
+  damageMult: 0
+  firingMode: Single
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  magazineSize: 20
+  reducedNoise: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  movementPenalty: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  reducedEquipTime: 0
+  staminaPerSecond: 0
+  increasedADSSpeed: 0
+  increasedFireRate: 0
+  reducedReloadTime: 0
+  illuminationRadius: 0
+  increasedEquipTime: 0
+  reducedUnequipTime: 0
+  shieldCompatibility: ""
+  increasedUnequipTime: 0
+  reducedVerticalRecoil: 0
+  increasedBulletVelocity: 0
+  increasedVerticalRecoil: 0
+  reducedMaxShotDispersion: 0
+  reducedPerShotDispersion: 0
+  reducedDurabilityBurnRate: 0
+  reducedRecoilRecoveryTime: 0
+  increasedRecoilRecoveryTime: 0
+  reducedDispersionRecoveryTime: 0
+flavor_text: Weak against ARC armor plating
+subcategory: Assault Rifle
+created_at: 2025-09-23T18:21:03.51415+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+shield_type: null
+loot_area: null
+sources: null
+ammo_type: Light
+locations: []
+guide_links: []

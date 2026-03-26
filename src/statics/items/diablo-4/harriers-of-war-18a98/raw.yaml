@@ -1,0 +1,10 @@
+id: 2120650
+icon: 3519334623
+name: Harriers of War
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Feet
+popularity: 18

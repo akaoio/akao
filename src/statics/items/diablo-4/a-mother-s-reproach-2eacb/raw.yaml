@@ -1,0 +1,14 @@
+id: 2391648
+icon: 119769000
+name: A Mother's Reproach
+itemTypeName: Flail
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 18

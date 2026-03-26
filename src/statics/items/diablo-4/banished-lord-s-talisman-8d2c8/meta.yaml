@@ -1,0 +1,24 @@
+id: banished-lord-s-talisman-8d2c8
+game: diablo-4
+type: Gloves
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes: null
+slots:
+  - Hands
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

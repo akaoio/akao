@@ -1,5 +1,5 @@
 import Thread from "/core/Thread.js"
-import QrScanner from "/core/QR/scan.js"
+import QR from "/core/QR.js"
 
 const thread = new Thread()
 
@@ -39,7 +39,7 @@ function ensureSourceContext(width, height) {
 
 async function ensureEngine() {
     ensureCompatGlobals()
-    if (!state.engine) state.engine = await QrScanner.createQrEngine()
+    if (!state.engine) state.engine = await QR.scan.createQrEngine()
     return state.engine
 }
 
@@ -68,7 +68,7 @@ thread.scan = async function ({ bitmap, imageData, width, height, scanRegion, al
     if (!source) return { ok: false, found: false, error: "No frame provided" }
 
     try {
-        const result = await QrScanner.scanImage(source, {
+        const result = await QR.scan.scanImage(source, {
             qrEngine: state.engine,
             canvas: state.scanCanvas,
             scanRegion: scanRegion || state.options.scanRegion,
@@ -78,9 +78,9 @@ thread.scan = async function ({ bitmap, imageData, width, height, scanRegion, al
         return { ok: true, found: true, data: result.data, cornerPoints: result.cornerPoints }
     } catch (error) {
         const message = normalizeError(error)
-        if (message === QrScanner.NO_QR_CODE_FOUND || /no qr code found/i.test(message)) {
+        if (message === QR.scan.NO_QR_CODE_FOUND || /no qr code found/i.test(message)) 
             return { ok: false, found: false }
-        }
+        
         return { ok: false, found: false, error: message }
     } finally {
         if (bitmap && typeof bitmap.close === "function") bitmap.close()

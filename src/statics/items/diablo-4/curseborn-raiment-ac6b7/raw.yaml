@@ -1,0 +1,10 @@
+id: 2209863
+icon: 2463102868
+name: Curseborn Raiment
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 15

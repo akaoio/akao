@@ -1,0 +1,24 @@
+id: urivar-s-shattered-face-76d00
+game: diablo-4
+type: Helm
+tags:
+  - diablo-4
+  - special
+  - helm
+rarity: Special
+itemTypeName: Helm
+classes: null
+slots:
+  - Head
+value: 27
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

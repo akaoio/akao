@@ -1,0 +1,24 @@
+id: vehement-augments-8c6fe
+game: diablo-4
+type: Temper Manual
+tags:
+  - diablo-4
+  - common
+  - temper manual
+rarity: Common
+itemTypeName: Temper Manual
+classes:
+  - Barbarian
+slots: null
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

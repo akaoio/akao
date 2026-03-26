@@ -1,0 +1,25 @@
+id: glaive-4897a
+game: diablo-4
+type: Glaive
+tags:
+  - diablo-4
+  - special
+  - glaive
+rarity: Special
+itemTypeName: Glaive
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 30
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2425438
+icon: 1918353372
+name: Sabre of Tsasgal
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Hands
+popularity: 32

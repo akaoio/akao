@@ -1,0 +1,23 @@
+id: yom-46b7c
+game: diablo-4
+type: Rune of Invocation
+tags:
+  - diablo-4
+  - unique
+  - rune of invocation
+rarity: Unique
+itemTypeName: Rune of Invocation
+classes: null
+slots: null
+value: 42
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp
