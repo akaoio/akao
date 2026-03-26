@@ -62,14 +62,13 @@ class $QR extends HTMLElement {
         if (this._scannerAttached) return
         this._scannerAttached = true
         this.camera = this.shadowRoot.querySelector("#camera")
-        this.status = this.shadowRoot.querySelector("#status ui-context")
         this.result = this.shadowRoot.querySelector("#result")
         this.$start = this.shadowRoot.querySelector("#start")
         this.$stop = this.shadowRoot.querySelector("#stop")
         this.$clear = this.shadowRoot.querySelector("#clear")
-        this.$start.shadowRoot.querySelector("button").addEventListener("click", this.start)
-        this.$stop.shadowRoot.querySelector("button").addEventListener("click", this.stop)
-        this.$clear.shadowRoot.querySelector("button").addEventListener("click", this.clear)
+        this.$start.addEventListener("click", this.start)
+        this.$stop.addEventListener("click", this.stop)
+        this.$clear.addEventListener("click", this.clear)
         this.camera.addEventListener("ready", this.onCameraReady)
         this.camera.addEventListener("capture", this.onCameraCapture)
         this.camera.addEventListener("resume", this.onCameraResume)
@@ -185,11 +184,11 @@ class $QR extends HTMLElement {
     }
 
     setStatus(key, fallback) {
-        if (!this.status) return
-        if (key) this.status.dataset.key = key
+        if (!this.camera) return
+        if (key) this.camera.dataset.status = key
         else if (fallback) {
-            this.status.removeAttribute("data-key")
-            this.status.innerText = fallback
+            this.camera.removeAttribute("data-status")
+            this.camera.querySelector("#status").textContent = fallback
         }
     }
 

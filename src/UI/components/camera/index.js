@@ -20,7 +20,7 @@ export class CAMERA extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["data-facing-mode"]
+        return ["data-facing-mode", "data-controls", "data-status"]
     }
 
     attributeChangedCallback(name, last, value) {
@@ -29,6 +29,8 @@ export class CAMERA extends HTMLElement {
             this.facingMode = value
             if (this.isConnected) this.start({ facingMode: value })
         }
+        if (name === "data-controls") this.shadowRoot.querySelector(".controls").style.display = value !== "false" ? "flex" : "none"
+        if (name === "data-status") this.status.dataset.key = value
     }
 
     connectedCallback() {

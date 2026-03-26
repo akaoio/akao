@@ -7,10 +7,12 @@ const template = html`
     ${styles}
     <video id="video" autoplay playsinline muted></video>
     <ui-context id="status" data-key="dictionary.idle" />
-    <div class="controls">
-        <ui-icon id="switch" data-icon="arrow-repeat" />
-        <ui-icon id="capture" data-icon="camera" />
-        <ui-icon id="resume" data-icon="record-circle" hidden />
+    <div id="controls">
+        <div class="controls">
+            <ui-icon id="switch" data-icon="arrow-repeat" />
+            <ui-icon id="capture" data-icon="camera" />
+            <ui-icon id="resume" data-icon="record-circle" hidden />
+        </div>
         <slot></slot>
     </div>
 `

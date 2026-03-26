@@ -16,12 +16,19 @@ const styles = css`
 
         #status {
             position: absolute;
-            left: var(--space);
+            left: 50%;
             top: var(--space);
+            transform: translateX(-50%);
+            width: max-content;
+            max-width: calc(100% - (var(--space) * 2));
+            z-index: 2;
+            text-align: center;
+            white-space: normal;
+            overflow-wrap: anywhere;
             opacity: 0.5;
         }
 
-        .controls {
+        #controls {
             display: flex;
             position: absolute;
             gap: var(--space);
@@ -29,6 +36,10 @@ const styles = css`
             left: 50%;
             transform: translateX(-50%);
             bottom: var(--space);
+            .controls {
+                display: flex;
+                gap: var(--space);
+            }
         }
     }
 `

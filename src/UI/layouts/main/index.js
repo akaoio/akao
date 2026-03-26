@@ -12,8 +12,8 @@ export class MAIN extends HTMLElement {
         return ["data-header", "data-footer"]
     }
 
-    attributeChangedCallback(name, old, value) {
-        if (old === value) return
+    attributeChangedCallback(name, last, value) {
+        if (last === value) return
         const key = name.replace("data-", "")
         if (["header", "footer"].includes(key)) this.shadowRoot.querySelector(`ui-${key}`).style.display = value !== "false" ? "flex" : "none"
     }
