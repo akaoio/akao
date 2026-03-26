@@ -117,22 +117,34 @@ async function testCore() {
         for (const item of coreItems) {
             const itemFiles = await dir([...paths.src.items, item])
             for (const file of itemFiles) {
-                const data = await load([...paths.src.items, item, file])
-                if (data) {
-                    const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
-                    await write([...paths.build.statics, "items", item, jsonName], data)
+                const sourcePath = [...paths.src.items, item, file]
+                if (await isDirectory(sourcePath)) {
+                    await copy(sourcePath, [...paths.build.statics, "items", item, file])
+                    continue
                 }
+
+                const data = await load(sourcePath)
+                if (!data) continue
+
+                const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
+                await write([...paths.build.statics, "items", item, jsonName], data)
             }
         }
         for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
             for (const itemId of itemIds) {
                 const itemFiles = await dir([...paths.src.items, gameId, itemId])
                 for (const file of itemFiles) {
-                    const data = await load([...paths.src.items, gameId, itemId, file])
-                    if (data) {
-                        const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
-                        await write([...paths.build.statics, "items", gameId, itemId, jsonName], data)
+                    const sourcePath = [...paths.src.items, gameId, itemId, file]
+                    if (await isDirectory(sourcePath)) {
+                        await copy(sourcePath, [...paths.build.statics, "items", gameId, itemId, file])
+                        continue
                     }
+
+                    const data = await load(sourcePath)
+                    if (!data) continue
+
+                    const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
+                    await write([...paths.build.statics, "items", gameId, itemId, jsonName], data)
                 }
             }
         }

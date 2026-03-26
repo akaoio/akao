@@ -7,7 +7,7 @@ log.start("Starting hash generation...")
 
 const buildRoot = paths.build.root
 
-if (!(await exist([buildRoot]))) {
+if (!(await exist(buildRoot))) {
     log.info("Build directory not found — run build:core first")
     process.exit(1)
 }
