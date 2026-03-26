@@ -74,4 +74,35 @@ Test.describe("Events", () => {
         Test.assert.deepEqual(received, { x: 1, y: 2 })
     })
 
+    Test.it("once triggers listener only once", () => {
+        const e = new Events()
+        let count = 0
+        e.once("once", () => { count++ })
+        e.emit("once", null)
+        e.emit("once", null)
+        Test.assert.equal(count, 1)
+    })
+
+    Test.it("emit supports browser event options", () => {
+        const e = new Events()
+        const ev = e.emit("options", { ok: true }, {
+            bubbles: true,
+            composed: true,
+            cancelable: true
+        })
+        Test.assert.equal(ev.bubbles, true)
+        Test.assert.equal(ev.composed, true)
+        Test.assert.equal(ev.cancelable, true)
+        Test.assert.deepEqual(ev.detail, { ok: true })
+    })
+
+    Test.it("can use external EventTarget as dispatch target", () => {
+        const target = new EventTarget()
+        const e = new Events(target)
+        let received = null
+        target.addEventListener("target", ({ detail }) => { received = detail })
+        e.emit("target", "ok")
+        Test.assert.equal(received, "ok")
+    })
+
 })

@@ -1,5 +1,6 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import { events } from "/core/Events.js"
 
 export class HEADER extends HTMLElement {
     constructor() {
@@ -10,7 +11,7 @@ export class HEADER extends HTMLElement {
 
     connectedCallback() {
         this.shadowRoot.querySelector(".games")?.addEventListener("click", () => {
-            window.dispatchEvent(new CustomEvent("game-nav:open"))
+            events.emit("game-nav:open")
         })
     }
 }

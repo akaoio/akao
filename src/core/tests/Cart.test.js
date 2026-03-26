@@ -4,12 +4,15 @@
 import Test from "../Test.js"
 import { Cart } from "../Cart.js"
 import { sha256 } from "../Utils.js"
+import { Indexes } from "../Stores.js"
 
 /** Create a fresh Cart with pre-seeded item metadata to avoid real DB calls. */
-function makeCart(items = {}) {
+async function makeCart(items = {}) {
+    await Indexes.Cart.get("cart").del()
     const cart = new Cart()
     // Pre-seed metas so add()/update() never fetches from DB
     Object.assign(cart.metas, items)
+    await cart.ready
     return cart
 }
 
@@ -25,7 +28,7 @@ Test.describe("Cart — key generation", () => {
 
     Test.it("key is sha256 of id+sku with no variants", async () => {
         const expected = sha256("id:green-tea.sku:default.")
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default" })
         const keys = Object.keys(cart.states.get("cart"))
         Test.assert.equal(keys.length, 1)
@@ -33,7 +36,7 @@ Test.describe("Cart — key generation", () => {
     })
 
     Test.it("different sku produces different key", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "small" })
         await cart.add({ id: "green-tea", sku: "large" })
         const keys = Object.keys(cart.states.get("cart"))
@@ -41,8 +44,8 @@ Test.describe("Cart — key generation", () => {
     })
 
     Test.it("variant pairs are sorted before hashing (order-independent)", async () => {
-        const cartA = makeCart(METAS)
-        const cartB = makeCart(METAS)
+        const cartA = await makeCart(METAS)
+        const cartB = await makeCart(METAS)
         await cartA.add({ id: "green-tea", sku: "s", color: "red", size: "M" })
         await cartB.add({ id: "green-tea", sku: "s", size: "M", color: "red" })
         const keyA = Object.keys(cartA.states.get("cart"))[0]
@@ -55,14 +58,14 @@ Test.describe("Cart — key generation", () => {
 Test.describe("Cart — add()", () => {
 
     Test.it("adds item to cart", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default", quantity: 2 })
         const keys = Object.keys(cart.states.get("cart"))
         Test.assert.equal(keys.length, 1)
     })
 
     Test.it("adding same item twice accumulates quantity", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default", quantity: 1 })
         await cart.add({ id: "green-tea", sku: "default", quantity: 2 })
         const keys = Object.keys(cart.states.get("cart"))
@@ -71,7 +74,7 @@ Test.describe("Cart — add()", () => {
     })
 
     Test.it("missing id or sku returns early without adding", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea" })
         await cart.add({ sku: "default" })
         const keys = Object.keys(cart.states.get("cart"))
@@ -79,7 +82,7 @@ Test.describe("Cart — add()", () => {
     })
 
     Test.it("quantity defaults to 1 when not provided", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default" })
         const keys = Object.keys(cart.states.get("cart"))
         Test.assert.equal(cart.states.get("cart")[keys[0]].quantity, 1)
@@ -90,7 +93,7 @@ Test.describe("Cart — add()", () => {
 Test.describe("Cart — remove() / increase() / decrease()", () => {
 
     Test.it("remove() deletes the item", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default" })
         const key = Object.keys(cart.states.get("cart"))[0]
         cart.remove(key)
@@ -98,7 +101,7 @@ Test.describe("Cart — remove() / increase() / decrease()", () => {
     })
 
     Test.it("increase() adds to quantity", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default", quantity: 1 })
         const key = Object.keys(cart.states.get("cart"))[0]
         cart.increase(key, 3)
@@ -106,7 +109,7 @@ Test.describe("Cart — remove() / increase() / decrease()", () => {
     })
 
     Test.it("decrease() subtracts from quantity (minimum 1)", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default", quantity: 3 })
         const key = Object.keys(cart.states.get("cart"))[0]
         cart.decrease(key, 2)
@@ -117,7 +120,7 @@ Test.describe("Cart — remove() / increase() / decrease()", () => {
     })
 
     Test.it("remove() returns false for non-existent key", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         const result = cart.remove("nonexistent-key")
         Test.assert.falsy(result)
     })
@@ -127,7 +130,7 @@ Test.describe("Cart — remove() / increase() / decrease()", () => {
 Test.describe("Cart — update() totals", () => {
 
     Test.it("correctly calculates total and quantity after add", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default", quantity: 2 })
         await cart.add({ id: "black-tea", sku: "large", quantity: 1 })
         await cart.update()
@@ -136,14 +139,14 @@ Test.describe("Cart — update() totals", () => {
     })
 
     Test.it("uses sale price when available", async () => {
-        const cart = makeCart({ "sale-item": { price: 20, sale: 12 } })
+        const cart = await makeCart({ "sale-item": { price: 20, sale: 12 } })
         await cart.add({ id: "sale-item", sku: "s", quantity: 1 })
         await cart.update()
         Test.assert.equal(cart.states.get("total"), 12)
     })
 
     Test.it("list is sorted by timestamp (newest first)", async () => {
-        const cart = makeCart(METAS)
+        const cart = await makeCart(METAS)
         await cart.add({ id: "green-tea", sku: "default" })
         await new Promise(r => setTimeout(r, 5))
         await cart.add({ id: "black-tea", sku: "large" })

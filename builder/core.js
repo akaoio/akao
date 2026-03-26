@@ -336,6 +336,13 @@ log.ok("Copied qr-scanner → build/core/QR/decoder.js")
 await copy(["node_modules", "qr-scanner", "qr-scanner-worker.min.js"], [...paths.build.core, "QR", "qr-scanner-worker.min.js"])
 log.ok("Copied qr-scanner worker → build/core/QR/qr-scanner-worker.min.js")
 
+// Copy sqlite-wasm for the sql worker (OPFS backend)
+log.info("Copying sqlite-wasm to build...")
+await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "index.mjs"], [...paths.build.core, "SQL", "sqlite3.js"])
+await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3.wasm"], [...paths.build.core, "SQL", "sqlite3.wasm"])
+await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3-opfs-async-proxy.js"], [...paths.build.core, "SQL", "sqlite3-opfs-async-proxy.js"])
+log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite3-opfs-async-proxy.js")
+
 // Copy gun library files to GDB folder
 log.info("Copying gun library to GDB...")
 const gunFiles = ["gun.js", "sea.js", ["lib", "radix.js"], ["lib", "radisk.js"], ["lib", "rindexed.js"], ["lib", "store.js"]]

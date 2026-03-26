@@ -3,7 +3,7 @@ import { get, $get } from "./IDB/get.js"
 import { put, $put } from "./IDB/put.js"
 import { del, $del } from "./IDB/del.js"
 import { execute } from "./IDB/execute.js"
-import { loadFromDisk, saveToDisk, initDisk } from "./IDB/disk.js"
+import { load, save, init } from "./IDB/disk.js"
 
 class IDB {
     constructor({ name = "system" } = {}) {
@@ -29,7 +29,7 @@ class IDB {
                     resolve()
                 }
             } else if (NODE) {
-                await initDisk.call(this)
+                await init.call(this)
                 resolve()
             }
         })
@@ -45,8 +45,8 @@ class IDB {
     $put = $put
     $del = $del
     execute = execute
-    loadFromDisk = loadFromDisk
-    saveToDisk = saveToDisk
+    load = load
+    save = save
 }
 
 export default IDB
