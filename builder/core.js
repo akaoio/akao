@@ -176,7 +176,6 @@ for (const name of itemDirs) {
                     normalizeTags(subMeta.tags).forEach((tag) => allTags.add(tag))
                 }
             }
-
         if (nested.length > 0) gameItemsMap[name] = nested
     }
 }
@@ -370,17 +369,30 @@ log.info("Processing i18n files...")
 const localeCount = await processI18n(locales)
 log.ok(`Created ${localeCount} locale files`)
 
-// Generate routes — always skipDynamic, SPA fallback handles dynamic routes
-// Dev: dev server serves index.html for unmatched extensionless URLs
-// Production: Netlify _redirects handles SPA fallback
-log.info("Generating routes (static prefixes only)...")
+// Generate routes
+// Dev: static prefixes only, dev server SPA fallback handles dynamic routes
+// Netlify: static prefixes only + _redirects for SPA fallback (faster deploy)
+// Other production: build all static files
+const devMode = process.argv.includes("--dev")
+const isNetlify = process.env.NETLIFY === "true"
+const skipDynamic = devMode || isNetlify
+
+if (isNetlify) log.info("Detected Netlify — static prefixes + _redirects...")
+else if (devMode) log.info("Generating routes (dev — SPA mode)...")
+else log.info("Generating routes (all static files)...")
+
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic: true })
+const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic })
 log.ok(`Created ${routeCount} route files`)
 
-// Generate _redirects for Netlify SPA fallback
-await write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
-log.ok("Created _redirects for Netlify SPA fallback")
+if (isNetlify) {
+    await write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
+    log.ok("Created _redirects for Netlify SPA fallback")
+}
+
+// 404.html — platform-agnostic SPA fallback for unknown routes
+await write([...paths.build.root, "404.html"], indexContent)
+log.ok("Created 404.html fallback")
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
 
