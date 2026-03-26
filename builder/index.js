@@ -2,7 +2,6 @@ import { load, write, dir, isDirectory, exist } from "../src/core/FS.js"
 import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
 import { generateRoutes } from "./core/routes.js"
-import { generateHashFiles } from "./core/hash.js"
 
 function normalizeTag(tag = "") {
     return String(tag || "")
@@ -105,9 +104,5 @@ const indexContent = await load(paths.src.index)
 log.info("Generating tag routes...")
 const tagRouteCount = await generateRoutes(locales, coreItems, tagsList, games, indexContent, "build", ["tag/[tag]"], gameItemsMap)
 log.ok(`Created ${tagRouteCount} tag-route files`) 
-
-log.info("Generating hash files for tags...")
-const hashResult = await generateHashFiles([...paths.build.statics, "tags"], [])
-log.ok(`Created ${hashResult.hashFiles} tag hash files`)
 
 log.start("Index build completed successfully!")

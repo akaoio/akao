@@ -2,12 +2,13 @@ import Thread from "/core/Thread.js"
 import { loop } from "/core/Utils.js"
 import { Indexes } from "/core/Stores.js"
 import DB from "/core/DB.js"
+import { DEV } from "/core/Utils/environment.js"
 
 const thread = new Thread()
 
 thread.init = async function () {
+    if (DEV) return
     const paths = [[], ["statics"], ["statics", "locales"], ["statics", "items"]]
-
     loop({
         process: async () => {
             const skippables = []
@@ -24,10 +25,10 @@ thread.init = async function () {
                 )
                     continue
 
-                const _ = [...path, "_.hash"]
+                const hash = [...path, "_.hash"]
                 // Compare old vs new directory hash via DB (handles Indexes.Hashes internally)
-                const before = await Indexes.Hashes.get(_).once()
-                const after = await DB.get(_)
+                const before = await Indexes.Hashes.get(hash).once()
+                const after = await DB.get(hash)
                 if (!after) continue
                 if (before === after) {
                     skippables.push(path)
