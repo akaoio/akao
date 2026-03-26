@@ -21,7 +21,7 @@ export const template = html`
                 <span class="pill__divider"></span>
                 <span class="pill__rarity-dot" id="pill-rarity-dot"></span>
                 <span class="pill__divider"></span>
-                <span class="pill__count" id="pill-count"></span>
+                <span class="pill__count" id="pill-count"><span class="count__num" id="pill-count-num"></span><span class="count__label"> Items</span></span>
                 <span class="pill__divider"></span>
                 <span class="pill__sort" id="pill-sort"></span>
                 <span class="pill__divider"></span>
@@ -32,7 +32,6 @@ export const template = html`
                     </svg>
                 </span>
             </div>
-            <button class="catalog-collapse-btn" id="catalog-collapse" aria-label="Collapse filters">‹</button>
             <nav class="marketplace-nav">
                 <div class="filter-group">
                     <span class="filter-group__label">Type</span>
@@ -47,12 +46,13 @@ export const template = html`
             </nav>
 
             <div class="catalog-toolbar" id="toolbar">
-                <span class="catalog-count" id="count"></span>
+                <span class="catalog-count" id="count"><span class="count__num" id="count-num"></span><span class="count__label"> Items</span></span>
                 <div class="catalog-search-wrap">
                     <input class="catalog-search" id="search" type="search" placeholder="Search items…" autocomplete="off" spellcheck="false" />
                     <ul class="catalog-search__suggestions" id="search-suggestions"></ul>
                 </div>
                 <div class="sort-bar" id="sort"></div>
+                <button class="catalog-collapse-btn" id="catalog-collapse" aria-label="Collapse filters"></button>
             </div>
         </div>
 

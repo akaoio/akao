@@ -102,13 +102,73 @@ export class GAME extends HTMLElement {
             // Pill click → expand (animated).
             // Clear inline px width + add .is-expanded in one flush.
             // Browser sees: from _pillWidth px (inline) → to 100% (CSS .is-stuck.is-expanded).
+            const expandSticky = () => {
+                sticky.style.width = ""
+                sticky.classList.add("is-expanded")
+            }
+
             if (pill) {
-                const onPillClick = () => {
-                    sticky.style.width = ""
-                    sticky.classList.add("is-expanded")
+                pill.addEventListener("click", expandSticky)
+                this.subscriptions.push(() => pill.removeEventListener("click", expandSticky))
+            }
+
+            // Individual pill segment actions — each stops propagation so the
+            // general pill-expand doesn't also fire, then handles its own action.
+
+            const pillSortEl = this.shadowRoot.querySelector("#pill-sort")
+            if (pillSortEl) {
+                const onPillSort = (e) => {
+                    e.stopPropagation()
+                    const sortCycle = SORT_OPTIONS.flatMap((o) => [o.asc, o.desc])
+                    const current = this.states.get("sort")
+                    const idx = sortCycle.indexOf(current)
+                    const next = sortCycle[(idx + 1) % sortCycle.length]
+                    this.states.set({ sort: next })
+                    this.applyFilters()
                 }
-                pill.addEventListener("click", onPillClick)
-                this.subscriptions.push(() => pill.removeEventListener("click", onPillClick))
+                pillSortEl.addEventListener("click", onPillSort)
+                this.subscriptions.push(() => pillSortEl.removeEventListener("click", onPillSort))
+            }
+
+            const pillTypeEl = this.shadowRoot.querySelector("#pill-type")
+            if (pillTypeEl) {
+                const onPillType = (e) => {
+                    e.stopPropagation()
+                    expandSticky()
+                    requestAnimationFrame(() => {
+                        const selectWrap = this.shadowRoot.querySelector("#type-select")?.closest(".filter-select-wrap")
+                        if (selectWrap && getComputedStyle(selectWrap).display !== "none") this.shadowRoot.querySelector("#type-select").focus()
+                        else this.shadowRoot.querySelector("#type-tabs button")?.focus()
+                    })
+                }
+                pillTypeEl.addEventListener("click", onPillType)
+                this.subscriptions.push(() => pillTypeEl.removeEventListener("click", onPillType))
+            }
+
+            const pillRarityDotEl = this.shadowRoot.querySelector("#pill-rarity-dot")
+            if (pillRarityDotEl) {
+                const onPillRarityDot = (e) => {
+                    e.stopPropagation()
+                    expandSticky()
+                    requestAnimationFrame(() => {
+                        const selectWrap = this.shadowRoot.querySelector("#rarity-select")?.closest(".filter-select-wrap")
+                        if (selectWrap && getComputedStyle(selectWrap).display !== "none") this.shadowRoot.querySelector("#rarity-select").focus()
+                        else this.shadowRoot.querySelector(".rarity-pills button")?.focus()
+                    })
+                }
+                pillRarityDotEl.addEventListener("click", onPillRarityDot)
+                this.subscriptions.push(() => pillRarityDotEl.removeEventListener("click", onPillRarityDot))
+            }
+
+            const pillSearchEl = this.shadowRoot.querySelector("#pill-search")
+            if (pillSearchEl) {
+                const onPillSearch = (e) => {
+                    e.stopPropagation()
+                    expandSticky()
+                    requestAnimationFrame(() => this.shadowRoot.querySelector("#search")?.focus())
+                }
+                pillSearchEl.addEventListener("click", onPillSearch)
+                this.subscriptions.push(() => pillSearchEl.removeEventListener("click", onPillSearch))
             }
 
             // Collapse button → collapse (animated).
@@ -161,13 +221,13 @@ export class GAME extends HTMLElement {
         filtered = sortItems(filtered, sort, rarityOrder)
 
         // Count
-        const countEl = this.shadowRoot.querySelector("#count")
-        if (countEl) countEl.textContent = `${filtered.length} items`
+        const countEl = this.shadowRoot.querySelector("#count-num")
+        if (countEl) countEl.textContent = filtered.length
 
         // ── Sync collapsed pill ──
         const pillType = this.shadowRoot.querySelector("#pill-type")
         const pillRarityDot = this.shadowRoot.querySelector("#pill-rarity-dot")
-        const pillCount = this.shadowRoot.querySelector("#pill-count")
+        const pillCount = this.shadowRoot.querySelector("#pill-count-num")
         const pillSort = this.shadowRoot.querySelector("#pill-sort")
         const pillSearch = this.shadowRoot.querySelector("#pill-search")
 
@@ -176,7 +236,7 @@ export class GAME extends HTMLElement {
                 pillType.textContent = activeType
                 pillType.classList.add("active")
             } else {
-                pillType.textContent = "Type"
+                pillType.textContent = "All"
                 pillType.classList.remove("active")
             }
 
@@ -190,7 +250,7 @@ export class GAME extends HTMLElement {
                 pillRarityDot.classList.remove("active")
             }
 
-        if (pillCount) pillCount.textContent = `${filtered.length} Items`
+        if (pillCount) pillCount.textContent = filtered.length
         if (pillSort) {
             const activeSortOpt = SORT_OPTIONS.find((o) => o.asc === sort || o.desc === sort)
             if (activeSortOpt) {

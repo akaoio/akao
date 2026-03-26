@@ -365,13 +365,22 @@ export const styles = css`
             }
         }
 
+        /* ── Shared count number / label styles ── */
+        .count__num {
+            color: var(--neon-c);
+            text-shadow: var(--glow-c);
+        }
+
+        .count__label {
+            color: var(--color);
+            opacity: 0.4;
+        }
+
         .catalog-count {
             flex-shrink: 0;
             font-family: var(--header-font);
             font-size: var(--text-xs);
             letter-spacing: 0.08em;
-            color: var(--color);
-            opacity: 0.4;
             text-transform: uppercase;
             white-space: nowrap;
             padding-left: var(--space-2);
@@ -665,7 +674,9 @@ export const styles = css`
                 border-radius: 0;
                 cursor: default;
                 overflow: visible;
-                position: relative; /* allow absolute collapse btn */
+                /* position: sticky (inherited from base rule) establishes a
+                   containing block for absolutely-positioned descendants per
+                   CSS Positioned Layout §3.4 — position: relative not needed */
 
                 .catalog-pill {
                     display: none;
@@ -675,24 +686,33 @@ export const styles = css`
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    position: absolute;
-                    right: var(--space-3);
-                    bottom: var(--space-3);
-                    width: 28px;
-                    height: 28px;
-                    border: 1px solid color-mix(in hsl, var(--color) 20%, transparent);
+                    flex-shrink: 0;
+                    padding: 0;
+                    width: 16px;
+                    height: 16px;
+                    border: none;
                     background: transparent;
-                    color: var(--color);
-                    font-size: var(--text-md);
                     cursor: pointer;
-                    opacity: 0.5;
-                    z-index: 1;
-                    transition: opacity var(--speed), border-color var(--speed), color var(--speed);
 
-                    &:hover {
-                        opacity: 1;
-                        border-color: var(--game-primary, var(--neon-c));
-                        color: var(--game-primary, var(--neon-c));
+                    &::before {
+                        content: "";
+                        display: block;
+                        width: 100%;
+                        height: 100%;
+                        background-color: var(--neon-g);
+                        -webkit-mask-image: var(--icon-chevron-double);
+                        mask-image: var(--icon-chevron-double);
+                        -webkit-mask-size: contain;
+                        mask-size: contain;
+                        -webkit-mask-repeat: no-repeat;
+                        mask-repeat: no-repeat;
+                        -webkit-mask-position: center;
+                        mask-position: center;
+                        transition: background-color var(--speed);
+                    }
+
+                    &:hover::before {
+                        background-color: var(--game-primary, var(--neon-c));
                     }
                 }
             }
@@ -744,8 +764,6 @@ export const styles = css`
                 font-size: var(--text-xs);
                 letter-spacing: 0.06em;
                 text-transform: uppercase;
-                color: var(--color);
-                opacity: 0.6;
                 white-space: nowrap;
             }
 
