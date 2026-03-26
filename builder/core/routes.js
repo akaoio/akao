@@ -43,9 +43,7 @@ function expandRouteSegments(route = "", options = {}) {
             // Build prefix of fixed segments before [game]
             const prefix = segments.slice(0, firstDynIndex)
             const suffix = segments.slice(firstDynIndex + 2)
-            const pairs = Object.entries(gameItems).flatMap(([gameId, itemIds]) =>
-                itemIds.map((itemId) => [...prefix, gameId, itemId, ...suffix])
-            )
+            const pairs = Object.entries(gameItems).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => [...prefix, gameId, itemId, ...suffix]))
             return pairs
         }
     }
@@ -68,22 +66,21 @@ function expandRouteSegments(route = "", options = {}) {
     return expanded
 }
 
-export async function generateRoutes(locales, items, tags, games, indexContent, outputBase = "build", routePatterns = [], gameItems = {}) {
-    if (typeof outputBase !== "string" || !outputBase.trim()) {
-        throw new TypeError(`generateRoutes expected outputBase to be a non-empty string, got: ${JSON.stringify(outputBase)}`)
-    }
+export async function generateRoutes(locales, items, tags, games, indexContent, outputBase = "build", routePatterns = [], gameItems = {}, { skipDynamic = false } = {}) {
+    if (typeof outputBase !== "string" || !outputBase.trim()) throw new TypeError(`generateRoutes expected outputBase to be a non-empty string, got: ${JSON.stringify(outputBase)}`)
 
-    if (typeof indexContent !== "string") {
-        throw new TypeError(`generateRoutes expected indexContent to be a string, got: ${typeof indexContent}`)
-    }
+    if (typeof indexContent !== "string") throw new TypeError(`generateRoutes expected indexContent to be a string, got: ${typeof indexContent}`)
 
-    const dynamicPaths = outputBase === "build" ? paths : {
-        ...paths,
-        build: {
-            ...paths.build,
-            root: [outputBase]
-        }
-    }
+    const dynamicPaths =
+        outputBase === "build"
+            ? paths
+            : {
+                  ...paths,
+                  build: {
+                      ...paths.build,
+                      root: [outputBase]
+                  }
+              }
 
     const normalizedRoutes = Array.from(new Set(routePatterns.map(normalizeRoute).filter(Boolean))).sort()
     const tagList = Array.from(tags || [])
@@ -104,9 +101,9 @@ export async function generateRoutes(locales, items, tags, games, indexContent, 
                 staticPrefix.push(segment)
             }
 
-            if (staticPrefix.length) {
-                routeTargets.add([...dynamicPaths.build.root, locale, ...staticPrefix, "index.html"].join("/"))
-            }
+            if (staticPrefix.length) routeTargets.add([...dynamicPaths.build.root, locale, ...staticPrefix, "index.html"].join("/"))
+
+            if (skipDynamic) continue
 
             const expanded = expandRouteSegments(route, { items, tags: tagList, games: gameList, gameItems })
             if (!expanded.length) {
@@ -114,9 +111,7 @@ export async function generateRoutes(locales, items, tags, games, indexContent, 
                 continue
             }
 
-            for (const segments of expanded) {
-                routeTargets.add([...dynamicPaths.build.root, locale, ...segments, "index.html"].join("/"))
-            }
+            for (const segments of expanded) routeTargets.add([...dynamicPaths.build.root, locale, ...segments, "index.html"].join("/"))
         }
     }
 

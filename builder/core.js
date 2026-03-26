@@ -370,20 +370,21 @@ log.info("Processing i18n files...")
 const localeCount = await processI18n(locales)
 log.ok(`Created ${localeCount} locale files`)
 
-// Generate routes
-log.info("Generating routes...")
+// Generate routes — always skipDynamic, SPA fallback handles dynamic routes
+// Dev: dev server serves index.html for unmatched extensionless URLs
+// Production: Netlify _redirects handles SPA fallback
+log.info("Generating routes (static prefixes only)...")
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap)
+const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic: true })
 log.ok(`Created ${routeCount} route files`)
+
+// Generate _redirects for Netlify SPA fallback
+await write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
+log.ok("Created _redirects for Netlify SPA fallback")
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
 
 // Note: geo metadata (countries, features) is built by geo:build to build/geo/
-
-// Generate hash files for all JSON files in build directory (excluding geo)
-log.info("Generating hash files...")
-const hashResult = await generateHashFiles(paths.build.root, ["geo"])
-log.ok(`Created ${hashResult.hashFiles} hash files`)
 
 // Summary
 log.section("========================================")
@@ -394,7 +395,6 @@ console.log(`${icons.done} ${color.ok("Items (Total)")}: ${totalItemCount}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)
-console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashResult.hashFiles}`)
 if (await exist(geoPath)) console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
 
 log.section("========================================")
