@@ -54,7 +54,7 @@ export class TEST extends HTMLElement {
 
         for (const mod of TEST_MODULES) {
             try { await import(mod) } catch (e) { console.error("Failed to load", mod, e) }
-        
+        }
 
         await Test.run(filter || null, (suiteResult) => {
             this._onSuiteComplete(suiteResult)
