@@ -54,13 +54,90 @@ export class GAME extends HTMLElement {
     async connectedCallback() {
         this.subscriptions.push(Context.on("locale", this.render))
         await this.render()
+
+        // ── Sticky sentinel — detect when .catalog-sticky has stuck ──
+        const sticky = this.shadowRoot.querySelector(".catalog-sticky")
+        const sentinel = this.shadowRoot.querySelector(".sticky-sentinel")
+        const pill = this.shadowRoot.querySelector("#catalog-pill")
+        if (sticky && sentinel) {
+            const stickyTopPx = parseInt(getComputedStyle(sticky).top) || 0
+
+            // Sets the inline pixel width that acts as the "from" value for transitions.
+            // Called after any change that may resize the pill (stuck, filter change).
+            const syncPillWidth = () => {
+                if (!pill) return
+                if (window.matchMedia("(min-width: 1024px)").matches) return
+                this._pillWidth = pill.getBoundingClientRect().width
+                sticky.style.width = this._pillWidth + "px"
+            }
+
+            // Collapses to pill with an animated transition (used for explicit user actions).
+            const animateCollapse = () => {
+                // Set the numeric target width + remove .is-expanded in one style flush.
+                // Browser sees: from 100% (CSS .is-stuck.is-expanded) → to _pillWidth px (inline).
+                if (this._pillWidth) sticky.style.width = this._pillWidth + "px"
+                sticky.classList.remove("is-expanded")
+            }
+
+            this._stickyObserver = new IntersectionObserver(
+                ([entry]) => {
+                    if (!entry.isIntersecting) {
+                        // Scroll-triggered stick: instant snap.
+                        // Add class first, then measure synchronously — getBoundingClientRect()
+                        // forces a style recalculation so .is-stuck CSS (including
+                        // width: fit-content on .catalog-pill) is applied before we measure.
+                        sticky.classList.add("is-stuck")
+                        syncPillWidth()
+                    } else {
+                        // Scroll-triggered unstick: instant snap back to full bar.
+                        sticky.style.width = ""
+                        sticky.classList.remove("is-stuck", "is-expanded")
+                    }
+                },
+                { rootMargin: `-${stickyTopPx}px 0px 0px 0px`, threshold: 0 }
+            )
+            this._stickyObserver.observe(sentinel)
+            this.subscriptions.push(() => this._stickyObserver.disconnect())
+
+            // Pill click → expand (animated).
+            // Clear inline px width + add .is-expanded in one flush.
+            // Browser sees: from _pillWidth px (inline) → to 100% (CSS .is-stuck.is-expanded).
+            if (pill) {
+                const onPillClick = () => {
+                    sticky.style.width = ""
+                    sticky.classList.add("is-expanded")
+                }
+                pill.addEventListener("click", onPillClick)
+                this.subscriptions.push(() => pill.removeEventListener("click", onPillClick))
+            }
+
+            // Collapse button → collapse (animated).
+            const collapseBtn = this.shadowRoot.querySelector("#catalog-collapse")
+            if (collapseBtn) {
+                const onCollapse = (e) => {
+                    e.stopPropagation()
+                    animateCollapse()
+                }
+                collapseBtn.addEventListener("click", onCollapse)
+                this.subscriptions.push(() => collapseBtn.removeEventListener("click", onCollapse))
+            }
+
+            // Pointer outside → collapse (animated).
+            this._onPointerDown = (e) => {
+                if (!sticky.classList.contains("is-expanded")) return
+                if (!e.composedPath().includes(sticky)) animateCollapse()
+            }
+            document.addEventListener("pointerdown", this._onPointerDown)
+            this.subscriptions.push(() => document.removeEventListener("pointerdown", this._onPointerDown))
+
+            // Store syncPillWidth so applyFilters can update the width when pill content changes.
+            this._syncPillWidth = syncPillWidth
+        }
     }
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
-        ;["--game-primary", "--game-text-color", "--game-title-shadow"].forEach((v) =>
-            document.documentElement.style.removeProperty(v)
-        )
+        ;["--game-primary", "--game-text-color", "--game-title-shadow"].forEach((v) => document.documentElement.style.removeProperty(v))
     }
 
     applyFilters() {
@@ -86,6 +163,47 @@ export class GAME extends HTMLElement {
         // Count
         const countEl = this.shadowRoot.querySelector("#count")
         if (countEl) countEl.textContent = `${filtered.length} items`
+
+        // ── Sync collapsed pill ──
+        const pillType = this.shadowRoot.querySelector("#pill-type")
+        const pillRarityDot = this.shadowRoot.querySelector("#pill-rarity-dot")
+        const pillCount = this.shadowRoot.querySelector("#pill-count")
+        const pillSort = this.shadowRoot.querySelector("#pill-sort")
+        const pillSearch = this.shadowRoot.querySelector("#pill-search")
+
+        if (pillType)
+            if (activeType) {
+                pillType.textContent = activeType
+                pillType.classList.add("active")
+            } else {
+                pillType.textContent = "Type"
+                pillType.classList.remove("active")
+            }
+
+        if (pillRarityDot)
+            if (activeRarity) {
+                const key = activeRarity.toLowerCase().replace(/\s+/g, "-")
+                pillRarityDot.style.setProperty("--pill-rarity-color", `var(--rarity-${key}, var(--color-accent))`)
+                pillRarityDot.classList.add("active")
+            } else {
+                pillRarityDot.style.removeProperty("--pill-rarity-color")
+                pillRarityDot.classList.remove("active")
+            }
+
+        if (pillCount) pillCount.textContent = `${filtered.length} Items`
+        if (pillSort) {
+            const activeSortOpt = SORT_OPTIONS.find((o) => o.asc === sort || o.desc === sort)
+            if (activeSortOpt) {
+                const isDesc = sort === activeSortOpt.desc
+                pillSort.textContent = `${activeSortOpt.label}${isDesc ? "↓" : "↑"}`
+            }
+        }
+        if (pillSearch) pillSearch.classList.toggle("active", !!search)
+
+        // Re-sync inline pill width if stuck and collapsed (pill content may have changed size).
+        const stickyEl = this.shadowRoot.querySelector(".catalog-sticky")
+        if (stickyEl && stickyEl.classList.contains("is-stuck") && !stickyEl.classList.contains("is-expanded") && this._syncPillWidth)
+            this._syncPillWidth()
 
         // Grid
         const grid = this.shadowRoot.querySelector("#items")
@@ -211,11 +329,7 @@ export class GAME extends HTMLElement {
                 styleEl.id = "rarity-palette"
                 this.shadowRoot.appendChild(styleEl)
             }
-            const vars = [
-                ...Object.entries(meta.rarity_palette || {}).map(([key, val]) => `--rarity-${key}: ${val};`),
-                ...(meta.color ? [`--game-primary: ${meta.color};`] : []),
-                ...(meta.text_color ? [`--game-text-color: ${meta.text_color};`] : [])
-            ].join(" ")
+            const vars = [...Object.entries(meta.rarity_palette || {}).map(([key, val]) => `--rarity-${key}: ${val};`), ...(meta.color ? [`--game-primary: ${meta.color};`] : []), ...(meta.text_color ? [`--game-text-color: ${meta.text_color};`] : [])].join(" ")
             styleEl.textContent = `:host { ${vars} }`
         }
 
@@ -233,12 +347,7 @@ export class GAME extends HTMLElement {
 
             // --game-title-shadow: use meta.colors (multi-stop) if defined, else single color
             const glowColors = Array.isArray(meta.colors) && meta.colors.length ? meta.colors : [meta.color]
-            const titleShadow = glowColors
-                .flatMap((c, i) => [
-                    `0 0 ${15 + i * 18}px ${toRgba(c, 0.65 - i * 0.08)}`,
-                    `0 0 ${40 + i * 27}px ${toRgba(c, 0.3 - i * 0.05)}`
-                ])
-                .join(", ")
+            const titleShadow = glowColors.flatMap((c, i) => [`0 0 ${15 + i * 18}px ${toRgba(c, 0.65 - i * 0.08)}`, `0 0 ${40 + i * 27}px ${toRgba(c, 0.3 - i * 0.05)}`]).join(", ")
             document.documentElement.style.setProperty("--game-title-shadow", titleShadow)
         } else gameVars.forEach((v) => document.documentElement.style.removeProperty(v))
 

@@ -61,6 +61,13 @@ export const styles = css`
             }
         }
 
+        /* ── Sticky sentinel ── */
+        .sticky-sentinel {
+            height: 1px;
+            margin-bottom: -1px;
+            pointer-events: none;
+        }
+
         /* ── Sticky band (filters + toolbar) ── */
         .catalog-sticky {
             position: sticky;
@@ -74,6 +81,19 @@ export const styles = css`
                 0 1px 0 color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
                 0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent),
                 0 20px 60px color-mix(in hsl, var(--background) 55%, transparent);
+            transition:
+                width var(--speed-3) cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius var(--speed-2);
+        }
+
+        /* ── Collapsed pill (hidden by default) ── */
+        .catalog-pill {
+            display: none;
+        }
+
+        /* ── Collapse button (hidden by default) ── */
+        .catalog-collapse-btn {
+            display: none;
         }
 
         /* ── Marketplace Nav ── */
@@ -612,6 +632,152 @@ export const styles = css`
 
             .filter-group__label {
                 width: 3rem;
+            }
+        }
+
+        /* ── Collapsed pill — tablet + mobile only ── */
+        @media (max-width: 1023px) {
+
+            /* Collapsed: pill only — width is set via JS inline style (pixel value)
+               so the width → 100% transition has two concrete lengths to interpolate */
+            .catalog-sticky.is-stuck:not(.is-expanded) {
+                border-radius: 0 0 8px 0;
+                cursor: pointer;
+
+                .marketplace-nav,
+                #toolbar {
+                    display: none;
+                }
+
+                .catalog-pill {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-2);
+                    padding: var(--space-3);
+                    cursor: pointer;
+                    width: fit-content;
+                }
+            }
+
+            /* Expanded: full bar as overlay */
+            .catalog-sticky.is-stuck.is-expanded {
+                width: 100%;
+                border-radius: 0;
+                cursor: default;
+                overflow: visible;
+                position: relative; /* allow absolute collapse btn */
+
+                .catalog-pill {
+                    display: none;
+                }
+
+                .catalog-collapse-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: absolute;
+                    right: var(--space-3);
+                    bottom: var(--space-3);
+                    width: 28px;
+                    height: 28px;
+                    border: 1px solid color-mix(in hsl, var(--color) 20%, transparent);
+                    background: transparent;
+                    color: var(--color);
+                    font-size: var(--text-md);
+                    cursor: pointer;
+                    opacity: 0.5;
+                    z-index: 1;
+                    transition: opacity var(--speed), border-color var(--speed), color var(--speed);
+
+                    &:hover {
+                        opacity: 1;
+                        border-color: var(--game-primary, var(--neon-c));
+                        color: var(--game-primary, var(--neon-c));
+                    }
+                }
+            }
+
+            /* Pill hover glow */
+            .catalog-sticky.is-stuck:not(.is-expanded):hover {
+                border-color: color-mix(in hsl, var(--game-primary, var(--neon-c)) 60%, transparent);
+                box-shadow:
+                    0 0 12px color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
+                    0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent);
+            }
+
+            /* ── Pill internals ── */
+            .pill__type {
+                font-family: var(--header-font);
+                font-size: var(--text-xs);
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--color);
+                opacity: 0.4;
+                white-space: nowrap;
+                flex-shrink: 0;
+                transition: opacity var(--speed);
+
+                &.active {
+                    opacity: 1;
+                    color: var(--neon-c);
+                }
+            }
+
+            .pill__rarity-dot {
+                flex-shrink: 0;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--pill-rarity-color, var(--color));
+                box-shadow: none;
+                opacity: 0.2;
+                transition: box-shadow var(--speed), opacity var(--speed);
+
+                &.active {
+                    opacity: 1;
+                    box-shadow: 0 0 6px var(--pill-rarity-color, var(--color-accent));
+                }
+            }
+
+            .pill__count {
+                font-family: var(--header-font);
+                font-size: var(--text-xs);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--color);
+                opacity: 0.6;
+                white-space: nowrap;
+            }
+
+            .pill__sort {
+                font-family: var(--header-font);
+                font-size: var(--text-xs);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--neon-g);
+                text-shadow: var(--glow-g);
+                white-space: nowrap;
+            }
+
+            .pill__search {
+                flex-shrink: 0;
+                color: var(--color);
+                opacity: 0.4;
+                line-height: 0;
+                transition: color var(--speed), opacity var(--speed);
+
+                &.active {
+                    color: var(--neon-c);
+                    opacity: 1;
+                }
+            }
+
+            .pill__divider {
+                flex-shrink: 0;
+                width: 1px;
+                height: 0.75em;
+                background: color-mix(in hsl, var(--color) 20%, transparent);
+                align-self: center;
             }
         }
 

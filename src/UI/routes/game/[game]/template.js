@@ -14,7 +14,25 @@ export const template = html`
             <div class="game-hero__meta" id="meta"></div>
         </header>
 
+        <div class="sticky-sentinel"></div>
         <div class="catalog-sticky">
+            <div class="catalog-pill" id="catalog-pill" aria-label="Open filters">
+                <span class="pill__type" id="pill-type">All</span>
+                <span class="pill__divider"></span>
+                <span class="pill__rarity-dot" id="pill-rarity-dot"></span>
+                <span class="pill__divider"></span>
+                <span class="pill__count" id="pill-count"></span>
+                <span class="pill__divider"></span>
+                <span class="pill__sort" id="pill-sort"></span>
+                <span class="pill__divider"></span>
+                <span class="pill__search" id="pill-search" aria-label="Search">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+                        <line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </div>
+            <button class="catalog-collapse-btn" id="catalog-collapse" aria-label="Collapse filters">‹</button>
             <nav class="marketplace-nav">
                 <div class="filter-group">
                     <span class="filter-group__label">Type</span>
