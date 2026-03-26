@@ -20,6 +20,11 @@ export const styles = css`
             display: none;
         }
 
+        #controls {
+            display: flex;
+            gap: var(--space);
+        }
+
         #result {
             display: flex;
             position: absolute;

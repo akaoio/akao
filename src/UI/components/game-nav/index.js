@@ -3,6 +3,7 @@ import DB from "/core/DB.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
+import { events } from "/core/Events.js"
 import "/UI/components/a/index.js"
 import "/UI/components/svg/index.js"
 
@@ -19,17 +20,23 @@ export class GAME_NAV extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.subscriptions.push(Context.on("locale", this._render))
-        this.subscriptions.push(Context.on("params", this._render))
-        this._bindEvents()
-        window.addEventListener("game-nav:open", this._toggle)
+        this.shadowRoot.querySelector(".game-nav__toggle")?.addEventListener("click", this._toggle)
+        this.shadowRoot.querySelector(".game-nav__close")?.addEventListener("click", this._close)
+        this.shadowRoot.querySelector(".game-nav__backdrop")?.addEventListener("click", this._close)
+        this.subscriptions.push(
+            Context.on("locale", this._render),
+            Context.on("params", this._render),
+            events.on("game-nav:open", this._toggle),
+            () => this.shadowRoot.querySelector(".game-nav__toggle")?.removeEventListener("click", this._toggle),
+            () => this.shadowRoot.querySelector(".game-nav__close")?.removeEventListener("click", this._close),
+            () => this.shadowRoot.querySelector(".game-nav__backdrop")?.removeEventListener("click", this._close)
+        )
         await this._loadGames()
         this._render()
     }
 
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
-        window.removeEventListener("game-nav:open", this._toggle)
     }
 
     async _loadGames() {
@@ -81,14 +88,6 @@ export class GAME_NAV extends HTMLElement {
             ),
             list
         )
-    }
-
-    _bindEvents() {
-        if (this._bound) return
-        this._bound = true
-        this.shadowRoot.querySelector(".game-nav__toggle")?.addEventListener("click", this._toggle)
-        this.shadowRoot.querySelector(".game-nav__close")?.addEventListener("click", this._close)
-        this.shadowRoot.querySelector(".game-nav__backdrop")?.addEventListener("click", this._close)
     }
 }
 

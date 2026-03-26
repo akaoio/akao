@@ -38,7 +38,6 @@ export class ACCESS extends HTMLElement {
         this.shadowRoot.querySelector("#signin").addEventListener("click", this.signinScreen)
         this.shadowRoot.querySelector("#wave").addEventListener("click", this.wave)
         this.shadowRoot.querySelector("#passkey").addEventListener("click", this.passkey)
-        this.waveAuth?.addEventListener("signin", this.onWaveSignin)
         this.subscriptions.push(
             () => this.shadowRoot.querySelector("#signup").removeEventListener("click", this.signupScreen),
             () => this.shadowRoot.querySelector("#back").removeEventListener("click", this.unauthenticated),
@@ -46,7 +45,7 @@ export class ACCESS extends HTMLElement {
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signinScreen),
             () => this.shadowRoot.querySelector("#wave").removeEventListener("click", this.wave),
             () => this.shadowRoot.querySelector("#passkey").removeEventListener("click", this.passkey),
-            () => this.waveAuth?.removeEventListener("signin", this.onWaveSignin)
+            this.waveAuth?.events?.on?.("signin", this.onWaveSignin)
         )
         this.form.querySelectorAll("input[type='text']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
     }

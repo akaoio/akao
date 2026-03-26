@@ -1,4 +1,5 @@
 import { render } from "/core/UI.js"
+import Events from "/core/Events.js"
 import template from "./template.js"
 
 export class CAMERA extends HTMLElement {
@@ -6,6 +7,7 @@ export class CAMERA extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this.events = new Events(this)
         this.stream = null
         this.devices = []
         this.currentDeviceId = null
@@ -17,6 +19,7 @@ export class CAMERA extends HTMLElement {
         this.switch = this.switch.bind(this)
         this.capture = this.capture.bind(this)
         this.resume = this.resume.bind(this)
+        this.subscriptions = []
     }
 
     static get observedAttributes() {
@@ -42,13 +45,17 @@ export class CAMERA extends HTMLElement {
         this.$switch.addEventListener("click", this.switch)
         this.$capture.addEventListener("click", this.capture)
         this.$resume.addEventListener("click", this.resume)
+        this.subscriptions.push(
+            () => this.$switch.removeEventListener("click", this.switch),
+            () => this.$capture.removeEventListener("click", this.capture),
+            () => this.$resume.removeEventListener("click", this.resume)
+        )
         if (this.dataset.autostart !== "false") this.start()
     }
 
     disconnectedCallback() {
-        this.$switch?.removeEventListener("click", this.switch)
-        this.$capture?.removeEventListener("click", this.capture)
-        this.$resume?.removeEventListener("click", this.resume)
+        this.subscriptions.forEach((off) => off())
+        this.subscriptions = []
         this.stop()
     }
 
@@ -62,7 +69,7 @@ export class CAMERA extends HTMLElement {
     async start({ deviceId, facingMode } = {}) {
         if (!navigator.mediaDevices?.getUserMedia) {
             const error = new Error("Camera is not supported in this browser")
-            this.dispatchEvent(new CustomEvent("error", { detail: error, bubbles: true, composed: true }))
+            this.events.emit("error", error, { bubbles: true, composed: true })
             this.status.dataset.key = "dictionary.cameraUnavailable"
             return null
         }
@@ -84,11 +91,7 @@ export class CAMERA extends HTMLElement {
         if (track?.label && this.status) this.status.innerText = track.label
         this.$resume.hidden = true
         this.$capture.hidden = false
-        this.dispatchEvent(new CustomEvent("ready", {
-            detail: { deviceId: this.currentDeviceId, facingMode: this.facingMode, devices: this.devices },
-            bubbles: true,
-            composed: true
-        }))
+        this.events.emit("ready", { deviceId: this.currentDeviceId, facingMode: this.facingMode, devices: this.devices }, { bubbles: true, composed: true })
         return stream
     }
 
@@ -121,7 +124,7 @@ export class CAMERA extends HTMLElement {
         this.$capture.hidden = true
         this.status.dataset.key = "dictionary.capturedFrame"
         const detail = { width: this.canvas.width, height: this.canvas.height, captured: true }
-        this.dispatchEvent(new CustomEvent("capture", { detail, bubbles: true, composed: true }))
+        this.events.emit("capture", detail, { bubbles: true, composed: true })
         return detail
     }
 
@@ -132,7 +135,7 @@ export class CAMERA extends HTMLElement {
         this.$resume.hidden = true
         this.$capture.hidden = false
         this.status.dataset.key = "dictionary.liveCamera"
-        this.dispatchEvent(new CustomEvent("resume", { bubbles: true, composed: true }))
+        this.events.emit("resume", undefined, { bubbles: true, composed: true })
     }
 
     isCaptured() {

@@ -10,9 +10,11 @@ export const template = html`
     <div id="qr"></div>
     <div id="scanner" hidden>
         <ui-camera id="camera" data-autostart="false" data-controls="false">
-            <ui-icon id="start" data-icon="qr-code-scan" />
-            <ui-icon id="stop" data-icon="stop-fill" />
-            <ui-icon id="clear" data-icon="eraser" />
+            <div id="controls">
+                <ui-icon id="start" data-icon="qr-code-scan" />
+                <ui-icon id="stop" data-icon="stop-fill" />
+                <ui-icon id="clear" data-icon="eraser" />
+            </div>
         </ui-camera>
         <pre id="result"></pre>
     </div>
