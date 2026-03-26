@@ -11,7 +11,7 @@ export class Cart {
         this.add = this.add.bind(this)
         this.remove = this.remove.bind(this)
         this.update = this.update.bind(this)
-        this.init()
+        this.ready = this.init()
     }
 
     async init() {

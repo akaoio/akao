@@ -19,6 +19,7 @@ A modern **serverless eCommerce engine** built with pure Web Components. Framewo
 - 🎨 **Themeable** - Built-in light/dark mode with CSS custom properties
 - 📦 **Multi-tenant** - Different domains per site with shared infrastructure
 - 🧵 **Multi-threaded** - Web Worker thread system for background tasks
+- 💾 **SQLite in Browser** - Full SQL queries via SQLite WASM + OPFS, isolated in a dedicated worker
 
 ## 🚀 Quick Start
 
@@ -89,6 +90,8 @@ shop/
 │   │   ├── UI/              # Template engine (html, render, css)
 │   │   ├── States/          # Reactive state internals
 │   │   ├── IDB/             # IndexedDB wrapper internals
+│   │   ├── OPFS/            # Origin Private File System wrapper internals
+│   │   ├── SQL/             # SQLite WASM client internals
 │   │   ├── FS/              # File system abstraction internals
 │   │   ├── Utils/           # Utilities (crypto, data, environment…)
 │   │   ├── Chains/          # Blockchain architecture (EVM)
@@ -106,8 +109,10 @@ shop/
 │   │   ├── GDB.js           # GunDB integration (Gun + SEA)
 │   │   ├── IDB.js           # IndexedDB wrapper
 │   │   ├── Launcher.js      # Thread bootstrap
+│   │   ├── OPFS.js          # OPFS async file system wrapper
 │   │   ├── Progress.js      # Global progress state
 │   │   ├── Router.js        # Pattern-based routing
+│   │   ├── SQL.js           # SQLite WASM client (worker-backed)
 │   │   ├── States.js        # Proxy-based reactive state
 │   │   ├── Stores.js        # Shared stores (IDB indexes, chains, wallets…)
 │   │   ├── Thread.js        # Single thread abstraction
@@ -223,10 +228,48 @@ Routes are always locale-prefixed: `/en/`, `/fr/`, etc.
 ### Multi-threading
 
 ```javascript
-// Launcher.js bootstraps two threads:
+// Launcher.js bootstraps three threads:
 // - main thread  (threads/main.js)
 // - update worker (threads/update.js) — background data sync
+// - sql worker   (threads/sql.js)    — SQLite WASM + OPFS (dedicated worker required)
 ```
+
+### SQLite / OPFS Storage
+
+Full SQL capabilities in the browser via `@sqlite.org/sqlite-wasm` running inside a dedicated worker with OPFS as the persistence backend:
+
+```javascript
+import SQL from "/core/SQL.js"
+
+const db = new SQL({ name: "shop" })
+await db.ready   // wait for worker to open the DB
+
+await db.exec(`CREATE TABLE IF NOT EXISTS orders (
+    id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId  TEXT NOT NULL,
+    total   REAL,
+    status  TEXT DEFAULT 'pending'
+)`)
+
+const { lastId } = await db.run(
+    "INSERT INTO orders (userId, total) VALUES (?, ?)",
+    ["user-abc", 99.50]
+)
+const order   = await db.get("SELECT * FROM orders WHERE id = ?", [lastId])
+const pending = await db.all("SELECT * FROM orders WHERE status = ?", ["pending"])
+
+await db.batch([
+    { sql: "UPDATE orders SET status = ? WHERE id = ?", params: ["paid", 1] },
+    { sql: "INSERT INTO ledger (orderId, amount) VALUES (?, ?)", params: [1, 99.50] }
+])
+```
+
+**Key design decisions:**
+- `sql` worker runs SQLite in WAL mode with `wal_autocheckpoint=0` — periodic `wal_checkpoint(PASSIVE)` every 2 s prevents OPFS thrash
+- All SQL calls go through `Threads.queue()` — same pattern as other workers
+- `OPFS.js` is a standalone async OPFS wrapper (usable independently of SQLite)
+
+See [docs/thoughts/sqlite-wasm-opfs-worker.md](docs/thoughts/sqlite-wasm-opfs-worker.md) for full architecture details.
 
 ### Blockchain / DeFi
 
@@ -287,6 +330,7 @@ build/
 ├── en/index.html, item/[slug]/index.html, tag/[slug]/index.html
 ├── fr/, de/, ... (19 locales)
 ├── core/          — copied JS modules
+│   └── SQL/       — sqlite3.js (WASM module) + sqlite3.wasm
 ├── UI/            — copied components
 ├── statics/
 │   ├── locales/   — per-locale i18n JSON
@@ -418,7 +462,9 @@ Access.on("authenticated", ({ value }) => {
 
 | Layer | Module | Purpose |
 |---|---|---|
+| SQLite WASM | `SQL.js` | Full SQL queries, relational data, runs in dedicated worker via OPFS |
 | IndexedDB | `IDB.js` | Client-side persistent cache |
+| OPFS | `OPFS.js` | Origin Private File System — async file I/O (blobs, arbitrary files) |
 | GunDB | `GDB.js` | Decentralized graph database (optional) |
 | Static Files | `DB.js` | Hash-validated JSON with auto-caching |
 | Blockchain | `Chain.js` / `Wallet.js` | On-chain state and transactions |
@@ -533,6 +579,7 @@ mystore.com: mystore
 ## 📚 Documentation
 
 - [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) — Why no framework?
+- [SQLite WASM + OPFS Architecture](docs/thoughts/sqlite-wasm-opfs-worker.md) — SQL storage design
 - [WebAuthn PRF Extension](docs/thoughts/webauthn-prf-extension.md) — Passkey deep-dive
 - [White Paper Draft](docs/thoughts/white-paper-draft.md) — 4-party escrow design
 - [Chat](docs/thoughts/chat.md) — escrow chat protocol
@@ -552,4 +599,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-**Built with ❤️ from 🇻🇳 Vietnam 🏯🌸🪷🐉🍜🪭**
+**Built with ❤️ from 🇻🇳 Vietnam 🍜🐉🪷🏯🌸🪭💋**

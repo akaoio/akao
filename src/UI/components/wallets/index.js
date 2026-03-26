@@ -44,6 +44,7 @@ export class WALLETS extends HTMLElement {
         this.$identicons = this.shadowRoot.querySelector("ui-identicons")
 
         const seed = async () => {
+            if (!Access.get("seed")) return
             const hashed = await globalThis.sea.work(Access.get("seed"), "wallet")
             this.$identicons.dataset.seed = hashed
         }
