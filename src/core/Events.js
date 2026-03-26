@@ -13,9 +13,10 @@ if (NODE && !BROWSER) {
 }
 
 export class Events {
-    constructor() {
+    constructor(target = null) {
         // Each instance gets its own independent event dispatcher
-        if (BROWSER && !NODE) this.$events = new EventTarget()
+        if (target) this.$events = target
+        else if (BROWSER && !NODE) this.$events = new EventTarget()
         else if (NODE && !BROWSER) this.$events = new EventEmitterClass()
     }
 
@@ -27,10 +28,22 @@ export class Events {
      * @param {Function} listener - Callback function to execute when event fires
      * @returns {Function} Unsubscribe function that removes the listener
      */
-    on(event, listener) {
-        if (BROWSER && !NODE) this.$events.addEventListener(event, listener)
+    on(event, listener, options) {
+        if (BROWSER && !NODE) this.$events.addEventListener(event, listener, options)
         else if (NODE && !BROWSER) this.$events.on(event, listener)
         // Return unsubscribe function with self-reference for convenience
+        const off = () => this.off(event, listener, options)
+        off.off = off
+        return off
+    }
+
+    once(event, listener, options) {
+        if (BROWSER && !NODE) {
+            const browserOptions = typeof options === "object" && options !== null ? options : {}
+            return this.on(event, listener, { ...browserOptions, once: true })
+        }
+
+        if (NODE && !BROWSER) this.$events.once(event, listener)
         const off = () => this.off(event, listener)
         off.off = off
         return off
@@ -43,8 +56,8 @@ export class Events {
      * @param {string} event - The event name to stop listening for
      * @param {Function} listener - The callback function to remove
      */
-    off(event, listener) {
-        if (BROWSER && !NODE) this.$events.removeEventListener(event, listener)
+    off(event, listener, options) {
+        if (BROWSER && !NODE) this.$events.removeEventListener(event, listener, options)
         else if (NODE && !BROWSER) this.$events.removeListener(event, listener)
     }
 
@@ -55,14 +68,20 @@ export class Events {
      * @param {string} event - The event name to emit
      * @param {*} detail - Event payload/data to pass to listeners
      */
-    emit(event, detail) {
+    emit(event, detail, options = {}) {
         // Browser: create and dispatch CustomEvent
         if (BROWSER && !NODE) {
-            const e = new CustomEvent(event, { detail })
+            const e = new CustomEvent(event, {
+                detail,
+                bubbles: options?.bubbles,
+                composed: options?.composed,
+                cancelable: options?.cancelable
+            })
             this.$events.dispatchEvent(e)
+            return e
         }
         // Node.js: emit event with detail as argument
-        else if (NODE && !BROWSER) this.$events.emit(event, { detail })
+        else if (NODE && !BROWSER) return this.$events.emit(event, { detail })
     }
 }
 

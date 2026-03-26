@@ -2,54 +2,45 @@ import { css } from "/core/UI.js"
 
 const styles = css`
     :host {
-        display: block;
-        color: var(--color);
-    }
-
-    .camera-shell {
-        display: grid;
-        gap: var(--space-2);
-        width: 100%;
-        max-width: 34rem;
-    }
-
-    .viewport {
-        position: relative;
-        overflow: hidden;
-        border-radius: var(--radius);
-        background: var(--background-focus);
-        border: var(--border);
-        aspect-ratio: 4 / 3;
-    }
-
-    video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    #badge {
-        position: absolute;
-        left: var(--space-2);
-        bottom: var(--space-2);
-        background: var(--background-focus);
-        border: var(--border);
-        color: var(--color);
-        padding: var(--space-sm) var(--space);
-        border-radius: var(--radius);
-        font-size: var(--text-xs);
-        opacity: 0.85;
-    }
-
-    .controls {
+        --icon: var(--icon-lg);
         display: flex;
-        gap: var(--space);
-        flex-wrap: wrap;
-    }
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-    ui-button {
-        display: block;
+        #status {
+            position: absolute;
+            left: 50%;
+            top: var(--space);
+            transform: translateX(-50%);
+            width: max-content;
+            max-width: calc(100% - (var(--space) * 2));
+            z-index: 2;
+            text-align: center;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            opacity: 0.5;
+        }
+
+        #controls {
+            display: flex;
+            position: absolute;
+            gap: var(--space);
+            align-items: center;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: var(--space);
+            .controls {
+                display: flex;
+                gap: var(--space);
+            }
+        }
     }
 `
 

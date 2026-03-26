@@ -14,6 +14,8 @@ const TEST_MODULES = [
     "/core/tests/Context.test.js",
     "/core/tests/Access.test.js",
     "/core/tests/WebAuthn.test.js",
+    "/core/tests/SQL.test.js",
+    "/core/tests/OPFS.test.js",
 ]
 
 export class TEST extends HTMLElement {
@@ -46,7 +48,11 @@ export class TEST extends HTMLElement {
         // Load test modules fresh (import cache — no re-run needed, Test.reset() handles state)
         const { default: Test } = await import("/core/Test.js")
         Test.reset()
-        for (const mod of TEST_MODULES) 
+        // Clear persistent state that could pollute tests between runs
+        const { Indexes } = await import("/core/Stores.js")
+        await Indexes.Cart.get("cart").del()
+
+        for (const mod of TEST_MODULES) {
             try { await import(mod) } catch (e) { console.error("Failed to load", mod, e) }
         
 

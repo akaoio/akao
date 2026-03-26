@@ -114,15 +114,14 @@ export default class Thread {
                 return result
                     .then((response) => this.send({ queue, response: clone(response) }))
                     .catch((error) => {
-                        console.error(error)
                         this.send({ queue, error: this.error(error) })
                     })
             
 
             this.send({ queue, response: clone(result) })
         } catch (error) {
-            console.error(error)
             if (queue) this.send({ queue, error: this.error(error) })
+            else console.error(error)
         }
     }
 

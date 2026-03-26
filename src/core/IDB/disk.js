@@ -1,14 +1,14 @@
 import { join, ensure, load, exist, write } from "../FS.js"
 import { NODE } from "../Utils.js"
 
-export async function initDisk() {
+export async function init() {
     // Create indexed directory if it doesn't exist
     await ensure(join(["indexed"]))
     // Load initial data from filesystem
-    await this.loadFromDisk()
+    await this.load()
 }
 
-export async function loadFromDisk() {
+export async function $load() {
     const fileExists = await exist(["indexed", this.name + ".json"])
     if (fileExists)
         try {
@@ -19,7 +19,7 @@ export async function loadFromDisk() {
         }
 }
 
-export async function saveToDisk() {
+export async function $save() {
     if (NODE)
         try {
             await write(["indexed", this.name + ".json"], this.data)
@@ -27,3 +27,5 @@ export async function saveToDisk() {
             console.error("Error saving to disk:", error)
         }
 }
+
+export { $load as load, $save as save }

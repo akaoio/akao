@@ -1,12 +1,14 @@
 import { render } from "/core/UI.js"
 import template from "./template.js"
 import { Wave } from "/core/Wave.js"
+import Events from "/core/Events.js"
 
 export class WAVE extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this.events = new Events(this)
         this.role = null
         this.session = null
         this.responseBuilder = null
@@ -388,11 +390,7 @@ export class WAVE extends HTMLElement {
             const seed = await sea.decrypt(parsed[":"], secret)
             if (!seed) return
             this.setStatus("Seed received. Completing signin...")
-            this.dispatchEvent(new CustomEvent("signin", {
-                detail: { seed, from, channel },
-                bubbles: true,
-                composed: true
-            }))
+            this.events.emit("signin", { seed, from, channel }, { bubbles: true, composed: true })
         }
     }
 

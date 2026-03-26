@@ -34,6 +34,7 @@ export class AVATARS extends HTMLElement {
         this.$identicons = this.shadowRoot.querySelector("ui-identicons")
 
         const seed = async () => {
+            if (!Access.get("seed")) return
             const hashed = await globalThis.sea.work(Access.get("seed"), "avatar")
             this.$identicons.dataset.seed = hashed
         }

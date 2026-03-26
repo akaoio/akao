@@ -157,7 +157,8 @@ function getMimeType(filePath) {
         ".gif": "image/gif",
         ".ico": "image/x-icon",
         ".txt": "text/plain; charset=utf-8",
-        ".hash": "text/plain; charset=utf-8"
+        ".hash": "text/plain; charset=utf-8",
+        ".wasm": "application/wasm"
     }
     return map[ext] || "application/octet-stream"
 }
@@ -298,16 +299,20 @@ async function startStaticServer() {
             }
 
             const mimeType = getMimeType(filePath)
+            const coiHeaders = {
+                "Cross-Origin-Opener-Policy": "same-origin",
+                "Cross-Origin-Embedder-Policy": "credentialless"
+            }
             if (mimeType.startsWith("text/html")) {
                 const content = await fs.readFile(filePath, "utf8")
                 const withClient = injectDevClient(content)
-                res.writeHead(200, { "Content-Type": mimeType })
+                res.writeHead(200, { "Content-Type": mimeType, ...coiHeaders })
                 res.end(withClient)
                 return
             }
 
             const content = await fs.readFile(filePath)
-            res.writeHead(200, { "Content-Type": mimeType })
+            res.writeHead(200, { "Content-Type": mimeType, ...coiHeaders })
             res.end(content)
         } catch {
             res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" })
