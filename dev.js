@@ -228,6 +228,7 @@ async function loadHttpsCredentials() {
 
 async function resolveBuildFile(urlPathname) {
     const pathname = decodeURIComponent(urlPathname)
+    const extensionlessRequest = !path.extname(pathname)
     let requestPath = pathname === "/" ? "/index.html" : pathname
     if (requestPath.endsWith("/")) requestPath += "index.html"
 
@@ -246,7 +247,7 @@ async function resolveBuildFile(urlPathname) {
         return absolutePath
     }
 
-    if (!path.extname(absolutePath)) {
+    if (extensionlessRequest) {
         const htmlPath = `${absolutePath}.html`
         if (await exists(htmlPath)) return htmlPath
         const indexPath = path.join(absolutePath, "index.html")
