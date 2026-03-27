@@ -4,7 +4,9 @@ import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
 import { generateRoutes } from "./core/routes.js"
 import { processI18n } from "./core/i18n.js"
-
+import { generateHashFiles } from "./core/hash.js"
+import { processGamesCatalog } from "./core/games-statics.js"
+import { gameRegistry } from "./games/index.js"
 import { Forex } from "../src/core/Forex.js"
 import fs from "fs"
 
@@ -151,8 +153,8 @@ const system = (await load([...paths.src.statics, "system.yaml"])) || { paginati
 
 // Load items metadata — distinguish core-managed (flat) from game-derived (nested)
 const itemDirs = await dir(paths.src.items)
-const coreItems = []          // flat item-ids under src/statics/items/<item-id>/
-const gameItemsMap = {}       // { gameId: [item-id, ...] }
+const coreItems = [] // flat item-ids under src/statics/items/<item-id>/
+const gameItemsMap = {} // { gameId: [item-id, ...] }
 const allTags = new Set()
 
 for (const name of itemDirs) {
@@ -166,7 +168,7 @@ for (const name of itemDirs) {
         // No meta.yaml → check if it's a game namespace containing item subdirs
         const subDirs = await dir([...paths.src.items, name])
         const nested = []
-        for (const sub of subDirs) {
+        for (const sub of subDirs)
             if (await isDirectory([...paths.src.items, name, sub])) {
                 const subMeta = await load([...paths.src.items, name, sub, "meta.yaml"])
                 if (subMeta) {
@@ -174,7 +176,6 @@ for (const name of itemDirs) {
                     normalizeTags(subMeta.tags).forEach((tag) => allTags.add(tag))
                 }
             }
-        }
         if (nested.length > 0) gameItemsMap[name] = nested
     }
 }
@@ -219,13 +220,8 @@ log.ok(`Built ${domainCount} domain mappings`)
 
 // Build core-managed items (YAML → JSON, flat structure only)
 log.info("Building core-managed items (YAML → JSON)...")
-for (const itemId of coreItems) {
-    await processYamlDirectory(
-        [...paths.src.items, itemId],
-        [...paths.build.statics, "items", itemId],
-        { recursive: false }
-    )
-}
+for (const itemId of coreItems) await processYamlDirectory([...paths.src.items, itemId], [...paths.build.statics, "items", itemId], { recursive: false })
+
 for (const itemId of coreItems) {
     const metaPath = [...paths.build.statics, "items", itemId, "meta.json"]
     const meta = await load(metaPath)
@@ -241,10 +237,7 @@ log.info("Skipping game-derived item emission in build:core (owned by build:game
 log.info("Generating items pagination...")
 const pagination = system.pagination
 
-const allItemKeys = [
-    ...coreItems,
-    ...Object.entries(gameItemsMap).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => `${gameId}/${itemId}`))
-].sort((a, b) => a.localeCompare(b))
+const allItemKeys = [...coreItems, ...Object.entries(gameItemsMap).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => `${gameId}/${itemId}`))].sort((a, b) => a.localeCompare(b))
 
 // Clean legacy/previous pagination outputs while preserving item directories
 const itemsRoot = [...paths.build.statics, "items"]
@@ -255,9 +248,7 @@ if (await exist(itemsRoot)) {
             await remove([...itemsRoot, entry])
             continue
         }
-        if (entry === "meta.json" || /^\d+\.json$/.test(entry)) {
-            await remove([...itemsRoot, entry])
-        }
+        if (entry === "meta.json" || /^\d+\.json$/.test(entry)) await remove([...itemsRoot, entry])
     }
 }
 
@@ -309,6 +300,9 @@ for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
     }
 }
 log.ok(`Generated per-game item pagination for ${Object.keys(gameItemsMap).length} game namespace(s)`)
+
+// Generate per-game catalog files
+await processGamesCatalog(games, gameRegistry)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")
@@ -368,12 +362,12 @@ const found = await dir(paths.src.routes, /index\.js$/)
 const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, ""))))
     .filter((route) => route !== "tag/[tag]")
     .sort((a, b) => {
-    const aFirstDynamic = a.split("/")[0]?.startsWith("[")
-    const bFirstDynamic = b.split("/")[0]?.startsWith("[")
-    if (aFirstDynamic && !bFirstDynamic) return 1
-    if (!aFirstDynamic && bFirstDynamic) return -1
-    return a.localeCompare(b)
-})
+        const aFirstDynamic = a.split("/")[0]?.startsWith("[")
+        const bFirstDynamic = b.split("/")[0]?.startsWith("[")
+        if (aFirstDynamic && !bFirstDynamic) return 1
+        if (!aFirstDynamic && bFirstDynamic) return -1
+        return a.localeCompare(b)
+    })
 await write([...paths.build.statics, "routes.json"], routeDirs)
 log.ok(`Built routes list with ${routeDirs.length} routes`)
 
@@ -382,17 +376,30 @@ log.info("Processing i18n files...")
 const localeCount = await processI18n(locales)
 log.ok(`Created ${localeCount} locale files`)
 
-// Generate routes — always skipDynamic, SPA fallback handles dynamic routes
-// Dev: dev server serves index.html for unmatched extensionless URLs
-// Production: Netlify _redirects handles SPA fallback
-log.info("Generating routes (static prefixes only)...")
+// Generate routes
+// Dev: static prefixes only, dev server SPA fallback handles dynamic routes
+// Netlify: static prefixes only + _redirects for SPA fallback (faster deploy)
+// Other production: build all static files
+const devMode = process.argv.includes("--dev")
+const isNetlify = process.env.NETLIFY === "true"
+const skipDynamic = devMode || isNetlify
+
+if (isNetlify) log.info("Detected Netlify — static prefixes + _redirects...")
+else if (devMode) log.info("Generating routes (dev — SPA mode)...")
+else log.info("Generating routes (all static files)...")
+
 const indexContent = await load(paths.src.index)
-const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic: true })
+const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic })
 log.ok(`Created ${routeCount} route files`)
 
-// Generate _redirects for Netlify SPA fallback
-await write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
-log.ok("Created _redirects for Netlify SPA fallback")
+if (isNetlify) {
+    await write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
+    log.ok("Created _redirects for Netlify SPA fallback")
+}
+
+// 404.html — platform-agnostic SPA fallback for unknown routes
+await write([...paths.build.root, "404.html"], indexContent)
+log.ok("Created 404.html fallback")
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
 

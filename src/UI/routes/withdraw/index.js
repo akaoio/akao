@@ -35,9 +35,9 @@ export class WITHDRAW extends HTMLElement {
                 if (!value) {
                     this.$form.reset()
                     this.$gas.textContent = ""
-                } else {
+                } else 
                     this.estimateGas()
-                }
+                
             }, true),
             () => $submit.removeEventListener("click", this.submit)
         )
@@ -75,9 +75,9 @@ export class WITHDRAW extends HTMLElement {
         const chain = this.$wallets.states.get("chain")
         const currencyName = this.$wallets.states.get("currency")
 
-        if (!data.amount || !data.address || !chain || !currencyName) {
+        if (!data.amount || !data.address || !chain || !currencyName) 
             return notify({ content: Context.get(["dictionary", "missingRequiredFields"]), autoClose: true })
-        }
+        
 
         const wallet = Wallets[chain]
         const currency = Object.values(wallet.chain.currencies).find((c) => c.name === currencyName)
@@ -93,9 +93,9 @@ export class WITHDRAW extends HTMLElement {
         if (tx && !tx.error) {
             notify({ content: Context.get(["dictionary", "transactionSent"]), autoClose: true })
             this.$form.reset()
-        } else if (!tx || tx?.error) {
+        } else if (!tx || tx?.error) 
             notify({ content: Context.get(["dictionary", "transactionError"]), autoClose: true })
-        }
+        
     }
 }
 

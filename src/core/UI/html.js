@@ -104,13 +104,13 @@ export function html(strings, ...values) {
             // Check if we're inside a tag (attribute position)
             const isInAttribute = ATTRIBUTE_POSITION_REGEX.test(mergedStrings[i])
 
-            if (isInAttribute && typeof markerValues[i] === "function") {
+            if (isInAttribute && typeof markerValues[i] === "function") 
                 // Use special attribute marker for functions in attribute position
                 htmlParts.push(`__attr_mark:${i}__`)
-            } else {
+             else 
                 // Use comment marker for content position
                 htmlParts.push(`<!--__mark:${i}-->`)
-            }
+            
         }
     }
 

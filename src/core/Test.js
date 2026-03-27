@@ -205,16 +205,16 @@ async function run(filter, onProgress) {
     if (NODE) {
         const line = "─".repeat(50)
         console.log(`\n${line}`)
-        if (results.failed === 0) {
+        if (results.failed === 0) 
             console.log(GREEN(`  All ${results.passed} tests passed`) +
                 (results.skipped ? DIM(` (${results.skipped} skipped)`) : ""))
-        } else {
+         else 
             console.log(
                 GREEN(`  ${results.passed} passed`) + "  " +
                 RED(`${results.failed} failed`) +
                 (results.skipped ? DIM(`  ${results.skipped} skipped`) : "")
             )
-        }
+        
         console.log(line + "\n")
 
         if (results.failed > 0) process.exitCode = 1

@@ -34,7 +34,7 @@ CLAUDE.md
 /src/statics/forex.yaml
 /games/
 
-# BMAD
-_bmad/
+# BMADT
 _bmad-output/
+_bmad/
 .cursor/

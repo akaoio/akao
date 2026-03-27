@@ -144,12 +144,12 @@ export class CAMERA extends HTMLElement {
 
     async getFrame() {
         if (typeof createImageBitmap === "function") {
-            if (this.captured && this.canvas.width && this.canvas.height) {
+            if (this.captured && this.canvas.width && this.canvas.height) 
                 return { bitmap: await createImageBitmap(this.canvas), captured: true, width: this.canvas.width, height: this.canvas.height }
-            }
-            if (this.video?.videoWidth && this.video?.videoHeight) {
+            
+            if (this.video?.videoWidth && this.video?.videoHeight) 
                 return { bitmap: await createImageBitmap(this.video), captured: false, width: this.video.videoWidth, height: this.video.videoHeight }
-            }
+            
         }
 
         if (!this.video?.videoWidth || !this.video?.videoHeight) return null

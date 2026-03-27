@@ -83,9 +83,9 @@ function extractLink(data) {
 function extractPub(data, path = [], key) {
     const candidate = parseMaybeJSON(data)
 
-    if (typeof candidate === "string") {
+    if (typeof candidate === "string") 
         return normalizePub(candidate) || pubFromSoul(candidate)
-    }
+    
 
     if (!candidate || typeof candidate !== "object") {
         const rebuilt = `${path.join("")}${key || ""}`

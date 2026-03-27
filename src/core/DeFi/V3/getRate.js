@@ -34,12 +34,12 @@ export const getRate = async function ({ pool: _pool, block } = {}) {
         const [liquidity, slot0] = await Promise.all([block ? pool.contract.liquidity({ blockTag: Number(block) }) : pool.contract.liquidity(), block ? pool.contract.slot0({ blockTag: Number(block) }) : pool.contract.slot0()])
 
         // Check for zero or invalid values
-        if (!liquidity || !slot0 || !slot0.sqrtPriceX96 || liquidity === "0") {
+        if (!liquidity || !slot0 || !slot0.sqrtPriceX96 || liquidity === "0") 
             return {
                 token0: { quantity: 0, rate: 0 },
                 token1: { quantity: 0, rate: 0 }
             }
-        }
+        
 
         // In Uniswap V3, sqrtPriceX96 represents √(token1/token0) * 2^96
         const sqrtPriceX96 = new BigNumber(slot0.sqrtPriceX96)

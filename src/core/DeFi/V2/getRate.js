@@ -32,24 +32,24 @@ export const getRate = async function ({ pool: _pool, block } = {}) {
         // Get reserves and decimals
         // If block is provided, get reserves at that block
         const reserves = block ? await pool.contract.getReserves({ blockTag: Number(block) }) : await pool.contract.getReserves()
-        if (!reserves || !reserves._reserve0 || !reserves._reserve1) {
+        if (!reserves || !reserves._reserve0 || !reserves._reserve1) 
             return {
                 token0: { quantity: 0, rate: 0 },
                 token1: { quantity: 0, rate: 0 }
             }
-        }
+        
 
         // Convert reserves to BigNumber
         token0.reserve = new BigNumber(reserves._reserve0) // token0 reserve
         token1.reserve = new BigNumber(reserves._reserve1) // token1 reserve
 
         // If either reserve is 0, return 0 values
-        if (token0.reserve.isZero() || token1.reserve.isZero()) {
+        if (token0.reserve.isZero() || token1.reserve.isZero()) 
             return {
                 token0: { quantity: 0, rate: 0 },
                 token1: { quantity: 0, rate: 0 }
             }
-        }
+        
 
         // Convert reserves to decimal values
         token0.reserveDecimal = token0.reserve.dividedBy(new BigNumber(10).pow(token0.configs?.decimals))

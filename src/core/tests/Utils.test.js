@@ -173,9 +173,9 @@ Test.describe("Utils — randomItem", () => {
 
     Test.it("returns an element from the array", () => {
         const arr = [10, 20, 30]
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 30; i++) 
             Test.assert.truthy(arr.includes(randomItem(arr)))
-        }
+        
     })
 
     Test.it("returns null for non-array input", () => {
