@@ -12,6 +12,8 @@ const TEST_MODULES = [
     "/core/tests/Cart.test.js",
     "/core/tests/UI.test.js",
     "/core/tests/Context.test.js",
+    "/core/tests/RTC.test.js",
+    "/core/tests/Torrent.test.js",
     "/core/tests/Access.test.js",
     "/core/tests/WebAuthn.test.js",
     "/core/tests/SQL.test.js",
@@ -52,9 +54,8 @@ export class TEST extends HTMLElement {
         const { Indexes } = await import("/core/Stores.js")
         await Indexes.Cart.get("cart").del()
 
-        for (const mod of TEST_MODULES) {
+        for (const mod of TEST_MODULES)
             try { await import(mod) } catch (e) { console.error("Failed to load", mod, e) }
-        }
 
         await Test.run(filter || null, (suiteResult) => {
             this._onSuiteComplete(suiteResult)
