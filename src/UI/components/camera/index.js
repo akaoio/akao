@@ -10,8 +10,8 @@ export class CAMERA extends HTMLElement {
         this.events = new Events(this)
         this.stream = null
         this.devices = []
-        this.currentDeviceId = null
-        this.facingMode = this.dataset.facingMode || "environment"
+        this.$id = null
+        this.facing = this.dataset.facing || "environment"
         this.captured = false
         this.canvas = document.createElement("canvas")
         this.start = this.start.bind(this)
@@ -23,14 +23,14 @@ export class CAMERA extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["data-facing-mode", "data-controls", "data-status"]
+        return ["data-facing", "data-controls", "data-status"]
     }
 
     attributeChangedCallback(name, last, value) {
         if (last === value) return
-        if (name === "data-facing-mode" && value) {
-            this.facingMode = value
-            if (this.isConnected) this.start({ facingMode: value })
+        if (name === "data-facing" && value) {
+            this.facing = value
+            if (this.isConnected) this.start({ facing: value })
         }
         if (name === "data-controls") this.shadowRoot.querySelector(".controls").style.display = value !== "false" ? "flex" : "none"
         if (name === "data-status") this.status.dataset.key = value
@@ -48,7 +48,8 @@ export class CAMERA extends HTMLElement {
         this.subscriptions.push(
             () => this.$switch.removeEventListener("click", this.switch),
             () => this.$capture.removeEventListener("click", this.capture),
-            () => this.$resume.removeEventListener("click", this.resume)
+            () => this.$resume.removeEventListener("click", this.resume),
+            this.stop
         )
         if (this.dataset.autostart !== "false") this.start()
     }
@@ -56,17 +57,16 @@ export class CAMERA extends HTMLElement {
     disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
         this.subscriptions = []
-        this.stop()
     }
 
-    async listCameras() {
+    async list() {
         if (!navigator.mediaDevices?.enumerateDevices) return []
         const devices = await navigator.mediaDevices.enumerateDevices()
         this.devices = devices.filter((device) => device.kind === "videoinput")
         return this.devices
     }
 
-    async start({ deviceId, facingMode } = {}) {
+    async start({ id, facing } = {}) {
         if (!navigator.mediaDevices?.getUserMedia) {
             const error = new Error("Camera is not supported in this browser")
             this.events.emit("error", error, { bubbles: true, composed: true })
@@ -76,7 +76,7 @@ export class CAMERA extends HTMLElement {
 
         this.stop()
 
-        const video = deviceId ? { deviceId: { exact: deviceId } } : { facingMode: { ideal: facingMode || this.facingMode || "environment" } }
+        const video = id ? { deviceId: { exact: id } } : { facingMode: { ideal: facing || this.facing || "environment" } }
         const stream = await navigator.mediaDevices.getUserMedia({ video, audio: false })
         this.stream = stream
         this.video.srcObject = stream
@@ -84,14 +84,14 @@ export class CAMERA extends HTMLElement {
         this.captured = false
         const track = stream.getVideoTracks()[0]
         const settings = track?.getSettings?.() || {}
-        this.currentDeviceId = settings.deviceId || deviceId || this.currentDeviceId
-        this.facingMode = settings.facingMode || facingMode || this.facingMode
-        await this.listCameras()
+        this.$id = settings.deviceId || id || this.$id
+        this.facing = settings.facingMode || facing || this.facing
+        await this.list()
         this.status.dataset.key = track?.label ? null : "dictionary.cameraReady"
         if (track?.label && this.status) this.status.innerText = track.label
         this.$resume.hidden = true
         this.$capture.hidden = false
-        this.events.emit("ready", { deviceId: this.currentDeviceId, facingMode: this.facingMode, devices: this.devices }, { bubbles: true, composed: true })
+        this.events.emit("ready", { id: this.$id, facing: this.facing, devices: this.devices }, { bubbles: true, composed: true })
         return stream
     }
 
@@ -102,14 +102,13 @@ export class CAMERA extends HTMLElement {
     }
 
     async switch() {
-        await this.listCameras()
-        if (this.devices.length > 1 && this.currentDeviceId) {
-            const index = this.devices.findIndex((device) => device.deviceId === this.currentDeviceId)
+        await this.list()
+        if (this.devices.length > 1 && this.$id) {
+            const index = this.devices.findIndex((device) => device.deviceId === this.$id)
             const next = this.devices[(index + 1 + this.devices.length) % this.devices.length]
-            if (next?.deviceId) return this.start({ deviceId: next.deviceId })
+            if (next?.deviceId) return this.start({ id: next.deviceId })
         }
-        const nextFacingMode = this.facingMode === "user" ? "environment" : "user"
-        return this.start({ facingMode: nextFacingMode })
+        return this.start({ facing: this.facing === "user" ? "environment" : "user" })
     }
 
     capture() {
@@ -138,18 +137,13 @@ export class CAMERA extends HTMLElement {
         this.events.emit("resume", undefined, { bubbles: true, composed: true })
     }
 
-    isCaptured() {
-        return this.captured
-    }
-
-    async getFrame() {
+    async frame() {
         if (typeof createImageBitmap === "function") {
             if (this.captured && this.canvas.width && this.canvas.height) 
                 return { bitmap: await createImageBitmap(this.canvas), captured: true, width: this.canvas.width, height: this.canvas.height }
             
             if (this.video?.videoWidth && this.video?.videoHeight) 
                 return { bitmap: await createImageBitmap(this.video), captured: false, width: this.video.videoWidth, height: this.video.videoHeight }
-            
         }
 
         if (!this.video?.videoWidth || !this.video?.videoHeight) return null
