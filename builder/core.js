@@ -337,6 +337,12 @@ log.ok("Copied qr-scanner → build/core/QR/decoder.js")
 await copy(["node_modules", "qr-scanner", "qr-scanner-worker.min.js"], [...paths.build.core, "QR", "qr-scanner-worker.min.js"])
 log.ok("Copied qr-scanner worker → build/core/QR/qr-scanner-worker.min.js")
 
+// Copy WebTorrent browser bundle and service worker companion
+log.info("Copying WebTorrent to build...")
+await copy(["node_modules", "webtorrent", "dist", "webtorrent.min.js"], [...paths.build.core, "Torrent", "client.js"])
+await copy(["node_modules", "webtorrent", "dist", "sw.min.js"], [...paths.build.core, "Torrent", "sw.min.js"])
+log.ok("Copied WebTorrent → build/core/Torrent/client.js + sw.min.js")
+
 // Copy sqlite-wasm for the sql worker (OPFS backend)
 log.info("Copying sqlite-wasm to build...")
 await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "index.mjs"], [...paths.build.core, "SQL", "sqlite3.js"])
