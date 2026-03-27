@@ -7,6 +7,9 @@ import { get } from "./Torrent/get.js"
 import { list } from "./Torrent/list.js"
 import { remove } from "./Torrent/remove.js"
 import { destroy } from "./Torrent/destroy.js"
+import { tracker } from "./Torrent/tracker.js"
+import { rotate } from "./Torrent/rotate.js"
+import { survive } from "./Torrent/survive.js"
 import { $emit } from "./Torrent/emit.js"
 import { $track } from "./Torrent/track.js"
 import { $snapshot } from "./Torrent/snapshot.js"
@@ -19,6 +22,11 @@ export class Torrent {
         this.torrents = new Map()
         this.callbacks = new Map()
         this.bound = new WeakSet()
+        this.pool = []
+        this.trackers = { http: [], https: [], ws: [], wss: [] }
+        this._active = null
+        this._scheme = null
+        this._survive = 0
     }
 
     init = init
@@ -30,6 +38,9 @@ export class Torrent {
     list = list
     remove = remove
     destroy = destroy
+    tracker = tracker
+    rotate = rotate
+    survive = survive
 
     $client = $client
     $emit = $emit

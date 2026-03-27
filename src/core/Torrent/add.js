@@ -1,9 +1,11 @@
 export async function add(input, options = {}) {
     const client = await this.$client()
 
+    const finalOptions = this._active && !options.announce ? { ...options, announce: [this._active] } : options
+
     return new Promise((resolve, reject) => {
         let settled = false
-        const torrent = client.add(input, options)
+        const torrent = client.add(input, finalOptions)
         this.$track(torrent)
 
         const cleanup = () => {
