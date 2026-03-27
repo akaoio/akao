@@ -29,6 +29,8 @@ const testFiles = [
     "./src/core/tests/Cart.test.js",
     "./src/core/tests/UI.test.js",
     "./src/core/tests/Context.test.js",
+    "./src/core/tests/RTC.test.js",
+    "./src/core/tests/Torrent.test.js",
     // Access.test.js + WebAuthn.test.js — browser-only, use the /test route in browser
 ]
 
@@ -38,14 +40,13 @@ if (filter) console.log(`  Filter: \x1b[33m${filter}\x1b[0m`)
 console.log("\x1b[1m\x1b[36m══════════════════════════════════════════════════\x1b[0m")
 
 // Import all test files — each one registers suites via Test.describe()
-for (const file of testFiles) {
+for (const file of testFiles)
     try {
         await import(file)
     } catch (err) {
         console.error(`\x1b[31m✗ Failed to import ${file}:\x1b[0m`, err.message)
         process.exitCode = 1
     }
-}
 
 // Now run all registered suites
 const { default: Test } = await import("./src/core/Test.js")

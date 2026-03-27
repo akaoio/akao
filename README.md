@@ -15,6 +15,8 @@ A modern **serverless eCommerce engine** built with pure Web Components. Framewo
 - 🔐 **Passwordless Auth** - WebAuthn passkeys (Face ID, Touch ID, Windows Hello)
 - 🔗 **DeFi Integration** - Uniswap V2/V3 DEX support, on-chain wallet, token swaps
 - 📡 **Decentralized** - Optional GunDB integration for peer-to-peer data sync
+- 📶 **WebRTC P2P** - Direct browser-to-browser DataChannel, signaling-agnostic (works with GunDB, HTTP, QR, anything)
+- 🌊 **WebTorrent** - In-browser BitTorrent over WebRTC — seed and stream files without a server
 - ⚡ **Fast** - Pre-rendered routes, hash-based caching, offline-first capabilities
 - 🎨 **Themeable** - Built-in light/dark mode with CSS custom properties
 - 📦 **Multi-tenant** - Different domains per site with shared infrastructure
@@ -91,7 +93,9 @@ shop/
 │   │   ├── States/          # Reactive state internals
 │   │   ├── IDB/             # IndexedDB wrapper internals
 │   │   ├── OPFS/            # Origin Private File System wrapper internals
+│   │   ├── RTC/             # WebRTC DataChannel internals
 │   │   ├── SQL/             # SQLite WASM client internals
+│   │   ├── Torrent/         # WebTorrent client internals
 │   │   ├── FS/              # File system abstraction internals
 │   │   ├── Utils/           # Utilities (crypto, data, environment…)
 │   │   ├── Chains/          # Blockchain architecture (EVM)
@@ -108,6 +112,7 @@ shop/
 │   │   ├── Forex.js         # Foreign exchange rate management
 │   │   ├── GDB.js           # GunDB integration (Gun + SEA)
 │   │   ├── IDB.js           # IndexedDB wrapper
+│   │   ├── RTC.js           # WebRTC DataChannel façade
 │   │   ├── Launcher.js      # Thread bootstrap
 │   │   ├── OPFS.js          # OPFS async file system wrapper
 │   │   ├── Progress.js      # Global progress state
@@ -117,6 +122,7 @@ shop/
 │   │   ├── Stores.js        # Shared stores (IDB indexes, chains, wallets…)
 │   │   ├── Thread.js        # Single thread abstraction
 │   │   ├── Threads.js       # Thread manager (main + worker threads)
+│   │   ├── Torrent.js       # WebTorrent façade (seed, add, stream)
 │   │   ├── Wallet.js        # Crypto wallet (key derivation, balance, send)
 │   │   └── WebAuthn.js      # WebAuthn/FIDO2 passkey wrapper
 │   ├── UI/                   # User interface
@@ -466,6 +472,8 @@ Access.on("authenticated", ({ value }) => {
 | IndexedDB | `IDB.js` | Client-side persistent cache |
 | OPFS | `OPFS.js` | Origin Private File System — async file I/O (blobs, arbitrary files) |
 | GunDB | `GDB.js` | Decentralized graph database (optional) |
+| WebRTC | `RTC.js` | P2P DataChannel — signaling-agnostic offer/answer/accept |
+| WebTorrent | `Torrent.js` | In-browser BitTorrent over WebRTC — seed and stream files |
 | Static Files | `DB.js` | Hash-validated JSON with auto-caching |
 | Blockchain | `Chain.js` / `Wallet.js` | On-chain state and transactions |
 
@@ -519,7 +527,7 @@ npm run test:geo      # geo data integrity tests
 
 For a live interactive view, open `/{locale}/test` in the dev server (e.g. `http://localhost:8080/en/test`). The browser UI shows pass/fail per suite in real time, lets you re-run individual suites or only failed tests, and displays inline error messages.
 
-### Test Coverage (12 files, 36 suites, 174 tests)
+### Test Coverage (14 files, 38 suites, 180 tests)
 
 | File | Modules covered | Tests |
 |---|---|---|
@@ -535,6 +543,8 @@ For a live interactive view, open `/{locale}/test` in the dev server (e.g. `http
 | `Context.test.js` | Context helpers | 8 |
 | `Access.test.js` | Access | 8 |
 | `WebAuthn.test.js` | WebAuthn passkey lifecycle | 4 |
+| `RTC.test.js` | RTC (on/off, snapshot, send guard) | 3 |
+| `Torrent.test.js` | Torrent (list, get, destroy) | 3 |
 
 Tests marked `{ browser: true }` are skipped in Node.js. Tests marked `{ interactive: true }` (e.g. WebAuthn hardware) are always skipped in automated runs and triggered manually in the browser UI.
 
@@ -580,6 +590,7 @@ mystore.com: mystore
 
 - [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) — Why no framework?
 - [SQLite WASM + OPFS Architecture](docs/thoughts/sqlite-wasm-opfs-worker.md) — SQL storage design
+- [Offline-First In-Browser Server](docs/thoughts/offline-first-browser-server.md) — RTC, Torrent, P2P stack architecture & feasibility
 - [WebAuthn PRF Extension](docs/thoughts/webauthn-prf-extension.md) — Passkey deep-dive
 - [White Paper Draft](docs/thoughts/white-paper-draft.md) — 4-party escrow design
 - [Chat](docs/thoughts/chat.md) — escrow chat protocol
