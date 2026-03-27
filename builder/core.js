@@ -4,9 +4,7 @@ import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
 import { generateRoutes } from "./core/routes.js"
 import { processI18n } from "./core/i18n.js"
-import { generateHashFiles } from "./core/hash.js"
-import { processGamesCatalog } from "./core/games-statics.js"
-import { gameRegistry } from "./games/index.js"
+
 import { Forex } from "../src/core/Forex.js"
 import fs from "fs"
 
@@ -155,6 +153,7 @@ const system = (await load([...paths.src.statics, "system.yaml"])) || { paginati
 const itemDirs = await dir(paths.src.items)
 const coreItems = [] // flat item-ids under src/statics/items/<item-id>/
 const gameItemsMap = {} // { gameId: [item-id, ...] }
+const gameTypesMap = {} // { gameId: Set<string> }
 const allTags = new Set()
 
 for (const name of itemDirs) {
@@ -174,6 +173,10 @@ for (const name of itemDirs) {
                 if (subMeta) {
                     nested.push(sub)
                     normalizeTags(subMeta.tags).forEach((tag) => allTags.add(tag))
+                    if (subMeta.type) {
+                        if (!gameTypesMap[name]) gameTypesMap[name] = new Set()
+                        gameTypesMap[name].add(subMeta.type)
+                    }
                 }
             }
         if (nested.length > 0) gameItemsMap[name] = nested
@@ -291,7 +294,8 @@ for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
     const totalGameItemPages = Math.ceil(itemIds.length / pagination)
     await write([...paths.build.statics, "games", gameId, "items", "meta.json"], {
         children: itemIds.length,
-        pages: Math.max(1, totalGameItemPages)
+        pages: Math.max(1, totalGameItemPages),
+        types: [...(gameTypesMap[gameId] || new Set())].sort()
     })
     for (let page = 1; page <= Math.max(1, totalGameItemPages); page++) {
         const start = (page - 1) * pagination
@@ -300,9 +304,6 @@ for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
     }
 }
 log.ok(`Generated per-game item pagination for ${Object.keys(gameItemsMap).length} game namespace(s)`)
-
-// Generate per-game catalog files
-await processGamesCatalog(games, gameRegistry)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")

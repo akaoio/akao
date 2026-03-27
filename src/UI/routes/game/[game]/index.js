@@ -3,8 +3,11 @@ import DB from "/core/DB.js"
 import Router from "/core/Router.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
-import GAME_ITEM from "/UI/components/game-item/index.js"
+import ITEM from "/UI/components/item/index.js"
 import { html, render } from "/core/UI.js"
+
+const INITIAL_PAGES = 3
+const LOAD_MORE_PAGES = 1
 
 const SORT_OPTIONS = [
     { key: "name", label: "Name", asc: "name", desc: "name-desc", indAsc: "↑", indDesc: "↓" },
@@ -213,7 +216,7 @@ export class GAME extends HTMLElement {
 
         let filtered = allItems
         if (activeType) filtered = filtered.filter((i) => i.type === activeType)
-        if (activeRarity) filtered = filtered.filter((i) => i.rarity === activeRarity)
+        if (activeRarity) filtered = filtered.filter((i) => (i.rarity || "").toLowerCase() === activeRarity.toLowerCase())
         if (search) {
             const q = search.toLowerCase()
             filtered = filtered.filter((i) => (i.name || "").toLowerCase().includes(q))
@@ -268,7 +271,7 @@ export class GAME extends HTMLElement {
         // Grid
         const grid = this.shadowRoot.querySelector("#items")
         const elements = filtered.map((item) => {
-            const el = new GAME_ITEM()
+            const el = new ITEM()
             el.dataset.item = JSON.stringify(item)
             return el
         })
@@ -318,6 +321,16 @@ export class GAME extends HTMLElement {
         })
     }
 
+    async _loadItem(gameId, itemId, locale) {
+        const [meta, loc] = await Promise.all([
+            DB.get(["statics", "items", gameId, itemId, "meta.json"]),
+            DB.get(["statics", "items", gameId, itemId, `${locale}.json`])
+        ])
+        if (!meta) return null
+        const icon = meta.images?.[0] ? `/statics/items/${gameId}/${itemId}/images/${meta.images[0]}` : null
+        return { ...meta, ...(loc || {}), id: itemId, icon, catalog: "game" }
+    }
+
     async loadMore() {
         const id = this.states.get("id")
         const loadedPages = this.states.get("loadedPages")
@@ -327,12 +340,18 @@ export class GAME extends HTMLElement {
         const loadMoreBtn = this.shadowRoot.querySelector("#load-more")
         if (loadMoreBtn) loadMoreBtn.disabled = true
 
-        const nextPage = loadedPages + 1
-        const data = await DB.get(["statics", "games", id, "catalog", `${nextPage}.json`])
-        if (data && Array.isArray(data)) {
-            const allItems = [...this.states.get("allItems"), ...data]
-            this.states.set({ allItems, loadedPages: nextPage })
-        }
+        const locale = Context.get("locale")?.code || "en"
+        const pagesToLoad = Math.min(LOAD_MORE_PAGES, totalPages - loadedPages)
+        const pageIdBatches = await Promise.all(
+            Array.from({ length: pagesToLoad }, (_, i) => DB.get(["statics", "games", id, "items", `${loadedPages + i + 1}.json`]))
+        )
+        const newItems = (
+            await Promise.all(
+                pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : []))
+            )
+        ).filter(Boolean)
+        const allItems = [...this.states.get("allItems"), ...newItems]
+        this.states.set({ allItems, loadedPages: loadedPages + pagesToLoad })
 
         if (loadMoreBtn) loadMoreBtn.disabled = false
         this.applyFilters()
@@ -411,16 +430,25 @@ export class GAME extends HTMLElement {
             document.documentElement.style.setProperty("--game-title-shadow", titleShadow)
         } else gameVars.forEach((v) => document.documentElement.style.removeProperty(v))
 
-        // Load catalog meta
-        const catalogMeta = await DB.get(["statics", "games", id, "catalog", "meta.json"])
-        if (!catalogMeta) return
+        // Load items meta
+        const itemsMeta = await DB.get(["statics", "games", id, "items", "meta.json"])
+        if (!itemsMeta) return
 
-        const { pages = 1, types = [], rarities = [] } = catalogMeta
-        this.states.set({ totalPages: pages, totalItems: catalogMeta.children || 0 })
+        const { pages = 1, types = [] } = itemsMeta
+        const rarities = meta.rarity_order || []
+        this.states.set({ totalPages: pages, totalItems: itemsMeta.children || 0 })
 
-        // Load first page only
-        const firstPage = await DB.get(["statics", "games", id, "catalog", "1.json"])
-        this.states.set({ allItems: Array.isArray(firstPage) ? firstPage : [], loadedPages: 1 })
+        // Load first N pages in parallel
+        const initialPages = Math.min(INITIAL_PAGES, pages)
+        const pageIdBatches = await Promise.all(
+            Array.from({ length: initialPages }, (_, i) => DB.get(["statics", "games", id, "items", `${i + 1}.json`]))
+        )
+        const firstItems = (
+            await Promise.all(
+                pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : []))
+            )
+        ).filter(Boolean)
+        this.states.set({ allItems: firstItems, loadedPages: initialPages })
 
         // Build type tabs with collapse
         const VISIBLE_TYPES = 6
