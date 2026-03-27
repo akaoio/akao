@@ -25,7 +25,7 @@
   "author": "mimiza",
   "type": "module",
   "scripts": {
-    "start": "node build.js crypto && node build.js core && node dev.js",
+    "start": "node build.js crypto && node build.js core --dev && node dev.js",
     "build": "node build.js crypto && node build.js core && node build.js index && node build.js geo && node build.js hash",
     "build:core": "node build.js core",
     "build:index": "node build.js index",
