@@ -4,7 +4,9 @@ import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
 import { generateRoutes } from "./core/routes.js"
 import { processI18n } from "./core/i18n.js"
-
+import { generateHashFiles } from "./core/hash.js"
+import { processGamesCatalog } from "./core/games-statics.js"
+import { gameRegistry } from "./games/index.js"
 import { Forex } from "../src/core/Forex.js"
 import fs from "fs"
 
@@ -151,8 +153,8 @@ const system = (await load([...paths.src.statics, "system.yaml"])) || { paginati
 
 // Load items metadata — distinguish core-managed (flat) from game-derived (nested)
 const itemDirs = await dir(paths.src.items)
-const coreItems = []          // flat item-ids under src/statics/items/<item-id>/
-const gameItemsMap = {}       // { gameId: [item-id, ...] }
+const coreItems = [] // flat item-ids under src/statics/items/<item-id>/
+const gameItemsMap = {} // { gameId: [item-id, ...] }
 const allTags = new Set()
 
 for (const name of itemDirs) {
@@ -235,10 +237,7 @@ log.info("Skipping game-derived item emission in build:core (owned by build:game
 log.info("Generating items pagination...")
 const pagination = system.pagination
 
-const allItemKeys = [
-    ...coreItems,
-    ...Object.entries(gameItemsMap).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => `${gameId}/${itemId}`))
-].sort((a, b) => a.localeCompare(b))
+const allItemKeys = [...coreItems, ...Object.entries(gameItemsMap).flatMap(([gameId, itemIds]) => itemIds.map((itemId) => `${gameId}/${itemId}`))].sort((a, b) => a.localeCompare(b))
 
 // Clean legacy/previous pagination outputs while preserving item directories
 const itemsRoot = [...paths.build.statics, "items"]
@@ -250,7 +249,6 @@ if (await exist(itemsRoot)) {
             continue
         }
         if (entry === "meta.json" || /^\d+\.json$/.test(entry)) await remove([...itemsRoot, entry])
-        
     }
 }
 
@@ -302,6 +300,9 @@ for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
     }
 }
 log.ok(`Generated per-game item pagination for ${Object.keys(gameItemsMap).length} game namespace(s)`)
+
+// Generate per-game catalog files
+await processGamesCatalog(games, gameRegistry)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")
@@ -361,12 +362,12 @@ const found = await dir(paths.src.routes, /index\.js$/)
 const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, ""))))
     .filter((route) => route !== "tag/[tag]")
     .sort((a, b) => {
-    const aFirstDynamic = a.split("/")[0]?.startsWith("[")
-    const bFirstDynamic = b.split("/")[0]?.startsWith("[")
-    if (aFirstDynamic && !bFirstDynamic) return 1
-    if (!aFirstDynamic && bFirstDynamic) return -1
-    return a.localeCompare(b)
-})
+        const aFirstDynamic = a.split("/")[0]?.startsWith("[")
+        const bFirstDynamic = b.split("/")[0]?.startsWith("[")
+        if (aFirstDynamic && !bFirstDynamic) return 1
+        if (!aFirstDynamic && bFirstDynamic) return -1
+        return a.localeCompare(b)
+    })
 await write([...paths.build.statics, "routes.json"], routeDirs)
 log.ok(`Built routes list with ${routeDirs.length} routes`)
 

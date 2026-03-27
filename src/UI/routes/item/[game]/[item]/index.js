@@ -72,9 +72,9 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
             imageEl.src = `/statics/items/${meta.game}/${meta.id}/images/${firstImage}`
             imageEl.alt = ""
             imageEl.style.display = ""
-        } else {
+        } else 
             imageEl.style.display = "none"
-        }
+        
 
         const rarityKey = (meta.rarity || "common").toLowerCase().replace(/\s+/g, "-")
         const rarityColor = `var(--rarity-${rarityKey}, var(--color-accent, #888))`
@@ -99,9 +99,9 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
             backLink.textContent = meta.game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
             backLink.dataset.to = `/game/${meta.game}`
             root.querySelector("#breadcrumb").style.display = ""
-        } else {
+        } else 
             root.querySelector("#breadcrumb").style.display = "none"
-        }
+        
 
         const flavorEl = root.querySelector("#flavor-text")
         flavorEl.textContent = meta.flavor_text || ""
@@ -114,9 +114,9 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
             )
             render(rows, statBlock)
             root.querySelector("#stats").style.display = ""
-        } else if (!meta.stat_block) {
+        } else if (!meta.stat_block) 
             root.querySelector("#stats").style.display = "none"
-        }
+        
 
         const slotsEl = root.querySelector("#loadout-slots")
         if (slotsEl.children.length === 0 && meta.loadout_slots?.length) {
@@ -125,9 +125,9 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
             )
             render(chips, slotsEl)
             root.querySelector("#slots").style.display = ""
-        } else if (!meta.loadout_slots?.length) {
+        } else if (!meta.loadout_slots?.length) 
             root.querySelector("#slots").style.display = "none"
-        }
+        
     }
 
     async render() {

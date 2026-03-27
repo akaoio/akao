@@ -61,6 +61,13 @@ export const styles = css`
             }
         }
 
+        /* ── Sticky sentinel ── */
+        .sticky-sentinel {
+            height: 1px;
+            margin-bottom: -1px;
+            pointer-events: none;
+        }
+
         /* ── Sticky band (filters + toolbar) ── */
         .catalog-sticky {
             position: sticky;
@@ -74,6 +81,19 @@ export const styles = css`
                 0 1px 0 color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
                 0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent),
                 0 20px 60px color-mix(in hsl, var(--background) 55%, transparent);
+            transition:
+                width var(--speed-3) cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius var(--speed-2);
+        }
+
+        /* ── Collapsed pill (hidden by default) ── */
+        .catalog-pill {
+            display: none;
+        }
+
+        /* ── Collapse button (hidden by default) ── */
+        .catalog-collapse-btn {
+            display: none;
         }
 
         /* ── Marketplace Nav ── */
@@ -81,8 +101,8 @@ export const styles = css`
             display: flex;
             flex-direction: column;
             gap: 0;
-            padding: var(--space-3) 0 var(--space-2);
-            border-bottom: 1px solid var(--border);
+            padding-block: var(--space-3);
+            border: 1px solid transparent;
         }
 
         /* ── Filter Group row (label + choices) ── */
@@ -90,7 +110,7 @@ export const styles = css`
             display: flex;
             align-items: flex-start;
             gap: var(--space-3);
-            padding: var(--space-2) var(--space-4);
+            padding: var(--space-2) var(--space-3);
 
             & + .filter-group {
                 border-top: 1px solid color-mix(in hsl, var(--color) 8%, transparent);
@@ -179,10 +199,38 @@ export const styles = css`
         }
 
         /* ── Filter Select (mobile replacement for tabs/pills) ── */
-        .filter-select {
+        .filter-select-wrap {
             display: none; /* shown only at ≤767px */
+            position: relative;
             flex: 1;
             min-width: 0;
+
+            &::after {
+                content: "";
+                pointer-events: none;
+                position: absolute;
+                right: var(--space-2);
+                top: 50%;
+                transform: translateY(-50%);
+                width: 10px;
+                height: 6px;
+                background-color: var(--color);
+                -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
+                -webkit-mask-size: 10px 6px;
+                -webkit-mask-repeat: no-repeat;
+                mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
+                mask-size: 10px 6px;
+                mask-repeat: no-repeat;
+                transition: background-color var(--speed);
+            }
+
+            &:has(.filter-select.active)::after {
+                background-color: var(--select-accent, var(--neon-c));
+            }
+        }
+
+        .filter-select {
+            width: 100%;
             font-family: var(--header-font);
             font-size: var(--text-xs);
             letter-spacing: 0.08em;
@@ -195,11 +243,6 @@ export const styles = css`
             outline: none;
             appearance: none;
             -webkit-appearance: none;
-            /* chevron arrow */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='%2300e5ff' stroke-width='1.5'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-size: 10px 6px;
-            background-position: right var(--space-2) center;
             transition:
                 border-color var(--speed),
                 color var(--speed),
@@ -215,7 +258,6 @@ export const styles = css`
                 border-color: var(--select-accent, var(--neon-c));
                 color: var(--select-accent, var(--neon-c));
                 box-shadow: 0 0 12px color-mix(in hsl, var(--select-accent, var(--neon-c)) 30%, transparent);
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='currentColor' stroke-width='1.5'/%3E%3C/svg%3E");
             }
 
             &:focus {
@@ -323,15 +365,25 @@ export const styles = css`
             }
         }
 
+        /* ── Shared count number / label styles ── */
+        .count__num {
+            color: var(--neon-c);
+            text-shadow: var(--glow-c);
+        }
+
+        .count__label {
+            color: var(--color);
+            opacity: 0.4;
+        }
+
         .catalog-count {
             flex-shrink: 0;
             font-family: var(--header-font);
             font-size: var(--text-xs);
             letter-spacing: 0.08em;
-            color: var(--color);
-            opacity: 0.4;
             text-transform: uppercase;
             white-space: nowrap;
+            padding-left: var(--space-2);
         }
 
         /* ── Search wrap + autocomplete ── */
@@ -457,6 +509,7 @@ export const styles = css`
             display: inline-flex;
             align-items: center;
             gap: 0.3em;
+            font-family: var(--header-font);
             font-size: var(--text-xs);
             letter-spacing: 0.06em;
             text-transform: uppercase;
@@ -496,51 +549,58 @@ export const styles = css`
         /* ── Item grid ── */
         .catalog-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: var(--space-3);
             padding: var(--space-4) 0 var(--space-3);
         }
 
         /* ── Responsive Breakpoints ── */
 
-        /* lg: Desktop (≥1280px) */
-        @media (min-width: 1280px) {
-            .catalog-grid {
-                grid-template-columns: repeat(auto-fill, minmax(414px, 1fr));
-            }
-        }
-
         /* md: Tablets (768–1023px) */
         @media (max-width: 1023px) {
             .game-hero {
                 padding: var(--space-6) 0 var(--space-4);
             }
-
-            .catalog-grid {
-                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            }
         }
 
-        /* sm: Large phones / small tablets (481–767px) */
+        /* sm: Large phones / small tablets (541–767px) */
         @media (max-width: 767px) {
             .game-hero {
                 padding: var(--space-5) 0 var(--space-4);
             }
 
             #toolbar {
+                flex-wrap: wrap;
                 padding: var(--space-3);
+            }
+
+            .sort-bar {
+                flex-basis: 100%;
             }
 
             /* swap buttons → selects */
             .type-tabs,
-            .rarity-pills { display: none; }
-
-            .filter-select { display: block; }
-
-            .catalog-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            .rarity-pills {
+                display: none;
             }
 
+            .filter-select-wrap {
+                display: flex;
+            }
+        }
+
+        /* 2-col: narrow tablets / large phones (≤849px) */
+        @media (max-width: 849px) {
+            .catalog-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 1-col: phones (≤540px) */
+        @media (max-width: 540px) {
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* xs: Mobile phones (≤480px) */
@@ -549,9 +609,13 @@ export const styles = css`
                 padding: var(--space-4) 0 var(--space-3);
                 gap: var(--space-1);
 
-                h1 { letter-spacing: 0.04em; }
+                h1 {
+                    letter-spacing: 0.04em;
+                }
 
-                p { font-size: var(--text-sm); }
+                p {
+                    font-size: var(--text-sm);
+                }
             }
 
             #toolbar {
@@ -566,16 +630,173 @@ export const styles = css`
             }
 
             .sort-bar {
-                order: 2;
+                order: 3;
                 flex-wrap: nowrap;
             }
 
             .catalog-search-wrap {
-                order: 3;
+                order: 2;
                 flex-basis: 100%;
             }
 
-            .filter-group__label { width: 3rem; }
+            .filter-group__label {
+                width: 3rem;
+            }
+        }
+
+        /* ── Collapsed pill — tablet + mobile only ── */
+        @media (max-width: 1023px) {
+
+            /* Collapsed: pill only — width is set via JS inline style (pixel value)
+               so the width → 100% transition has two concrete lengths to interpolate */
+            .catalog-sticky.is-stuck:not(.is-expanded) {
+                border-radius: 0 0 8px 0;
+                cursor: pointer;
+
+                .marketplace-nav,
+                #toolbar {
+                    display: none;
+                }
+
+                .catalog-pill {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-2);
+                    padding: var(--space-3);
+                    cursor: pointer;
+                    width: fit-content;
+                }
+            }
+
+            /* Expanded: full bar as overlay */
+            .catalog-sticky.is-stuck.is-expanded {
+                width: 100%;
+                border-radius: 0;
+                cursor: default;
+                overflow: visible;
+                /* position: sticky (inherited from base rule) establishes a
+                   containing block for absolutely-positioned descendants per
+                   CSS Positioned Layout §3.4 — position: relative not needed */
+
+                .catalog-pill {
+                    display: none;
+                }
+
+                .catalog-collapse-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    padding: 0;
+                    width: 16px;
+                    height: 16px;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+
+                    &::before {
+                        content: "";
+                        display: block;
+                        width: 100%;
+                        height: 100%;
+                        background-color: var(--neon-g);
+                        -webkit-mask-image: var(--icon-chevron-double);
+                        mask-image: var(--icon-chevron-double);
+                        -webkit-mask-size: contain;
+                        mask-size: contain;
+                        -webkit-mask-repeat: no-repeat;
+                        mask-repeat: no-repeat;
+                        -webkit-mask-position: center;
+                        mask-position: center;
+                        transition: background-color var(--speed);
+                    }
+
+                    &:hover::before {
+                        background-color: var(--game-primary, var(--neon-c));
+                    }
+                }
+            }
+
+            /* Pill hover glow */
+            .catalog-sticky.is-stuck:not(.is-expanded):hover {
+                border-color: color-mix(in hsl, var(--game-primary, var(--neon-c)) 60%, transparent);
+                box-shadow:
+                    0 0 12px color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
+                    0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent);
+            }
+
+            /* ── Pill internals ── */
+            .pill__type {
+                font-family: var(--header-font);
+                font-size: var(--text-xs);
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--color);
+                opacity: 0.4;
+                white-space: nowrap;
+                flex-shrink: 0;
+                transition: opacity var(--speed);
+
+                &.active {
+                    opacity: 1;
+                    color: var(--neon-c);
+                }
+            }
+
+            .pill__rarity-dot {
+                flex-shrink: 0;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--pill-rarity-color, var(--color));
+                box-shadow: none;
+                opacity: 0.2;
+                transition: box-shadow var(--speed), opacity var(--speed);
+
+                &.active {
+                    opacity: 1;
+                    box-shadow: 0 0 6px var(--pill-rarity-color, var(--color-accent));
+                }
+            }
+
+            .pill__count {
+                font-family: var(--header-font);
+                font-size: var(--text-xs);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+
+            .pill__sort {
+                font-family: var(--header-font);
+                font-size: var(--text-xs);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--neon-g);
+                text-shadow: var(--glow-g);
+                white-space: nowrap;
+            }
+
+            .pill__search {
+                flex-shrink: 0;
+                color: var(--color);
+                opacity: 0.4;
+                line-height: 0;
+                transition: color var(--speed), opacity var(--speed);
+
+                &.active {
+                    color: var(--neon-c);
+                    opacity: 1;
+                }
+            }
+
+            .pill__divider {
+                flex-shrink: 0;
+                width: 1px;
+                height: 0.75em;
+                background: color-mix(in hsl, var(--color) 20%, transparent);
+                align-self: center;
+            }
         }
 
         /* ── Load More ── */

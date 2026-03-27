@@ -118,9 +118,9 @@ export class WALLETS extends HTMLElement {
                     : options[0]?.value || null
                 this.$chains.states.set({ options, selected: chain })
                 this.states.set({ currency: value, chain })
-            } else {
+            } else 
                 this.states.set({ [name]: value })
-            }
+            
         }
         this.$identicons.id = this.id
         this.$identicons.total = this.total
@@ -137,7 +137,7 @@ export class WALLETS extends HTMLElement {
 
     get currencies() {
         const currencies = {}
-        for (const chain of Object.values(Chains)) {
+        for (const chain of Object.values(Chains)) 
             for (const currency of Object.values(chain.currencies)) {
                 if (!currency?.name) continue
                 currencies[currency.name] = {
@@ -145,7 +145,7 @@ export class WALLETS extends HTMLElement {
                     symbol: currency.symbol
                 }
             }
-        }
+        
         return Object.values(currencies)
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((currency) => ({

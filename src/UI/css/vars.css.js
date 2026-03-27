@@ -112,6 +112,9 @@ export const styles = css`
         --icon-lg: var(--unit-7);
         --icon: var(--icon-md);
 
+        /* Icon Masks — square viewBox, default direction left; rotate() to repoint */
+        --icon-chevron-double: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M7 11 L4 8 L7 5 M12 11 L9 8 L12 5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
         /* Layout */
         --max-width: 80rem;
         --content-width: min(100% - var(--space-4), var(--max-width));

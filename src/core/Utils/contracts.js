@@ -63,9 +63,9 @@ export const fiatValue = async ({ chain, currency, amount, fiat, forex, inverse 
     if (!rates) return
 
     // Check for direct conversion first with non-zero rate
-    if (rates[fiat] && rates[fiat] > 0) {
+    if (rates[fiat] && rates[fiat] > 0) 
         return inverse ? amount / rates[fiat] : amount * rates[fiat]
-    }
+    
 
     // Try forex conversion through available rates, ignoring zero rates
     for (const [baseFiat, rate] of Object.entries(rates)) {
@@ -74,9 +74,9 @@ export const fiatValue = async ({ chain, currency, amount, fiat, forex, inverse 
 
         const forexRate = inverse ? forex[fiat]?.[baseFiat] : forex[baseFiat]?.[fiat]
         // Only process if forexRate is valid (non-zero, non-null)
-        if (forexRate && forexRate > 0) {
+        if (forexRate && forexRate > 0) 
             return inverse ? amount / rate / forexRate : amount * rate * forexRate
-        }
+        
     }
 
     // Return undefined if no valid conversion found
@@ -97,9 +97,9 @@ export const fiatRates = async ({ chain, currency } = {}) => {
     }
 
     // Quick return for stablecoins
-    if (currency?.group === "stables" && currency?.fiat) {
+    if (currency?.group === "stables" && currency?.fiat) 
         return { [currency.fiat]: 1 }
-    }
+    
 
     // Get all rates for this token from pools
     const pools = Lives?.pools?.[chain]
@@ -129,9 +129,9 @@ export const fiatRates = async ({ chain, currency } = {}) => {
         const otherToken = isToken0 ? pool.token1 : pool.token0
         const rate = isToken0 ? pairs[pool.token0.address]?.[pool.token1.address] : pairs[pool.token1.address]?.[pool.token0.address]
 
-        if (rate > 0) {
+        if (rate > 0) 
             rates[otherToken.address] = rate
-        }
+        
     })
 
     // Find stablecoins among the paired tokens
@@ -150,20 +150,20 @@ export const fiatRates = async ({ chain, currency } = {}) => {
         // Skip zero or negative rates
         if (rate <= 0) continue
 
-        if (!list[stable.fiat]) {
+        if (!list[stable.fiat]) 
             list[stable.fiat] = [rate]
-        } else if (!list[stable.fiat].includes(rate)) {
+         else if (!list[stable.fiat].includes(rate)) 
             list[stable.fiat].push(rate)
-        }
+        
     }
 
     // Calculate final rates using only positive values
     const finalRates = {}
     for (const [fiat, rateArray] of Object.entries(list)) {
         const validRates = rateArray.filter((rate) => rate > 0)
-        if (validRates.length > 0) {
+        if (validRates.length > 0) 
             finalRates[fiat] = validRates.length === 1 ? validRates[0] : validRates.reduce((sum, rate) => sum + rate, 0) / validRates.length
-        }
+        
     }
 
     return Object.keys(finalRates).length ? finalRates : undefined
