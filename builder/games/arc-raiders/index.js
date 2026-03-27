@@ -27,6 +27,7 @@ function catalogMapper(raw) {
 function detailMapper(raw) {
     return {
         meta: {
+            catalog: "game",
             game: "arc-raiders",
             tags: [raw.rarity?.toLowerCase(), normalizeString(raw.item_type)?.toLowerCase()].filter(Boolean),
             rarity: raw.rarity || "Common",
