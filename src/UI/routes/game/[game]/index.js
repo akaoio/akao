@@ -49,8 +49,10 @@ export class GAME extends HTMLElement {
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.subscriptions = []
+        this._loadingAll = false
         this.render = this.render.bind(this)
         this.applyFilters = this.applyFilters.bind(this)
+        this._applyFiltersWithLoad = this._applyFiltersWithLoad.bind(this)
         this.loadMore = this.loadMore.bind(this)
     }
 
@@ -203,6 +205,43 @@ export class GAME extends HTMLElement {
         ;["--game-primary", "--game-text-color", "--game-title-shadow"].forEach((v) => document.documentElement.style.removeProperty(v))
     }
 
+    async _loadAllRemaining() {
+        if (this._loadingAll) return
+        this._loadingAll = true
+        const grid = this.shadowRoot.querySelector("#items")
+        if (grid) grid.classList.add("is-loading-all")
+
+        const id = this.states.get("id")
+        const locale = Context.get("locale")?.code || "en"
+        const fromPage = this.states.get("loadedPages")
+        const totalPages = this.states.get("totalPages")
+        const count = totalPages - fromPage
+
+        const pageIdBatches = await Promise.all(
+            Array.from({ length: count }, (_, i) => DB.get(["statics", "games", id, "items", `${fromPage + i + 1}.json`]))
+        )
+        const newItems = (
+            await Promise.all(
+                pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : []))
+            )
+        ).filter(Boolean)
+
+        const allItems = [...this.states.get("allItems"), ...newItems]
+        this.states.set({ allItems, loadedPages: totalPages })
+
+        this._loadingAll = false
+        if (grid) grid.classList.remove("is-loading-all")
+    }
+
+    async _applyFiltersWithLoad() {
+        const anyFilter = this.states.get("activeType") || this.states.get("activeRarity") || this.states.get("search")
+        if (anyFilter && this.states.get("loadedPages") < this.states.get("totalPages")) {
+            this.applyFilters()
+            await this._loadAllRemaining()
+        }
+        this.applyFilters()
+    }
+
     applyFilters() {
         const allItems = this.states.get("allItems")
         const activeType = this.states.get("activeType")
@@ -277,10 +316,11 @@ export class GAME extends HTMLElement {
         })
         grid.replaceChildren(...elements)
 
-        // Load more button
+        // Load more button — hidden whenever a filter is active (all pages load eagerly then)
         const loadMoreBtn = this.shadowRoot.querySelector("#load-more")
         if (loadMoreBtn) {
-            const hasMore = loadedPages < totalPages
+            const anyFilterActive = !!(activeType || activeRarity || search)
+            const hasMore = loadedPages < totalPages && !anyFilterActive
             loadMoreBtn.hidden = !hasMore
             if (hasMore) {
                 const remaining = totalItems - allItems.length
@@ -485,7 +525,7 @@ export class GAME extends HTMLElement {
         typeSelect.value = this.states.get("activeType") || ""
         typeSelect.onchange = () => {
             this.states.set({ activeType: typeSelect.value || null })
-            this.applyFilters()
+            this._applyFiltersWithLoad()
         }
 
         // Build rarity pills
@@ -517,7 +557,7 @@ export class GAME extends HTMLElement {
         raritySelect.value = this.states.get("activeRarity") || ""
         raritySelect.onchange = () => {
             this.states.set({ activeRarity: raritySelect.value || null })
-            this.applyFilters()
+            this._applyFiltersWithLoad()
         }
 
         // Wire search input + autocomplete
@@ -557,7 +597,7 @@ export class GAME extends HTMLElement {
                     searchInput.value = item.name
                     this.states.set({ search: item.name })
                     closeSuggestions()
-                    this.applyFilters()
+                    this._applyFiltersWithLoad()
                 })
                 return li
             })
@@ -570,7 +610,7 @@ export class GAME extends HTMLElement {
             const val = e.target.value.trim()
             this.states.set({ search: val })
             openSuggestions(val)
-            this.applyFilters()
+            this._applyFiltersWithLoad()
         }
 
         searchInput.onfocus = (e) => openSuggestions(e.target.value.trim())
@@ -655,7 +695,7 @@ export class GAME extends HTMLElement {
         if (stateKey === "activeRarity") btn.dataset.rarity = value || ""
         btn.addEventListener("click", () => {
             this.states.set({ [stateKey]: value })
-            this.applyFilters()
+            this._applyFiltersWithLoad()
         })
         return btn
     }

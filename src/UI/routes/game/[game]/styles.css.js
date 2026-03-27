@@ -553,6 +553,12 @@ export const styles = css`
             grid-template-columns: repeat(3, 1fr);
             gap: var(--space-3);
             padding: var(--space-4) 0 var(--space-3);
+            transition: opacity 0.15s;
+
+            &.is-loading-all {
+                opacity: 0.4;
+                pointer-events: none;
+            }
         }
 
         /* ── Responsive Breakpoints ── */
