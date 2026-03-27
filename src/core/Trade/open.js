@@ -1,12 +1,20 @@
 /**
  * Open a trade (set status to "open") or decrypt an encrypted payload.
- * - open()           → sets trade status to "open"
- * - open({...})      → sets status to "open" and merges provided data into state
- * - open("cipher")   → decrypts ciphertext using SEA; roleA/roleB select shared secret
+ *
+ * This method intentionally serves two roles under one name:
+ *   - "open an envelope" (decrypt): called with a ciphertext string produced by wrap()
+ *   - "open a deal"     (protocol): called with no args or a plain-object state patch
+ *
+ * The overload is resolved by argument type:
+ *   - open("ciphertext")           → decrypt with shared ECDH secret or actor pair
+ *   - open("cipher", "B", "E")     → decrypt using the B↔E shared secret
+ *   - open()                       → set trade status to "open"
+ *   - open({ orderId: "x" })       → set status to "open" and merge data into state
+ *
  * @param {string|Object} [data] - Encrypted string to decrypt, or initial state data
  * @param {string} [roleA] - First role for shared-secret decryption
  * @param {string} [roleB] - Second role for shared-secret decryption
- * @returns {Trade|*} this for state transition, or decrypted value
+ * @returns {Trade|*} this for state transition, or decrypted value for decrypt
  */
 export async function open(data, roleA, roleB) {
     // Decrypt mode: called with a ciphertext string

@@ -14,6 +14,11 @@
  */
 export async function child(extended, indexOrSeed) {
     const { HDNodeWallet } = await import("ethers")
+    // When a hex seed string is passed, derive a 31-bit non-hardened child index
+    // from the first 8 hex characters (4 bytes) of the seed, masked to 31 bits.
+    // Require at least 8 hex characters to guarantee a full 4-byte parse.
+    if (typeof indexOrSeed === "string" && indexOrSeed.length < 8)
+        throw new Error("seed string must be at least 8 hex characters")
     const index =
         typeof indexOrSeed === "string"
             ? parseInt(indexOrSeed.substring(0, 8), 16) & 0x7fffffff

@@ -20,7 +20,10 @@ export async function pair(roleA, roleB) {
     if (!a || !b) return
 
     let secret
-    // Use whichever actor has a key pair (private key access)
+    // SEA uses separate encryption key pairs (epub/epriv) for ECDH via sea.secret().
+    // Always prefer epub over pub for sea.secret() because SEA's ECDH operates on the
+    // encryption curve key pair, not the signing key pair. Falling back to pub is kept
+    // for compatibility with actors that expose only a single key field.
     if (a.pair) secret = await sea.secret(b.epub ?? b.pub, a.pair)
     else if (b.pair) secret = await sea.secret(a.epub ?? a.pub, b.pair)
     if (!secret) return

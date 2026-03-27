@@ -369,6 +369,12 @@ Test.describe("Trade — root / child derivation", () => {
         Test.assert.equal(byInt.address, bySeed.address)
     })
 
+    Test.it("child rejects seed string shorter than 8 hex chars", async () => {
+        const t = new Trade()
+        const rootNode = await t.root(sha256("short-seed"))
+        await Test.assert.rejects(t.child(rootNode, "abc"), "at least 8 hex")
+    })
+
     Test.it("watch-only and full derivation produce identical address (white-paper §6)", async () => {
         const t = new Trade()
         const s = sha256("se-secret" + ":" + "item-42")
@@ -384,6 +390,13 @@ Test.describe("Trade — root / child derivation", () => {
 })
 
 // ─── Seed derivation (sha256-based) ──────────────────────────────────────────
+//
+// NOTE: Tests that exercise the full pair() → sea.secret() → seed() derivation
+// chain (requiring a live SEA instance) are only runnable in the browser because
+// GDB/SEA loads gun.js build artifacts that are not available in Node.js.
+// Those tests live in the /test route (browser runner) via Access.test.js.
+// The tests below pre-cache the ECDH secret to unit-test the sha256 derivation
+// logic of seed() in isolation.
 
 Test.describe("Trade — seed derivation", () => {
 

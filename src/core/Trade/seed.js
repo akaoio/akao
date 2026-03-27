@@ -26,6 +26,9 @@ export async function seed(roleA, roleB, scope) {
     const input = scope ? `${secret}:${scope}` : secret
     const derived = sha256(input)
 
-    if (!scope) this.keys.set(key, { ...this.keys.get(key), seed: derived })
+    if (!scope) {
+        const existing = this.keys.get(key)
+        this.keys.set(key, existing ? { ...existing, seed: derived } : { seed: derived })
+    }
     return derived
 }
