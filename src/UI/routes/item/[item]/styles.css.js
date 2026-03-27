@@ -2,6 +2,7 @@ import fieldset from "/UI/css/elements/fieldset.css.js"
 import input from "/UI/css/elements/input.css.js"
 import radioItem from "/UI/css/elements/radio-item.css.js"
 import { css } from "/core/UI.js"
+import { bp } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     ${fieldset}
@@ -20,7 +21,7 @@ export const styles = css`
                 "footer footer";
             gap: var(--space-3);
 
-            @media (max-width: 767px) {
+            @media (max-width: ${bp.sm}px) {
                 grid-template-columns: 1fr;
                 grid-template-areas:
                     "breadcrumb"

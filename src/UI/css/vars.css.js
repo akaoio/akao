@@ -32,12 +32,14 @@ export const styles = css`
         --space-md: var(--space-2);
         --space-lg: var(--space-3);
 
-        /* Typography */
-        --text-xs: calc(var(--unit) * 6);
-        --text-sm: calc(var(--unit) * 7);
-        --text-md: calc(var(--unit) * 8);
-        --text-lg: calc(var(--unit) * 10);
-        --text-xl: calc(var(--unit) * 12);
+        /* Typography — fluid via clamp(min, viewport, max).
+           Max values match the previous fixed sizes (0.125rem × multiplier).
+           Min values keep text legible on small phones. */
+        --text-xs: clamp(0.65rem,  1.5vw, 0.75rem);
+        --text-sm: clamp(0.75rem,  1.8vw, 0.875rem);
+        --text-md: clamp(0.875rem, 2vw,   1rem);
+        --text-lg: clamp(1rem,     2.5vw, 1.25rem);
+        --text-xl: clamp(1.25rem,  3vw,   1.5rem);
         --text: var(--text-md);
 
         /* Animation */

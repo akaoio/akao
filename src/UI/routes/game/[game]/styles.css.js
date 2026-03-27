@@ -1,4 +1,5 @@
 import { css } from "/core/UI.js"
+import { bp } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -557,14 +558,14 @@ export const styles = css`
         /* ── Responsive Breakpoints ── */
 
         /* md: Tablets (768–1023px) */
-        @media (max-width: 1023px) {
+        @media (max-width: ${bp.md}px) {
             .game-hero {
                 padding: var(--space-6) 0 var(--space-4);
             }
         }
 
         /* sm: Large phones / small tablets (541–767px) */
-        @media (max-width: 767px) {
+        @media (max-width: ${bp.sm}px) {
             .game-hero {
                 padding: var(--space-5) 0 var(--space-4);
             }
@@ -590,21 +591,21 @@ export const styles = css`
         }
 
         /* 2-col: narrow tablets / large phones (≤849px) */
-        @media (max-width: 849px) {
+        @media (max-width: ${bp.grid2}px) {
             .catalog-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
         /* 1-col: phones (≤540px) */
-        @media (max-width: 540px) {
+        @media (max-width: ${bp.grid1}px) {
             .catalog-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         /* xs: Mobile phones (≤480px) */
-        @media (max-width: 480px) {
+        @media (max-width: ${bp.xs}px) {
             .game-hero {
                 padding: var(--space-4) 0 var(--space-3);
                 gap: var(--space-1);
@@ -645,7 +646,7 @@ export const styles = css`
         }
 
         /* ── Collapsed pill — tablet + mobile only ── */
-        @media (max-width: 1023px) {
+        @media (max-width: ${bp.md}px) {
 
             /* Collapsed: pill only — width is set via JS inline style (pixel value)
                so the width → 100% transition has two concrete lengths to interpolate */
