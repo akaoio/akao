@@ -15,5 +15,6 @@
 export async function derive(roleA, roleB, scope) {
     const s = await this.seed(roleA, roleB, scope)
     if (!s) return
+    // root() is synchronous (static Ethers.js import) — no await needed
     return this.root(s)
 }

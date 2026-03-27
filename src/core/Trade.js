@@ -21,6 +21,7 @@
  *   - HDNodeWallet / getBytes from ethers for BIP-32 HD key derivation
  */
 
+import { Chains, Wallets } from "./Stores.js"
 import { bind } from "./Trade/bind.js"
 import { unbind } from "./Trade/unbind.js"
 import { open } from "./Trade/open.js"
@@ -52,6 +53,10 @@ export class Trade {
     constructor(options = {}) {
         // Trade identifier (e.g. orderId or sessionId)
         this.id = options.id || ""
+
+        // EVM chain ID this trade operates on (e.g. "1" for Ethereum mainnet).
+        // When set, lock()/release()/refund() delegate to Chains[chain] and Wallets[chain].
+        this.chain = options.chain || ""
 
         // Protocol scope — domain label used as a derivation separator
         // (e.g. "item", "order", "session", "dispute")

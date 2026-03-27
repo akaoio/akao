@@ -168,9 +168,9 @@ Test.describe("Trade — protocol state transitions", () => {
         Test.assert.equal(t.get("amount"), "100")
     })
 
-    Test.it("release is chainable", () => {
+    Test.it("release is chainable", async () => {
         const t = new Trade()
-        const result = t.release()
+        const result = await t.release()
         Test.assert.truthy(result === t)
     })
 
@@ -318,74 +318,78 @@ Test.describe("Trade — route / emit", () => {
 })
 
 // ─── HD key derivation (root / child) ─────────────────────────────────────────
+//
+// These tests require Ethers.js (build/core/Ethers.js — copied from
+// node_modules/ethers/dist/ethers.min.js during `npm run build:core`).
+// The file does not exist in src/core/, so these tests are browser-only.
 
 Test.describe("Trade — root / child derivation", () => {
 
     Test.it("root returns an HDNodeWallet for a known seed", async () => {
         const t = new Trade()
         const seedHex = sha256("test-seed")
-        const node = await t.root(seedHex)
+        const node = t.root(seedHex)
         Test.assert.truthy(node.address)
         Test.assert.truthy(node.privateKey)
-    })
+    }, { browser: true })
 
     Test.it("root is deterministic — same seed yields same address", async () => {
         const t = new Trade()
         const seedHex = sha256("deterministic-seed")
-        const a = await t.root(seedHex)
-        const b = await t.root(seedHex)
+        const a = t.root(seedHex)
+        const b = t.root(seedHex)
         Test.assert.equal(a.address, b.address)
-    })
+    }, { browser: true })
 
     Test.it("root exposes extendedKey (xprv) and neuter xpub", async () => {
         const t = new Trade()
-        const node = await t.root(sha256("xpub-test"))
+        const node = t.root(sha256("xpub-test"))
         Test.assert.truthy(node.extendedKey.startsWith("xprv"))
         Test.assert.truthy(node.neuter().extendedKey.startsWith("xpub"))
-    })
+    }, { browser: true })
 
     Test.it("child derives child from live node at numeric index", async () => {
         const t = new Trade()
-        const rootNode = await t.root(sha256("child-test"))
-        const c = await t.child(rootNode, 0)
+        const rootNode = t.root(sha256("child-test"))
+        const c = t.child(rootNode, 0)
         Test.assert.truthy(c.address)
-    })
+    }, { browser: true })
 
     Test.it("child accepts xpub string (watch-only path)", async () => {
         const t = new Trade()
-        const rootNode = await t.root(sha256("xpub-child"))
+        const rootNode = t.root(sha256("xpub-child"))
         const xpub = rootNode.neuter().extendedKey
-        const c = await t.child(xpub, 1)
+        const c = t.child(xpub, 1)
         Test.assert.truthy(c.address)
-    })
+    }, { browser: true })
 
     Test.it("child accepts seed hex as index — derives 31-bit non-hardened index", async () => {
         const t = new Trade()
-        const rootNode = await t.root(sha256("index-seed"))
+        const rootNode = t.root(sha256("index-seed"))
         const indexSeed = sha256("order-1")
         const expectedIndex = parseInt(indexSeed.substring(0, 8), 16) & 0x7fffffff
-        const byInt = await t.child(rootNode, expectedIndex)
-        const bySeed = await t.child(rootNode, indexSeed)
+        const byInt = t.child(rootNode, expectedIndex)
+        const bySeed = t.child(rootNode, indexSeed)
         Test.assert.equal(byInt.address, bySeed.address)
-    })
+    }, { browser: true })
 
-    Test.it("child rejects seed string shorter than 8 hex chars", async () => {
+    Test.it("child rejects seed string shorter than 8 hex chars", () => {
         const t = new Trade()
-        const rootNode = await t.root(sha256("short-seed"))
-        await Test.assert.rejects(t.child(rootNode, "abc"), "at least 8 hex")
-    })
+        const rootNode = t.root(sha256("short-seed"))
+        Test.assert.throws(() => t.child(rootNode, "abc"), "at least 8 hex")
+    }, { browser: true })
 
     Test.it("watch-only and full derivation produce identical address (white-paper §6)", async () => {
         const t = new Trade()
         const s = sha256("se-secret" + ":" + "item-42")
-        const rootNode = await t.root(s)
+        const rootNode = t.root(s)
         const indexSeed = sha256("be-secret" + ":" + "order-7")
 
-        const addrFromXprv = (await t.child(rootNode, indexSeed)).address
-        const addrFromXpub = (await t.child(rootNode.neuter().extendedKey, indexSeed)).address
+        const addrFromXprv = t.child(rootNode, indexSeed).address
+        const addrFromXpub = t.child(rootNode.neuter().extendedKey, indexSeed).address
 
         Test.assert.equal(addrFromXprv, addrFromXpub)
-    })
+    }, { browser: true })
 
 })
 

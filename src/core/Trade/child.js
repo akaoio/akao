@@ -1,3 +1,5 @@
+import { HDNodeWallet } from "../Ethers.js"
+
 /**
  * Derive a BIP-32 child key at a given index from an extended key or HD node.
  * Accepts either an xpub/xprv string or a live HDNodeWallet/HDNodeVoidWallet.
@@ -10,10 +12,9 @@
  *
  * @param {string|HDNodeWallet} extended - xpub, xprv string or live HD node
  * @param {number|string} indexOrSeed - Child index (integer) or seed hex (64 chars)
- * @returns {Promise<HDNodeWallet|HDNodeVoidWallet>} Derived child HD node
+ * @returns {HDNodeWallet|HDNodeVoidWallet} Derived child HD node
  */
-export async function child(extended, indexOrSeed) {
-    const { HDNodeWallet } = await import("ethers")
+export function child(extended, indexOrSeed) {
     // When a hex seed string is passed, derive a 31-bit non-hardened child index
     // from the first 8 hex characters (4 bytes) of the seed, masked to 31 bits.
     // Require at least 8 hex characters to guarantee a full 4-byte parse.

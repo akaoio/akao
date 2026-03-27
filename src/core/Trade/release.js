@@ -1,11 +1,35 @@
+import { Chains } from "../Stores.js"
+
 /**
- * Transition the trade to "released" status (funds released to seller).
- * @param {Object} [data] - Optional additional state to merge
- * @returns {Trade} this (chainable)
+ * Transition the trade to "released" status (escrow funds released to seller).
+ * When a chain is configured on the Trade instance and opts provides the escrow
+ * spending key, executes the on-chain release transaction via Chains[chain].send().
+ * All opts keys (except key) are also merged into the trade's state.
+ * @param {Object} [opts] - State data and optional on-chain release parameters
+ * @param {string} [opts.key] - Escrow wallet private key (VSE.privateKey)
+ * @param {string} [opts.from] - Escrow wallet address (VSE.address)
+ * @param {string} [opts.to] - Recipient address (seller)
+ * @param {string} [opts.amount] - Amount to release
+ * @param {*} [opts.currency] - Currency descriptor passed to chain.send()
+ * @returns {Promise<Trade>} this (chainable)
  */
-export function release(data) {
+export async function release(opts = {}) {
+    // Set state synchronously so callers don't need to await for status checks
     this.state.set("status", "released")
-    if (data && typeof data === "object")
-        for (const [k, v] of Object.entries(data)) this.state.set(k, v)
+    if (opts && typeof opts === "object")
+        for (const [k, v] of Object.entries(opts)) this.state.set(k, v)
+
+    // Execute on-chain release when chain and spending key are available
+    const chain = this.chain ? Chains[this.chain] : null
+    if (chain && opts?.key && opts?.from && opts?.to && opts?.amount) {
+        try {
+            await chain.send({ from: opts.from, to: opts.to, amount: opts.amount, currency: opts.currency, key: opts.key })
+        } catch (error) {
+            this.state.set("status", "failed")
+            this.state.set("error", error?.message || String(error))
+            return this
+        }
+    }
+
     return this
 }
