@@ -2,8 +2,8 @@
 import * as THREE from "/core/Three.js"
 import template from "./template.js"
 
-const NOISE_FLOOR  = 0.08
-const DECAY        = 0.05
+const NOISE_FLOOR  = 0.20
+const DECAY        = 0.08
 const NOISE_IDLE   = 0.008
 const NOISE_AUDIO  = 0.14
 
@@ -49,11 +49,11 @@ export class VISUALIZER extends HTMLElement {
         this.group    = null
         this.mat      = null
         this.tubes    = []          // [{ mesh, ai, bi }] — 32 hypercube edges
-        this.audioCtx = null
-        this.analyser  = null
-        this.source    = null
+        this.analyser  = null   // set externally via setanalyser()
         this.raf       = null
         this.amp       = 0
+        this.prevRaw   = 0          // previous raw amplitude — for transient detection
+        this._glitch   = 0          // current glitch shake magnitude
         this.time      = 0
         this.theta     = 0          // 4D XW-plane rotation angle
         this.probe     = null
@@ -69,7 +69,6 @@ export class VISUALIZER extends HTMLElement {
         this.colorFrame   = 0
         this.draw   = this.draw.bind(this)
         this.resize = this.resize.bind(this)
-        this.stream = this.stream.bind(this)
         this.stop   = this.stop.bind(this)
     }
 
@@ -151,22 +150,15 @@ export class VISUALIZER extends HTMLElement {
         this.renderer.setSize(w, h)
     }
 
-    stream(mediaStream) {
-        this.source?.disconnect()
-        this.source   = null
-        this.analyser = null
-        if (this.audioCtx) { this.audioCtx.close(); this.audioCtx = null }
-        if (mediaStream) {
-            const AudioEngine = globalThis.AudioContext || globalThis.webkitAudioContext
-            if (AudioEngine) {
-                this.audioCtx = new AudioEngine()
-                this.analyser = this.audioCtx.createAnalyser()
-                this.analyser.fftSize = 256
-                this.analyser.smoothingTimeConstant = 0.4
-                this.source = this.audioCtx.createMediaStreamSource(mediaStream)
-                this.source.connect(this.analyser)
-            }
-        }
+    // Set the active AnalyserNode — wave component owns the audio graph,
+    // visualizer is generic and just reads whatever analyser it is given.
+    // Reset accumulated amplitude state on every analyser swap so the effect
+    // does not stay stuck at the previous audio source's energy level.
+    setanalyser(analyser) {
+        this.analyser = analyser || null
+        this.amp      = 0
+        this._glitch  = 0
+        this.prevRaw  = 0
         if (!this.raf) this.draw()
     }
 
@@ -267,18 +259,36 @@ export class VISUALIZER extends HTMLElement {
 
         if (++this.colorFrame >= 120) { this.readcolors(); this.colorFrame = 0 }
 
-        // Amplitude from analyser
+        // Amplitude from analyser — playback analyser takes priority over mic
         let raw = 0
         if (this.analyser) {
             const freq = new Uint8Array(this.analyser.frequencyBinCount)
             this.analyser.getByteFrequencyData(freq)
-            let sum = 0
-            for (let i = 0; i < freq.length; i++) sum += freq[i]
-            raw = sum / (freq.length * 255)
+            // MAX bin (not average): works for both mic (diffuse) and direct wave audio
+            // (narrow-band tones like ggwave concentrate energy in few bins — averaging dilutes below noise floor)
+            let max = 0
+            for (let i = 0; i < freq.length; i++) if (freq[i] > max) max = freq[i]
+            raw = max / 255
             raw = raw < NOISE_FLOOR ? 0 : (raw - NOISE_FLOOR) / (1 - NOISE_FLOOR)
         }
         if (raw > this.amp) this.amp = raw
         else this.amp = Math.max(0, this.amp - DECAY)
+
+        // Glitch: spike = positive transient; decays at 0.60/frame (very fast)
+        const spike  = Math.max(0, raw - this.prevRaw)
+        this._glitch = Math.max(spike * 0.55, this._glitch * 0.60)
+        this.prevRaw = raw
+
+        // Apply glitch shake as random group position offset
+        if (this._glitch > 0.002) {
+            this.group.position.set(
+                (Math.random() * 2 - 1) * this._glitch * 0.35,
+                (Math.random() * 2 - 1) * this._glitch * 0.35,
+                0
+            )
+        } else {
+            this.group.position.set(0, 0, 0)
+        }
 
         // 4D swap speed + 3D tumble: both scale with audio
         const spin   = 0.002 + this.amp * 0.04
@@ -297,7 +307,7 @@ export class VISUALIZER extends HTMLElement {
         // Multi-stop color gradient: colorBase (silence) → effectColors by amp
         const palette = [this.colorBase, ...this.effectColors]
         const n   = palette.length - 1
-        const ca  = Math.min(1, this.amp * 2.5)
+        const ca  = Math.min(1, this.amp * 1.2)
         const seg = ca * n
         const idx = Math.min(Math.floor(seg), n - 1)
         const tt  = seg - idx
@@ -314,10 +324,7 @@ export class VISUALIZER extends HTMLElement {
     }
 
     stop() {
-        this.source?.disconnect()
-        this.source   = null
         this.analyser = null
-        if (this.audioCtx) { this.audioCtx.close(); this.audioCtx = null }
     }
 }
 

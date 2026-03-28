@@ -21,6 +21,7 @@ export class WAVE extends HTMLElement {
         this.maxsize = 140
         this.chunksttl = 60000
         this.chunks = new Map()
+        this.micAnalyser = null
         this.running = false
         this.sending = false
         this.last = ""
@@ -119,8 +120,19 @@ export class WAVE extends HTMLElement {
         this.source.connect(this.processor)
         this.processor.connect(this.sink)
         this.sink.connect(context.destination)
+        // Tap mic audio for visualizer: side branch through zero-gain node so analyser
+        // is in the pull graph (processed by audio engine) without affecting decoding chain
+        this.micAnalyser = context.createAnalyser()
+        this.micAnalyser.fftSize = 256
+        this.micAnalyser.smoothingTimeConstant = 0.4
+        const micTap = context.createGain()
+        micTap.gain.value = 0
+        this.source.connect(this.micAnalyser)
+        this.micAnalyser.connect(micTap)
+        micTap.connect(context.destination)
         this.running = true
         this.events.emit("stream", { stream: this.stream })
+        this.events.emit("analyser", { analyser: this.micAnalyser })
         this.setstatus(`Listening (${context.sampleRate}Hz, track ${settings?.sampleRate || "unknown"}Hz, ${settings?.channelCount || 1}ch)`)
         return true
     }
@@ -143,7 +155,10 @@ export class WAVE extends HTMLElement {
         this.sink = null
         this.stream = null
         this.chunks.clear()
+        this.micAnalyser?.disconnect()
+        this.micAnalyser = null
         this.events.emit("stream", { stream: null })
+        this.events.emit("analyser", { analyser: null })
         this.setstatus("Stopped")
     }
 
@@ -257,6 +272,7 @@ export class WAVE extends HTMLElement {
 
     async onaudio(event) {
         if (!this.running) return
+        if (this.micTemporarilyDisabled) return   // playing — keep mic on but skip decode
         const input = event?.inputBuffer?.getChannelData?.(0)
         if (!input?.length) return
         const bytes = this.tobytes(input)
@@ -279,20 +295,34 @@ export class WAVE extends HTMLElement {
         const channel = audio.getChannelData(0)
         const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength)
         for (let i = 0; i < samples; i++) channel[i] = view.getInt16(i * 2, true) / 32768
-        const source = context.createBufferSource()
-        const gain = context.createGain()
+        const source   = context.createBufferSource()
+        const gain     = context.createGain()
         gain.gain.value = 1.0
         source.buffer = audio
+        // Restore original playback chain exactly; tap analyser as a silent side branch
+        // so getByteFrequencyData works without inline-analyser latency/browser quirks
         source.connect(gain)
         gain.connect(context.destination)
-        this.micTemporarilyDisabled = true
-        this.mic(false)
+        // Merged analyser: combines wave output + live mic so visualizer reacts to both.
+        // Multiple sources can connect to the same AudioNode — Web Audio mixes them.
+        const mergeAnalyser = context.createAnalyser()
+        mergeAnalyser.fftSize = 256
+        mergeAnalyser.smoothingTimeConstant = 0.4
+        const mergeTap = context.createGain()
+        mergeTap.gain.value = 0
+        gain.connect(mergeAnalyser)            // wave audio
+        if (this.source) this.source.connect(mergeAnalyser)  // mic audio (if listening)
+        mergeAnalyser.connect(mergeTap)
+        mergeTap.connect(context.destination)
+        this.micTemporarilyDisabled = true     // suppress decode; mic track stays enabled
+        this.events.emit("analyser", { analyser: mergeAnalyser })
         source.start()
         await new Promise((resolve) => { source.onended = resolve })
-        this.mic(true)
-        this.micTemporarilyDisabled = false
-        this.audioBacklog = []
+        if (this.source) this.source.disconnect(mergeAnalyser)
+        this.audioBacklog = []                 // discard ggwave's own reflected audio
         this.audioBacklogBytes = 0
+        this.micTemporarilyDisabled = false
+        this.events.emit("analyser", { analyser: this.micAnalyser })
         return true
     }
 

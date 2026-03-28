@@ -33,7 +33,7 @@ export class AUTHENTICATE extends HTMLElement {
             () => this.$wavebtn.removeEventListener("click", this.onwavebtn),
             () => this.$passkeybtn.removeEventListener("click", this.onpasskeybtn),
             this.$wave.events.on("message", this.onwave),
-            this.$wave.events.on("stream", (e) => this.$vis?.stream(e.detail?.stream ?? null))
+            this.$wave.events.on("analyser", (e) => this.$vis?.setanalyser(e.detail?.analyser ?? null))
         )
     }
 
