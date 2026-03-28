@@ -36,6 +36,7 @@ function detailMapper(raw) {
     const normalized = catalogMapper(raw)
     return {
         meta: {
+            catalog: "game",
             game: "diablo-4",
             type: normalized.type || "Misc",
             tags: ["diablo-4", normalized.rarity?.toLowerCase(), (normalized.type || "").toLowerCase()].filter(Boolean),
