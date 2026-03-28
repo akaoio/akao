@@ -75,11 +75,11 @@ Test.describe("Torrent", () => {
         Test.assert.equal(t._active, "ws://tracker.example.com/announce")
     })
 
-    Test.it("tracker resets survive counter", () => {
+    Test.it("tracker resets reconnect counter", () => {
         const t = new Torrent()
-        t._survive = 3
+        t._reconnect = 3
         t.tracker(["wss://tracker.example.com/announce"])
-        Test.assert.equal(t._survive, 0)
+        Test.assert.equal(t._reconnect, 0)
     })
 
     Test.it("rotate picks a different tracker when multiple are available", () => {
@@ -129,21 +129,21 @@ Test.describe("Torrent", () => {
         Test.assert.equal(t._active, null)
     })
 
-    Test.it("survive increments counter and is bounded by MAX", () => {
+    Test.it("reconnect increments counter and is bounded by MAX", () => {
         const t = new Torrent()
         t.tracker(["wss://tracker.example.com/announce"])
-        t._survive = 4
-        t.survive()
-        Test.assert.equal(t._survive, 5)
-        // At MAX, survive should not increment further
-        t.survive()
-        Test.assert.equal(t._survive, 5)
+        t._reconnect = 4
+        t.reconnect()
+        Test.assert.equal(t._reconnect, 5)
+        // At MAX, reconnect should not increment further
+        t.reconnect()
+        Test.assert.equal(t._reconnect, 5)
     })
 
-    Test.it("survive is a no-op when pool is empty", () => {
+    Test.it("reconnect is a no-op when pool is empty", () => {
         const t = new Torrent()
-        t.survive()
-        Test.assert.equal(t._survive, 0)
+        t.reconnect()
+        Test.assert.equal(t._reconnect, 0)
     })
 
 })

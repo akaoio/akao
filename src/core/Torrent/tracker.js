@@ -10,7 +10,7 @@ export function tracker(urls = []) {
         if (SCHEMES.includes(scheme)) this.trackers[scheme].push(url)
     }
 
-    this._survive = 0
+    this._reconnect = 0
 
     if (!this._active || !this.pool.includes(this._active)) this.rotate()
 

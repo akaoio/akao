@@ -27,7 +27,7 @@ export function $track(torrent) {
     torrent.on("upload", (bytes) => this.$emit("upload", { torrent: this.$snapshot(torrent), bytes }))
     torrent.on("wire", () => this.$emit("wire", this.$snapshot(torrent)))
     torrent.on("noPeers", (announceType) => {
-        this.survive()
+        this.reconnect()
         this.$emit("noPeers", { torrent: this.$snapshot(torrent), announceType })
     })
 

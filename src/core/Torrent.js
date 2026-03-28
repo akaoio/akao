@@ -9,7 +9,7 @@ import { remove } from "./Torrent/remove.js"
 import { destroy } from "./Torrent/destroy.js"
 import { tracker } from "./Torrent/tracker.js"
 import { rotate } from "./Torrent/rotate.js"
-import { survive } from "./Torrent/survive.js"
+import { reconnect } from "./Torrent/reconnect.js"
 import { $emit } from "./Torrent/emit.js"
 import { $track } from "./Torrent/track.js"
 import { $snapshot } from "./Torrent/snapshot.js"
@@ -26,7 +26,7 @@ export class Torrent {
         this.trackers = { http: [], https: [], ws: [], wss: [] }
         this._active = null
         this._scheme = null
-        this._survive = 0
+        this._reconnect = 0
     }
 
     init = init
@@ -40,7 +40,7 @@ export class Torrent {
     destroy = destroy
     tracker = tracker
     rotate = rotate
-    survive = survive
+    reconnect = reconnect
 
     $client = $client
     $emit = $emit
