@@ -172,10 +172,6 @@ export class WAVE extends HTMLElement {
         tracks.forEach((track) => { track.enabled = Boolean(enabled) })
     }
 
-    msgid() {
-        return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
-    }
-
     cleanup() {
         const now = Date.now()
         for (const [id, entry] of this.chunks.entries())
@@ -195,39 +191,44 @@ export class WAVE extends HTMLElement {
 
     async chunked(text) {
         const total = Math.ceil(text.length / this.maxsize)
-        const id = this.msgid()
         for (let index = 0; index < total; index++) {
             const from = index * this.maxsize
             const part = text.slice(from, from + this.maxsize)
-            const envelope = JSON.stringify({ __waveChunk: 1, id, index, total, part })
+            const last = index === total - 1
+            const envelope = JSON.stringify({ "&": last ? `${index}!` : index, ":": part })
             await this.frame(envelope)
             this.setstatus(`Broadcasting chunk ${index + 1}/${total}`)
         }
     }
 
-    async consume(message = {}) {
+    async consume(chunk = {}) {
         this.cleanup()
-        const id = message?.id
-        const index = Number(message?.index)
-        const total = Number(message?.total)
-        const part = message?.part
-        if (!id || !Number.isInteger(index) || !Number.isInteger(total) || total <= 0 || index < 0 || index >= total || typeof part !== "string") return
-
-        const current = this.chunks.get(id) || { total, parts: new Array(total).fill(null), updatedAt: Date.now() }
-        if (!Array.isArray(current.parts) || current.parts.length !== total) {
-            current.parts = new Array(total).fill(null)
-            current.total = total
+        const raw = chunk["&"]
+        const part = chunk[":"]
+        if (typeof part !== "string") return
+        const last = typeof raw === "string" && raw.endsWith("!")
+        const index = last ? parseInt(raw, 10) : Number(raw)
+        if (!Number.isInteger(index) || index < 0) return
+        if (index === 0) {
+            this.chunks.set("_", { parts: [part], updatedAt: Date.now() })
+            if (last) {
+                this.chunks.delete("_")
+                await this.handle(part)
+            }
+            return
         }
-
-        current.parts[index] = part
+        const current = this.chunks.get("_")
+        if (!current) return
+        if (current.parts.length !== index) {
+            this.chunks.delete("_")
+            return
+        }
+        current.parts.push(part)
         current.updatedAt = Date.now()
-        this.chunks.set(id, current)
-
-        if (current.parts.some((value) => typeof value !== "string")) return
-
-        this.chunks.delete(id)
-        const payload = current.parts.join("")
-        await this.handle(payload)
+        if (last) {
+            this.chunks.delete("_")
+            await this.handle(current.parts.join(""))
+        }
     }
 
     dequeue(maxChunks = 6) {
@@ -343,7 +344,7 @@ export class WAVE extends HTMLElement {
     async handle(message) {
         if (!message) return
         const parsed = this.parse(message)
-        if (parsed?.__waveChunk === 1) {
+        if (parsed !== null && "&" in parsed) {
             await this.consume(parsed)
             return
         }

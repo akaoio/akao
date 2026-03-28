@@ -5,6 +5,11 @@ import { wave } from "/core/Access.js"
 import WaveAuth from "./wave.js"
 import signinWithPasskey from "./passkey.js"
 
+function shortenepub(epub) {
+    if (!epub || epub.length <= 12) return epub || ""
+    return `${epub.slice(0, 5)}...${epub.slice(-5)}`
+}
+
 export class AUTHENTICATE extends HTMLElement {
     constructor() {
         super()
@@ -13,28 +18,34 @@ export class AUTHENTICATE extends HTMLElement {
         this.events = new Events(this)
         this.subscriptions = []
         this.waveauth = new WaveAuth()
+        this.state = "neutral"
         this.onwave = this.onwave.bind(this)
-        this.onwavebtn = this.onwavebtn.bind(this)
+        this.onrequestbtn = this.onrequestbtn.bind(this)
+        this.onstopbtn = this.onstopbtn.bind(this)
         this.onpasskeybtn = this.onpasskeybtn.bind(this)
         this.stop = this.stop.bind(this)
-        this.startsignin = this.startsignin.bind(this)
-        this.startshare = this.startshare.bind(this)
     }
 
     connectedCallback() {
         this.$wave = this.shadowRoot.querySelector("#wave")
         this.$vis = this.shadowRoot.querySelector("#vis")
-        this.$wavesection = this.shadowRoot.querySelector(".wave-section")
-        this.$wavebtn = this.shadowRoot.querySelector("#wave-btn")
+        this.$requestbtn = this.shadowRoot.querySelector("#request-btn")
+        this.$stopbtn = this.shadowRoot.querySelector("#stop-btn")
         this.$passkeybtn = this.shadowRoot.querySelector("#passkey-btn")
-        this.$wavebtn.addEventListener("click", this.onwavebtn)
+        this.$epub = this.shadowRoot.querySelector("#epub")
+        this.$msg = this.shadowRoot.querySelector("#msg")
+        this.$requestbtn.addEventListener("click", this.onrequestbtn)
+        this.$stopbtn.addEventListener("click", this.onstopbtn)
         this.$passkeybtn.addEventListener("click", this.onpasskeybtn)
         this.subscriptions.push(
-            () => this.$wavebtn.removeEventListener("click", this.onwavebtn),
+            () => this.$requestbtn.removeEventListener("click", this.onrequestbtn),
+            () => this.$stopbtn.removeEventListener("click", this.onstopbtn),
             () => this.$passkeybtn.removeEventListener("click", this.onpasskeybtn),
             this.$wave.events.on("message", this.onwave),
             this.$wave.events.on("analyser", (e) => this.$vis?.setanalyser(e.detail?.analyser ?? null))
         )
+        this.setstate("neutral")
+        this.initpair()
     }
 
     disconnectedCallback() {
@@ -42,43 +53,60 @@ export class AUTHENTICATE extends HTMLElement {
         this.stop()
     }
 
-    showwave(visible) {
-        this.$wavesection?.classList?.toggle("active", visible)
+    async initpair() {
+        const { sea } = globalThis
+        if (!sea?.pair) return
+        const pair = await sea.pair()
+        this.waveauth.session = pair
+        if (this.$epub) this.$epub.textContent = shortenepub(pair.epub)
+    }
+
+    setstate(state) {
+        this.state = state
+        this.$requestbtn.hidden = state !== "neutral"
+        this.$stopbtn.hidden = state === "neutral"
+        if (this.$msg) this.$msg.textContent = ""
     }
 
     done(response) {
         this.events.emit("done", { response }, { bubbles: true, composed: true })
     }
 
-    onwave(event) {
-        this.waveauth.onmessage(event, this.$wave, ({ seed, from, channel }) => {
-            wave({ seed, from, channel }).then((response) => this.done(response))
+    async onwave(event) {
+        const { parsed } = event?.detail || {}
+        const result = await this.waveauth.handle(parsed)
+        if (!result) return
+        if (result.type === "deny") {
+            if (this.$msg) this.$msg.textContent = "Access denied"
+            return
+        }
+        if (result.type === "grant") {
+            this.stop()
+            wave({ seed: result.seed }).then((response) => this.done(response))
+        }
+    }
+
+    onrequestbtn() {
+        this.setstate("listening")
+        this.waveauth.request(this.$wave).catch((error) => {
+            this.setstate("neutral")
+            console.error(error)
         })
     }
 
-    onwavebtn() {
-        this.showwave(true)
-        this.startsignin().catch((error) => console.error(error))
+    onstopbtn() {
+        this.stop()
     }
 
     onpasskeybtn() {
-        this.showwave(false)
         signinWithPasskey().then((response) => this.done(response))
     }
 
-    startsignin() {
-        return this.waveauth.startsignin(this.$wave)
-    }
-
-    startshare(builder) {
-        this.showwave(true)
-        return this.waveauth.startshare(this.$wave, builder)
-    }
-
     stop() {
-        this.waveauth.stop()
+        this.waveauth.reset()
         this.$wave?.stop?.()
-        this.showwave(false)
+        this.setstate("neutral")
+        this.initpair()
     }
 }
 

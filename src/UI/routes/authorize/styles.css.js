@@ -2,10 +2,13 @@ import { css } from "/core/UI.js"
 
 export const styles = css`
     :host {
-        display: flex;
-        position: absolute;
-        height: stretch;
-        width: 100%;
+        ui-authorize {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(calc(100vw - var(--space-4) * 2), 20rem);
+        }
     }
 `
 
