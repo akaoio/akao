@@ -1,6 +1,8 @@
 export async function seed(input, options = {}) {
     const client = await this.$client()
 
+    const finalOptions = this._active && !options.announce ? { ...options, announce: [this._active] } : options
+
     return new Promise((resolve, reject) => {
         let seeded = null
 
@@ -16,7 +18,7 @@ export async function seed(input, options = {}) {
             reject(error instanceof Error ? error : new Error(String(error)))
         }
 
-        const torrent = client.seed(input, options, onSeed)
+        const torrent = client.seed(input, finalOptions, onSeed)
         this.$track(torrent)
         torrent.on("error", onError)
     })
