@@ -174,7 +174,7 @@ export class WAVE extends HTMLElement {
         await this.play(response.bytes, response.sampleRate)
         const sampleRate = response.sampleRate || 48000
         const durationMs = Math.ceil((response.bytes.length / 2 / sampleRate) * 1000)
-        await this.sleep(Math.min(240, Math.max(90, durationMs + 50)))
+        await this.sleep(Math.min(80, Math.max(20, durationMs + 10)))
         return response
     }
 

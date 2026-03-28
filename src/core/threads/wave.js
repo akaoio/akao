@@ -56,7 +56,7 @@ function normalizePayload(payload = "") {
 async function ensureModule() {
     if (!wave) wave = new Wave()
     if (!state.module) state.module = await wave.init()
-    if (state.protocolId == null) state.protocolId = state.module.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_NORMAL
+    if (state.protocolId == null) state.protocolId = state.module.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_FAST
     for (const [name, id] of Object.entries(state.module.ProtocolId)) {
         if (typeof id !== "number" || !name.startsWith("GGWAVE_PROTOCOL_")) continue
         const enabled = id === state.protocolId ? 1 : 0

@@ -99,15 +99,16 @@ export class ACCESS extends HTMLElement {
         this.modal.showModal()
         this.show("signin-screen")
         this.auth
-            ?.startshare?.(async (peerPub) => {
+            ?.startshare?.(async (peer) => {
                 const { sea } = globalThis
-                if (!Access.get("authenticated") || !Access.get("seed") || !Access.get("pair") || !peerPub || !sea?.secret || !sea?.encrypt) return null
-                const secret = await sea.secret(peerPub, Access.get("pair"))
-                const encrypted = await sea.encrypt(Access.get("seed"), secret)
+                const pair = Access.get("pair")
+                if (!Access.get("authenticated") || !Access.get("seed") || !pair || !peer || !sea?.secret || !sea?.encrypt) return null
+                const secret = await sea.secret(peer, pair)
+                const encrypted = await sea.encrypt(Access.get("seed"), secret, null, { raw: true })
                 return {
-                    "~": peerPub,
-                    ":": encrypted,
-                    from: Access.get("pair").pub
+                    "~": pair.epub, // from: sender's epub (always)
+                    ":": "seed",
+                    ...encrypted
                 }
             })
             .catch((error) => console.error(error))

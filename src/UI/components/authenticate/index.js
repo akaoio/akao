@@ -1,7 +1,9 @@
 import { render } from "/core/UI.js"
 import template from "./template.js"
 import Events from "/core/Events.js"
-import { wave, passkey } from "/core/Access.js"
+import { wave } from "/core/Access.js"
+import WaveAuth from "./wave.js"
+import signinWithPasskey from "./passkey.js"
 
 export class AUTHENTICATE extends HTMLElement {
     constructor() {
@@ -10,10 +12,7 @@ export class AUTHENTICATE extends HTMLElement {
         render(template, this.shadowRoot)
         this.events = new Events(this)
         this.subscriptions = []
-        this.role = null
-        this.session = null
-        this.builder = null
-        this.sending = false
+        this.waveauth = new WaveAuth()
         this.onwave = this.onwave.bind(this)
         this.onwavebtn = this.onwavebtn.bind(this)
         this.onpasskeybtn = this.onpasskeybtn.bind(this)
@@ -51,35 +50,10 @@ export class AUTHENTICATE extends HTMLElement {
         this.events.emit("done", { response }, { bubbles: true, composed: true })
     }
 
-    async onwave(event) {
-        const { parsed } = event?.detail || {}
-        if (!parsed || typeof parsed !== "object") return
-
-        if (this.role === "receiver" && parsed?.["~"] === this.session?.pub && parsed?.[":"] && parsed[":"] !== "auth") {
-            const from = parsed.from || parsed["^"] || parsed.pub
-            if (!from) return
-            const { sea } = globalThis
-            if (!sea?.secret || !sea?.decrypt) return
-            const secret = await sea.secret(from, this.session)
-            const seed = await sea.decrypt(parsed[":"], secret)
-            if (!seed) return
-            this.$wave?.setstatus?.("Seed received. Completing signin...")
-            wave({ seed, from, channel: "wave" }).then((response) => this.done(response))
-            return
-        }
-
-        if (this.role === "sender" && parsed?.[":"] === "auth" && parsed?.["~"] && typeof this.builder === "function") {
-            if (this.sending) return
-            this.sending = true
-            try {
-                const reply = await this.builder(parsed["~"], parsed)
-                if (reply) await this.$wave?.send(reply)
-            } finally {
-                this.sending = false
-                this.$wave?.audioBacklog && (this.$wave.audioBacklog = [])
-                this.$wave && (this.$wave.audioBacklogBytes = 0)
-            }
-        }
+    onwave(event) {
+        this.waveauth.onmessage(event, this.$wave, ({ seed, from, channel }) => {
+            wave({ seed, from, channel }).then((response) => this.done(response))
+        })
     }
 
     onwavebtn() {
@@ -89,37 +63,20 @@ export class AUTHENTICATE extends HTMLElement {
 
     onpasskeybtn() {
         this.showwave(false)
-        passkey().then((response) => this.done(response))
+        signinWithPasskey().then((response) => this.done(response))
     }
 
-    async startsignin() {
-        const { sea } = globalThis
-        if (!sea?.pair) throw new Error("SEA is not available")
-        this.role = "receiver"
-        this.builder = null
-        this.session = await sea.pair()
-        if (!this.session?.pub) throw new Error("Unable to create temporary pair")
-        await this.$wave?.listen()
-        const request = { "~": this.session.pub, ":": "auth" }
-        await this.$wave?.send(request)
-        this.$wave?.setstatus?.("Auth request broadcasted via wave")
-        return request
+    startsignin() {
+        return this.waveauth.startsignin(this.$wave)
     }
 
-    async startshare(builder) {
-        this.role = "sender"
-        this.session = null
-        this.builder = typeof builder === "function" ? builder : null
+    startshare(builder) {
         this.showwave(true)
-        await this.$wave?.listen()
-        this.$wave?.setstatus?.("Listening for auth request to share seed")
+        return this.waveauth.startshare(this.$wave, builder)
     }
 
     stop() {
-        this.role = null
-        this.session = null
-        this.builder = null
-        this.sending = false
+        this.waveauth.stop()
         this.$wave?.stop?.()
         this.showwave(false)
     }
