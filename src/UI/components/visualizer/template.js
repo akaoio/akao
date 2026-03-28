@@ -3,7 +3,8 @@ import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
-    <pre id="status">Idle</pre>
+    <span class="probe"></span>
+    <canvas></canvas>
 `
 
 export default template
