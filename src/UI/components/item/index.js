@@ -3,18 +3,33 @@ import DB from "/core/DB.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { render } from "/core/UI.js"
+import "/UI/components/game-item/index.js"
 
 export class ITEM extends HTMLElement {
     constructor() {
         super()
         this.states = new States()
         this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
         this.subscriptions = []
         this.render = this.render.bind(this)
     }
 
     async connectedCallback() {
+        if ("item" in this.dataset) {
+            const item = JSON.parse(this.dataset.item || "{}")
+            const catalog = item.catalog || (item.game ? "game" : null)
+            if (catalog === "game") {
+                this.shadowRoot.innerHTML = `<style>:host{display:contents}</style>`
+                const el = document.createElement("ui-game-item")
+                el.dataset.item = this.dataset.item
+                this.shadowRoot.appendChild(el)
+            }
+            // future: else if (catalog === "physical") { ... }
+            return
+        }
+
+        render(template, this.shadowRoot)
+
         const name = this.shadowRoot.querySelector("#name")
         const description = this.shadowRoot.querySelector("#description")
         const price = this.shadowRoot.querySelector("#price")

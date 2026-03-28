@@ -1,4 +1,5 @@
 import { css } from "/core/UI.js"
+import { bp } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -50,7 +51,7 @@ export const styles = css`
 
             .games {
                 display: none;
-                @media (max-width: 767px) {
+                @media (max-width: ${bp.sm}px) {
                     display: flex;
                 }
             }

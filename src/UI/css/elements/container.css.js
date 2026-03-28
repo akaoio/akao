@@ -1,4 +1,5 @@
 import { css } from "/core/UI.js"
+import { bp } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -6,33 +7,17 @@ export const styles = css`
             margin: auto;
             overflow: hidden;
             height: auto;
-            width: 100%;
+            width: 50%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
 
-        @media screen and (max-width: 480px) {
-            .container {
-                width: 100%;
-            }
-        }
-
-        @media screen and (min-width: 481px) and (max-width: 768px) {
-            .container {
+            @media (max-width: ${bp.sm}px) {
                 width: 75%;
             }
-        }
 
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                width: 50%;
-            }
-        }
-
-        @media screen and (min-width: 1025px) {
-            .container {
-                width: 50%;
+            @media (max-width: ${bp.xs}px) {
+                width: 100%;
             }
         }
     }
