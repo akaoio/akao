@@ -15,8 +15,8 @@ if (NODE && !BROWSER) {
 export class Events {
     constructor(target = null) {
         // Each instance gets its own independent event dispatcher
-        if (target) this.$events = target
-        else if (BROWSER && !NODE) this.$events = new EventTarget()
+        this.$target = target || null
+        if (BROWSER && !NODE) this.$events = new EventTarget()
         else if (NODE && !BROWSER) this.$events = new EventEmitterClass()
     }
 
@@ -71,13 +71,15 @@ export class Events {
     emit(event, detail, options = {}) {
         // Browser: create and dispatch CustomEvent
         if (BROWSER && !NODE) {
-            const e = new CustomEvent(event, {
+            const init = {
                 detail,
                 bubbles: options?.bubbles,
                 composed: options?.composed,
                 cancelable: options?.cancelable
-            })
+            }
+            const e = new CustomEvent(event, init)
             this.$events.dispatchEvent(e)
+            if (this.$target) this.$target.dispatchEvent(new CustomEvent(event, init))
             return e
         }
         // Node.js: emit event with detail as argument

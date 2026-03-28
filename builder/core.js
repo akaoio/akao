@@ -344,6 +344,12 @@ await copy(["node_modules", "webtorrent", "dist", "webtorrent.min.js"], [...path
 await copy(["node_modules", "webtorrent", "dist", "sw.min.js"], [...paths.build.core, "Torrent", "sw.min.js"])
 log.ok("Copied WebTorrent → build/core/Torrent/client.js + sw.min.js")
 
+// Copy three.js ESM module (three.module.js imports three.core.js internally)
+log.info("Copying three.js to build...")
+await copy(["node_modules", "three", "build", "three.module.js"], [...paths.build.core, "Three", "three.js"])
+await copy(["node_modules", "three", "build", "three.core.js"], [...paths.build.core, "Three", "three.core.js"])
+log.ok("Copied three.js → build/core/Three/three.js + three.core.js")
+
 // Copy sqlite-wasm for the sql worker (OPFS backend)
 log.info("Copying sqlite-wasm to build...")
 await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "index.mjs"], [...paths.build.core, "SQL", "sqlite3.js"])

@@ -1,6 +1,6 @@
 import { Elements } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
-import { Access, signup, wave, passkey } from "/core/Access.js"
+import { Access, signup } from "/core/Access.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
 import WebAuthn from "/core/WebAuthn.js"
@@ -18,10 +18,7 @@ export class ACCESS extends HTMLElement {
         this.signinScreen = this.signinScreen.bind(this)
         this.unauthenticated = this.unauthenticated.bind(this)
         this.signup = this.signup.bind(this)
-        this.sign = this.sign.bind(this)
-        this.wave = this.wave.bind(this)
-        this.passkey = this.passkey.bind(this)
-        this.onWaveSignin = this.onWaveSignin.bind(this)
+        this.ondone = this.ondone.bind(this)
         this.openWaveSignin = this.openWaveSignin.bind(this)
         this.openWaveShare = this.openWaveShare.bind(this)
     }
@@ -31,21 +28,17 @@ export class ACCESS extends HTMLElement {
         Elements.Access = this
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.form = this.shadowRoot.querySelector("#signup-form")
-        this.waveAuth = this.shadowRoot.querySelector("#wave-auth")
+        this.auth = this.shadowRoot.querySelector("#auth")
         this.shadowRoot.querySelector("#signup").addEventListener("click", this.signupScreen)
         this.shadowRoot.querySelector("#back").addEventListener("click", this.unauthenticated)
         this.shadowRoot.querySelector("#confirm").addEventListener("click", this.signup)
         this.shadowRoot.querySelector("#signin").addEventListener("click", this.signinScreen)
-        this.shadowRoot.querySelector("#wave").addEventListener("click", this.wave)
-        this.shadowRoot.querySelector("#passkey").addEventListener("click", this.passkey)
         this.subscriptions.push(
             () => this.shadowRoot.querySelector("#signup").removeEventListener("click", this.signupScreen),
             () => this.shadowRoot.querySelector("#back").removeEventListener("click", this.unauthenticated),
             () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signup),
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signinScreen),
-            () => this.shadowRoot.querySelector("#wave").removeEventListener("click", this.wave),
-            () => this.shadowRoot.querySelector("#passkey").removeEventListener("click", this.passkey),
-            this.waveAuth?.events?.on?.("signin", this.onWaveSignin)
+            this.auth?.events?.on?.("done", this.ondone)
         )
         this.form.querySelectorAll("input[type='text']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
     }
@@ -59,8 +52,11 @@ export class ACCESS extends HTMLElement {
         if (response.error) return console.error(response)
         this.form.reset()
         this.modal.close()
-        this.shadowRoot.querySelector("#wave-auth").style.display = "none"
-        this.waveAuth?.stop?.()
+        this.auth?.stop?.()
+    }
+
+    ondone(event) {
+        this.next(event?.detail?.response)
     }
 
     checkpoint() {
@@ -92,42 +88,27 @@ export class ACCESS extends HTMLElement {
         const data = Object.fromEntries(new FormData(this.form))
         signup(data).then(this.next)
     }
-    
-    wave() {
-        this.shadowRoot.querySelector("#wave-auth").style.display = "flex"
-        this.waveAuth?.startSignin?.().catch((error) => console.error(error))
-    }
-
-    passkey() {
-        this.shadowRoot.querySelector("#wave-auth").style.display = "none"
-        passkey().then(this.next)
-    }
-
-    onWaveSignin(event) {
-        wave(event?.detail).then(this.next)
-    }
 
     openWaveSignin() {
         this.modal.showModal()
         this.show("signin-screen")
-        this.shadowRoot.querySelector("#wave-auth").style.display = "flex"
-        this.waveAuth?.startSignin?.().catch((error) => console.error(error))
+        this.auth?.startsignin?.().catch((error) => console.error(error))
     }
 
     openWaveShare() {
         this.modal.showModal()
         this.show("signin-screen")
-        this.shadowRoot.querySelector("#wave-auth").style.display = "flex"
-        this.waveAuth
-            ?.startShare?.(async (peerPub) => {
+        this.auth
+            ?.startshare?.(async (peer) => {
                 const { sea } = globalThis
-                if (!Access.get("authenticated") || !Access.get("seed") || !Access.get("pair") || !peerPub || !sea?.secret || !sea?.encrypt) return null
-                const secret = await sea.secret(peerPub, Access.get("pair"))
-                const encrypted = await sea.encrypt(Access.get("seed"), secret)
+                const pair = Access.get("pair")
+                if (!Access.get("authenticated") || !Access.get("seed") || !pair || !peer || !sea?.secret || !sea?.encrypt) return null
+                const secret = await sea.secret(peer, pair)
+                const encrypted = await sea.encrypt(Access.get("seed"), secret, null, { raw: true })
                 return {
-                    "~": peerPub,
-                    ":": encrypted,
-                    from: Access.get("pair").pub
+                    "~": pair.epub, // from: sender's epub (always)
+                    ":": "seed",
+                    ...encrypted
                 }
             })
             .catch((error) => console.error(error))

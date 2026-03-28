@@ -9,9 +9,6 @@ export class WAVE extends HTMLElement {
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.events = new Events(this)
-        this.role = null
-        this.session = null
-        this.responseBuilder = null
         this.audioContext = null
         this.stream = null
         this.source = null
@@ -21,19 +18,14 @@ export class WAVE extends HTMLElement {
         this.pendingDecode = false
         this.audioBacklog = []
         this.audioBacklogBytes = 0
-        this.maxWavePayloadSize = 140
-        this.chunkTtlMs = 60000
+        this.maxsize = 140
+        this.chunksttl = 60000
         this.chunks = new Map()
+        this.micAnalyser = null
         this.running = false
         this.sending = false
-        this.lastIncoming = ""
-        this.onScan = this.onScan.bind(this)
-        this.onAudio = this.onAudio.bind(this)
-        this.onSend = this.onSend.bind(this)
-        this.onListen = this.onListen.bind(this)
-        this.onStop = this.onStop.bind(this)
-        this.startSignin = this.startSignin.bind(this)
-        this.startShare = this.startShare.bind(this)
+        this.last = ""
+        this.onaudio = this.onaudio.bind(this)
         this.stop = this.stop.bind(this)
         this.listen = this.listen.bind(this)
         this.send = this.send.bind(this)
@@ -41,52 +33,31 @@ export class WAVE extends HTMLElement {
     }
 
     connectedCallback() {
-        this.input = this.shadowRoot.querySelector("#input")
-        this.incoming = this.shadowRoot.querySelector("#incoming")
         this.status = this.shadowRoot.querySelector("#status")
-        this.outgoingQR = this.shadowRoot.querySelector("#outgoing")
-        this.incomingQR = this.shadowRoot.querySelector("#incoming-qr")
-        this.$send = this.shadowRoot.querySelector("#send")
-        this.$listen = this.shadowRoot.querySelector("#listen")
-        this.$stop = this.shadowRoot.querySelector("#stop")
-        this.$send?.addEventListener("click", this.onSend)
-        this.$listen?.addEventListener("click", this.onListen)
-        this.$stop?.addEventListener("click", this.onStop)
-        this.incomingQR?.addEventListener("scan", this.onScan)
     }
 
     disconnectedCallback() {
-        this.$send?.removeEventListener("click", this.onSend)
-        this.$listen?.removeEventListener("click", this.onListen)
-        this.$stop?.removeEventListener("click", this.onStop)
-        this.incomingQR?.removeEventListener("scan", this.onScan)
         this.stop()
     }
 
-    setStatus(text) {
+    setstatus(text) {
         if (this.status) this.status.textContent = text
     }
 
-    appendIncoming(text) {
-        if (!this.incoming || !text) return
-        const line = `${new Date().toISOString()}  ${text}`
-        this.incoming.value = this.incoming.value ? `${this.incoming.value}\n${line}` : line
-    }
-
-    toAudioBytes(floatSamples) {
+    tobytes(floatSamples) {
         const copy = new Float32Array(floatSamples)
         return new Int8Array(copy.buffer)
     }
 
-    ensureAudioContext() {
+    ensurecontext() {
         const AudioEngine = globalThis.AudioContext || globalThis.webkitAudioContext
         if (!AudioEngine) throw new Error("Web Audio API is not supported in this browser")
         if (!this.audioContext) this.audioContext = new AudioEngine({ sampleRate: 48000 })
         return this.audioContext
     }
 
-    async prepareWorker() {
-        const context = this.ensureAudioContext()
+    async prepare() {
+        const context = this.ensurecontext()
         await Wave.request({
             method: "configure",
             params: {
@@ -103,11 +74,11 @@ export class WAVE extends HTMLElement {
     async listen() {
         if (this.running) return true
         if (!navigator?.mediaDevices?.getUserMedia) {
-            this.setStatus("Microphone is not supported in this browser")
+            this.setstatus("Microphone is not supported in this browser")
             return false
         }
 
-        const context = this.ensureAudioContext()
+        const context = this.ensurecontext()
         if (context.state === "suspended") await context.resume()
 
         const constraints = {
@@ -131,7 +102,7 @@ export class WAVE extends HTMLElement {
 
         await Wave.request({
             method: "configure",
-            params:{
+            params: {
                 sampleRate: inputSampleRate,
                 sampleRateInp: inputSampleRate,
                 sampleRateOut: inputSampleRate,
@@ -145,12 +116,24 @@ export class WAVE extends HTMLElement {
         this.processor = context.createScriptProcessor(1024, 1, 1)
         this.sink = context.createGain()
         this.sink.gain.value = 0
-        this.processor.onaudioprocess = this.onAudio
+        this.processor.onaudioprocess = this.onaudio
         this.source.connect(this.processor)
         this.processor.connect(this.sink)
         this.sink.connect(context.destination)
+        // Tap mic audio for visualizer: side branch through zero-gain node so analyser
+        // is in the pull graph (processed by audio engine) without affecting decoding chain
+        this.micAnalyser = context.createAnalyser()
+        this.micAnalyser.fftSize = 256
+        this.micAnalyser.smoothingTimeConstant = 0.4
+        const micTap = context.createGain()
+        micTap.gain.value = 0
+        this.source.connect(this.micAnalyser)
+        this.micAnalyser.connect(micTap)
+        micTap.connect(context.destination)
         this.running = true
-        this.setStatus(`Listening on wave + scanning QR (context ${context.sampleRate}Hz, track ${settings?.sampleRate || "unknown"}Hz, ${settings?.channelCount || 1}ch)`)
+        this.events.emit("stream", { stream: this.stream })
+        this.events.emit("analyser", { analyser: this.micAnalyser })
+        this.setstatus(`Listening (${context.sampleRate}Hz, track ${settings?.sampleRate || "unknown"}Hz, ${settings?.channelCount || 1}ch)`)
         return true
     }
 
@@ -171,61 +154,59 @@ export class WAVE extends HTMLElement {
         this.source = null
         this.sink = null
         this.stream = null
-        this.role = null
-        this.responseBuilder = null
-        this.session = null
         this.chunks.clear()
-        this.setStatus("Stopped")
+        this.micAnalyser?.disconnect()
+        this.micAnalyser = null
+        this.events.emit("stream", { stream: null })
+        this.events.emit("analyser", { analyser: null })
+        this.setstatus("Stopped")
     }
 
     sleep(ms = 0) {
         return new Promise((resolve) => setTimeout(resolve, ms))
     }
 
-    setMicEnabled(enabled) {
+    mic(enabled) {
         const tracks = this.stream?.getAudioTracks?.()
         if (!Array.isArray(tracks) || !tracks.length) return
-        tracks.forEach((track) => {
-            track.enabled = Boolean(enabled)
-        })
+        tracks.forEach((track) => { track.enabled = Boolean(enabled) })
     }
 
-    createMessageId() {
+    msgid() {
         return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
     }
 
-    cleanupChunks() {
+    cleanup() {
         const now = Date.now()
-        for (const [id, entry] of this.chunks.entries()) 
-            if (!entry?.updatedAt || now - entry.updatedAt > this.chunkTtlMs) this.chunks.delete(id)
-        
+        for (const [id, entry] of this.chunks.entries())
+            if (!entry?.updatedAt || now - entry.updatedAt > this.chunksttl) this.chunks.delete(id)
     }
 
-    async sendWaveFrame(text) {
+    async frame(text) {
         const response = await Wave.encode({ message: text })
         if (!response?.ok || !response?.bytes) throw new Error(response?.error || "Unable to encode payload")
-        this.setStatus("Broadcasting via wave")
+        this.setstatus("Broadcasting")
         await this.play(response.bytes, response.sampleRate)
         const sampleRate = response.sampleRate || 48000
         const durationMs = Math.ceil((response.bytes.length / 2 / sampleRate) * 1000)
-        await this.sleep(Math.min(240, Math.max(90, durationMs + 50)))
+        await this.sleep(Math.min(80, Math.max(20, durationMs + 10)))
         return response
     }
 
-    async sendChunked(text) {
-        const total = Math.ceil(text.length / this.maxWavePayloadSize)
-        const id = this.createMessageId()
+    async chunked(text) {
+        const total = Math.ceil(text.length / this.maxsize)
+        const id = this.msgid()
         for (let index = 0; index < total; index++) {
-            const from = index * this.maxWavePayloadSize
-            const part = text.slice(from, from + this.maxWavePayloadSize)
+            const from = index * this.maxsize
+            const part = text.slice(from, from + this.maxsize)
             const envelope = JSON.stringify({ __waveChunk: 1, id, index, total, part })
-            await this.sendWaveFrame(envelope)
-            this.setStatus(`Broadcasting chunk ${index + 1}/${total}`)
+            await this.frame(envelope)
+            this.setstatus(`Broadcasting chunk ${index + 1}/${total}`)
         }
     }
 
-    async consumeChunk(message = {}, channel = "wave") {
-        this.cleanupChunks()
+    async consume(message = {}) {
+        this.cleanup()
         const id = message?.id
         const index = Number(message?.index)
         const total = Number(message?.total)
@@ -246,11 +227,10 @@ export class WAVE extends HTMLElement {
 
         this.chunks.delete(id)
         const payload = current.parts.join("")
-        this.appendIncoming(`[${channel}] [reassembled ${total} chunks]`)
-        await this.handleIncoming(payload, channel)
+        await this.handle(payload)
     }
 
-    dequeueAudioBytes(maxChunks = 6) {
+    dequeue(maxChunks = 6) {
         if (!this.audioBacklog?.length) return null
         const chunks = []
         let bytes = 0
@@ -272,40 +252,41 @@ export class WAVE extends HTMLElement {
         return merged
     }
 
-    async pumpDecode() {
+    async pump() {
         if (!this.running || this.pendingDecode || this.sending) return
         this.pendingDecode = true
         try {
             while (this.running && !this.sending) {
-                const bytes = this.dequeueAudioBytes(8)
+                const bytes = this.dequeue(8)
                 if (!bytes?.length) break
                 const response = await Wave.decode({ bytes }, { transfer: [bytes.buffer] })
-                if (response?.found && response?.message) await this.handleIncoming(response.message, "wave")
+                if (response?.found && response?.message) await this.handle(response.message)
             }
         } catch (error) {
-            this.setStatus(error?.message || String(error))
+            this.setstatus(error?.message || String(error))
         } finally {
             this.pendingDecode = false
-            if (this.running && !this.sending && this.audioBacklogBytes > 0) this.pumpDecode()
+            if (this.running && !this.sending && this.audioBacklogBytes > 0) this.pump()
         }
     }
 
-    async onAudio(event) {
+    async onaudio(event) {
         if (!this.running) return
+        if (this.micTemporarilyDisabled) return   // playing — keep mic on but skip decode
         const input = event?.inputBuffer?.getChannelData?.(0)
         if (!input?.length) return
-        const bytes = this.toAudioBytes(input)
+        const bytes = this.tobytes(input)
         this.audioBacklog.push(bytes)
         this.audioBacklogBytes += bytes.byteLength
         if (this.audioBacklog.length > 64) {
             const removed = this.audioBacklog.shift()
             if (removed?.byteLength) this.audioBacklogBytes -= removed.byteLength
         }
-        this.pumpDecode()
+        this.pump()
     }
 
     async play(bytes, sampleRate = 48000) {
-        const context = this.ensureAudioContext()
+        const context = this.ensurecontext()
         if (context.state === "suspended") await context.resume()
         const pcm = bytes instanceof Int8Array ? bytes : new Int8Array(bytes)
         if (!pcm.length) return false
@@ -314,127 +295,65 @@ export class WAVE extends HTMLElement {
         const channel = audio.getChannelData(0)
         const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength)
         for (let i = 0; i < samples; i++) channel[i] = view.getInt16(i * 2, true) / 32768
-        const source = context.createBufferSource()
-        const gain = context.createGain()
+        const source   = context.createBufferSource()
+        const gain     = context.createGain()
         gain.gain.value = 1.0
         source.buffer = audio
+        // Restore original playback chain exactly; tap analyser as a silent side branch
+        // so getByteFrequencyData works without inline-analyser latency/browser quirks
         source.connect(gain)
         gain.connect(context.destination)
-        this.micTemporarilyDisabled = true
-        this.setMicEnabled(false)
+        // Merged analyser: combines wave output + live mic so visualizer reacts to both.
+        // Multiple sources can connect to the same AudioNode — Web Audio mixes them.
+        const mergeAnalyser = context.createAnalyser()
+        mergeAnalyser.fftSize = 256
+        mergeAnalyser.smoothingTimeConstant = 0.4
+        const mergeTap = context.createGain()
+        mergeTap.gain.value = 0
+        gain.connect(mergeAnalyser)            // wave audio
+        if (this.source) this.source.connect(mergeAnalyser)  // mic audio (if listening)
+        mergeAnalyser.connect(mergeTap)
+        mergeTap.connect(context.destination)
+        this.micTemporarilyDisabled = true     // suppress decode; mic track stays enabled
+        this.events.emit("analyser", { analyser: mergeAnalyser })
         source.start()
-        await new Promise((resolve) => {
-            source.onended = resolve
-        })
-        this.setMicEnabled(true)
-        this.micTemporarilyDisabled = false
-        this.audioBacklog = []
+        await new Promise((resolve) => { source.onended = resolve })
+        if (this.source) this.source.disconnect(mergeAnalyser)
+        this.audioBacklog = []                 // discard ggwave's own reflected audio
         this.audioBacklogBytes = 0
+        this.micTemporarilyDisabled = false
+        this.events.emit("analyser", { analyser: this.micAnalyser })
         return true
     }
 
     async send(payload) {
-        await this.prepareWorker()
+        await this.prepare()
         const text = typeof payload === "string" ? payload : JSON.stringify(payload)
         if (!text) return null
-        if (this.outgoingQR) this.outgoingQR.dataset.value = text
-        if (this.input && this.input.value !== text) this.input.value = text
-        if (text.length > this.maxWavePayloadSize) await this.sendChunked(text)
-        else await this.sendWaveFrame(text)
+        if (text.length > this.maxsize) await this.chunked(text)
+        else await this.frame(text)
         return text
     }
 
-    parseMessage(message) {
+    parse(message) {
         if (typeof message !== "string") return null
-        try {
-            return JSON.parse(message)
-        } catch {
-            return null
-        }
+        try { return JSON.parse(message) } catch { return null }
     }
 
-    async handleIncoming(message, channel = "wave") {
+    async handle(message) {
         if (!message) return
-        const parsed = this.parseMessage(message)
+        const parsed = this.parse(message)
         if (parsed?.__waveChunk === 1) {
-            await this.consumeChunk(parsed, channel)
+            await this.consume(parsed)
             return
         }
-
-        if (message === this.lastIncoming) return
-        this.lastIncoming = message
-        this.appendIncoming(`[${channel}] ${message}`)
-        if (!parsed || typeof parsed !== "object") return
-
-        if (this.role === "sender" && parsed?.[":"] === "auth" && parsed?.["~"] && typeof this.responseBuilder === "function") {
-            if (this.sending) return
-            this.sending = true
-            try {
-                const reply = await this.responseBuilder(parsed["~"], parsed)
-                if (reply) await this.send(reply)
-            } finally {
-                this.sending = false
-                // Flush audio captured during playback to prevent self-loopback decode
-                this.audioBacklog = []
-                this.audioBacklogBytes = 0
-            }
-            return
-        }
-
-        if (this.role === "receiver" && parsed?.["~"] === this.session?.pub && parsed?.[":"] && parsed[":"] !== "auth") {
-            const from = parsed.from || parsed["^"] || parsed.pub
-            if (!from) return
-            const { sea } = globalThis
-            if (!sea?.secret || !sea?.decrypt) return
-            const secret = await sea.secret(from, this.session)
-            const seed = await sea.decrypt(parsed[":"], secret)
-            if (!seed) return
-            this.setStatus("Seed received. Completing signin...")
-            this.events.emit("signin", { seed, from, channel }, { bubbles: true, composed: true })
-        }
+        if (message === this.last) return
+        this.last = message
+        this.events.emit("message", { message, parsed }, { bubbles: true, composed: true })
     }
 
-    async startSignin() {
-        const { sea } = globalThis
-        if (!sea?.pair) throw new Error("SEA is not available")
-        this.role = "receiver"
-        this.responseBuilder = null
-        this.session = await sea.pair()
-        if (!this.session?.pub) throw new Error("Unable to create temporary pair")
-        await this.listen()
-        const request = { "~": this.session.pub, ":": "auth" }
-        await this.send(request)
-        this.setStatus("Auth request broadcasted via QR + wave")
-        return request
-    }
 
-    async startShare(builder) {
-        this.role = "sender"
-        this.session = null
-        this.responseBuilder = typeof builder === "function" ? builder : null
-        await this.listen()
-        this.setStatus("Listening for auth request to share seed")
-    }
-
-    onScan(event) {
-        const message = event?.detail?.data
-        if (!message) return
-        this.handleIncoming(message, "qr").catch((error) => this.setStatus(error?.message || String(error)))
-    }
-
-    onSend() {
-        const payload = this.input?.value?.trim()
-        if (!payload) return
-        this.send(payload).catch((error) => this.setStatus(error?.message || String(error)))
-    }
-
-    onListen() {
-        this.listen().catch((error) => this.setStatus(error?.message || String(error)))
-    }
-
-    onStop() {
-        this.stop()
-    }
 }
 
 customElements.define("ui-wave", WAVE)
+export default WAVE
