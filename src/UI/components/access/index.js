@@ -20,7 +20,6 @@ export class ACCESS extends HTMLElement {
         this.signup = this.signup.bind(this)
         this.ondone = this.ondone.bind(this)
         this.openWaveSignin = this.openWaveSignin.bind(this)
-        this.openWaveShare = this.openWaveShare.bind(this)
     }
 
     connectedCallback() {
@@ -92,26 +91,6 @@ export class ACCESS extends HTMLElement {
     openWaveSignin() {
         this.modal.showModal()
         this.show("signin-screen")
-        this.auth?.startsignin?.().catch((error) => console.error(error))
-    }
-
-    openWaveShare() {
-        this.modal.showModal()
-        this.show("signin-screen")
-        this.auth
-            ?.startshare?.(async (peer) => {
-                const { sea } = globalThis
-                const pair = Access.get("pair")
-                if (!Access.get("authenticated") || !Access.get("seed") || !pair || !peer || !sea?.secret || !sea?.encrypt) return null
-                const secret = await sea.secret(peer, pair)
-                const encrypted = await sea.encrypt(Access.get("seed"), secret, null, { raw: true })
-                return {
-                    "~": pair.epub, // from: sender's epub (always)
-                    ":": "seed",
-                    ...encrypted
-                }
-            })
-            .catch((error) => console.error(error))
     }
 
     sign(data, callback) {

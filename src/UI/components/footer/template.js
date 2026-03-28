@@ -22,7 +22,7 @@ export const template = html`
                 <ui-locales />
                 <ui-fiats />
                 <ui-themes />
-                <a is="ui-a" data-to="/authorize"><ui-icon data-icon="qr-code-scan" /></a>
+                <a is="ui-a" data-to="/authorize"><ui-icon data-icon="soundwave" /></a>
             </ui-navigator>
         </ui-navigator>
     </footer>
