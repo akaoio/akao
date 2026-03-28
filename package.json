@@ -61,6 +61,7 @@
     "prettier": "^3.7.2",
     "qr-scanner": "^1.4.2",
     "selfsigned": "^5.5.0",
+    "three": "^0.183.2",
     "uqr": "^0.1.2",
     "webtorrent": "^2.8.5",
     "yaml": "^2.8.2"

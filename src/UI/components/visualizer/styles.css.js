@@ -6,11 +6,19 @@ export const styles = css`
 		position: relative;
 		width: 100%;
 		aspect-ratio: 1;
+		overflow: hidden;
 
-		canvas {
+		.scene {
 			display: block;
 			width: 100%;
 			height: 100%;
+			overflow: hidden;
+
+			canvas {
+				display: block;
+				width: 100% !important;
+				height: 100% !important;
+			}
 		}
 
 		.probe {

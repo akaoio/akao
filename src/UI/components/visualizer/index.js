@@ -1,98 +1,159 @@
 ﻿import { render } from "/core/UI.js"
+import * as THREE from "/core/Three.js"
 import template from "./template.js"
 
-const RINGS = 3
-const RING_T = [0.28, 0.55, 0.82]   // radii as fraction of maxR
-const SPACING = 3                   // CSS px between particle centers → dense rings
-const SPRING = 0.07
-const DAMPING = 0.80
-const NOISE_FLOOR = 0.12
-const DECAY = 0.05
-const PUSH_FRAC = 0.018  // push = amp * buildMaxR * PUSH_FRAC; tỷ lệ với canvas
-const JITTER = 0.006     // per-frame random noise strength
+const NOISE_FLOOR  = 0.08
+const DECAY        = 0.05
+const NOISE_IDLE   = 0.008
+const NOISE_AUDIO  = 0.14
+
+const DEFAULT_COLORS = [[0, 230, 80], [160, 0, 255]]
+
+// 4D perspective: D4=3 gives inner:outer = 1:2 exactly at theta=0
+// proof: D4/(D4-1) = 1.5,  D4/(D4+1) = 0.75,  ratio = 0.5
+const D4         = 3.0
+const OUTER_HALF = 0.5
+const NORM_SCALE = OUTER_HALF / (D4 / (D4 - 1))    // = 0.333…
+const TUBE_R_EDGE = 0.028
+const TUBE_R_CONN = 0.018
+
+// 16 corners of the 4D unit hypercube  [x, y, z, w]
+// [0-7]  w=+1  →  projects to outer cube at theta=0
+// [8-15] w=-1  →  projects to inner cube at theta=0
+const CN4 = [
+    [-1,-1,-1,+1],[+1,-1,-1,+1],[+1,+1,-1,+1],[-1,+1,-1,+1],
+    [-1,-1,+1,+1],[+1,-1,+1,+1],[+1,+1,+1,+1],[-1,+1,+1,+1],
+    [-1,-1,-1,-1],[+1,-1,-1,-1],[+1,+1,-1,-1],[-1,+1,-1,-1],
+    [-1,-1,+1,-1],[+1,-1,+1,-1],[+1,+1,+1,-1],[-1,+1,+1,-1],
+]
+
+// 32 edges of the hypercube
+const EDGES4 = [
+    // 12 outer edges (w=+1, indices 0-7)
+    [0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7],
+    // 12 inner edges (w=-1, indices 8-15)
+    [8,9],[9,10],[10,11],[11,8],[12,13],[13,14],[14,15],[15,12],[8,12],[9,13],[10,14],[11,15],
+    // 8 connector edges: outer corner i <-> inner corner i+8
+    [0,8],[1,9],[2,10],[3,11],[4,12],[5,13],[6,14],[7,15],
+]
 
 export class VISUALIZER extends HTMLElement {
-    constructor() {
+    constructor(props = {}) {
         super()
+        this.props  = props
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this.renderer  = null
+        this.scene     = null
+        this.camera    = null
+        this.group    = null
+        this.mat      = null
+        this.tubes    = []          // [{ mesh, ai, bi }] — 32 hypercube edges
         this.audioCtx = null
-        this.analyser = null
-        this.source = null
-        this.raf = null
-        this.amps = new Float32Array(RINGS)
-        this.particles = []
-        this.canvas = null
-        this.ctx = null
-        this.probe = null
-        this.ro = null
-        this.built = false
-        this.colorBase = [255, 255, 255]
-        this.colorAccent = [0, 229, 255]
-        this.colorFrame = 0
-        this.stream = this.stream.bind(this)
-        this.draw = this.draw.bind(this)
-        this.stop = this.stop.bind(this)
+        this.analyser  = null
+        this.source    = null
+        this.raf       = null
+        this.amp       = 0
+        this.time      = 0
+        this.theta     = 0          // 4D XW-plane rotation angle
+        this.probe     = null
+        this.ro       = null
+        this._mo      = null
+        // 16 pre-allocated 3D projected positions — no GC per frame
+        this._pts3D    = Array.from({ length: 16 }, () => new THREE.Vector3())
+        // scratch vectors for _updateTube
+        this._vd = new THREE.Vector3()
+        this._up = new THREE.Vector3(0, 1, 0)
+        this.colorBase    = [255, 255, 255]
+        this.effectColors = DEFAULT_COLORS
+        this.colorFrame   = 0
+        this.draw   = this.draw.bind(this)
         this.resize = this.resize.bind(this)
+        this.stream = this.stream.bind(this)
+        this.stop   = this.stop.bind(this)
     }
 
     connectedCallback() {
-        this.canvas = this.shadowRoot.querySelector("canvas")
-        this.ctx = this.canvas.getContext("2d")
         this.probe = this.shadowRoot.querySelector(".probe")
+        this.syncattrs()
         this.readcolors()
-        this.resize()
+        this.build()
         this.ro = new ResizeObserver(this.resize)
         this.ro.observe(this)
+        // Watch for runtime attribute changes (data-color, data-colors-N)
+        this._mo = new MutationObserver(mutations => {
+            if (mutations.some(m => m.attributeName === "data-color" ||
+                    /^data-colors-\d+$/.test(m.attributeName))) {
+                this.syncattrs()
+                this.readcolors()
+            }
+        })
+        this._mo.observe(this, { attributes: true })
+        this.draw()
     }
 
     disconnectedCallback() {
+        cancelAnimationFrame(this.raf)
+        this.raf = null
         this.stop()
         this.ro?.disconnect()
-    }
-
-    resize() {
-        if (!this.canvas) return
-        const dpr = window.devicePixelRatio || 1
-        const w = this.offsetWidth || 200
-        const h = this.offsetHeight || 200
-        this.canvas.width = Math.round(w * dpr)
-        this.canvas.height = Math.round(h * dpr)
-        this.canvas.style.width = `${w}px`
-        this.canvas.style.height = `${h}px`
-        this.built = false
+        this._mo?.disconnect()
+        this.renderer?.dispose()
     }
 
     build() {
-        const W = this.canvas.width
-        const H = this.canvas.height
-        const cx = W / 2
-        const cy = H / 2
-        const dpr = window.devicePixelRatio || 1
-        const maxR = Math.min(cx, cy) * 0.9
-        const cssMaxR = maxR / dpr   // convert canvas px → CSS px for spacing calc
-        this.particles = []
-        for (let r = 0; r < RINGS; r++) {
-            const radius = RING_T[r] * maxR
-            const cssR = RING_T[r] * cssMaxR
-            const count = Math.max(20, Math.round(2 * Math.PI * cssR / SPACING))
-            for (let i = 0; i < count; i++) {
-                const angle = (i / count) * Math.PI * 2
-                const hx = cx + Math.cos(angle) * radius
-                const hy = cy + Math.sin(angle) * radius
-                this.particles.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0, ring: r,
-                    dir: Math.random() < 0.5 ? 1 : -1,
-                    tan: (Math.random() - 0.5) * 0.6,
-                    noise: 0.7 + Math.random() * 0.6
-                })
-            }
+        const container = this.shadowRoot.querySelector(".scene")
+        const w = this.offsetWidth  || 300
+        const h = this.offsetHeight || 300
+
+        this.scene  = new THREE.Scene()
+        this.camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 100)
+        this.camera.position.z = 2.8
+
+        this.group = new THREE.Group()
+        this.tubes = []
+
+        this.mat = new THREE.MeshBasicMaterial({
+            color:       new THREE.Color(1, 1, 1),
+            transparent: true,
+            opacity:     0.9,
+            blending:    THREE.AdditiveBlending,
+            depthWrite:  false,
+        })
+
+        // 32 edges: 12 outer + 12 inner + 8 connectors (all from EDGES4)
+        for (let e = 0; e < EDGES4.length; e++) {
+            const [ai, bi] = EDGES4[e]
+            const isConnector = e >= 24    // last 8 entries are connector edges
+            const r = isConnector ? TUBE_R_CONN : TUBE_R_EDGE
+            const mesh = new THREE.Mesh(
+                new THREE.CylinderGeometry(r, r, 1, 6),
+                this.mat
+            )
+            this.group.add(mesh)
+            this.tubes.push({ mesh, ai, bi })
         }
-        this.built = true
+
+        this.scene.add(this.group)
+
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+        this.renderer.setPixelRatio(window.devicePixelRatio || 1)
+        this.renderer.setSize(w, h)
+        container.appendChild(this.renderer.domElement)
+    }
+
+    resize() {
+        if (!this.renderer || !this.camera) return
+        const w = this.offsetWidth  || 300
+        const h = this.offsetHeight || 300
+        this.camera.aspect = w / h
+        this.camera.updateProjectionMatrix()
+        this.renderer.setSize(w, h)
     }
 
     stream(mediaStream) {
         this.source?.disconnect()
-        this.source = null
+        this.source   = null
         this.analyser = null
         if (this.audioCtx) { this.audioCtx.close(); this.audioCtx = null }
         if (mediaStream) {
@@ -101,21 +162,37 @@ export class VISUALIZER extends HTMLElement {
                 this.audioCtx = new AudioEngine()
                 this.analyser = this.audioCtx.createAnalyser()
                 this.analyser.fftSize = 256
-                this.analyser.smoothingTimeConstant = 0.8
+                this.analyser.smoothingTimeConstant = 0.4
                 this.source = this.audioCtx.createMediaStreamSource(mediaStream)
                 this.source.connect(this.analyser)
             }
         }
-        if (this.raf) cancelAnimationFrame(this.raf)
-        this.raf = null
-        this.draw()
+        if (!this.raf) this.draw()
+    }
+
+    // Merge data-color and data-colors-N attributes into this.props
+    syncattrs() {
+        if (this.hasAttribute("data-color"))
+            this.props.color = this.getAttribute("data-color")
+        // data-colors-0, data-colors-1 … → sorted array in props.colors
+        const entries = Object.entries(this.dataset)
+            .filter(([k]) => /^colors\d+$/.test(k))
+            .sort(([a], [b]) => +a.replace("colors", "") - +b.replace("colors", ""))
+            .map(([, v]) => v)
+        if (entries.length >= 1) this.props.colors = entries
     }
 
     readcolors() {
-        if (!this.probe) return
-        const s = getComputedStyle(this.probe)
-        this.colorBase = this.parsergb(s.color)
-        this.colorAccent = this.parsergb(s.backgroundColor)
+        // base color: props.color → CSS --color
+        if (this.props.color) {
+            this.colorBase = this.parsecsscolor(this.props.color)
+        } else if (this.probe) {
+            this.colorBase = this.parsergb(getComputedStyle(this.probe).color)
+        }
+        // effect colors: props.colors → defaults
+        this.effectColors = this.props.colors?.length >= 2
+            ? this.props.colors.map(c => this.parsecsscolor(c))
+            : DEFAULT_COLORS
     }
 
     parsergb(str) {
@@ -123,134 +200,124 @@ export class VISUALIZER extends HTMLElement {
         return m ? [+m[0], +m[1], +m[2]] : [128, 128, 128]
     }
 
+    parsecsscolor(val) {
+        if (!val) return [128, 128, 128]
+        if (val.startsWith("#")) {
+            const h = val.slice(1)
+            const x = h.length === 3 ? h.split("").map(c => c + c).join("") : h
+            return [parseInt(x.slice(0, 2), 16), parseInt(x.slice(2, 4), 16), parseInt(x.slice(4, 6), 16)]
+        }
+        return this.parsergb(val)
+    }
+
+    noise(x, y, z) {
+        const t = this.time
+        return (
+            Math.sin(x * 2.9 + t)       * Math.cos(y * 3.3 + t * 1.1) * Math.sin(z * 2.7 + t * 0.8) +
+            Math.sin(x * 6.1 + t * 1.4) * Math.cos(z * 5.7 + t * 0.6) * Math.sin(y * 4.9 + t * 1.3) * 0.38
+        )
+    }
+
+    // Project all 16 hypercube corners from 4D → 3D via XW-plane rotation.
+    // Rotation: x' = x·cos(θ) - w·sin(θ),  w' = x·sin(θ) + w·cos(θ)
+    // At θ=0: outer (w=+1) projects at scale 1.5×NORM = OUTER_HALF
+    //         inner (w=-1) projects at scale 0.75×NORM = OUTER_HALF/2
+    // At θ=π: the cubes are fully swapped.
+    // Corners never collide: at θ=π/2 same-xyz pairs project to x=−1 vs x=+1 (mirrored).
+    _project4D() {
+        const cosT     = Math.cos(this.theta)
+        const sinT     = Math.sin(this.theta)
+        const noiseAmp = NOISE_IDLE + Math.pow(this.amp, 0.6) * NOISE_AUDIO
+        for (let i = 0; i < 16; i++) {
+            const [bx, by, bz, bw] = CN4[i]
+            const rx  = bx * cosT - bw * sinT
+            const rw  = bx * sinT + bw * cosT
+            const s   = D4 / (D4 - rw) * NORM_SCALE
+            const px  = rx * s, py = by * s, pz = bz * s
+            const len = Math.sqrt(px * px + py * py + pz * pz)
+            const nd  = len > 1e-6 ? (this.noise(bx, by, bz) / 1.38) * noiseAmp : 0
+            const inv = 1 / (len || 1)
+            this._pts3D[i].set(px + px * inv * nd, py + py * inv * nd, pz + pz * inv * nd)
+        }
+    }
+
+    // Stretch a CylinderGeometry(height=1) mesh to span from a to b, no allocation
+    _updateTube(mesh, a, b) {
+        this._vd.subVectors(b, a)
+        const len = this._vd.length()
+        if (len < 1e-6) { mesh.visible = false; return }
+        mesh.visible = true
+        mesh.position.addVectors(a, b).multiplyScalar(0.5)
+        mesh.scale.y = len
+        this._vd.divideScalar(len)
+        const dot = this._vd.dot(this._up)
+        if (dot > 0.9999) {
+            mesh.quaternion.identity()
+        } else if (dot < -0.9999) {
+            mesh.quaternion.set(1, 0, 0, 0)   // 180° around X
+        } else {
+            mesh.quaternion.setFromUnitVectors(this._up, this._vd)
+        }
+    }
+
     draw() {
         this.raf = requestAnimationFrame(this.draw)
-        const canvas = this.canvas
-        if (!canvas) return
-        if (!this.built) this.build()
-        // Throttle getComputedStyle: re-read theme colors every 120 frames (~2s)
+
+        this.time += 0.006 + this.amp * 0.06
+
         if (++this.colorFrame >= 120) { this.readcolors(); this.colorFrame = 0 }
 
-        const W = canvas.width
-        const H = canvas.height
-        const dpr = window.devicePixelRatio || 1
-        const cx = W / 2
-        const cy = H / 2
-        const buildMaxR = Math.min(cx, cy) * 0.9
-        const maxDisp = (PUSH_FRAC / SPRING) * buildMaxR
-        const clipR = RING_T[RINGS - 1] * buildMaxR + maxDisp + dpr * 3
-        const c = this.ctx
-
-        c.clearRect(0, 0, W, H)
-        c.save()
-        c.beginPath()
-        c.arc(cx, cy, clipR, 0, Math.PI * 2)
-        c.clip()
-
-        // Per-ring amplitude with noise gate
-        let freq = null
+        // Amplitude from analyser
+        let raw = 0
         if (this.analyser) {
-            freq = new Uint8Array(this.analyser.frequencyBinCount)
+            const freq = new Uint8Array(this.analyser.frequencyBinCount)
             this.analyser.getByteFrequencyData(freq)
+            let sum = 0
+            for (let i = 0; i < freq.length; i++) sum += freq[i]
+            raw = sum / (freq.length * 255)
+            raw = raw < NOISE_FLOOR ? 0 : (raw - NOISE_FLOOR) / (1 - NOISE_FLOOR)
+        }
+        if (raw > this.amp) this.amp = raw
+        else this.amp = Math.max(0, this.amp - DECAY)
+
+        // 4D swap speed + 3D tumble: both scale with audio
+        const spin   = 0.002 + this.amp * 0.04
+        this.theta             += 0.004 + this.amp * 0.05
+        this.group.rotation.y  += spin
+        this.group.rotation.x  += spin * 0.4
+
+        // Project all 16 hypercube corners from 4D to 3D
+        this._project4D()
+
+        // Update all 32 tube meshes
+        for (const { mesh, ai, bi } of this.tubes) {
+            this._updateTube(mesh, this._pts3D[ai], this._pts3D[bi])
         }
 
-        for (let i = 0; i < RINGS; i++) {
-            let amp = 0
-            if (freq) {
-                const bins = freq.length
-                const start = Math.floor((i / RINGS) * bins * 0.55)
-                const end = Math.max(start + 1, Math.floor(((i + 1) / RINGS) * bins * 0.55))
-                let sum = 0
-                for (let b = start; b < end; b++) sum += freq[b]
-                amp = sum / ((end - start) * 255)
-                amp = amp < NOISE_FLOOR ? 0 : (amp - NOISE_FLOOR) / (1 - NOISE_FLOOR)
-            }
-            if (amp > this.amps[i]) this.amps[i] = amp
-            else this.amps[i] = Math.max(0, this.amps[i] - DECAY)
-        }
+        // Multi-stop color gradient: colorBase (silence) → effectColors by amp
+        const palette = [this.colorBase, ...this.effectColors]
+        const n   = palette.length - 1
+        const ca  = Math.min(1, this.amp * 2.5)
+        const seg = ca * n
+        const idx = Math.min(Math.floor(seg), n - 1)
+        const tt  = seg - idx
+        const [r0, g0, b0] = palette[idx]
+        const [r1, g1, b1] = palette[idx + 1]
+        this.mat.color.setRGB(
+            (r0 + (r1 - r0) * tt) / 255,
+            (g0 + (g1 - g0) * tt) / 255,
+            (b0 + (b1 - b0) * tt) / 255
+        )
+        this.mat.opacity = 0.55 + this.amp * 0.45
 
-        // Update and draw particles
-        const jitterScale = buildMaxR * JITTER
-        for (const p of this.particles) {
-            const amp = this.amps[p.ring]
-
-            // Spring toward home
-            const sx = (p.hx - p.x) * SPRING
-            const sy = (p.hy - p.y) * SPRING
-
-            // Radial unit vector from home position outward
-            const rdx = p.hx - cx
-            const rdy = p.hy - cy
-            const rlen = Math.sqrt(rdx * rdx + rdy * rdy) || 1
-            const rnx = rdx / rlen
-            const rny = rdy / rlen
-
-            // jitter scales with amp → zero when silent, so self-cancel can trigger
-            const push = amp * buildMaxR * PUSH_FRAC
-            const jx = amp * (Math.random() - 0.5) * jitterScale * p.noise * 4
-            const jy = amp * (Math.random() - 0.5) * jitterScale * p.noise * 4
-
-            p.vx = (p.vx + sx + rnx * push * p.dir + (-rny) * push * p.tan + jx) * DAMPING
-            p.vy = (p.vy + sy + rny * push * p.dir + (rnx)  * push * p.tan + jy) * DAMPING
-            p.x += p.vx
-            p.y += p.vy
-
-            // Color: inline lerp --color → --color-accent by displacement from home
-            const ddx = p.x - p.hx
-            const ddy = p.y - p.hy
-            const disp = Math.min(1, Math.sqrt(ddx * ddx + ddy * ddy) / (maxDisp * 0.5 || 1))
-            const lr = (this.colorBase[0] + (this.colorAccent[0] - this.colorBase[0]) * disp) | 0
-            const lg = (this.colorBase[1] + (this.colorAccent[1] - this.colorBase[1]) * disp) | 0
-            const lb = (this.colorBase[2] + (this.colorAccent[2] - this.colorBase[2]) * disp) | 0
-            const alpha = 0.2 + disp * 0.8
-
-            // Short radial segment oriented toward center
-            const tox = cx - p.x
-            const toy = cy - p.y
-            const tlen = Math.sqrt(tox * tox + toy * toy) || 1
-            const tnx = tox / tlen
-            const tny = toy / tlen
-            const segLen = dpr * (1.2 + amp * 2)
-
-            // Gradient: bright at head (toward center) → transparent at tail
-            const hx0 = p.x + tnx * segLen   // head, toward center
-            const hy0 = p.y + tny * segLen
-            const hx1 = p.x - tnx * segLen   // tail, away from center
-            const hy1 = p.y - tny * segLen
-            const grad = c.createLinearGradient(hx0, hy0, hx1, hy1)
-            grad.addColorStop(0, `rgba(${lr},${lg},${lb},0)`)
-            grad.addColorStop(1, `rgba(${lr},${lg},${lb},${alpha.toFixed(2)})`)
-            c.beginPath()
-            c.moveTo(hx0, hy0)
-            c.lineTo(hx1, hy1)
-            c.strokeStyle = grad
-            c.lineWidth = dpr * 0.6
-            c.stroke()
-        }
-
-        c.restore()
-
-        // Self-cancel when no audio and all particles returned to rest
-        if (!this.analyser && this.amps.every(a => a < 0.001)) {
-            const rested = this.particles.every(p => {
-                const dx = p.x - p.hx
-                const dy = p.y - p.hy
-                return Math.abs(p.vx) < 0.05 && Math.abs(p.vy) < 0.05
-                    && dx * dx + dy * dy < 0.25
-            })
-            if (rested) {
-                cancelAnimationFrame(this.raf)
-                this.raf = null
-            }
-        }
+        this.renderer.render(this.scene, this.camera)
     }
 
     stop() {
         this.source?.disconnect()
-        this.source = null
+        this.source   = null
         this.analyser = null
         if (this.audioCtx) { this.audioCtx.close(); this.audioCtx = null }
-        // raf keeps running so particles spring back to rest, then self-cancels
     }
 }
 
