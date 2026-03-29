@@ -1,5 +1,4 @@
 import "/UI/components/wave/index.js"
-import "/UI/components/visualizer/index.js"
 import "/UI/components/button/index.js"
 import "/UI/components/context/index.js"
 import styles from "./styles.css.js"
@@ -7,10 +6,9 @@ import { html } from "/core/UI.js"
 
 export const template = html`
     ${styles}
-    <div class="wave-section">
-        <ui-visualizer id="vis" />
+    <div class="wave">
         <ui-wave id="wave" />
-        <span class="epub" id="epub"></span>
+        <span id="epub"></span>
     </div>
     <span class="msg" id="msg"></span>
     <div class="buttons">

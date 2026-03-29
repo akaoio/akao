@@ -16,11 +16,6 @@ export const styles = css`
             flex-direction: column;
             gap: var(--space);
             width: 100%;
-
-            ui-visualizer {
-                width: min(100%, 10rem);
-                align-self: center;
-            }
         }
 
         #confirm {

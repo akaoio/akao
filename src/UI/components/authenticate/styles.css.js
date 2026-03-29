@@ -8,27 +8,20 @@ export const styles = css`
         flex-direction: column;
         gap: var(--space);
 
-        .wave-section {
+        .wave {
             display: flex;
             flex-direction: column;
             gap: var(--space);
 
-            ui-visualizer {
-                width: min(100%, 10rem);
-                align-self: center;
-            }
-
-            .epub {
+            #epub {
                 text-align: center;
                 font-family: monospace;
-                font-size: 0.85em;
-                opacity: 0.7;
+                color: var(--color-accent);
             }
         }
 
         .msg {
             text-align: center;
-            font-size: 0.9em;
         }
     }
 `

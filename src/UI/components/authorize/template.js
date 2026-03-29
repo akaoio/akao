@@ -1,5 +1,4 @@
 import "/UI/components/wave/index.js"
-import "/UI/components/visualizer/index.js"
 import "/UI/components/button/index.js"
 import "/UI/components/context/index.js"
 import styles from "./styles.css.js"
@@ -8,7 +7,6 @@ import { html } from "/core/UI.js"
 export const template = html`
     ${styles}
     <div class="main">
-        <ui-visualizer id="vis" />
         <ui-wave id="wave" />
         <div id="confirm" hidden>
             <p id="note"></p>

@@ -133,7 +133,8 @@ export class WAVE extends HTMLElement {
         this.running = true
         this.events.emit("stream", { stream: this.stream })
         this.events.emit("analyser", { analyser: this.micAnalyser })
-        this.setstatus(`Listening (${context.sampleRate}Hz, track ${settings?.sampleRate || "unknown"}Hz, ${settings?.channelCount || 1}ch)`)
+        this.shadowRoot.querySelector("ui-visualizer")?.setanalyser(this.micAnalyser)
+        this.setstatus(`Listening`)
         return true
     }
 

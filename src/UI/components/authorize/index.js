@@ -24,7 +24,6 @@ export class AUTHORIZE extends HTMLElement {
 
     connectedCallback() {
         this.$wave = this.shadowRoot.querySelector("#wave")
-        this.$vis = this.shadowRoot.querySelector("#vis")
         this.$confirm = this.shadowRoot.querySelector("#confirm")
         this.$note = this.shadowRoot.querySelector("#note")
         this.$denybtn = this.shadowRoot.querySelector("#deny-btn")
@@ -34,8 +33,7 @@ export class AUTHORIZE extends HTMLElement {
         this.subscriptions.push(
             () => this.$denybtn.removeEventListener("click", this.ondeny),
             () => this.$grantbtn.removeEventListener("click", this.ongrant),
-            this.$wave.events.on("message", this.onwave),
-            this.$wave.events.on("analyser", (e) => this.$vis?.setanalyser(e.detail?.analyser ?? null))
+            this.$wave.events.on("message", this.onwave)
         )
         this.$wave.listen()
         this.setstate("listening")

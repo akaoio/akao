@@ -2,14 +2,20 @@ import { css } from "/core/UI.js"
 
 export const styles = css`
 	:host {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space);
 
 		#status {
-			margin: 0;
 			white-space: pre-wrap;
 			overflow-wrap: anywhere;
-			font-size: 0.85rem;
-			opacity: 0.6;
+			text-align: center;
+		}
+
+		ui-visualizer {
+			aspect-ratio: 1/1;
+			width: min(100%, 10rem);
+			align-self: center;
 		}
 	}
 `

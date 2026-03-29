@@ -28,7 +28,6 @@ export class AUTHENTICATE extends HTMLElement {
 
     connectedCallback() {
         this.$wave = this.shadowRoot.querySelector("#wave")
-        this.$vis = this.shadowRoot.querySelector("#vis")
         this.$requestbtn = this.shadowRoot.querySelector("#request-btn")
         this.$stopbtn = this.shadowRoot.querySelector("#stop-btn")
         this.$passkeybtn = this.shadowRoot.querySelector("#passkey-btn")
@@ -41,8 +40,7 @@ export class AUTHENTICATE extends HTMLElement {
             () => this.$requestbtn.removeEventListener("click", this.onrequestbtn),
             () => this.$stopbtn.removeEventListener("click", this.onstopbtn),
             () => this.$passkeybtn.removeEventListener("click", this.onpasskeybtn),
-            this.$wave.events.on("message", this.onwave),
-            this.$wave.events.on("analyser", (e) => this.$vis?.setanalyser(e.detail?.analyser ?? null))
+            this.$wave.events.on("message", this.onwave)
         )
         this.setstate("neutral")
         this.initpair()
