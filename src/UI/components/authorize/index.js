@@ -29,16 +29,17 @@ export class AUTHORIZE extends HTMLElement {
         this.$grant = this.shadowRoot.querySelector("#grant")
         this.$deny = this.shadowRoot.querySelector("#deny")
         this.$stop = this.shadowRoot.querySelector("#stop")
+        this.$dialog = this.$modal.shadowRoot?.querySelector("dialog")
         this.$authorize.addEventListener("click", this.toggle)
         this.$grant.addEventListener("click", this.grant)
         this.$deny.addEventListener("click", this.deny)
         this.$stop.addEventListener("click", this.stop)
-        this.$modal.dialog?.addEventListener("close", this.onclose)
+        this.$dialog?.addEventListener("close", this.onclose)
         this.subscriptions.push(
             () => this.$deny.removeEventListener("click", this.deny),
             () => this.$grant.removeEventListener("click", this.grant),
             () => this.$stop.removeEventListener("click", this.stop),
-            () => this.$modal.dialog?.removeEventListener("close", this.onclose),
+            () => this.$dialog?.removeEventListener("close", this.onclose),
             this.$wave.events.on("message", this.wave),
             this.states.on("state", this.render)
         )
@@ -73,7 +74,7 @@ export class AUTHORIZE extends HTMLElement {
         await this.$wave.send({ ":": "!>" })
         this.pending = null
         this.states.set({ state: "listening" })
-        if (this.$modal.dialog?.open) this.$wave.listen()
+        if (this.$dialog?.open) this.$wave.listen()
     }
 
     stop() {
@@ -97,13 +98,13 @@ export class AUTHORIZE extends HTMLElement {
         await this.$wave.send(payload)
         this.pending = null
         this.states.set({ state: "listening" })
-        if (this.$modal.dialog?.open) this.$wave.listen()
+        if (this.$dialog?.open) this.$wave.listen()
     }
 
     toggle() {
         const check = Elements.Access?.checkpoint()
         if (!check) return
-        if (!this.$modal.dialog?.open) this.$wave.listen()
+        if (!this.$dialog?.open) this.$wave.listen()
         this.$modal.toggleModal()
     }
 

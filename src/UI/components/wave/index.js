@@ -119,10 +119,11 @@ export class WAVE extends HTMLElement {
         })
 
         this.source = context.createMediaStreamSource(this.stream)
-        this.processor = context.createScriptProcessor(1024, 1, 1)
+        await context.audioWorklet.addModule("/UI/components/wave/worklet.js")
+        this.processor = new AudioWorkletNode(context, "audio-capture")
+        this.processor.port.onmessage = (e) => this.onaudio(e.data)
         this.sink = context.createGain()
         this.sink.gain.value = 0
-        this.processor.onaudioprocess = this.onaudio
         this.source.connect(this.processor)
         this.processor.connect(this.sink)
         this.sink.connect(context.destination)
@@ -152,7 +153,7 @@ export class WAVE extends HTMLElement {
         try { this.activesource?.stop() } catch {}
         this.activesource = null
         if (this.processor) {
-            this.processor.onaudioprocess = null
+            this.processor.port.onmessage = null
             this.processor.disconnect()
         }
         if (this.source) this.source.disconnect()
@@ -372,10 +373,9 @@ export class WAVE extends HTMLElement {
         }
     }
 
-    async onaudio(event) {
+    async onaudio(input) {
         if (!this.running) return
         if (this.micTemporarilyDisabled) return   // playing — keep mic on but skip decode
-        const input = event?.inputBuffer?.getChannelData?.(0)
         if (!input?.length) return
         const bytes = this.tobytes(input)
         this.audioBacklog.push(bytes)

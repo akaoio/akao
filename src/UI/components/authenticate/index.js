@@ -124,6 +124,7 @@ export class AUTHENTICATE extends HTMLElement {
 
     render() {
         const method = this.states.get("method")
+        if (method !== "wave") this.stop()
         this.shadowRoot.querySelector("#methods-screen").hidden = method !== null
         this.shadowRoot.querySelector("#passkey-screen").hidden = method !== "passkey"
         this.shadowRoot.querySelector("#wave-screen").hidden = method !== "wave"
