@@ -5,6 +5,8 @@ import { wave } from "/core/Access.js"
 import WaveAuth from "./wave.js"
 import signinWithPasskey from "./passkey.js"
 import States from "/core/States.js"
+import { Context } from "/core/Context.js"
+import { notify } from "/core/Utils/browser.js"
 
 export class AUTHENTICATE extends HTMLElement {
     constructor() {
@@ -30,7 +32,6 @@ export class AUTHENTICATE extends HTMLElement {
         this.$requestbtn = this.shadowRoot.querySelector("#request-btn")
         this.$stopbtn = this.shadowRoot.querySelector("#stop-btn")
         this.$epub = this.shadowRoot.querySelector("#epub")
-        this.$msg = this.shadowRoot.querySelector("#msg")
         this.$requestbtn.addEventListener("click", this.onrequestbtn)
         this.$stopbtn.addEventListener("click", this.onstopbtn)
         this.shadowRoot.querySelector("#passkey").addEventListener("click", this.passkey)
@@ -67,7 +68,6 @@ export class AUTHENTICATE extends HTMLElement {
         this.state = state
         this.$requestbtn.hidden = state !== "neutral"
         this.$stopbtn.hidden = state === "neutral"
-        if (this.$msg) this.$msg.textContent = ""
     }
 
     done(response) {
@@ -79,14 +79,14 @@ export class AUTHENTICATE extends HTMLElement {
         const result = await this.waveauth.handle(parsed)
         if (!result) return
         if (result.type === "deny") {
-            if (this.$msg) this.$msg.textContent = "Access denied"
+            notify({ content: Context.get(["dictionary", "accessDenied"]) })
             return
         }
         if (result.type === "grant") {
             this.stop()
             wave({ seed: result.seed })
                 .then((response) => this.done(response))
-                .catch((error) => console.log(error))
+                .catch(() => {})
         }
     }
 
@@ -94,7 +94,7 @@ export class AUTHENTICATE extends HTMLElement {
         this.setstate("listening")
         this.waveauth.request(this.$wave).catch((error) => {
             this.setstate("neutral")
-            console.error(error)
+            if (error?.message) notify({ content: error.message })
         })
     }
 

@@ -110,7 +110,6 @@ export class AUTHORIZE extends HTMLElement {
 
     render() {
         const state = this.states.get("state")
-        console.log("Authorize state:", state)
         this.$grant.hidden = state !== "confirm"
         this.$deny.hidden = state !== "confirm"
         this.$stop.hidden = state !== "sending"
