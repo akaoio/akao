@@ -9,7 +9,7 @@ export class ICON extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["data-icon"]
+        return ["data-icon", "class"]
     }
 
     connectedCallback() {
@@ -18,11 +18,14 @@ export class ICON extends HTMLElement {
     }
 
     attributeChangedCallback(name, last, value) {
-        if (name !== "data-icon") return
+        if (!["data-icon", "class"].includes(name) || last === value) return
         this.render()
     }
 
     render() {
+        const button = this.shadowRoot.querySelector("button.icon")
+        if (this.classList.contains("active")) button.classList.add("active")
+        else button.classList.remove("active")
         let src = this.dataset.icon
         const svg = this.shadowRoot.querySelector("ui-svg")
         if (src) {

@@ -16,11 +16,6 @@ export const styles = css`
             flex-direction: column;
             gap: var(--space);
             width: 100%;
-
-            ui-visualizer {
-                width: min(100%, 10rem);
-                align-self: center;
-            }
         }
 
         #confirm {
@@ -28,20 +23,17 @@ export const styles = css`
             flex-direction: column;
             gap: var(--space);
             width: 100%;
+        }
 
-            #note {
+        .wave {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space);
+
+            #epub {
                 text-align: center;
                 font-family: monospace;
-                font-size: 0.9em;
-            }
-
-            .actions {
-                display: flex;
-                gap: var(--space);
-
-                ui-button {
-                    flex: 1;
-                }
+                color: var(--color-accent);
             }
         }
     }

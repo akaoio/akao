@@ -22,7 +22,7 @@ export const styles = css`
             padding: 0;
             cursor: pointer;
             transition: var(--speed) ease-in-out;
-            &:hover {
+            &:hover, &.active {
                 background: var(--background-inverted);
                 color: var(--color-inverted);
             }

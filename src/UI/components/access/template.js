@@ -21,8 +21,6 @@ export const template = html`
             </div>
         </main>
         <main id="signin-screen">
-            <h3><ui-context data-key="dictionary.signin" /></h3>
-            <p><ui-context data-key="dictionary.pleaseChooseYourAuthenticationMethod" /></p>
             <ui-authenticate id="auth" />
         </main>
         <main id="signup-screen">
@@ -34,9 +32,6 @@ export const template = html`
                     <ui-button class="full" data-left="check-lg" id="confirm">
                         <ui-context data-key="dictionary.confirm" />
                     </ui-button>
-                    <ui-button class="full" data-left="arrow-left" id="back">
-                        <ui-context data-key="dictionary.back" />
-                    </ui-button>
                 </div>
             </form>
         </main>
@@ -45,6 +40,7 @@ export const template = html`
                 <ui-button class="full" id="sign"><ui-context data-key="dictionary.sign" /></ui-button>
             </div>
         </main>
+        <ui-icon hidden slot="footer" class="icon active" data-icon="arrow-left" id="back" />
     </ui-modal>
 `
 export default template

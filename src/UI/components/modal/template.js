@@ -14,8 +14,8 @@ export const template = html`
                 <slot></slot>
             </section>
             <footer>
-                <span class="icon close"></span>
                 <slot name="footer"></slot>
+                <span class="icon close"></span>
             </footer>
         </div>
     </dialog>

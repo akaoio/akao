@@ -20,23 +20,28 @@ export class ACCESS extends HTMLElement {
         this.signup = this.signup.bind(this)
         this.ondone = this.ondone.bind(this)
         this.openWaveSignin = this.openWaveSignin.bind(this)
+        this.onmodalclose = this.onmodalclose.bind(this)
     }
 
     connectedCallback() {
         // Assign to Elements only after component is fully connected and modal is initialized
         Elements.Access = this
         this.modal = this.shadowRoot.querySelector("ui-modal")
+        this.$dialog = this.modal.shadowRoot?.querySelector("dialog")
         this.form = this.shadowRoot.querySelector("#signup-form")
         this.auth = this.shadowRoot.querySelector("#auth")
+        this.$back = this.shadowRoot.querySelector("#back")
+        this.$back.addEventListener("click", this.unauthenticated)
         this.shadowRoot.querySelector("#signup").addEventListener("click", this.signupScreen)
-        this.shadowRoot.querySelector("#back").addEventListener("click", this.unauthenticated)
         this.shadowRoot.querySelector("#confirm").addEventListener("click", this.signup)
         this.shadowRoot.querySelector("#signin").addEventListener("click", this.signinScreen)
+        this.$dialog?.addEventListener("close", this.onmodalclose)
         this.subscriptions.push(
+            () => this.$back.removeEventListener("click", this.unauthenticated),
             () => this.shadowRoot.querySelector("#signup").removeEventListener("click", this.signupScreen),
-            () => this.shadowRoot.querySelector("#back").removeEventListener("click", this.unauthenticated),
             () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signup),
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signinScreen),
+            () => this.$dialog?.removeEventListener("close", this.onmodalclose),
             this.auth?.events?.on?.("done", this.ondone)
         )
         this.form.querySelectorAll("input[type='text']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
@@ -47,11 +52,16 @@ export class ACCESS extends HTMLElement {
         this.subscriptions.forEach((off) => off())
     }
 
+    onmodalclose() {
+        this.auth?.stop?.()
+        this.auth?.reset?.()
+        this.unauthenticated()
+    }
+
     next(response) {
         if (response.error) return console.error(response)
         this.form.reset()
         this.modal.close()
-        this.auth?.stop?.()
     }
 
     ondone(event) {
@@ -73,14 +83,20 @@ export class ACCESS extends HTMLElement {
     signupScreen() {
         this.form.reset()
         this.show("signup-screen")
+        this.$back.hidden = false
     }
 
     signinScreen() {
+        this.auth?.reset?.()
         this.show("signin-screen")
+        this.$back.hidden = false
     }
 
     unauthenticated() {
+        this.auth?.stop?.()
+        this.auth?.reset?.()
         this.show("unauthenticated-screen")
+        this.$back.hidden = true
     }
 
     signup() {

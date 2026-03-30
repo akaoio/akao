@@ -1,44 +1,49 @@
+import { Elements } from "/core/Stores.js"
 import { render } from "/core/UI.js"
 import template from "./template.js"
-import Events from "/core/Events.js"
+import States from "/core/States.js"
 import { Access } from "/core/Access.js"
-
-function shortenepub(epub) {
-    if (!epub || epub.length <= 12) return epub || ""
-    return `${epub.slice(0, 5)}...${epub.slice(-5)}`
-}
 
 export class AUTHORIZE extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.events = new Events(this)
         this.subscriptions = []
-        this.state = "listening"
+        this.states = new States({ state: "listening" })
         this.pending = null
-        this.onwave = this.onwave.bind(this)
-        this.ondeny = this.ondeny.bind(this)
-        this.ongrant = this.ongrant.bind(this)
+        this.render = this.render.bind(this)
+        this.toggle = this.toggle.bind(this)
+        this.wave = this.wave.bind(this)
+        this.grant = this.grant.bind(this)
+        this.deny = this.deny.bind(this)
+        this.stop = this.stop.bind(this)
+        this.onclose = this.onclose.bind(this)
     }
 
     connectedCallback() {
-        this.$wave = this.shadowRoot.querySelector("#wave")
-        this.$vis = this.shadowRoot.querySelector("#vis")
-        this.$confirm = this.shadowRoot.querySelector("#confirm")
-        this.$note = this.shadowRoot.querySelector("#note")
-        this.$denybtn = this.shadowRoot.querySelector("#deny-btn")
-        this.$grantbtn = this.shadowRoot.querySelector("#grant-btn")
-        this.$denybtn.addEventListener("click", this.ondeny)
-        this.$grantbtn.addEventListener("click", this.ongrant)
+        this.$authorize = this.shadowRoot.querySelector("#authorize")
+        this.$modal = this.shadowRoot.querySelector("ui-modal")
+        this.$wave = this.shadowRoot.querySelector("ui-wave")
+        this.$epub = this.shadowRoot.querySelector("#epub")
+        this.$grant = this.shadowRoot.querySelector("#grant")
+        this.$deny = this.shadowRoot.querySelector("#deny")
+        this.$stop = this.shadowRoot.querySelector("#stop")
+        this.$dialog = this.$modal.shadowRoot?.querySelector("dialog")
+        this.$authorize.addEventListener("click", this.toggle)
+        this.$grant.addEventListener("click", this.grant)
+        this.$deny.addEventListener("click", this.deny)
+        this.$stop.addEventListener("click", this.stop)
+        this.$dialog?.addEventListener("close", this.onclose)
         this.subscriptions.push(
-            () => this.$denybtn.removeEventListener("click", this.ondeny),
-            () => this.$grantbtn.removeEventListener("click", this.ongrant),
-            this.$wave.events.on("message", this.onwave),
-            this.$wave.events.on("analyser", (e) => this.$vis?.setanalyser(e.detail?.analyser ?? null))
+            () => this.$deny.removeEventListener("click", this.deny),
+            () => this.$grant.removeEventListener("click", this.grant),
+            () => this.$stop.removeEventListener("click", this.stop),
+            () => this.$dialog?.removeEventListener("close", this.onclose),
+            this.$wave.events.on("message", this.wave),
+            this.states.on("state", this.render)
         )
-        this.$wave.listen()
-        this.setstate("listening")
+        this.render()
     }
 
     disconnectedCallback() {
@@ -46,44 +51,69 @@ export class AUTHORIZE extends HTMLElement {
         this.$wave?.stop?.()
     }
 
-    setstate(state) {
-        this.state = state
-        this.$confirm.hidden = state !== "confirming"
+    onclose() {
+        this.$wave?.stop?.()
+        this.pending = null
+        this.states.set({ state: "listening" })
     }
 
-    async onwave(event) {
+    async wave(event) {
         const { parsed } = event?.detail || {}
         if (!parsed || typeof parsed !== "object") return
         if (parsed[":"] !== ">" || !parsed["~"]) return
-        if (this.state !== "listening") return
+        if (this.states.get("state") !== "listening") return
         this.pending = parsed
-        this.$note.textContent = shortenepub(parsed["~"])
-        this.setstate("confirming")
+        const epub = parsed["~"]
+        this.$epub.textContent = !epub || epub.length <= 12 ? epub || "" : `${epub.slice(0, 5)}...${epub.slice(-5)}`
+        this.states.set({ state: "confirm" })
     }
 
-    async ondeny() {
+    async deny() {
         if (!this.$wave) return
+        this.states.set({ state: "sending" })
         await this.$wave.send({ ":": "!>" })
         this.pending = null
-        this.setstate("listening")
+        this.states.set({ state: "listening" })
+        if (this.$dialog?.open) this.$wave.listen()
     }
 
-    async ongrant() {
+    stop() {
+        this.$wave?.stop?.()
+        this.pending = null
+        this.states.set({ state: "listening" })
+    }
+
+    async grant() {
         if (!this.pending) return
         const { sea } = globalThis
         const pair = Access.get("pair")
         const seed = Access.get("seed")
         if (!Access.get("authenticated") || !pair || !seed || !sea?.secret || !sea?.encrypt) return
         const secret = await sea.secret(this.pending["~"], pair)
-        const encrypted = await sea.encrypt(seed, secret, null, { raw: true })
-        await this.$wave.send({
-            "~": pair.epub,
-            "!": encrypted.ct,
-            "@": encrypted.iv,
-            "#": encrypted.s
-        })
+        // Uint8Array does not survive JSON serialization — convert to plain Array first
+        const seedData = seed instanceof Uint8Array ? Array.from(seed) : seed
+        const encrypted = await sea.encrypt(seedData, secret, null, { raw: true })
+        const payload = { "~": pair.epub, "!": encrypted.ct, "@": encrypted.iv, "#": encrypted.s }
+        this.states.set({ state: "sending" })
+        await this.$wave.send(payload)
         this.pending = null
-        this.setstate("listening")
+        this.states.set({ state: "listening" })
+        if (this.$dialog?.open) this.$wave.listen()
+    }
+
+    toggle() {
+        const check = Elements.Access?.checkpoint()
+        if (!check) return
+        if (!this.$dialog?.open) this.$wave.listen()
+        this.$modal.toggleModal()
+    }
+
+    render() {
+        const state = this.states.get("state")
+        console.log("Authorize state:", state)
+        this.$grant.hidden = state !== "confirm"
+        this.$deny.hidden = state !== "confirm"
+        this.$stop.hidden = state !== "sending"
     }
 }
 

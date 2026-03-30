@@ -112,6 +112,7 @@ export const styles = css`
         --icon-sm: var(--unit-5);
         --icon-md: var(--unit-6);
         --icon-lg: var(--unit-7);
+        --icon-xlg: var(--unit-10);
         --icon: var(--icon-md);
 
         /* Icon Masks — square viewBox, default direction left; rotate() to repoint */

@@ -24,7 +24,7 @@ export const template = html`
         <section class="catalog">
             <div class="section-header">
                 <h2>Featured</h2>
-                <a is="ui-a" data-to="/inventory">View all →</a>
+                <a is="ui-a" data-to="/">View all →</a>
             </div>
             <ui-items data-columns="4" data-start="1" data-end="1" />
         </section>
@@ -32,7 +32,7 @@ export const template = html`
         <section class="catalog">
             <div class="section-header">
                 <h2>New Arrivals</h2>
-                <a is="ui-a" data-to="/inventory">View all →</a>
+                <a is="ui-a" data-to="/">View all →</a>
             </div>
             <ui-items data-columns="5" data-start="2" data-end="3" />
         </section>

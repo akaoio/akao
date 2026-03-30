@@ -3,32 +3,48 @@ import buttons from "/css/elements/buttons.css.js"
 
 export const styles = css`
     ${buttons}
+    [hidden] { display: none !important }
     :host {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         gap: var(--space);
+        position: relative;
 
-        .wave-section {
+        #methods-screen {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space);
+            div:first-child {
+                grid-column: 1 / -1;
+                text-align: center;
+            }
+            div:nth-child(2), div:nth-child(3) {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--space);
+            }
+        }
+
+        #passkey-screen, #wave-screen {
+            width: 100%;
             display: flex;
             flex-direction: column;
             gap: var(--space);
+            align-items: center;
+        }
 
-            ui-visualizer {
-                width: min(100%, 10rem);
-                align-self: center;
-            }
-
-            .epub {
+        #wave-screen {
+            #epub {
                 text-align: center;
                 font-family: monospace;
-                font-size: 0.85em;
-                opacity: 0.7;
+                color: var(--color-accent);
             }
         }
 
         .msg {
             text-align: center;
-            font-size: 0.9em;
         }
     }
 `
