@@ -28,13 +28,14 @@ export class ACCESS extends HTMLElement {
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.form = this.shadowRoot.querySelector("#signup-form")
         this.auth = this.shadowRoot.querySelector("#auth")
+        this.$back = this.shadowRoot.querySelector("#back")
+        this.$back.addEventListener("click", this.unauthenticated)
         this.shadowRoot.querySelector("#signup").addEventListener("click", this.signupScreen)
-        this.shadowRoot.querySelector("#back").addEventListener("click", this.unauthenticated)
         this.shadowRoot.querySelector("#confirm").addEventListener("click", this.signup)
         this.shadowRoot.querySelector("#signin").addEventListener("click", this.signinScreen)
         this.subscriptions.push(
+            () => this.$back.removeEventListener("click", this.unauthenticated),
             () => this.shadowRoot.querySelector("#signup").removeEventListener("click", this.signupScreen),
-            () => this.shadowRoot.querySelector("#back").removeEventListener("click", this.unauthenticated),
             () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signup),
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signinScreen),
             this.auth?.events?.on?.("done", this.ondone)
@@ -73,14 +74,18 @@ export class ACCESS extends HTMLElement {
     signupScreen() {
         this.form.reset()
         this.show("signup-screen")
+        this.$back.hidden = false
     }
 
     signinScreen() {
+        this.auth?.reset?.()
         this.show("signin-screen")
+        this.$back.hidden = false
     }
 
     unauthenticated() {
         this.show("unauthenticated-screen")
+        this.$back.hidden = true
     }
 
     signup() {

@@ -26,6 +26,7 @@ export class CONTEXT extends HTMLElement {
     connectedCallback() {
         this.subscriptions.push(this.states.on("key", this.render))
         this.on()
+        this.render()
     }
 
     disconnectedCallback() {

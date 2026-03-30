@@ -25,6 +25,7 @@ export class WAVE extends HTMLElement {
         this.running = false
         this.sending = false
         this.last = ""
+        this.activesource = null
         this.ackcb = null
         this.nacktimer = null
         this.nackchannel = null
@@ -148,6 +149,8 @@ export class WAVE extends HTMLElement {
         this.sending = false
         this.audioBacklog = []
         this.audioBacklogBytes = 0
+        try { this.activesource?.stop() } catch {}
+        this.activesource = null
         if (this.processor) {
             this.processor.onaudioprocess = null
             this.processor.disconnect()
@@ -416,7 +419,9 @@ export class WAVE extends HTMLElement {
         this.micTemporarilyDisabled = true     // suppress decode; mic track stays enabled
         this.events.emit("analyser", { analyser: mergeAnalyser })
         source.start()
+        this.activesource = source
         await new Promise((resolve) => { source.onended = resolve })
+        this.activesource = null
         if (this.source) this.source.disconnect(mergeAnalyser)
         this.audioBacklog = []                 // discard ggwave's own reflected audio
         this.audioBacklogBytes = 0

@@ -17,6 +17,9 @@ export const styles = css`
     :host([data-size="lg"]) {
         --icon: var(--icon-lg);
     }
+    :host([data-size="xlg"]) {
+        --icon: var(--icon-xlg);
+    }
 `
 
 export default styles

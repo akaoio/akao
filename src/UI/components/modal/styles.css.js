@@ -70,6 +70,8 @@ export const styles = css`
                 slot[name="header"] {
                     position: absolute;
                     right: var(--space);
+                    display: flex;
+                    gap: var(--space);
                 }
             }
 
@@ -78,9 +80,10 @@ export const styles = css`
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                height: calc(var(--footer-size) * 0.5);
+                transform: translateY(-50%);
+                height: var(--footer-size);
+                gap: var(--space);
                 .close {
-                    top: -50%;
                     background: var(--background-inverted);
                     &::before,
                     &::after {

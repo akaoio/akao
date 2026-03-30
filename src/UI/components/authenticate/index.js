@@ -4,11 +4,7 @@ import Events from "/core/Events.js"
 import { wave } from "/core/Access.js"
 import WaveAuth from "./wave.js"
 import signinWithPasskey from "./passkey.js"
-
-function shortenepub(epub) {
-    if (!epub || epub.length <= 12) return epub || ""
-    return `${epub.slice(0, 5)}...${epub.slice(-5)}`
-}
+import States from "/core/States.js"
 
 export class AUTHENTICATE extends HTMLElement {
     constructor() {
@@ -18,29 +14,34 @@ export class AUTHENTICATE extends HTMLElement {
         this.events = new Events(this)
         this.subscriptions = []
         this.waveauth = new WaveAuth()
+        this.states = new States({ method: null })
         this.state = "neutral"
         this.onwave = this.onwave.bind(this)
         this.onrequestbtn = this.onrequestbtn.bind(this)
         this.onstopbtn = this.onstopbtn.bind(this)
-        this.onpasskeybtn = this.onpasskeybtn.bind(this)
+        this.passkey = this.passkey.bind(this)
         this.stop = this.stop.bind(this)
+        this.render = this.render.bind(this)
+        this.wave = this.wave.bind(this)
     }
 
     connectedCallback() {
-        this.$wave = this.shadowRoot.querySelector("#wave")
+        this.$wave = this.shadowRoot.querySelector("ui-wave")
         this.$requestbtn = this.shadowRoot.querySelector("#request-btn")
         this.$stopbtn = this.shadowRoot.querySelector("#stop-btn")
-        this.$passkeybtn = this.shadowRoot.querySelector("#passkey-btn")
         this.$epub = this.shadowRoot.querySelector("#epub")
         this.$msg = this.shadowRoot.querySelector("#msg")
         this.$requestbtn.addEventListener("click", this.onrequestbtn)
         this.$stopbtn.addEventListener("click", this.onstopbtn)
-        this.$passkeybtn.addEventListener("click", this.onpasskeybtn)
+        this.shadowRoot.querySelector("#passkey").addEventListener("click", this.passkey)
+        this.shadowRoot.querySelector("#wave").addEventListener("click", this.wave)
         this.subscriptions.push(
             () => this.$requestbtn.removeEventListener("click", this.onrequestbtn),
             () => this.$stopbtn.removeEventListener("click", this.onstopbtn),
-            () => this.$passkeybtn.removeEventListener("click", this.onpasskeybtn),
-            this.$wave.events.on("message", this.onwave)
+            () => this.shadowRoot.querySelector("#passkey").removeEventListener("click", this.passkey),
+            () => this.shadowRoot.querySelector("#wave").removeEventListener("click", this.wave),
+            this.$wave.events.on("message", this.onwave),
+            this.states.on("method", this.render)
         )
         this.setstate("neutral")
         this.initpair()
@@ -56,7 +57,10 @@ export class AUTHENTICATE extends HTMLElement {
         if (!sea?.pair) return
         const pair = await sea.pair()
         this.waveauth.session = pair
-        if (this.$epub) this.$epub.textContent = shortenepub(pair.epub)
+        if (this.$epub) {
+            const epub = pair.epub
+            this.$epub.textContent = !epub || epub.length <= 12 ? epub || "" : `${epub.slice(0, 5)}...${epub.slice(-5)}`
+        }
     }
 
     setstate(state) {
@@ -98,8 +102,13 @@ export class AUTHENTICATE extends HTMLElement {
         this.stop()
     }
 
-    onpasskeybtn() {
+    passkey() {
+        this.states.set({ method: "passkey" })
         signinWithPasskey().then((response) => this.done(response))
+    }
+
+    wave() {
+        this.states.set({ method: "wave" })
     }
 
     stop() {
@@ -107,6 +116,17 @@ export class AUTHENTICATE extends HTMLElement {
         this.$wave?.stop?.()
         this.setstate("neutral")
         this.initpair()
+    }
+
+    reset() {
+        this.states.set({ method: null })
+    }
+
+    render() {
+        const method = this.states.get("method")
+        this.shadowRoot.querySelector("#methods-screen").hidden = method !== null
+        this.shadowRoot.querySelector("#passkey-screen").hidden = method !== "passkey"
+        this.shadowRoot.querySelector("#wave-screen").hidden = method !== "wave"
     }
 }
 
