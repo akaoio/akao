@@ -25,6 +25,9 @@ export class WAVE extends HTMLElement {
         this.running = false
         this.sending = false
         this.last = ""
+        this.ackcb = null
+        this.nacktimer = null
+        this.nackchannel = null
         this.onaudio = this.onaudio.bind(this)
         this.stop = this.stop.bind(this)
         this.listen = this.listen.bind(this)
@@ -65,7 +68,7 @@ export class WAVE extends HTMLElement {
                 sampleRateInp: context.sampleRate,
                 sampleRateOut: context.sampleRate,
                 samplesPerFrame: 1024,
-                volume: 25
+                volume: 50
             }
         })
         return context
@@ -73,7 +76,9 @@ export class WAVE extends HTMLElement {
 
     async listen() {
         if (this.running) return true
+        this.running = true  // claim slot early — prevents concurrent double-init
         if (!navigator?.mediaDevices?.getUserMedia) {
+            this.running = false
             this.setstatus("Microphone is not supported in this browser")
             return false
         }
@@ -130,7 +135,6 @@ export class WAVE extends HTMLElement {
         this.source.connect(this.micAnalyser)
         this.micAnalyser.connect(micTap)
         micTap.connect(context.destination)
-        this.running = true
         this.events.emit("stream", { stream: this.stream })
         this.events.emit("analyser", { analyser: this.micAnalyser })
         this.shadowRoot.querySelector("ui-visualizer")?.setanalyser(this.micAnalyser)
@@ -156,6 +160,10 @@ export class WAVE extends HTMLElement {
         this.sink = null
         this.stream = null
         this.chunks.clear()
+        if (this.nacktimer) clearTimeout(this.nacktimer)
+        this.nacktimer = null
+        this.nackchannel = null
+        this.ackcb = null
         this.micAnalyser?.disconnect()
         this.micAnalyser = null
         this.events.emit("stream", { stream: null })
@@ -165,6 +173,40 @@ export class WAVE extends HTMLElement {
 
     sleep(ms = 0) {
         return new Promise((resolve) => setTimeout(resolve, ms))
+    }
+
+    rndchannel() {
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let result = ""
+        const arr = crypto.getRandomValues(new Uint8Array(5))
+        for (const b of arr) result += chars[b % chars.length]
+        return result
+    }
+
+    // Wait for an ACK or NACK matching expectedIdx on channel.
+    // Stale ACKs for other indices are ignored; NACK (-1) always resolves immediately.
+    waitack(channel, expectedIdx, timeoutMs = 6000) {
+        return new Promise((resolve) => {
+            const timer = setTimeout(() => { this.ackcb = null; resolve(null) }, timeoutMs)
+            this.ackcb = (parsed) => {
+                if (parsed["."] !== channel) return
+                if (typeof expectedIdx === "number" && parsed["*"] !== expectedIdx && parsed["*"] !== -1) return
+                clearTimeout(timer)
+                this.ackcb = null
+                resolve(parsed)
+            }
+        })
+    }
+
+    // Schedule a NACK on channel if no chunk arrives within delay ms.
+    schedulenack(channel, delay = 14000) {
+        if (this.nacktimer) clearTimeout(this.nacktimer)
+        this.nacktimer = setTimeout(async () => {
+            this.nacktimer = null
+            if (this.nackchannel !== channel) return
+            if (this.pendingDecode || this.micTemporarilyDisabled) return
+            await this.frame(JSON.stringify({ "*": -1, ".": channel })).catch(() => {})
+        }, delay)
     }
 
     mic(enabled) {
@@ -191,14 +233,48 @@ export class WAVE extends HTMLElement {
     }
 
     async chunked(text) {
-        const total = Math.ceil(text.length / this.maxsize)
-        for (let index = 0; index < total; index++) {
-            const from = index * this.maxsize
-            const part = text.slice(from, from + this.maxsize)
-            const last = index === total - 1
-            const envelope = JSON.stringify({ "&": last ? `${index}!` : index, ":": part })
-            await this.frame(envelope)
-            this.setstatus(`Broadcasting chunk ${index + 1}/${total}`)
+        // Pre-compute all envelopes once; channel ties all chunks of this broadcast
+        // together so consumer can isolate parallel/echo transmissions by channel key.
+        const channel = this.rndchannel()
+        const envelopes = []
+        let start = 0
+        let index = 0
+        while (start < text.length) {
+            let end = Math.min(start + this.maxsize, text.length)
+            let envelope
+            // Shrink slice until serialized envelope fits within maxsize.
+            // JSON.stringify escapes " and \ inside the content, inflating size beyond
+            // the raw content length — compensate by measuring the actual envelope.
+            while (end > start) {
+                const part = text.slice(start, end)
+                const isLast = end === text.length
+                envelope = JSON.stringify({ "&": isLast ? `${index}!` : index, ":": part, ".": channel })
+                if (envelope.length <= this.maxsize) break
+                end -= (envelope.length - this.maxsize)
+            }
+            envelopes.push(envelope)
+            start = end
+            index++
+        }
+        // Announce ready so receiver arms its NACK timer for this channel
+        this.sending = true
+        try { await this.frame(JSON.stringify({ "&": "^", ".": channel })) }
+        finally { this.sending = false }
+        await this.sleep(300)
+        // ACK-driven: send each chunk, then wait for receiver ACK.
+        // sending=false during waitack so pump() can decode incoming audio.
+        // Retry up to 2 extra times on NACK (-1) or timeout (null).
+        for (let i = 0; i < envelopes.length; i++) {
+            let acked = false
+            for (let attempt = 0; attempt < 3 && !acked; attempt++) {
+                if (i > 0 || attempt > 0) await this.sleep(attempt > 0 ? 400 : 600)
+                this.sending = true
+                try { await this.frame(envelopes[i]) }
+                finally { this.sending = false }
+                const ack = await this.waitack(channel, i, 6000)
+                if (ack !== null && ack["*"] === i) acked = true
+            }
+            this.setstatus(acked ? "Broadcasting" : `Retried #${i}`)
         }
     }
 
@@ -206,29 +282,50 @@ export class WAVE extends HTMLElement {
         this.cleanup()
         const raw = chunk["&"]
         const part = chunk[":"]
+        // Channel isolates parallel/echo broadcasts; fall back to "_" for legacy messages
+        const channel = typeof chunk["."] === "string" ? chunk["."] : "_"
         if (typeof part !== "string") return
         const last = typeof raw === "string" && raw.endsWith("!")
         const index = last ? parseInt(raw, 10) : Number(raw)
         if (!Number.isInteger(index) || index < 0) return
+        // Cancel pending NACK — we received something — then ACK this chunk back to sender
+        if (channel !== "_") {
+            if (this.nackchannel === channel && this.nacktimer) { clearTimeout(this.nacktimer); this.nacktimer = null }
+            await this.frame(JSON.stringify({ "*": index, ".": channel })).catch(() => {})
+        }
         if (index === 0) {
-            this.chunks.set("_", { parts: [part], updatedAt: Date.now() })
+            const existing = this.chunks.get(channel)
+            if (existing?.parts[0] === part) {
+                existing.updatedAt = Date.now()
+            } else {
+                this.chunks.set(channel, { parts: [part], total: null, updatedAt: Date.now() })
+            }
             if (last) {
-                this.chunks.delete("_")
+                if (this.nackchannel === channel) this.nackchannel = null
+                this.chunks.delete(channel)
                 await this.handle(part)
+            } else if (channel !== "_") {
+                this.schedulenack(channel)  // expect next chunk
             }
             return
         }
-        const current = this.chunks.get("_")
+        const current = this.chunks.get(channel)
         if (!current) return
-        if (current.parts.length !== index) {
-            this.chunks.delete("_")
-            return
-        }
-        current.parts.push(part)
+        // Gap-tolerant: extend array with null placeholders so a missed chunk in one
+        // pass can be filled by a later pass without losing already-received chunks.
+        while (current.parts.length <= index) current.parts.push(null)
+        if (current.parts[index] === part && current.parts[index] !== null) return  // exact duplicate
+        current.parts[index] = part
         current.updatedAt = Date.now()
-        if (last) {
-            this.chunks.delete("_")
-            await this.handle(current.parts.join(""))
+        if (last) current.total = index + 1
+        // Only assemble once the last chunk is known and every slot is filled
+        if (current.total != null && !current.parts.slice(0, current.total).includes(null)) {
+            const joined = current.parts.slice(0, current.total).join("")
+            if (this.nackchannel === channel) { if (this.nacktimer) clearTimeout(this.nacktimer); this.nacktimer = null; this.nackchannel = null }
+            this.chunks.delete(channel)
+            await this.handle(joined)
+        } else if (channel !== "_") {
+            this.schedulenack(channel)  // expect next chunk
         }
     }
 
@@ -345,9 +442,19 @@ export class WAVE extends HTMLElement {
     async handle(message) {
         if (!message) return
         const parsed = this.parse(message)
-        if (parsed !== null && "&" in parsed) {
-            await this.consume(parsed)
-            return
+        if (parsed !== null) {
+            if (parsed["&"] === "^") {
+                // Ready announcement from sender — arm NACK timer for this channel
+                const ch = parsed["."]
+                if (ch) { this.nackchannel = ch; this.schedulenack(ch) }
+                return
+            }
+            if ("&" in parsed) { return await this.consume(parsed) }
+            if ("*" in parsed) {
+                // ACK or NACK from receiver
+                if (this.ackcb) this.ackcb(parsed)
+                return
+            }
         }
         if (message === this.last) return
         this.last = message

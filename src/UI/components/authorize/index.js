@@ -73,14 +73,13 @@ export class AUTHORIZE extends HTMLElement {
         const seed = Access.get("seed")
         if (!Access.get("authenticated") || !pair || !seed || !sea?.secret || !sea?.encrypt) return
         const secret = await sea.secret(this.pending["~"], pair)
-        const encrypted = await sea.encrypt(seed, secret, null, { raw: true })
-        await this.$wave.send({
-            "~": pair.epub,
-            "!": encrypted.ct,
-            "@": encrypted.iv,
-            "#": encrypted.s
-        })
+        // Uint8Array does not survive JSON serialization — convert to plain Array first
+        const seedData = seed instanceof Uint8Array ? Array.from(seed) : seed
+        const encrypted = await sea.encrypt(seedData, secret, null, { raw: true })
+        const payload = { "~": pair.epub, "!": encrypted.ct, "@": encrypted.iv, "#": encrypted.s }
+        await this.$wave.send(payload)
         this.pending = null
+        this.$wave.stop()
         this.setstate("listening")
     }
 }

@@ -33,12 +33,13 @@ export class WaveAuth {
         if (!parsed || typeof parsed !== "object") return null
         if (parsed[":"] === "!>") return { type: "deny" }
         if (parsed["~"] && parsed["!"] && parsed["@"] && parsed["#"]) {
-            if (!this.session) return null
             const { sea } = globalThis
             if (!sea?.secret || !sea?.decrypt) return null
             const secret = await sea.secret(parsed["~"], this.session)
-            const seed = await sea.decrypt({ ct: parsed["!"], iv: parsed["@"], s: parsed["#"] }, secret)
-            if (!seed) return null
+            const decrypted = await sea.decrypt({ ct: parsed["!"], iv: parsed["@"], s: parsed["#"] }, secret)
+            if (!decrypted) return null
+            // Convert plain Array back to Uint8Array so sea.pair() accepts it
+            const seed = Array.isArray(decrypted) ? new Uint8Array(decrypted) : decrypted
             return { type: "grant", seed }
         }
         return null

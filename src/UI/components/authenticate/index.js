@@ -80,7 +80,9 @@ export class AUTHENTICATE extends HTMLElement {
         }
         if (result.type === "grant") {
             this.stop()
-            wave({ seed: result.seed }).then((response) => this.done(response))
+            wave({ seed: result.seed })
+                .then((response) => this.done(response))
+                .catch((error) => console.log(error))
         }
     }
 
