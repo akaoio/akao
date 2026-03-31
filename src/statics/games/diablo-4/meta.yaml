@@ -1,5 +1,6 @@
 name: Diablo IV
 logo: /statics/games/diablo-4/images/symbol.svg
+hero: /statics/games/diablo-4/images/hero.png
 rarity_order:
   - normal
   - common

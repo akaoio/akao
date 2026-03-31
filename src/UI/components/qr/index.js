@@ -2,6 +2,7 @@ import QR from "/core/QR.js"
 import Events from "/core/Events.js"
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
+import { notify } from "/core/Utils/browser.js"
 
 class $QR extends HTMLElement {
     constructor() {
@@ -75,11 +76,11 @@ class $QR extends HTMLElement {
         this.$cameraCapture = this.camera.events.on("capture", this.capture)
         this.$cameraResume = this.camera.events.on("resume", this.resume)
         this.inspect().then((state) => {
-            if (!state.supported) this.status(null, "Camera is not supported in this browser")
-            else if (!state.hasCamera) this.status(null, "No camera detected on this device")
-            else if (state.permission === "denied") this.status(null, "Camera permission is denied. Please allow camera access in browser settings")
-            else if (state.permission === "granted") this.status("dictionary.cameraReady")
-            else this.status(null, "Press Start to scan and request camera permission")
+            if (!state.supported) this.camera.dataset.status = "dictionary.cameraUnavailable"
+            else if (!state.hasCamera) this.camera.dataset.status = "dictionary.noCameraDetected"
+            else if (state.permission === "denied") this.camera.dataset.status = "dictionary.cameraPermissionDenied"
+            else if (state.permission === "granted") this.camera.dataset.status = "dictionary.cameraReady"
+            else this.camera.dataset.status = "dictionary.cameraPermissionRequired"
         })
     }
 
@@ -100,18 +101,17 @@ class $QR extends HTMLElement {
     }
 
     ready() {
-        console.log("Camera is ready")
-        this.status("dictionary.cameraReadyScanning")
+        this.camera.dataset.status = "dictionary.cameraReadyScanning"
         this.go()
     }
 
     capture() {
-        this.status("dictionary.capturedFrameLocked")
+        this.camera.dataset.status = "dictionary.capturedFrameLocked"
         if (this.scanning) this.scan(true)
     }
 
     resume() {
-        this.status("dictionary.liveCameraResumed")
+        this.camera.dataset.status = "dictionary.liveCameraResumed"
         if (this.scanning) this.schedule(0)
     }
 
@@ -145,22 +145,23 @@ class $QR extends HTMLElement {
         if (this.camera?.stream) return true
         const state = await this.inspect()
         if (!state.supported) {
-            this.status(null, "Camera is not supported in this browser")
+            this.camera.dataset.status = "dictionary.cameraUnavailable"
             return false
         }
         if (!state.hasCamera) {
-            this.status(null, "No camera detected on this device")
+            this.camera.dataset.status = "dictionary.noCameraDetected"
             return false
         }
         if (state.permission === "denied") {
-            this.status(null, "Camera permission is denied. Please allow camera access in browser settings")
+            this.camera.dataset.status = "dictionary.cameraPermissionDenied"
             return false
         }
         try {
             await this.camera?.start?.()
             return true
         } catch (error) {
-            this.status(null, error?.message || "Unable to access camera")
+            if (error?.message) notify({ content: error.message })
+            this.camera.dataset.status = "dictionary.cameraAccessFailed"
             return false
         }
     }
@@ -178,8 +179,8 @@ class $QR extends HTMLElement {
         this.scanning = true
         this.$start.hidden = true
         this.$stop.hidden = false
-        this.status(this.camera?.captured ? "dictionary.scanningCapturedFrame" : "dictionary.scanningLiveFrames")
-        QR.request({method: "configure", params: { alsoTryWithoutScanRegion: true }}).catch((error) => this.status(null, error.message || "Error"))
+        this.camera.dataset.status = this.camera?.captured ? "dictionary.scanningCapturedFrame" : "dictionary.scanningLiveFrames"
+        QR.request({method: "configure", params: { alsoTryWithoutScanRegion: true }}).catch((error) => { if (error?.message) notify({ content: error.message }) })
         this.schedule(0)
     }
 
@@ -191,7 +192,7 @@ class $QR extends HTMLElement {
         if (this.mode === "scan") {
             if (this.$start) this.$start.hidden = false
             if (this.$stop) this.$stop.hidden = true
-            this.status("dictionary.scanningStopped")
+            this.camera.dataset.status = "dictionary.scanningStopped"
         }
     }
 
@@ -199,16 +200,7 @@ class $QR extends HTMLElement {
         if (!this.result) return
         this.result.textContent = ""
         if (this.$clear) this.$clear.hidden = true
-        this.status(this.camera?.captured ? "dictionary.capturedFrameReady" : "dictionary.resultCleared")
-    }
-
-    status(key, fallback) {
-        if (!this.camera) return
-        if (key) this.camera.dataset.status = key
-        else if (fallback) {
-            this.camera.removeAttribute("data-status")
-            this.camera.querySelector("#status").textContent = fallback
-        }
+        this.camera.dataset.status = this.camera?.captured ? "dictionary.capturedFrameReady" : "dictionary.resultCleared"
     }
 
     schedule(delay = 180) {
@@ -235,20 +227,20 @@ class $QR extends HTMLElement {
                         this.result.textContent = response.data
                         if (this.$clear) this.$clear.hidden = false
                     }
-                    this.status(frame.captured ? "dictionary.decodedFromCapturedFrame" : "dictionary.decodedFromLiveFrame")
+                    this.camera.dataset.status = frame.captured ? "dictionary.decodedFromCapturedFrame" : "dictionary.decodedFromLiveFrame"
                     this.events.emit("scan", response, { bubbles: true, composed: true })
                     this.stop()
                     return
                 }
 
-                if (response?.error) this.status(null, response.error)
-                else this.status(frame.captured ? "dictionary.noQrFoundInCapturedFrameYet" : "dictionary.scanningLiveFrames")
+                if (response?.error) notify({ content: response.error })
+                else this.camera.dataset.status = frame.captured ? "dictionary.noQrFoundInCapturedFrameYet" : "dictionary.scanningLiveFrames"
 
                 if (this.scanning) this.schedule(frame.captured ? 500 : 180)
             })
             .catch((error) => {
                 this.pending = false
-                this.status(null, error.message || "Error")
+                if (error?.message) notify({ content: error.message })
                 if (this.scanning) this.schedule(400)
             })
     }

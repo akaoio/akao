@@ -2,6 +2,8 @@ import { render } from "/core/UI.js"
 import template from "./template.js"
 import { Wave } from "/core/Wave.js"
 import Events from "/core/Events.js"
+import { Context } from "/core/Context.js"
+import { notify } from "/core/Utils/browser.js"
 
 export class WAVE extends HTMLElement {
     constructor() {
@@ -44,10 +46,6 @@ export class WAVE extends HTMLElement {
         this.stop()
     }
 
-    setstatus(text) {
-        if (this.status) this.status.textContent = text
-    }
-
     tobytes(floatSamples) {
         const copy = new Float32Array(floatSamples)
         return new Int8Array(copy.buffer)
@@ -55,13 +53,17 @@ export class WAVE extends HTMLElement {
 
     ensurecontext() {
         const AudioEngine = globalThis.AudioContext || globalThis.webkitAudioContext
-        if (!AudioEngine) throw new Error("Web Audio API is not supported in this browser")
+        if (!AudioEngine) {
+            notify({ content: Context.get(["dictionary", "webAudioUnsupported"]) })
+            return null
+        }
         if (!this.audioContext) this.audioContext = new AudioEngine({ sampleRate: 48000 })
         return this.audioContext
     }
 
     async prepare() {
         const context = this.ensurecontext()
+        if (!context) return null
         await Wave.request({
             method: "configure",
             params: {
@@ -80,11 +82,12 @@ export class WAVE extends HTMLElement {
         this.running = true  // claim slot early — prevents concurrent double-init
         if (!navigator?.mediaDevices?.getUserMedia) {
             this.running = false
-            this.setstatus("Microphone is not supported in this browser")
+            notify({ content: Context.get(["dictionary", "microphoneUnsupported"]) })
             return false
         }
 
         const context = this.ensurecontext()
+        if (!context) { this.running = false; return false }
         if (context.state === "suspended") await context.resume()
 
         const constraints = {
@@ -140,7 +143,7 @@ export class WAVE extends HTMLElement {
         this.events.emit("stream", { stream: this.stream })
         this.events.emit("analyser", { analyser: this.micAnalyser })
         this.shadowRoot.querySelector("ui-visualizer")?.setanalyser(this.micAnalyser)
-        this.setstatus(`Listening`)
+        this.status.dataset.key = "dictionary.listening"
         return true
     }
 
@@ -172,7 +175,7 @@ export class WAVE extends HTMLElement {
         this.micAnalyser = null
         this.events.emit("stream", { stream: null })
         this.events.emit("analyser", { analyser: null })
-        this.setstatus("Stopped")
+        this.status.dataset.key = "dictionary.stopped"
     }
 
     sleep(ms = 0) {
@@ -227,8 +230,11 @@ export class WAVE extends HTMLElement {
 
     async frame(text) {
         const response = await Wave.encode({ message: text })
-        if (!response?.ok || !response?.bytes) throw new Error(response?.error || "Unable to encode payload")
-        this.setstatus("Broadcasting")
+        if (!response?.ok || !response?.bytes) {
+            notify({ content: response?.error || Context.get(["dictionary", "encodeFailed"]) })
+            return null
+        }
+        this.status.dataset.key = "dictionary.broadcasting"
         await this.play(response.bytes, response.sampleRate)
         const sampleRate = response.sampleRate || 48000
         const durationMs = Math.ceil((response.bytes.length / 2 / sampleRate) * 1000)
@@ -278,7 +284,7 @@ export class WAVE extends HTMLElement {
                 const ack = await this.waitack(channel, i, 6000)
                 if (ack !== null && ack["*"] === i) acked = true
             }
-            this.setstatus(acked ? "Broadcasting" : `Retried #${i}`)
+            this.status.dataset.key = acked ? "dictionary.broadcasting" : "dictionary.retrying"
         }
     }
 
@@ -366,7 +372,7 @@ export class WAVE extends HTMLElement {
                 if (response?.found && response?.message) await this.handle(response.message)
             }
         } catch (error) {
-            this.setstatus(error?.message || String(error))
+            if (error?.message) notify({ content: error.message })
         } finally {
             this.pendingDecode = false
             if (this.running && !this.sending && this.audioBacklogBytes > 0) this.pump()
@@ -389,6 +395,7 @@ export class WAVE extends HTMLElement {
 
     async play(bytes, sampleRate = 48000) {
         const context = this.ensurecontext()
+        if (!context) return false
         if (context.state === "suspended") await context.resume()
         const pcm = bytes instanceof Int8Array ? bytes : new Int8Array(bytes)
         if (!pcm.length) return false
