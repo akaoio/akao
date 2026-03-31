@@ -3,13 +3,43 @@ import { bp } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
+        display: block;
+        overflow-x: clip;
+
         /* ── Game Hero ── */
         .game-hero {
-            padding: var(--space-7) 0 var(--space-5);
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+            /* Full-bleed: break out of centered layout container */
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            /* Flush with top: cancel layout-main top padding */
+            margin-top: calc(-1 * var(--space-4));
+            /* Inner content alignment: mirrors layout-main's centering formula */
+            padding-top: calc(var(--space-4) + clamp(5rem, 13vw, 9rem));
+            padding-bottom: var(--space-6);
+            padding-inline: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
             border-bottom: 1px solid var(--neon-c);
             display: flex;
             flex-direction: column;
             gap: var(--space-2);
+            background-image:
+                linear-gradient(
+                    to bottom,
+                    color-mix(in hsl, var(--background) 10%, transparent) 0%,
+                    color-mix(in hsl, var(--background) 55%, transparent) 48%,
+                    var(--background) 80%
+                ),
+                linear-gradient(
+                    to bottom,
+                    color-mix(in hsl, var(--game-primary, #000) 18%, transparent) 0%,
+                    transparent 55%
+                ),
+                var(--game-hero-image, none);
+            background-size: 100% 100%, 100% 100%, 100% auto;
+            background-position: 0 0, 0 0, center top;
+            background-repeat: no-repeat;
 
             .game-hero__eyebrow {
                 display: flex;
@@ -566,14 +596,16 @@ export const styles = css`
         /* md: Tablets (768–1023px) */
         @media (max-width: ${bp.md}px) {
             .game-hero {
-                padding: var(--space-6) 0 var(--space-4);
+                padding-top: calc(var(--space-4) + clamp(4rem, 11vw, 7rem));
+                padding-bottom: var(--space-5);
             }
         }
 
         /* sm: Large phones / small tablets (541–767px) */
         @media (max-width: ${bp.sm}px) {
             .game-hero {
-                padding: var(--space-5) 0 var(--space-4);
+                padding-top: calc(var(--space-4) + clamp(3.5rem, 10vw, 6rem));
+                padding-bottom: var(--space-4);
             }
 
             #toolbar {
@@ -613,7 +645,8 @@ export const styles = css`
         /* xs: Mobile phones (≤480px) */
         @media (max-width: ${bp.xs}px) {
             .game-hero {
-                padding: var(--space-4) 0 var(--space-3);
+                padding-top: calc(var(--space-4) + clamp(3rem, 9vw, 4.5rem));
+                padding-bottom: var(--space-3);
                 gap: var(--space-1);
 
                 h1 {
