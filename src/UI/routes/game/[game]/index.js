@@ -441,14 +441,14 @@ export class GAME extends HTMLElement {
         this.states.set({ rarityOrder: meta.rarity_order || [] })
 
         // Inject rarity palette + game primary color as scoped CSS vars on :host
-        if (meta.rarity_palette || meta.color) {
+        if (meta.rarity_palette || meta.color || meta.hero) {
             let styleEl = this.shadowRoot.querySelector("#rarity-palette")
             if (!styleEl) {
                 styleEl = document.createElement("style")
                 styleEl.id = "rarity-palette"
                 this.shadowRoot.appendChild(styleEl)
             }
-            const vars = [...Object.entries(meta.rarity_palette || {}).map(([key, val]) => `--rarity-${key}: ${val};`), ...(meta.color ? [`--game-primary: ${meta.color};`] : []), ...(meta.text_color ? [`--game-text-color: ${meta.text_color};`] : [])].join(" ")
+            const vars = [...Object.entries(meta.rarity_palette || {}).map(([key, val]) => `--rarity-${key}: ${val};`), ...(meta.color ? [`--game-primary: ${meta.color};`] : []), ...(meta.text_color ? [`--game-text-color: ${meta.text_color};`] : []), ...(meta.hero ? [`--game-hero-image: url("${meta.hero}");`] : [])].join(" ")
             styleEl.textContent = `:host { ${vars} }`
         }
 

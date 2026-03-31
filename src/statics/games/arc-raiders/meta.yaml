@@ -1,5 +1,6 @@
 name: Arc Raiders
 logo: /statics/games/arc-raiders/images/symbol.svg
+hero: /statics/games/arc-raiders/images/hero.jpg
 rarity_order:
   - common
   - uncommon
