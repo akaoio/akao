@@ -13,6 +13,10 @@ import { reconnect } from "./Torrent/reconnect.js"
 import { $emit } from "./Torrent/emit.js"
 import { $track } from "./Torrent/track.js"
 import { $snapshot } from "./Torrent/snapshot.js"
+import { hash } from "./Torrent/hash.js"
+
+export { TorrentError } from "./Torrent/error.js"
+export { hash }
 
 export class Torrent {
     constructor(options = {}) {
@@ -46,6 +50,8 @@ export class Torrent {
     $emit = $emit
     $track = $track
     $snapshot = $snapshot
+
+    hash = hash
 }
 
 export default Torrent

@@ -6,19 +6,9 @@
  * implement crypto.subtle and TextEncoder. Zero external dependencies = zero supply-chain risk.
  */
 
-// ─── Error ────────────────────────────────────────────────────────────────────
-
-/**
- * Typed error for all hashing failures.
- * Consumers can switch on `err.code` instead of parsing error message strings.
- */
-export class HashInfoError extends Error {
-    constructor(code, message, options) {
-        super(message, options)
-        this.name = "HashInfoError"
-        this.code = code
-    }
-}
+import { TorrentError } from "./error.js"
+import { bytesToHex, concatbuffers } from "../Utils/crypto.js"
+import { tick } from "../Utils/loop.js"
 
 // ─── Module-Level Constants & Utilities ───────────────────────────────────────
 
@@ -28,20 +18,6 @@ const ZERO_HASH = new Uint8Array(32)
 
 const utf8Encoder = new TextEncoder()
 const stringToBytes = (s) => utf8Encoder.encode(s)
-const toHex = (bytes) => Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")
-
-// Releases the event loop between hash batches to keep the UI/other tasks responsive.
-const yieldToEventLoop = () => new Promise((r) => setTimeout(r, 0))
-
-function concatUint8Arrays(chunks) {
-    const result = new Uint8Array(chunks.reduce((total, chunk) => total + chunk.length, 0))
-    let offset = 0
-    for (const chunk of chunks) {
-        result.set(chunk, offset)
-        offset += chunk.length
-    }
-    return result
-}
 
 function normalizePathParts(path) {
     const parts = Array.isArray(path)
@@ -55,7 +31,7 @@ function normalizePathParts(path) {
         const segment = String(part).normalize("NFC")
         if (!segment || segment === ".") continue
         // Reject ".." because it can escape the torrent root directory on extraction.
-        if (segment === "..") throw new HashInfoError("INVALID_PATH", `Path segment '..' is not allowed`)
+        if (segment === "..") throw new TorrentError("INVALID_PATH", `Path segment '..' is not allowed`)
         result.push(segment)
     }
     return result
@@ -66,7 +42,7 @@ function normalizePathParts(path) {
 // Why return an array of chunks instead of one concatenated buffer?
 // A torrent with many files has thousands of 20-byte SHA-1 hashes in "pieces".
 // Concatenating on every recursive call is O(n²) allocations.
-// The single concat is deferred to the final step in concatUint8Arrays.
+// The single concat is deferred to the final step in concatbuffers.
 //
 // Why for..of instead of push(...subArray)?
 // V8 implements spread/apply via the call stack — push(...65k_items) overflows
@@ -103,7 +79,7 @@ function encodeToBencodeChunks(value) {
         return chunks
     }
 
-    throw new HashInfoError("INVALID_INPUT", `Bencode: unsupported type "${typeof value}"`)
+    throw new TorrentError("INVALID_INPUT", `Bencode: unsupported type "${typeof value}"`)
 }
 
 // ─── BEP 52 Merkle Tree ───────────────────────────────────────────────────────
@@ -155,7 +131,7 @@ function addToV2FileTree(tree, pathParts, length, piecesRoot) {
         if (!dir[part]) dir[part] = {}
         // A path cannot be both a file (has "") and a directory (has children) simultaneously.
         if (dir[part][""] && Object.keys(dir[part]).length > 1)
-            throw new HashInfoError("INVALID_INPUT", `Path conflict: "${pathParts.join("/")}" is both a file and a directory`)
+            throw new TorrentError("INVALID_INPUT", `Path conflict: "${pathParts.join("/")}" is both a file and a directory`)
         dir = dir[part]
     }
     dir[pathParts[pathParts.length - 1]] = { "": { length, "pieces root": piecesRoot } }
@@ -219,10 +195,6 @@ async function feedBlockBuffer(chunk, carry, carryLen, blockSize, onBlock) {
 // A stream factory (typeof stream === "function") produces a fresh stream on each call.
 // A raw stream object is already open and cannot be rewound — retry would read garbage.
 
-/**
- * Streams one file through the V1 SHA-1 pieces pipeline only (BEP 3 mode).
- * pieceState is mutated in-place.
- */
 async function hashFileV1(file, pathParts, pieceState, opts, crypto) {
     const isStreamFactory = typeof file.stream === "function"
     const maxAttempts = isStreamFactory ? (opts.retries ?? 3) : 1
@@ -244,14 +216,14 @@ async function hashFileV1(file, pathParts, pieceState, opts, crypto) {
                 fileBytesRead += chunk.length
                 pieceState.carryLen = await feedBlockBuffer(chunk, pieceState.carry, pieceState.carryLen, pieceState.pieceLen, async (block) => {
                     pieceState.pieces.push(new Uint8Array(await crypto.subtle.digest("SHA-1", block)))
-                    if (++pieceState.yieldCounter % breatherInterval === 0) await yieldToEventLoop()
+                    if (++pieceState.yieldCounter % breatherInterval === 0) await tick()
                 })
             }
 
             // Dynamic length: backfill if caller didn't know the file size upfront (e.g. piped stream).
             if (file.length == null) file.length = fileBytesRead
             else if (fileBytesRead !== file.length)
-                throw new HashInfoError("STREAM_LENGTH_MISMATCH", `"${pathParts.join("/")}" declared ${file.length} bytes but stream yielded ${fileBytesRead}`)
+                throw new TorrentError("STREAM_LENGTH_MISMATCH", `"${pathParts.join("/")}" declared ${file.length} bytes but stream yielded ${fileBytesRead}`)
 
             return // success — exit retry loop
         } catch (err) {
@@ -261,8 +233,8 @@ async function hashFileV1(file, pathParts, pieceState, opts, crypto) {
             pieceState.carryLen = checkpoint.carryLen
 
             if (attempt === maxAttempts) {
-                if (err instanceof HashInfoError) throw err
-                throw new HashInfoError("STREAM_FAILED", `Failed to hash "${pathParts.join("/")}" after ${maxAttempts} attempt(s)`, { cause: err })
+                if (err instanceof TorrentError) throw err
+                throw new TorrentError("STREAM_FAILED", `Failed to hash "${pathParts.join("/")}" after ${maxAttempts} attempt(s)`, { cause: err })
             }
 
             opts.onRetry?.(pathParts.join("/"), attempt, err)
@@ -271,14 +243,12 @@ async function hashFileV1(file, pathParts, pieceState, opts, crypto) {
     }
 }
 
-/**
- * Streams one file through V1 (SHA-1 pieces) and V2 (SHA-256 Merkle) pipelines simultaneously.
- * pieceState is mutated in-place. Returns the file's Merkle root for BEP 52.
- *
- * Why feed both pipelines in a single pass?
- * Reading a file twice (once for SHA-1, once for SHA-256) doubles I/O cost.
- * A single pass feeds both pipelines simultaneously.
- */
+// Streams one file through V1 (SHA-1 pieces) and V2 (SHA-256 Merkle) pipelines simultaneously.
+// pieceState is mutated in-place. Returns the file's Merkle root for BEP 52.
+//
+// Why feed both pipelines in a single pass?
+// Reading a file twice (once for SHA-1, once for SHA-256) doubles I/O cost.
+// A single pass feeds both pipelines simultaneously.
 async function hashFileV1V2(file, pathParts, pieceState, opts, crypto) {
     const isStreamFactory = typeof file.stream === "function"
     const maxAttempts = isStreamFactory ? (opts.retries ?? 3) : 1
@@ -307,14 +277,14 @@ async function hashFileV1V2(file, pathParts, pieceState, opts, crypto) {
                 // V1: SHA-1 pieces — carry is shared across files (pieces span file boundaries).
                 pieceState.carryLen = await feedBlockBuffer(chunk, pieceState.carry, pieceState.carryLen, pieceState.pieceLen, async (block) => {
                     pieceState.pieces.push(new Uint8Array(await crypto.subtle.digest("SHA-1", block)))
-                    if (++pieceState.yieldCounter % breatherInterval === 0) await yieldToEventLoop()
+                    if (++pieceState.yieldCounter % breatherInterval === 0) await tick()
                 })
 
                 // V2: SHA-256 Merkle leaves — per-file, each file has its own carry and stack.
                 v2CarryLen = await feedBlockBuffer(chunk, v2Carry, v2CarryLen, V2_BLOCK_SIZE, async (block) => {
                     await pushMerkleLeaf(new Uint8Array(await crypto.subtle.digest("SHA-256", block)), v2Stack, crypto)
                     v2LeavesCount++
-                    if (++pieceState.yieldCounter % breatherInterval === 0) await yieldToEventLoop()
+                    if (++pieceState.yieldCounter % breatherInterval === 0) await tick()
                 })
             }
 
@@ -328,7 +298,7 @@ async function hashFileV1V2(file, pathParts, pieceState, opts, crypto) {
 
             if (file.length == null) file.length = fileBytesRead
             else if (fileBytesRead !== file.length)
-                throw new HashInfoError("STREAM_LENGTH_MISMATCH", `"${pathParts.join("/")}" declared ${file.length} bytes but stream yielded ${fileBytesRead}`)
+                throw new TorrentError("STREAM_LENGTH_MISMATCH", `"${pathParts.join("/")}" declared ${file.length} bytes but stream yielded ${fileBytesRead}`)
 
             return computeMerkleRoot(v2LeavesCount, v2Stack, crypto)
         } catch (err) {
@@ -337,8 +307,8 @@ async function hashFileV1V2(file, pathParts, pieceState, opts, crypto) {
             pieceState.carryLen = checkpoint.carryLen
 
             if (attempt === maxAttempts) {
-                if (err instanceof HashInfoError) throw err
-                throw new HashInfoError("STREAM_FAILED", `Failed to hash "${pathParts.join("/")}" after ${maxAttempts} attempt(s)`, { cause: err })
+                if (err instanceof TorrentError) throw err
+                throw new TorrentError("STREAM_FAILED", `Failed to hash "${pathParts.join("/")}" after ${maxAttempts} attempt(s)`, { cause: err })
             }
 
             opts.onRetry?.(pathParts.join("/"), attempt, err)
@@ -389,9 +359,10 @@ function buildInfoDict(name, pieceLen, pieces, v2FileTree, normalizedFiles, opts
 
 async function computeInfohash(files, name, opts = {}) {
     // Step 1 — Validate environment.
+    // crypto.subtle is available in Node.js 15+, all modern browsers, and WinterCG runtimes.
     const crypto = opts.customCrypto ?? globalThis.crypto
-    if (!crypto?.subtle) throw new HashInfoError("CRYPTO_UNAVAILABLE", "crypto.subtle is not available — requires Node.js 15+, a modern browser, or a WinterCG-compatible runtime")
-    if (!Array.isArray(files) || files.length === 0) throw new HashInfoError("INVALID_INPUT", "files must be a non-empty array")
+    if (!crypto?.subtle) throw new TorrentError("CRYPTO_UNAVAILABLE", "crypto.subtle is not available — requires Node.js 15+, a modern browser, or a WinterCG-compatible runtime")
+    if (!Array.isArray(files) || files.length === 0) throw new TorrentError("INVALID_INPUT", "files must be a non-empty array")
 
     // Step 2 — Calculate piece length.
     // Auto-calculate to match create-torrent's algorithm — so our v1 infohash
@@ -403,8 +374,8 @@ async function computeInfohash(files, name, opts = {}) {
         return Math.max(V2_BLOCK_SIZE, Math.min(262144, raw))
     })()
 
-    if (pieceLen < V2_BLOCK_SIZE) throw new HashInfoError("INVALID_PIECE_LENGTH", `pieceLength must be ≥ ${V2_BLOCK_SIZE} bytes (BEP 52)`)
-    if ((pieceLen & (pieceLen - 1)) !== 0) throw new HashInfoError("INVALID_PIECE_LENGTH", "pieceLength must be a power of two (e.g. 16384, 32768, 262144)")
+    if (pieceLen < V2_BLOCK_SIZE) throw new TorrentError("INVALID_PIECE_LENGTH", `pieceLength must be ≥ ${V2_BLOCK_SIZE} bytes (BEP 52)`)
+    if ((pieceLen & (pieceLen - 1)) !== 0) throw new TorrentError("INVALID_PIECE_LENGTH", "pieceLength must be a power of two (e.g. 16384, 32768, 262144)")
 
     // Step 3 — Normalize and sort file paths.
     // Why NOT localeCompare? Locale-sensitive collation differs across OSes ("ä" sorts
@@ -412,7 +383,7 @@ async function computeInfohash(files, name, opts = {}) {
     const normalizedFiles = files
         .map((file, index) => {
             if (file.length != null && (!Number.isFinite(file.length) || file.length < 0))
-                throw new HashInfoError("INVALID_INPUT", `Invalid length for "${file.path}": must be a non-negative finite number`)
+                throw new TorrentError("INVALID_INPUT", `Invalid length for "${file.path}": must be a non-negative finite number`)
             const pathParts = normalizePathParts(file.path)
             const pathKeyBytes = stringToBytes(pathParts.join("/"))
             return { file, pathParts, pathKeyBytes, index }
@@ -431,7 +402,7 @@ async function computeInfohash(files, name, opts = {}) {
         carry: new Uint8Array(pieceLen),
         carryLen: 0,
         pieceLen,
-        yieldCounter: 0, // throttles yieldToEventLoop — counts hashes across both V1 and V2 pipelines
+        yieldCounter: 0, // throttles tick() — counts hashes across both V1 and V2 pipelines
     }
     const v2FileTree = {}
 
@@ -454,11 +425,11 @@ async function computeInfohash(files, name, opts = {}) {
 
     // Step 5 — Assemble info dict, bencode it, compute infohash(es).
     const info = buildInfoDict(String(name || "").normalize("NFC"), pieceLen, pieceState.pieces, v2FileTree, normalizedFiles, opts)
-    const bencodedInfo = concatUint8Arrays(encodeToBencodeChunks(info))
+    const bencodedInfo = concatbuffers(encodeToBencodeChunks(info))
 
     return {
-        v1: toHex(new Uint8Array(await crypto.subtle.digest("SHA-1", bencodedInfo))),
-        v2: opts.v2 ? toHex(new Uint8Array(await crypto.subtle.digest("SHA-256", bencodedInfo))) : null,
+        v1: bytesToHex(new Uint8Array(await crypto.subtle.digest("SHA-1", bencodedInfo))),
+        v2: opts.v2 ? bytesToHex(new Uint8Array(await crypto.subtle.digest("SHA-256", bencodedInfo))) : null,
     }
 }
 
@@ -491,9 +462,9 @@ async function computeInfohash(files, name, opts = {}) {
  * @param {Function}[options.onRetry]           — (path, attempt, error) => void — called before each retry
  * @param {object}  [options.customCrypto]      — inject a crypto implementation (testing / non-standard runtimes)
  * @returns {Promise<{v1: string, v2: string|null}>}
- * @throws {HashInfoError}
+ * @throws {TorrentError}
  */
-export async function hashInfo(inputData, fileName, options = {}) {
+export async function hash(inputData, fileName, options = {}) {
     let files
 
     if (Array.isArray(inputData))
@@ -516,7 +487,7 @@ export async function hashInfo(inputData, fileName, options = {}) {
         // so isStreamFactory=false → maxAttempts=1 is enforced automatically.
         // length is optional: if omitted the engine counts bytes on the fly and backfills.
         files = [{ path: fileName, length: options.length ?? null, stream: inputData }]
-    else throw new HashInfoError("UNSUPPORTED_FORMAT", "Unsupported inputData type. Expected: Uint8Array, ArrayBuffer, File/Blob, AsyncIterable, or Array of file descriptors.")
+    else throw new TorrentError("UNSUPPORTED_FORMAT", "Unsupported inputData type. Expected: Uint8Array, ArrayBuffer, File/Blob, AsyncIterable, or Array of file descriptors.")
 
     return computeInfohash(files, fileName, options)
 }

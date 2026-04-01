@@ -31,7 +31,7 @@ export async function $del(path) {
                 const subPath = parts.slice(0, i)
                 await update(this, subPath, i === parts.length ? undefined : current[parts[i - 1]])
             }
-            await this.saveToDisk()
+            await this.save()
         }
     }
 }
