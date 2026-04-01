@@ -3,6 +3,15 @@ import { css } from "/core/UI.js"
 export const styles = css`
     :host {
         display: flex;
+        position: relative;
+        width: 100%;
+        height: 100%;
+
+        #scanner:not([hidden]) {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
 
         #qr {
             display: flex;
