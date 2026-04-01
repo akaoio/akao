@@ -23,8 +23,9 @@ export const styles = css`
                 font-size: var(--text-xs);
                 letter-spacing: 0.15em;
                 text-transform: uppercase;
-                color: var(--color);
-                opacity: 0.3;
+                color: var(--neon-c);
+                text-shadow: 0 0 8px color-mix(in srgb, var(--neon-c) 60%, transparent);
+                opacity: 0.85;
                 font-family: var(--header-font);
             }
 
@@ -149,8 +150,8 @@ export const styles = css`
                 border: none;
                 border-top: var(--border);
                 background: var(--background);
-                color: var(--color);
-                opacity: 0.4;
+                color: var(--color-accent);
+                opacity: 0.8;
                 cursor: pointer;
                 font-family: var(--header-font);
                 font-size: var(--text-xs);
@@ -215,7 +216,107 @@ export const styles = css`
                     gap: var(--space) var(--space-4);
                     font-size: var(--text-sm);
                 }
+
+                .glitch-text {
+                    font-family: var(--header-font);
+                    font-size: 3rem;
+                    font-weight: 700;
+                    text-transform: lowercase;
+                    position: relative;
+                    margin: 0;
+                    color: #fff;
+                }
+
+                .glitch-text span {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    color: #fff;
+                }
+
+                .glitch-text span:first-child {
+                    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+                    transform: translate(-0.025em, -0.0125em);
+                    opacity: 0.8;
+                }
+
+                .glitch-text span:last-child {
+                    clip-path: polygon(0 80%, 100% 20%, 100% 100%, 0 100%);
+                    transform: translate(0.0125em, 0.025em);
+                    opacity: 0.8;
+                }
+
+                .glitch-text.is-glitching {
+                    text-shadow:
+                        0.05em 0 0 rgba(255, 0, 0, 0.75),
+                        -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
+                        0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+                    animation: glitch-text 1200ms infinite;
+                }
+
+                .glitch-text.is-glitching span:first-child {
+                    animation: glitch-text 1600ms infinite;
+                }
+
+                .glitch-text.is-glitching span:last-child {
+                    animation: glitch-text 900ms infinite;
+                }
             }
+        }
+    }
+
+    @keyframes glitch-text {
+        0%,
+        14% {
+            text-shadow:
+                0.05em 0 0 rgba(255, 0, 0, 0.75),
+                -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+                -0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+        }
+        15%,
+        49% {
+            text-shadow:
+                -0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+                0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+                -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+        }
+        50%,
+        99% {
+            text-shadow:
+                0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+                0.05em 0 0 rgba(0, 255, 0, 0.75),
+                0 -0.05em 0 rgba(0, 0, 255, 0.75);
+        }
+        100% {
+            text-shadow:
+                -0.025em 0 0 rgba(255, 0, 0, 0.75),
+                -0.025em -0.025em 0 rgba(0, 255, 0, 0.75),
+                -0.025em -0.05em 0 rgba(0, 0, 255, 0.75);
+        }
+    }
+
+    @keyframes glitch-tiktok {
+        0%,
+        14% {
+            filter: drop-shadow(4px 0 0 var(--glitch-ch1)) drop-shadow(-4px -2px 0 var(--glitch-ch2));
+        }
+        15%,
+        49% {
+            filter: drop-shadow(-4px -2px 0 var(--glitch-ch1)) drop-shadow(2px 2px 0 var(--glitch-ch2));
+        }
+        50%,
+        99% {
+            filter: drop-shadow(2px 4px 0 var(--glitch-ch1)) drop-shadow(4px 0 0 var(--glitch-ch2));
+        }
+        100% {
+            filter: drop-shadow(-2px 0 0 var(--glitch-ch1)) drop-shadow(-2px -2px 0 var(--glitch-ch2));
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 1ms !important;
+            animation-iteration-count: 1 !important;
         }
     }
 
