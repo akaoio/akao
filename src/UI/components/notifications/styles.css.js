@@ -5,7 +5,7 @@ export const styles = css`
         position: fixed;
         bottom: 0;
         left: 0;
-        z-index: 1000;
+        z-index: var(--z-toast);
         display: flex;
         flex-direction: column;
         gap: var(--space);
@@ -13,7 +13,7 @@ export const styles = css`
         .notification {
             --icon: var(--icon-md);
             background: var(--background-inverted);
-            border: 1px solid var(--border-inverted);
+            border: var(--border-inverted);
             color: var(--color-inverted);
             padding: var(--space);
             display: flex;

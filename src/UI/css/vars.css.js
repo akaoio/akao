@@ -113,6 +113,7 @@ export const styles = css`
         --icon-md: var(--unit-6);
         --icon-lg: var(--unit-7);
         --icon-xlg: var(--unit-10);
+        --icon-2xl: var(--unit-9);   /* 6rem = 96px */
         --icon: var(--icon-md);
 
         /* Icon Masks — square viewBox, default direction left; rotate() to repoint */
@@ -166,7 +167,7 @@ export const styles = css`
         --rarity-special: var(--neon-g);
         --rarity-normal: color-mix(in hsl, var(--color) 60%, transparent);
         --rarity-uncommon: color-mix(in hsl, var(--neon-g) 60%, var(--color));
-        --rarity-epic: hsl(270, 70%, 68%);
+        --rarity-epic: var(--rarity-magic);
         --rarity-mythic: var(--neon-g);
 
         --glow-legendary: var(--glow-y);
@@ -179,6 +180,37 @@ export const styles = css`
         --scrollbar-thumb: var(--color);
         --scrollbar-thumb-hover: var(--color-accent);
         --scrollbar-corner: var(--background);
+
+        /* Z-index Layers */
+        --z-base: 0;
+        --z-sticky: 50;
+        --z-dropdown: 100;
+        --z-panel-toggle: 200;
+        --z-panel-backdrop: 210;
+        --z-panel: 220;
+        --z-modal: 300;
+        --z-overlay: 400;
+        --z-toast: 500;
+
+        /* Blur Scale */
+        --blur-xs: 2px;
+        --blur-sm: 4px;
+        --blur-md: 8px;
+        --blur-lg: 12px;
+        --blur-xl: 1rem;
+
+        /* Structural Shadows */
+        --shadow-sm: 0 1px 3px color-mix(in hsl, var(--color) 8%, transparent);
+        --shadow-md: 0 4px 16px color-mix(in hsl, var(--color) 10%, transparent);
+        --shadow-lg: 0 8px 32px color-mix(in hsl, var(--color) 12%, transparent);
+
+        /* Component Sizing */
+        --panel-width: min(20rem, 85vw);
+        --logo-width: 4rem;
+        --logo-height: 2.25rem;
+        --brand-max-width: 8rem;
+        --progress-width: 10rem;
+        --progress-height: var(--space-1);
     }
 
     * {

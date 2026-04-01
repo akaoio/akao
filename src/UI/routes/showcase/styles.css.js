@@ -38,7 +38,7 @@ export const styles = css`
                 text-decoration: none;
                 color: var(--color);
                 opacity: 0.5;
-                border-left: 2px solid transparent;
+                border-left: calc(var(--border-width) * 2) solid transparent;
                 transition:
                     opacity var(--speed) ease-in-out,
                     color var(--speed) ease-in-out,
@@ -136,7 +136,7 @@ export const styles = css`
                 justify-content: center;
                 flex-wrap: wrap;
                 gap: var(--space);
-                min-height: 6rem;
+                min-height: var(--space-9);
                 background: var(--item-background, transparent);
             }
 
@@ -187,13 +187,13 @@ export const styles = css`
 
             .story-preview {
                 .svg-sm {
-                    width: 2rem;
+                    width: var(--icon-md);
                 }
                 .svg-md {
-                    width: 3rem;
+                    width: var(--icon-lg);
                 }
                 .svg-lg {
-                    width: 8rem;
+                    width: var(--icon-xlg);
                 }
                 .svg-color {
                     color: var(--color);
