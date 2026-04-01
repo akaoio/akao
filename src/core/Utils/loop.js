@@ -34,3 +34,9 @@ export function loop({ data, process, callback, delay = [1000, 5000], index = 0,
     if (isPromise(result)) return result.then((result) => next(result)).catch((error) => console.error(error))
     else next(result)
 }
+
+// Yield control back to the event loop (one macrotask tick).
+// Useful in long-running async loops to keep the UI or other tasks responsive.
+export function tick() {
+    return new Promise((r) => setTimeout(r, 0))
+}
