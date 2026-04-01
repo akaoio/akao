@@ -1,5 +1,4 @@
 import { init, $client } from "./Torrent/init.js"
-export { hashInfo } from "./Torrent/hashInfo.js"
 import { on } from "./Torrent/on.js"
 import { off } from "./Torrent/off.js"
 import { add } from "./Torrent/add.js"

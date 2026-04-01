@@ -31,6 +31,7 @@ const testFiles = [
     "./src/core/tests/Context.test.js",
     "./src/core/tests/RTC.test.js",
     "./src/core/tests/Torrent.test.js",
+    "./src/core/tests/HashInfo.test.js",
     // Access.test.js + WebAuthn.test.js — browser-only, use the /test route in browser
 ]
 
