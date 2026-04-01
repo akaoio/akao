@@ -1,5 +1,5 @@
 import Test from "../Test.js"
-import { hashInfo, HashInfoError } from "../../../builder/hashInfo.js"
+import { hashInfo, HashInfoError } from "../Torrent/hashInfo.js"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
