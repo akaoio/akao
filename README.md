@@ -5,6 +5,7 @@ A modern **serverless eCommerce engine** built with pure Web Components. Framewo
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Web Components](https://img.shields.io/badge/Web-Components-29ABE2.svg)](https://www.webcomponents.org/)
 [![No Framework](https://img.shields.io/badge/Framework-None-green.svg)](docs/thoughts/the-philosophy-of-framework-less.md)
+[![Telegram](https://img.shields.io/badge/Telegram-akaoproject-2CA5E0.svg?logo=telegram)](https://t.me/akaoproject)
 
 ## ✨ Features
 
