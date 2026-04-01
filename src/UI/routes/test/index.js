@@ -16,6 +16,7 @@ const TEST_MODULES = [
     "/core/tests/Torrent.test.js",
     "/core/tests/Access.test.js",
     "/core/tests/WebAuthn.test.js",
+    "/core/tests/Hash.test.js",
     "/core/tests/SQL.test.js",
     "/core/tests/OPFS.test.js",
 ]

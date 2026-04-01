@@ -140,3 +140,18 @@ export function base64UrlToBuffer(base64url) {
 
     return buffer
 }
+// Convert a Uint8Array to a lowercase hex string.
+export function bytesToHex(bytes) {
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")
+}
+
+// Concatenate an array of Uint8Array chunks into a single Uint8Array.
+export function concatbuffers(chunks) {
+    const result = new Uint8Array(chunks.reduce((total, chunk) => total + chunk.length, 0))
+    let offset = 0
+    for (const chunk of chunks) {
+        result.set(chunk, offset)
+        offset += chunk.length
+    }
+    return result
+}

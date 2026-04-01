@@ -94,7 +94,7 @@ Test.describe("Events", () => {
         Test.assert.equal(ev.composed, true)
         Test.assert.equal(ev.cancelable, true)
         Test.assert.deepEqual(ev.detail, { ok: true })
-    })
+    }, { browser: true })
 
     Test.it("can use external EventTarget as dispatch target", () => {
         const target = new EventTarget()
@@ -103,6 +103,6 @@ Test.describe("Events", () => {
         target.addEventListener("target", ({ detail }) => { received = detail })
         e.emit("target", "ok")
         Test.assert.equal(received, "ok")
-    })
+    }, { browser: true })
 
 })

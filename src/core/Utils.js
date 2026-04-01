@@ -4,7 +4,7 @@ export { root, join, write, load, download, copy, find, dir, exist, isDirectory,
 
 export { notify } from "./Utils/browser.js"
 
-export { sha256, signAndHash, base64UrlToHex, hexToBase64Url, base64ToHex, hexToBase64, bufferToBase64Url, base64UrlToBuffer } from "./Utils/crypto.js"
+export { sha256, signAndHash, base64UrlToHex, hexToBase64Url, base64ToHex, hexToBase64, bufferToBase64Url, base64UrlToBuffer, bytesToHex, concatbuffers } from "./Utils/crypto.js"
 
 export { encodeQuery, spintax, schemaToDisplay, objectToArray, arrayToString, filterData, logic, clone, diff, merge, isPromise } from "./Utils/data.js"
 
@@ -14,7 +14,7 @@ export { BigNumber, toDecimal, toBigNumber, formatNumber, beautifyNumber, shorte
 
 export { randomInt, randomText, randomKey, randomItem, sortStrings } from "./Utils/random.js"
 
-export { loop } from "./Utils/loop.js"
+export { loop, tick } from "./Utils/loop.js"
 
 export { reset } from "./Utils/reset.js"
 

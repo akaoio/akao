@@ -18,7 +18,7 @@ export async function $put(path, value) {
             current = current[key]
         }
         current[path.at(-1)] = value
-        await this.saveToDisk()
+        await this.save()
     }
     await update(this, path, value)
     return value
