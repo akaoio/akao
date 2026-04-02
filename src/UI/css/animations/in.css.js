@@ -4,7 +4,7 @@ export const styles = css`
     @keyframes in {
         from {
             opacity: 0;
-            filter: blur(1rem);
+            filter: blur(var(--blur-xl));
             transform: translateY(1rem);
             scale: 0.75;
         }

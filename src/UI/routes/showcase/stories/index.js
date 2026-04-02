@@ -1,3 +1,4 @@
+import logo from "./logo.js"
 import button from "./button.js"
 import icon from "./icon.js"
 import identicon from "./identicon.js"
@@ -17,6 +18,7 @@ import cameraQR from "./camera-qr.js"
 import wave from "./wave.js"
 
 export default [
+    logo,
     button,
     icon,
     identicon,

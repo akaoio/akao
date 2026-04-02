@@ -217,14 +217,8 @@ export class GAME extends HTMLElement {
         const totalPages = this.states.get("totalPages")
         const count = totalPages - fromPage
 
-        const pageIdBatches = await Promise.all(
-            Array.from({ length: count }, (_, i) => DB.get(["statics", "games", id, "items", `${fromPage + i + 1}.json`]))
-        )
-        const newItems = (
-            await Promise.all(
-                pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : []))
-            )
-        ).filter(Boolean)
+        const pageIdBatches = await Promise.all(Array.from({ length: count }, (_, i) => DB.get(["statics", "games", id, "items", `${fromPage + i + 1}.json`])))
+        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : [])))).filter(Boolean)
 
         const allItems = [...this.states.get("allItems"), ...newItems]
         this.states.set({ allItems, loadedPages: totalPages })
@@ -304,8 +298,7 @@ export class GAME extends HTMLElement {
 
         // Re-sync inline pill width if stuck and collapsed (pill content may have changed size).
         const stickyEl = this.shadowRoot.querySelector(".catalog-sticky")
-        if (stickyEl && stickyEl.classList.contains("is-stuck") && !stickyEl.classList.contains("is-expanded") && this._syncPillWidth)
-            this._syncPillWidth()
+        if (stickyEl && stickyEl.classList.contains("is-stuck") && !stickyEl.classList.contains("is-expanded") && this._syncPillWidth) this._syncPillWidth()
 
         // Grid
         const grid = this.shadowRoot.querySelector("#items")
@@ -362,10 +355,7 @@ export class GAME extends HTMLElement {
     }
 
     async _loadItem(gameId, itemId, locale) {
-        const [meta, loc] = await Promise.all([
-            DB.get(["statics", "items", gameId, itemId, "meta.json"]),
-            DB.get(["statics", "items", gameId, itemId, `${locale}.json`])
-        ])
+        const [meta, loc] = await Promise.all([DB.get(["statics", "items", gameId, itemId, "meta.json"]), DB.get(["statics", "items", gameId, itemId, `${locale}.json`])])
         if (!meta) return null
         const icon = meta.images?.[0] ? `/statics/items/${gameId}/${itemId}/images/${meta.images[0]}` : null
         return { ...meta, ...(loc || {}), id: itemId, icon, catalog: "game" }
@@ -382,14 +372,8 @@ export class GAME extends HTMLElement {
 
         const locale = Context.get("locale")?.code || "en"
         const pagesToLoad = Math.min(LOAD_MORE_PAGES, totalPages - loadedPages)
-        const pageIdBatches = await Promise.all(
-            Array.from({ length: pagesToLoad }, (_, i) => DB.get(["statics", "games", id, "items", `${loadedPages + i + 1}.json`]))
-        )
-        const newItems = (
-            await Promise.all(
-                pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : []))
-            )
-        ).filter(Boolean)
+        const pageIdBatches = await Promise.all(Array.from({ length: pagesToLoad }, (_, i) => DB.get(["statics", "games", id, "items", `${loadedPages + i + 1}.json`])))
+        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : [])))).filter(Boolean)
         const allItems = [...this.states.get("allItems"), ...newItems]
         this.states.set({ allItems, loadedPages: loadedPages + pagesToLoad })
 
@@ -480,14 +464,8 @@ export class GAME extends HTMLElement {
 
         // Load first N pages in parallel
         const initialPages = Math.min(INITIAL_PAGES, pages)
-        const pageIdBatches = await Promise.all(
-            Array.from({ length: initialPages }, (_, i) => DB.get(["statics", "games", id, "items", `${i + 1}.json`]))
-        )
-        const firstItems = (
-            await Promise.all(
-                pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : []))
-            )
-        ).filter(Boolean)
+        const pageIdBatches = await Promise.all(Array.from({ length: initialPages }, (_, i) => DB.get(["statics", "games", id, "items", `${i + 1}.json`])))
+        const firstItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : [])))).filter(Boolean)
         this.states.set({ allItems: firstItems, loadedPages: initialPages })
 
         // Build type tabs with collapse

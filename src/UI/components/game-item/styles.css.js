@@ -20,14 +20,14 @@ export const styles = css`
 
         .icon {
             flex-shrink: 0;
-            width: 96px;
-            height: 96px;
+            width: var(--icon-2xl);
+            height: var(--icon-2xl);
             align-self: center;
             display: flex;
             align-items: center;
             justify-content: center;
             background: color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 8%, transparent);
-            border-right: 1px solid color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 25%, transparent);
+            border-right: var(--border-width) solid color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 25%, transparent);
             box-sizing: border-box;
 
             img {
@@ -41,8 +41,8 @@ export const styles = css`
             }
 
             .icon__placeholder {
-                width: 32px;
-                height: 32px;
+                width: var(--icon-md);
+                height: var(--icon-md);
                 opacity: 0.3;
             }
         }
@@ -107,7 +107,7 @@ export const styles = css`
             font-family: var(--header-font);
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            padding: 1px var(--space-1);
+            padding: var(--border-width) var(--space-1);
             line-height: 1.5;
             white-space: nowrap;
         }
@@ -121,7 +121,7 @@ export const styles = css`
         }
 
         .badge--type {
-            border: 1px solid var(--border);
+            border: var(--border);
             color: color-mix(in hsl, white 75%, var(--color) 25%);
         }
     }
