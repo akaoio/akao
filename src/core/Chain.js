@@ -43,6 +43,12 @@ export default class Chain {
             merge(this.configs, { stables })
         }
 
+        // Mirror stables to Statics so fiatRates() can read them
+        if (this.configs?.stables) {
+            Statics.chains[this.id] = Statics.chains[this.id] || {}
+            Statics.chains[this.id].stables = this.configs.stables
+        }
+
         await this.load({ address: "native" }) // Load native currency
 
         // Load architecture

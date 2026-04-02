@@ -1,12 +1,11 @@
-import { events } from "../core/Events.js"
-import { Context } from "../core/Context.js"
-import { Indexes, Statics, Chains, Dexs, Wallets } from "../core/Stores.js"
-import Thread from "../core/Thread.js"
-import { loop } from "../core/Utils/loop.js"
-import { Construct } from "../core/Construct.js"
-import { loadContract } from "../core/Utils/contracts.js"
-import { clone } from "../core/Utils/data.js"
-import { authenticate } from "../core/Gun.js"
+import { events } from "/core/Events.js"
+import { Context } from "/core/Context.js"
+import { Indexes, Statics, Chains, Dexs, Wallets } from "/core/Stores.js"
+import Thread from "/core/Thread.js"
+import { loop } from "/core/Utils/loop.js"
+import { Construct } from "/core/Construct.js"
+import { loadContract } from "/core/Utils/contracts.js"
+import { clone } from "/core/Utils/data.js"
 
 const thread = new Thread()
 
@@ -19,18 +18,10 @@ thread.init = async () => {
     await Construct.Chains()
     await Construct.Dexs()
     await Construct.Wallets()
-    await Construct.DB()
-    await Construct.User()
     // Start scanning pools and update to main thread's Lives object
     thread.scanPools()
     // Start listening for new blocks
     // thread.listenForNewBlocks()
-}
-
-thread.authenticate = async (pair) => {
-    if (!thread.initialized || Context.get("authenticated")) return
-    pair = pair || (await Indexes.Auth.get("pair").once())
-    if (pair && !Context.get("authenticated")) authenticate(pair)
 }
 
 // This method is used to create new Wallets
@@ -39,12 +30,10 @@ thread.wallets = async ({ seed } = {}) => {
 }
 
 thread.scanPools = () => {
-    Object.entries(Statics.defis).forEach(([id, configs]) => {
-        const chain = Chains[configs.chain]
+    Object.entries(Dexs).forEach(([id, dex]) => {
+        const chain = dex.chain
         if (!chain) return
-        const dex = Dexs[id]
-        if (!dex) return
-        const pools = configs.pools
+        const pools = dex.configs.pools
         if (!pools || !pools.length) return
         loop({
             data: pools,

@@ -1,5 +1,4 @@
 import "/UI/components/a/index.js"
-import "/UI/components/cart/index.js"
 import "/UI/components/user/index.js"
 import "/UI/components/svg/index.js"
 import "/UI/components/icon/index.js"
@@ -16,7 +15,8 @@ export const template = html`
             </a>
             <div>
                 <ui-icon class="games" data-icon="controller" />
-                <ui-cart />
+                <a is="ui-a" data-to="/pools"><ui-icon data-icon="coin" /></a>
+                <a is="ui-a" data-to="/swap"><ui-icon data-icon="arrow-down-up" /></a>
                 <ui-user />
             </div>
         </nav>
