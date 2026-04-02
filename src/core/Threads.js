@@ -4,8 +4,10 @@
  * Provides API for calling methods on threads and receiving responses via callbacks.
  */
 
-import { NODE, randomKey } from "./Utils.js"
+import { NODE, randomKey, diff, merge } from "./Utils.js"
 import { join } from "./FS.js"
+import { Lives } from "./Stores.js"
+import { events } from "./Events.js"
 
 export class Threads {
     // Map of registered threads by name
@@ -92,6 +94,12 @@ export class Threads {
     process(data, source) {
         if (typeof data !== "object") return
         if (data?.relay) return this.relay({ source, ...data.relay })
+        if (data?.Lives) {
+            const diff_data = diff(Lives, data.Lives)
+            merge(Lives, diff_data)
+            for (const key in diff_data) events.emit("Lives." + key, diff_data[key])
+            return
+        }
         // data is an object that contains { queue, response }
 
         const queue = data?.queue
