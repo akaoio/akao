@@ -27,69 +27,77 @@ export const styles = css`
             position: absolute;
             inset: 0;
             pointer-events: none;
+            isolation: isolate;
+            --neon-p: hsl(270 100% 65%);
+            --grid-v: 4%;
+
             background-image:
-                /* ① Bottom fade — anchors content legibility */
+                /* ① Bottom fade — text legibility */
                 linear-gradient(
                     to bottom,
                     transparent 0%,
-                    color-mix(in hsl, var(--background) 45%, transparent) 52%,
-                    var(--background) 86%
+                    transparent 58%,
+                    color-mix(in hsl, var(--background) 35%, transparent) 73%,
+                    var(--background) 87%
                 ),
-                /* ② Warm bloom — hue-2 rising from bottom-right */
+                /* ② Dark green base — derived from --neon-g hue, blends with nav + page bg */
                 radial-gradient(
-                    ellipse 65% 50% at 90% 108%,
-                    color-mix(in hsl, hsl(var(--hero-hue-2, 300) 100% 65%) 28%, transparent) 0%,
-                    transparent 75%
-                ),
-                /* ③ Cool bloom — hue-1 corona from top-left */
-                radial-gradient(
-                    ellipse 80% 65% at 6% -8%,
-                    color-mix(in hsl, hsl(var(--hero-hue-1, 150) 100% 65%) 30%, transparent) 0%,
-                    transparent 70%
-                ),
-                /* ④ Hex beam B — 120° counter-angle (equilateral triangle geometry) */
-                linear-gradient(
-                    -60deg,
-                    transparent 0%,
-                    transparent 40%,
-                    color-mix(in hsl, hsl(var(--hero-hue-2, 300) 100% 82%) 7%, transparent) 46%,
-                    color-mix(in hsl, hsl(var(--hero-hue-2, 300) 100% 82%) 13%, transparent) 50%,
-                    color-mix(in hsl, hsl(var(--hero-hue-2, 300) 100% 82%) 7%, transparent) 54%,
-                    transparent 60%,
-                    transparent 100%
-                ),
-                /* ⑤ Hex beam A — 60° primary angle */
-                linear-gradient(
-                    60deg,
-                    transparent 0%,
-                    transparent 40%,
-                    color-mix(in hsl, hsl(var(--hero-hue-1, 150) 100% 82%) 9%, transparent) 46%,
-                    color-mix(in hsl, hsl(var(--hero-hue-1, 150) 100% 82%) 16%, transparent) 50%,
-                    color-mix(in hsl, hsl(var(--hero-hue-1, 150) 100% 82%) 9%, transparent) 54%,
-                    transparent 60%,
-                    transparent 100%
-                ),
-                /* ⑥ Moiré ring B — center shifted +12%, spacing 36px
-                   Beat freq with ring A: 1/(1/30−1/36) = 180px phantom arcs */
-                repeating-radial-gradient(
-                    ellipse at 56% 4%,
-                    transparent 0px,
-                    transparent 34px,
-                    color-mix(in hsl, hsl(var(--hero-hue-2, 300) 100% 72%) 5%, transparent) 35px,
-                    color-mix(in hsl, hsl(var(--hero-hue-2, 300) 100% 72%) 5%, transparent) 37px,
-                    transparent 38px
-                ),
-                /* ⑦ Moiré ring A — primary concentric rings, spacing 30px */
-                repeating-radial-gradient(
-                    ellipse at 44% 4%,
-                    transparent 0px,
-                    transparent 28px,
-                    color-mix(in hsl, hsl(var(--hero-hue-1, 150) 100% 72%) 6%, transparent) 29px,
-                    color-mix(in hsl, hsl(var(--hero-hue-1, 150) 100% 72%) 6%, transparent) 31px,
-                    transparent 32px
+                    ellipse 130% 90% at 50% 0%,
+                    color-mix(in hsl, var(--neon-g) 18%, var(--background)) 0%,
+                    color-mix(in hsl, var(--neon-g) 10%, var(--background)) 50%,
+                    var(--background) 100%
                 );
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+
+            /* ── Ceiling perspective grid ── */
+            &::before {
+                content: "";
+                position: absolute;
+                left: -10%;
+                right: -10%;
+                /* Push well above hero so perspective-compressed lines fill the nav bar gap */
+                top: -25%;
+                height: 93%;
+                pointer-events: none;
+                background-image:
+                    /* Vertical columns: density controlled by --grid-v */
+                    repeating-linear-gradient(
+                        to right,
+                        transparent 0%,
+                        transparent calc(var(--grid-v) - 1px),
+                        color-mix(in hsl, var(--neon-g) 28%, transparent) calc(var(--grid-v) - 1px),
+                        color-mix(in hsl, var(--neon-g) 28%, transparent) var(--grid-v)
+                    ),
+                    /* Horizontal rows: percentage stops so the 1px line always sits
+                       at the tile edge regardless of tile height, enabling fluid scaling */
+                    repeating-linear-gradient(
+                        to bottom,
+                        transparent 0%,
+                        transparent calc(100% - 1px),
+                        color-mix(in hsl, var(--neon-g) 20%, transparent) calc(100% - 1px),
+                        color-mix(in hsl, var(--neon-g) 20%, transparent) 100%
+                    );
+                /* Tile height uses clamp: tighter on mobile, roomier on desktop */
+                background-size: 100% 100%, 100% clamp(24px, 4vw, 52px);
+                background-repeat: no-repeat, repeat-y;
+                transform: perspective(600px) rotateX(-52deg);
+                transform-origin: 50% 100%;
+                mix-blend-mode: screen;
+                opacity: 0.7;
+                mask-image: linear-gradient(
+                    to bottom,
+                    black 0%,
+                    black 55%,
+                    rgba(0, 0, 0, 0.35) 82%,
+                    transparent 100%
+                );
+                -webkit-mask-image: linear-gradient(
+                    to bottom,
+                    black 0%,
+                    black 55%,
+                    rgba(0, 0, 0, 0.35) 82%,
+                    transparent 100%
+                );
+            }
         }
 
         /* ── Avatar anchor (overlaps hero bottom edge by 50%) ── */
@@ -708,6 +716,8 @@ export const styles = css`
             .profile-hero {
                 padding-bottom: calc(var(--space-5) + clamp(4rem, 9vw, 7rem));
             }
+            /* iPad Air (820px) — ~5.5% keeps physical line spacing close to iPad Pro at 4% */
+            .profile-hero__gradient { --grid-v: 5.5%; }
         }
 
         @media (max-width: ${bp.sm}px) {
@@ -723,6 +733,8 @@ export const styles = css`
             .profile-auth-controls {
                 padding-left: var(--space-2);
             }
+            /* Phone landscape — step down again */
+            .profile-hero__gradient { --grid-v: 7.5%; }
         }
 
         @media (max-width: ${bp.xs}px) {
@@ -733,6 +745,8 @@ export const styles = css`
             .profile-body {
                 padding-top: calc(var(--avatar-size) * 0.5 + var(--space-3));
             }
+            /* Small phones — sparse grid to avoid clutter */
+            .profile-hero__gradient { --grid-v: 10%; }
         }
     }
 `
