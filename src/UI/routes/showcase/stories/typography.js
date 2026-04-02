@@ -1,3 +1,4 @@
+import "/UI/components/select/index.js"
 import { LOCALES, T } from "./locales.js"
 
 function getDir(code) {
@@ -15,18 +16,14 @@ export default {
         label.className = "story-locale-label"
         label.textContent = "Language"
 
-        const select = document.createElement("select")
+        const select = document.createElement("ui-select")
         select.className = "story-locale-select"
-        for (const locale of LOCALES) {
-            const opt = document.createElement("option")
-            opt.value = locale.code
-            opt.textContent = `${locale.code} — ${locale.name}`
-            select.appendChild(opt)
-        }
-
-        select.addEventListener("change", (e) => {
-            const code = e.target.value
-            for (const preview of grid.querySelectorAll(".story-preview")) preview._updateLocale?.(code)
+        select.states.set({
+            options: LOCALES.map((l) => ({ value: l.code, label: `${l.code} — ${l.name}` })),
+            selected: "en",
+        })
+        select.states.on("selected", ({ value }) => {
+            for (const preview of grid.querySelectorAll(".story-preview")) preview._updateLocale?.(value)
         })
 
         bar.appendChild(label)

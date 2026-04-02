@@ -11,14 +11,14 @@ export const styles = css`
         position: fixed;
         top: 50%;
         left: 0;
-        z-index: 200;
+        z-index: var(--z-panel-toggle);
         transform: translateY(-50%);
         writing-mode: vertical-rl;
         text-orientation: mixed;
         rotate: 180deg;
         padding: var(--space-3) var(--space-2);
         background: var(--background);
-        border: 1px solid var(--game-text-color, var(--game-primary, var(--neon-c)));
+        border: var(--border-width) solid var(--game-text-color, var(--game-primary, var(--neon-c)));
         border-left: none;
         color: var(--game-text-color, var(--game-primary, var(--neon-c)));
         cursor: pointer;
@@ -64,9 +64,9 @@ export const styles = css`
     .game-nav__backdrop {
         position: fixed;
         inset: 0;
-        z-index: 210;
+        z-index: var(--z-panel-backdrop);
         background: color-mix(in hsl, var(--background) 60%, transparent);
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(var(--blur-sm));
         opacity: 0;
         pointer-events: none;
         transition: opacity var(--speed);
@@ -83,10 +83,10 @@ export const styles = css`
         top: 0;
         left: 0;
         bottom: 0;
-        z-index: 220;
-        width: min(320px, 85vw);
+        z-index: var(--z-panel);
+        width: var(--panel-width);
         background: var(--background);
-        border-right: 1px solid var(--game-primary, var(--neon-c));
+        border-right: var(--border-width) solid var(--game-primary, var(--neon-c));
         box-shadow: 4px 0 40px color-mix(in hsl, var(--game-primary, var(--neon-c)) 13%, transparent);
         display: flex;
         flex-direction: column;
@@ -105,7 +105,7 @@ export const styles = css`
         align-items: center;
         justify-content: space-between;
         padding: var(--space-4) var(--space-3);
-        border-bottom: 1px solid color-mix(in hsl, var(--game-primary, var(--neon-c)) 30%, transparent);
+        border-bottom: var(--border-width) solid color-mix(in hsl, var(--game-primary, var(--neon-c)) 30%, transparent);
         flex-shrink: 0;
     }
 
@@ -122,7 +122,7 @@ export const styles = css`
 
     .game-nav__close {
         background: transparent;
-        border: 1px solid var(--border);
+        border: var(--border);
         color: var(--color);
         width: var(--icon-md);
         height: var(--icon-md);
@@ -184,8 +184,8 @@ export const styles = css`
 
     .game-nav__item-logo {
         flex-shrink: 0;
-        width: 64px;
-        height: 36px;
+        width: var(--logo-width);
+        height: var(--logo-height);
         object-fit: contain;
         object-position: left center;
         opacity: 0.85;

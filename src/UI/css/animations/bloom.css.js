@@ -8,7 +8,7 @@ export const styles = css`
 
         to {
             scale: 100;
-            filter: blur(1rem);
+            filter: blur(var(--blur-xl));
         }
     }
 `

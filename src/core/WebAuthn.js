@@ -4,8 +4,8 @@
  * Supports both resident keys and server-side credential storage.
  */
 
-import { Statics } from "./Stores.js"
 import { bufferToBase64Url } from "./Utils/crypto.js"
+import { Statics } from "./Stores.js"
 
 export class WebAuthn {
     /**
@@ -19,7 +19,6 @@ export class WebAuthn {
         this.authenticate = this.authenticate.bind(this)
         this.sign = this.sign.bind(this)
     }
-
     // Resolved lazily so it's always read after Construct.Site() has populated Statics
     get rp() {
         return {
@@ -133,7 +132,6 @@ export class WebAuthn {
                 }
             }
         }
-        
         // Add specific credential if provided (for targeted authentication)
         if (id) options.allowCredentials = [{ id, type: "public-key" }]
 

@@ -6,7 +6,7 @@ export const styles = css`
         header {
             position: fixed;
             top: 0;
-            z-index: 50;
+            z-index: var(--z-sticky);
             width: 100%;
             background: transparent;
 
@@ -43,7 +43,7 @@ export const styles = css`
             }
 
             .brand {
-                max-width: 8rem;
+                max-width: var(--brand-max-width);
                 color: var(--brand-color);
                 display: flex;
                 filter: drop-shadow(var(--glow-c, none));

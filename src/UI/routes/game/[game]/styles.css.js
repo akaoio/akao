@@ -17,28 +17,22 @@ export const styles = css`
             /* Flush with top: cancel layout-main top padding */
             margin-top: calc(-1 * var(--space-4));
             /* Inner content alignment: mirrors layout-main's centering formula */
-            padding-top: calc(var(--space-4) + clamp(5rem, 13vw, 9rem));
+            padding-top: calc(var(--space-4) + var(--hero-pad-top));
             padding-bottom: var(--space-6);
             padding-inline: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
-            border-bottom: 1px solid var(--neon-c);
+            border-bottom: var(--border-width) solid var(--game-text-color, var(--game-primary, var(--color)));
             display: flex;
             flex-direction: column;
             gap: var(--space-2);
-            background-image:
-                linear-gradient(
-                    to bottom,
-                    color-mix(in hsl, var(--background) 10%, transparent) 0%,
-                    color-mix(in hsl, var(--background) 55%, transparent) 48%,
-                    var(--background) 80%
-                ),
-                linear-gradient(
-                    to bottom,
-                    color-mix(in hsl, var(--game-primary, #000) 18%, transparent) 0%,
-                    transparent 55%
-                ),
-                var(--game-hero-image, none);
-            background-size: 100% 100%, 100% 100%, 100% auto;
-            background-position: 0 0, 0 0, center top;
+            background-image: linear-gradient(to bottom, color-mix(in hsl, var(--background) 10%, transparent) 0%, color-mix(in hsl, var(--background) 55%, transparent) 48%, var(--background) 80%), linear-gradient(to bottom, color-mix(in hsl, var(--game-primary, #000) 18%, transparent) 0%, transparent 55%), var(--game-hero-image, none);
+            background-size:
+                100% 100%,
+                100% 100%,
+                100% auto;
+            background-position:
+                0 0,
+                0 0,
+                center top;
             background-repeat: no-repeat;
 
             .game-hero__eyebrow {
@@ -596,7 +590,6 @@ export const styles = css`
         /* md: Tablets (768–1023px) */
         @media (max-width: ${bp.md}px) {
             .game-hero {
-                padding-top: calc(var(--space-4) + clamp(4rem, 11vw, 7rem));
                 padding-bottom: var(--space-5);
             }
         }
@@ -604,7 +597,6 @@ export const styles = css`
         /* sm: Large phones / small tablets (541–767px) */
         @media (max-width: ${bp.sm}px) {
             .game-hero {
-                padding-top: calc(var(--space-4) + clamp(3.5rem, 10vw, 6rem));
                 padding-bottom: var(--space-4);
             }
 
@@ -645,7 +637,6 @@ export const styles = css`
         /* xs: Mobile phones (≤480px) */
         @media (max-width: ${bp.xs}px) {
             .game-hero {
-                padding-top: calc(var(--space-4) + clamp(3rem, 9vw, 4.5rem));
                 padding-bottom: var(--space-3);
                 gap: var(--space-1);
 
@@ -686,7 +677,6 @@ export const styles = css`
 
         /* ── Collapsed pill — tablet + mobile only ── */
         @media (max-width: ${bp.md}px) {
-
             /* Collapsed: pill only — width is set via JS inline style (pixel value)
                so the width → 100% transition has two concrete lengths to interpolate */
             .catalog-sticky.is-stuck:not(.is-expanded) {
@@ -791,7 +781,9 @@ export const styles = css`
                 background: var(--pill-rarity-color, var(--color));
                 box-shadow: none;
                 opacity: 0.2;
-                transition: box-shadow var(--speed), opacity var(--speed);
+                transition:
+                    box-shadow var(--speed),
+                    opacity var(--speed);
 
                 &.active {
                     opacity: 1;
@@ -822,7 +814,9 @@ export const styles = css`
                 color: var(--color);
                 opacity: 0.4;
                 line-height: 0;
-                transition: color var(--speed), opacity var(--speed);
+                transition:
+                    color var(--speed),
+                    opacity var(--speed);
 
                 &.active {
                     color: var(--neon-c);

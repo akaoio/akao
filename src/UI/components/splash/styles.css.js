@@ -10,7 +10,7 @@ export const styles = css`
         position: absolute;
         top: 0;
         left: 0;
-        z-index: 1000;
+        z-index: var(--z-overlay);
         display: block;
 
         .container {
@@ -29,21 +29,23 @@ export const styles = css`
                 animation: out var(--speed) ease-out forwards;
             }
 
+            --splash-symbol-size: 25vmin;
+
             .symbol {
-                min-width: 25vmin;
-                max-height: 25vmin;
+                min-width: var(--splash-symbol-size);
+                max-height: var(--splash-symbol-size);
             }
 
             .text {
                 min-width: 30vmin;
-                max-height: 25vmin;
+                max-height: var(--splash-symbol-size);
                 margin: var(--space-5);
             }
 
             .progress {
-                --border-radius: 0.25rem;
-                height: 0.25rem;
-                width: 10rem;
+                --border-radius: var(--progress-height);
+                height: var(--progress-height);
+                width: var(--progress-width);
                 display: flex;
                 position: relative;
                 align-content: center;
@@ -59,7 +61,7 @@ export const styles = css`
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    filter: blur(0.25rem);
+                    filter: blur(var(--blur-xs));
                     background-color: var(--color);
                     z-index: -1;
                     scale: 1.025;
