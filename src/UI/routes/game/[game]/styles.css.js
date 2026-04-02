@@ -17,7 +17,7 @@ export const styles = css`
             /* Flush with top: cancel layout-main top padding */
             margin-top: calc(-1 * var(--space-4));
             /* Inner content alignment: mirrors layout-main's centering formula */
-            padding-top: calc(var(--space-4) + clamp(5rem, 13vw, 9rem));
+            padding-top: calc(var(--space-4) + var(--hero-pad-top));
             padding-bottom: var(--space-6);
             padding-inline: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
             border-bottom: var(--border-width) solid var(--game-text-color, var(--game-primary, var(--color)));
@@ -590,7 +590,6 @@ export const styles = css`
         /* md: Tablets (768–1023px) */
         @media (max-width: ${bp.md}px) {
             .game-hero {
-                padding-top: calc(var(--space-4) + clamp(4rem, 11vw, 7rem));
                 padding-bottom: var(--space-5);
             }
         }
@@ -598,7 +597,6 @@ export const styles = css`
         /* sm: Large phones / small tablets (541–767px) */
         @media (max-width: ${bp.sm}px) {
             .game-hero {
-                padding-top: calc(var(--space-4) + clamp(3.5rem, 10vw, 6rem));
                 padding-bottom: var(--space-4);
             }
 
@@ -639,7 +637,6 @@ export const styles = css`
         /* xs: Mobile phones (≤480px) */
         @media (max-width: ${bp.xs}px) {
             .game-hero {
-                padding-top: calc(var(--space-4) + clamp(3rem, 9vw, 4.5rem));
                 padding-bottom: var(--space-3);
                 gap: var(--space-1);
 

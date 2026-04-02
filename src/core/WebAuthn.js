@@ -4,8 +4,8 @@
  * Supports both resident keys and server-side credential storage.
  */
 
-import { Statics } from "./Stores.js"
 import { bufferToBase64Url } from "./Utils/crypto.js"
+import { Statics } from "./Stores.js"
 
 export class WebAuthn {
     /**
@@ -15,13 +15,16 @@ export class WebAuthn {
      */
     constructor(configs = {}) {
         this.configs = { ...configs }
-        // Set relying party (RP) information - identifies the website to the authenticator
-        this.configs.rp = this.configs?.rp || {}
-        this.configs.rp.id = this.configs.rp?.id || Statics.domain
-        this.configs.rp.name = this.configs.rp?.name || Statics.site?.name
         this.create = this.create.bind(this)
         this.authenticate = this.authenticate.bind(this)
         this.sign = this.sign.bind(this)
+    }
+
+    get rp() {
+        return {
+            id: this.configs.rp?.id || Statics.domain,
+            name: this.configs.rp?.name || Statics.site?.name
+        }
     }
 
     /**
@@ -48,7 +51,7 @@ export class WebAuthn {
         const options = {
             publicKey: {
                 challenge,
-                rp: this.configs.rp,
+                rp: this.rp,
                 // Supported public key algorithms (in order of preference)
                 pubKeyCredParams: [
                     { type: "public-key", alg: -7 }, // ECDSA, P-256 curve - widely supported
@@ -120,7 +123,7 @@ export class WebAuthn {
             challenge,
             timeout: 60000, // 60 second timeout
             userVerification: "preferred",
-            rpId: this.configs.rp.id,
+            rpId: this.rp.id,
             extensions: {
                 prf: {
                     eval: {
@@ -175,7 +178,7 @@ export class WebAuthn {
         const options = {
             challenge: challenge,
             userVerification: "preferred",
-            rpId: this.configs.rp.id
+            rpId: this.rp.id
         }
 
         // Add specific credential if provided (for targeted signing)

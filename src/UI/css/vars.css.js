@@ -1,4 +1,5 @@
 import { css } from "/core/UI.js"
+import { bp } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :root {
@@ -211,6 +212,25 @@ export const styles = css`
         --brand-max-width: 8rem;
         --progress-width: 10rem;
         --progress-height: var(--space-1);
+
+        /* Hero layout */
+        --hero-pad-top: clamp(5rem, 13vw, 9rem);
+        --avatar-size:  clamp(5rem, 12vw, 8rem);
+    }
+
+    @media (max-width: ${bp.md}px) {
+        :root { --hero-pad-top: clamp(4rem, 11vw, 7rem); }
+    }
+
+    @media (max-width: ${bp.sm}px) {
+        :root { --hero-pad-top: clamp(3.5rem, 10vw, 6rem); }
+    }
+
+    @media (max-width: ${bp.xs}px) {
+        :root {
+            --hero-pad-top: clamp(3rem, 9vw, 4.5rem);
+            --avatar-size:  clamp(4rem, 10vw, 5.5rem);
+        }
     }
 
     * {

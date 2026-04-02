@@ -93,12 +93,7 @@ export const styles = css`
             }
 
             .story-locale-select {
-                font-size: var(--text-sm);
-                padding: var(--space) var(--space-2);
-                border: var(--border);
-                background: transparent;
-                color: inherit;
-                cursor: pointer;
+                --select-width: 14rem;
             }
 
             .stories-grid {
