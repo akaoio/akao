@@ -19,7 +19,7 @@ export class WebAuthn {
         this.authenticate = this.authenticate.bind(this)
         this.sign = this.sign.bind(this)
     }
-
+    // Resolved lazily so it's always read after Construct.Site() has populated Statics
     get rp() {
         return {
             id: this.configs.rp?.id || Statics.domain,
@@ -132,7 +132,6 @@ export class WebAuthn {
                 }
             }
         }
-        
         // Add specific credential if provided (for targeted authentication)
         if (id) options.allowCredentials = [{ id, type: "public-key" }]
 

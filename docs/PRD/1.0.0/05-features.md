@@ -107,7 +107,7 @@ Phân loại theo priority. Mỗi feature ghi rõ: user nào, mô tả, chain de
 
 - **Wave Signin** ⚠️: Đăng nhập trên thiết bị mới bằng QR code + sóng âm (ultrasound). Cấu trúc wave() function trong Access.js đã có, ggwave.js đang integrate.
   - User: Tất cả
-  - (ref: src/core/Access.js — wave() method, docs/todos/20260322 — đang phát triển)
+  - (ref: src/core/Access.js — wave() method, docs/todos/son/20260322.md — đang phát triển)
 
 - **Multi-chain Selection** 🔲: User chọn chain (ETH/BSC) khi checkout, hệ thống hiển thị giá + gas fee tương ứng.
   - User: Buyer

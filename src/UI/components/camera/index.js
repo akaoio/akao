@@ -76,23 +76,29 @@ export class CAMERA extends HTMLElement {
 
         this.stop()
 
-        const video = id ? { deviceId: { exact: id } } : { facingMode: { ideal: facing || this.facing || "environment" } }
-        const stream = await navigator.mediaDevices.getUserMedia({ video, audio: false })
-        this.stream = stream
-        this.video.srcObject = stream
-        await this.video.play()
-        this.captured = false
-        const track = stream.getVideoTracks()[0]
-        const settings = track?.getSettings?.() || {}
-        this.$id = settings.deviceId || id || this.$id
-        this.facing = settings.facingMode || facing || this.facing
-        await this.list()
-        this.status.dataset.key = track?.label ? null : "dictionary.cameraReady"
-        if (track?.label && this.status) this.status.innerText = track.label
-        this.$resume.hidden = true
-        this.$capture.hidden = false
-        this.events.emit("ready", { id: this.$id, facing: this.facing, devices: this.devices }, { bubbles: true, composed: true })
-        return stream
+        try {
+            const video = id ? { deviceId: { exact: id } } : { facingMode: { ideal: facing || this.facing || "environment" } }
+            const stream = await navigator.mediaDevices.getUserMedia({ video, audio: false })
+            this.stream = stream
+            this.video.srcObject = stream
+            await this.video.play()
+            this.captured = false
+            const track = stream.getVideoTracks()[0]
+            const settings = track?.getSettings?.() || {}
+            this.$id = settings.deviceId || id || this.$id
+            this.facing = settings.facingMode || facing || this.facing
+            await this.list()
+            this.status.dataset.key = track?.label ? null : "dictionary.cameraReady"
+            if (track?.label && this.status) this.status.innerText = track.label
+            this.$resume.hidden = true
+            this.$capture.hidden = false
+            this.events.emit("ready", { id: this.$id, facing: this.facing, devices: this.devices }, { bubbles: true, composed: true })
+            return stream
+        } catch (error) {
+            this.events.emit("error", error, { bubbles: true, composed: true })
+            this.status.dataset.key = "dictionary.cameraAccessFailed"
+            return null
+        }
     }
 
     stop() {
