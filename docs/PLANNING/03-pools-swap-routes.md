@@ -103,24 +103,96 @@ Cho swap, vì gọi router contract thay vì transfer trực tiếp, cần encod
 
 ### 1.5 Token logo đã có tại `/images/cryptos/`
 
-Các file SVG đã được build vào `build/images/cryptos/`, phục vụ tại `/images/cryptos/`.  
-Danh sách hiện có: `ethereum-eth-logo.svg`, `wrapped-bitcoin-wbtc-logo.svg`, `tether-usdt-logo.svg`, `usd-coin-usdc-logo.svg`, `bnb-bnb-logo.svg`, `binance-usd-busd-logo.svg`, `uniswap-uni-logo.svg`, `chainlink-link-logo.svg`, `ethena-usde-usde-logo.svg`, `near-protocol-near-logo.svg`, `toncoin-ton-logo.svg`, `tron-trx-logo.svg`.
+Mỗi token/chain config có field `symbol` = **filename SVG** (không phải ticker). Ví dụ từ `currencies.yaml`:
 
-**Quy tắc đặt tên:** `{name.toLowerCase().replace(/\s+/g, '-')}-{symbol.toLowerCase()}-logo.svg`
-
-Ví dụ:
-- `name: "Wrapped Bitcoin"`, `symbol: "WBTC"` → `wrapped-bitcoin-wbtc-logo.svg` ✓
-- `name: "Ethereum"`, `symbol: "ETH"` → `ethereum-eth-logo.svg` ✓
-- `name: "Tether"`, `symbol: "USDT"` → `tether-usdt-logo.svg` ✓
-
-`ui-token` render:
-```html
-<img src="/images/cryptos/${name}-${symbol}-logo.svg"
-     onerror="this.replaceWith(identicon)" />
+```yaml
+- name: WBTC
+  symbol: wrapped-bitcoin-wbtc-logo.svg   # ← filename SVG, không phải ticker
+  ABI: WBTC
+  address: "0x92f3B59a..."
+  decimals: 8
 ```
-Fallback nếu không có file: dùng `ui-identicon` (đã có sẵn trong akao).
 
-### 1.6 Luồng dữ liệu live
+Field `symbol` này được `loadContract()` nạp vào `configs`, nên `Lives.pools[chain][address].token0.configs.symbol` đã chứa sẵn filename.
+
+Pattern render **giống hệt `ui-wallets`** (dùng `ui-svg`, không phải `<img>`):
+
+```javascript
+// ui-wallets (reference — wallets/index.js line 152):
+html`<ui-svg class="icon" data-src="/images/cryptos/${currency.symbol}" /> ${currency.name}`
+
+// ui-token dùng cùng pattern:
+html`<ui-svg class="icon" data-src="/images/cryptos/${token.configs.symbol}" /> ${token.configs.name}`
+```
+
+`ui-svg` (component đã có) xử lý fetch + inline SVG.
+
+Danh sách SVG hiện có: `ethereum-eth-logo.svg`, `wrapped-bitcoin-wbtc-logo.svg`, `tether-usdt-logo.svg`, `usd-coin-usdc-logo.svg`, `bnb-bnb-logo.svg`, `binance-usd-busd-logo.svg`, `uniswap-uni-logo.svg`, `chainlink-link-logo.svg`, `ethena-usde-usde-logo.svg`, `near-protocol-near-logo.svg`, `toncoin-ton-logo.svg`, `tron-trx-logo.svg`.
+
+### 1.6 Kiến trúc DB.get — học từ deposit & withdraw
+
+**Deposit và withdraw không gọi `DB.get` trực tiếp.** Toàn bộ data loading được phân chia như sau:
+
+#### Tầng onchain thread (trước khi route render)
+```
+Construct.Chains()
+  └─ chain.init()
+       ├─ DB.get(["statics","chains",id,"configs.json"])     ← chain RPCs, id, symbol
+       ├─ DB.get(["statics","chains",id,"currencies.json"])  ← danh sách địa chỉ ERC-20
+       ├─ DB.get(["statics","chains",id,"stables.json"])
+       └─ chain.load({ address: "native" })
+            └─ loadContract({ chain: id, address: "native" })
+                 └─ DB.get(["statics","chains",id,"contracts","native.json"])
+
+Construct.Dexs()
+  └─ dex.init()
+       ├─ DB.get([...,"defis",dex,version,"configs.json"])   ← router, factory, quoter
+       └─ DB.get([...,"defis",dex,version,"pools.json"])     ← mảng địa chỉ pool
+
+scanPools()  (loop mỗi 10s)
+  └─ loadContract({ chain, address: poolAddress })
+       └─ DB.get(["statics","chains",chain,"contracts","{address}.json"])
+  └─ loadContract({ chain, address: token0Address })   ← configs.symbol ở đây
+  └─ loadContract({ chain, address: token1Address })
+  └─ dex.getRate({ pool })  ← gọi on-chain RPC
+  └─ Indexes.Lives.get("pools").get(dex.id).get(address).put(data)  ← ghi IDB
+  └─ thread.send({ Lives: { pools: {...} } })           ← đẩy về main thread
+```
+
+> **Kết quả:** Sau khi `onchain.js` chạy xong, `Chains[id].currencies` chỉ có **native token**. ERC-20 addresses được liệt kê trong `chain.configs.currencies` nhưng **chưa load** thành object.
+
+#### Tầng ui-wallets (khi route mount)
+```
+ui-wallets.connectedCallback()
+  └─ for each chain:
+       if (chain.configs.currencies.length !== Object.values(chain.currencies).length)
+           await chain.load()   // ← load TẤT CẢ ERC-20 còn thiếu
+                └─ loadContract({ chain: id, address })
+                     ├─ check Statics.chains[id].contracts[address]  (in-memory cache)
+                     └─ DB.get(["statics","chains",id,"contracts","{address}.json"])
+                          ├─ check Indexes.Hashes (IDB hash)
+                          ├─ fetch hash file
+                          └─ serve from Indexes.Statics (IDB) nếu hash khớp
+                               else fetch mới → update IDB
+```
+
+#### Tầng route (sau khi ui-wallets load xong)
+- **deposit**: lắng nghe `$wallets.states.on("address")` → pipe vào `<ui-qr>`
+- **withdraw**: lắng nghe `$wallets.states.on("address")` → enable form → gọi `wallet.fee()` / `wallet.send()`
+- **Không route nào gọi DB.get trực tiếp**
+
+#### Ngụ ý cho route pools và swap
+
+| Route | DB.get trực tiếp? | Nguồn data | Cần `ui-wallets`? |
+|-------|-------------------|------------|-------------------|
+| `/pools` | **Không** | `Indexes.Lives.get("pools").once()` (IDB cache) + `events.on("Lives.pools")` | Không (public, không cần auth) |
+| `/swap` | **Không** | `Chains[x].currencies` (sau khi `ui-wallets` trigger `chain.load()`), `Lives.pools` | **Có** (cần wallet để ký TX) |
+
+Route `/pools` đọc data từ **IDB cache** (`Indexes.Lives`) — không cần `DB.get` vì `onchain.js` đã ghi vào IDB qua `Indexes.Lives.get("pools").put(data)`.
+
+Route `/swap` dùng `ui-wallets` y chang deposit/withdraw — component đó tự xử lý `chain.load()` → `loadContract` → `DB.get` khi cần.
+
+### 1.7 Luồng dữ liệu live
 
 ```
 onchain thread → thread.send({ Lives: { pools: {...} } })
@@ -128,8 +200,6 @@ onchain thread → thread.send({ Lives: { pools: {...} } })
   → events.emit("Lives.pools", data)
   → UI components lắng nghe events.on("Lives.pools", handler)
 ```
-
----
 
 ---
 
@@ -267,13 +337,18 @@ export const template = html`
 // Nhận dataset attributes:
 // data-chain, data-address, data-dex, data-version
 
-// Hiển thị:
-// [logo token0][symbol0] / [logo token1][symbol1]
-// rate: 1 WBTC = 15.3 WETH
-// fiat: ≈ $X,XXX
-// liquidity: $X,XXX,XXX
-// chain badge: ETH | BSC
+// Hiển thị (token logo dùng configs.symbol trực tiếp):
+// html`<ui-svg data-src="/images/cryptos/${token0.configs.symbol}" /> ${token0.configs.name}`
+// /
+// html`<ui-svg data-src="/images/cryptos/${token1.configs.symbol}" /> ${token1.configs.name}`
+// rate: 1 WBTC = 15.3 WETH  (từ pool.pairs[token0.address][token1.address])
+// fiat: ≈ $X,XXX (từ fiatValue({ chain, currency: token0.configs, amount: 1, fiat }))
+// liquidity: $X,XXX,XXX TVL  (fiatValue × token0.quantity + fiatValue × token1.quantity)
+// chain badge: ETH | BSC  (dùng chain.configs.symbol cho logo)
 // dex badge: Uniswap V2 | V3
+
+// token0.configs.symbol = "wrapped-bitcoin-wbtc-logo.svg"
+// Lấy từ Lives.pools[chain][address].token0.configs.symbol
 
 // Nhận live data qua:
 // events.on("Lives.pools", ...)  ← tự subscribe/unsubscribe
@@ -282,68 +357,44 @@ export const template = html`
 
 ### 2.7 Tính liquidity và giá fiat
 
-Fiat pricing **bắt buộc** được hiển thị cùng với rate. Logic:
+Fiat pricing **bắt buộc** được hiển thị cùng với rate. **Không cần viết thêm helper** — `fiatValue` và `fiatRates` đã có sẵn trong `src/core/Utils/contracts.js`.
 
-```
-Bước 1 — Xây price graph từ Lives.pools
-  Input: tất cả pools hiện có trong Lives.pools
-  Mỗi pool đóng góp 2 cạnh vào graph:
-    pool.token0.address → pool.token1.address : token0.rate
-    pool.token1.address → pool.token0.address : token1.rate
+#### `fiatRates({ chain, currency })` — async
+Tìm tất cả pools trong `Lives.pools[chain]` chứa currency này, tra `Statics.chains[chain].stables` (mảng stablecoin addresses), trả về `{ "USD": 1500, "USDT": 1500 }`. Rate lấy từ `pool.pairs[token0.address][token1.address]`.
 
-Bước 2 — Xác định anchor (USD)
-  Stablecoins: USDT, USDC, BUSD, USDE (symbol check)
-  Nếu token1 là stable: token0.price_in_USD = token0.rate (rate đã là USD/token0)
+- Native token không có `address`: tự động dùng `currency.wrapped` để tìm rate
+- Stablecoin (`currency.group === "stables"` + `currency.fiat`): trả về `{ [fiat]: 1 }` ngay
 
-Bước 3 — Traverse graph (BFS/DFS)
-  Xuất phát từ stable anchor, lan dần:
-    WETH.price_in_USD  = WETH.rate_against_USDT
-    WBTC.price_in_USD  = WBTC.rate_against_WETH × WETH.price_in_USD
-    ...
-  Kết quả: priceMap = { [tokenAddress]: usdPrice }
-
-Bước 4 — Tính liquidity pool
-  liquidity_USD = token0.quantity × priceMap[token0.address]
-                + token1.quantity × priceMap[token1.address]
-
-Bước 5 — Áp dụng forex Lives.forex
-  userFiat = Context.get("fiat").code   // e.g. "VND"
-  display_price = usdPrice × Lives.forex["USD"][userFiat]
-```
-
-**Module helper:** `src/core/Utils/prices.js` (mới) — export function `buildpricemap(pools)` trả về `{ [tokenAddress]: usdPrice }`. Được gọi mỗi khi `Lives.pools` hoặc `Lives.forex` thay đổi.
+#### `fiatValue({ chain, currency, amount, fiat, forex })` — async
+Gọi `fiatRates()` rồi áp `Lives.forex` để chuyển sang fiat mục tiêu. `forex` mặc định là `Lives.forex` (không cần truyền).
 
 ```javascript
-// src/core/Utils/prices.js
-export function buildpricemap(pools) {
-    const graph = {}   // { [address]: [{ neighbor, rate }] }
-    const STABLES = new Set(["USDT", "USDC", "BUSD", "DAI", "USDE"])
-    const prices = {}  // { [address]: usdPrice }
+import { fiatValue } from "/core/Utils/contracts.js"
 
-    // Xây graph từ tất cả pools
-    for (const chainPools of Object.values(pools)) {
-        for (const pool of Object.values(chainPools)) {
-            const a = pool.token0.address, b = pool.token1.address
-            if (!a || !b) continue
-            graph[a] = graph[a] || []
-            graph[b] = graph[b] || []
-            graph[a].push({ neighbor: b, rate: pool.token0.rate, symbol: pool.token1.configs?.symbol })
-            graph[b].push({ neighbor: a, rate: pool.token1.rate, symbol: pool.token0.configs?.symbol })
-        }
-    }
+// Trong ui-pool — async method:
+async renderfiat(pool) {
+    const fiat = Context.get("fiat")?.code || "USD"
+    const chain = pool.chain
 
-    // Seed stables với price = 1 USD
-    for (const [address, edges] of Object.entries(graph)) {
-        // Kiểm tra nếu token này là stable
-        // (symbol nằm trong metadata của poolside)
-    }
-    // ... BFS từ stable seeds
+    // Token price (1 token0 = bao nhiêu fiat)
+    const price0 = await fiatValue({ chain, currency: pool.token0.configs, amount: 1, fiat })
+    //=> hiển thị "≈ $1,500" bên cạnh WETH
 
-    return prices
+    // Liquidity TVL
+    const liq0 = await fiatValue({ chain, currency: pool.token0.configs, amount: pool.token0.quantity, fiat })
+    const liq1 = await fiatValue({ chain, currency: pool.token1.configs, amount: pool.token1.quantity, fiat })
+    const tvl = (liq0 || 0) + (liq1 || 0)
+    //=> hiển thị "$X,XXX,XXX TVL"
+
+    // Rate từ pool.pairs (không dùng rate field riêng)
+    const rate = pool.pairs?.[pool.token0.address]?.[pool.token1.address]
+    //=> hiển thị "1 WBTC = 15.3 WETH"
+
+    this.states.set({ price0, tvl, rate })
 }
 ```
 
-> Hàm `buildpricemap` được gọi trong `route-pools` và `route-swap` (qua `events.on`) — không phải trong onchain thread.
+> `fiatValue` trả về `undefined` nếu không tìm được rate (token chưa có pool với stable). UI nên hiển thị `"—"` thay vì crash.
 
 ---
 
@@ -378,6 +429,8 @@ src/UI/components/token-select/
 
 > `ui-token-select` tái sử dụng `ui-token` component từ route pools.
 
+**Pattern từ deposit/withdraw — bắt buộc với swap:** Cả 2 route đều nhúng `<ui-wallets />`. Đây **không chỉ là UI** — `ui-wallets.connectedCallback()` là trigger duy nhất gọi `chain.load()` → `loadContract` → `DB.get` để nạp tất cả ERC-20 configs vào `chain.currencies`. Sau đó `withdraw` mới resolve được currency object qua `Object.values(wallet.chain.currencies).find(c => c.name === currencyName)`. Route swap cũng phải làm y chang: nhúng `<ui-wallets />`, lắng nghe `$wallets.states.on("address")`, rồi mới truy cập `wallet.chain.currencies`.
+
 ### 3.4 Route component pattern
 
 ```javascript
@@ -406,6 +459,7 @@ export class SWAP extends HTMLElement {
         // Pre-fill từ URL params nếu có
         if (params?.from || params?.to) this.prefill(params)
 
+        this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.$from = this.shadowRoot.querySelector("#from")
         this.$to = this.shadowRoot.querySelector("#to")
         this.$amount = this.shadowRoot.querySelector("#amount")
@@ -417,6 +471,10 @@ export class SWAP extends HTMLElement {
         $submit.addEventListener("click", this.submit)
 
         this.subscriptions.push(
+            // ui-wallets triggers chain.load() on mount — sau đó mới có chain.currencies ERC-20
+            this.$wallets.states.on("chain", ({ value: chain }) => {
+                if (chain) this.refreshtokens()
+            }),
             this.$from.events.on("select", ({ detail }) => {
                 this.states.set({ from: detail })
                 this.quote()
@@ -563,11 +621,15 @@ customElements.define("route-swap", SWAP)
 
 ```javascript
 // src/UI/routes/swap/template.js
+// ui-wallets PHẢI có trong template — nó trigger chain.load() khi connectedCallback chạy
+// (giống hệt deposit/withdraw — xem src/UI/routes/withdraw/template.js)
 export const template = html`
     ${styles}
     <layout-main>
         <h1><ui-context data-key="dictionary.swap" /></h1>
         <main>
+            <ui-wallets />
+
             <div class="swap-box">
                 <div class="field">
                     <label><ui-context data-key="dictionary.from" /></label>
@@ -604,16 +666,26 @@ export const template = html`
 
 ### 3.6 Component `ui-token-select`
 
-Dropdown chọn token từ danh sách available. Tương tự `ui-wallets` nhưng cho token:
+Dropdown chọn token. Nguồn dữ liệu: `Chains[x].currencies` (có `configs.symbol` = SVG filename, giống `ui-wallets`) cộng token từ pools chưa có trong currencies.
 
 ```javascript
-// Nhận: options = [{ address, configs: {symbol, name, decimals}, quantity }]
-// Emit: CustomEvent("select", { detail: { address, configs, quantity } })
+// Nhận: options = [{ address, configs: { symbol, name, decimals } }]
+// configs.symbol = SVG filename ("tether-usdt-logo.svg")
+// Emit: CustomEvent("select", { detail: { address, configs } })
 
-// Hiển thị mỗi option:
-// [logo/identicon token] [symbol] [name] [balance nếu có]
+// Render mỗi option — giống hệt ui-wallets.get currencies() (line 152):
+html`<ui-svg class="icon" data-src="/images/cryptos/${token.configs.symbol}" /> ${token.configs.name}`
 
-// Internal state: States({ selected: null, open: false })
+// Xây options (gọi SAU KHI ui-wallets đã load — qua $wallets.states.on("chain")):
+// 1. Từ Chains[activeChain].currencies (đã load đủ configs.symbol sau chain.load())
+// 2. Bổ sung token từ Lives.pools chưa có trong currencies (đã load configs bởi onchain.js)
+// 3. Filter theo chain từ ui-wallets.states.get("chain")
+
+// SAI nếu gọi ngay trong connectedCallback — chain.currencies chỉ có native lúc đó.
+// ĐÚNG: đợi $wallets.states.on("chain", ...) rồi mới build.
+
+// Internal state: States({ selected: null, open: false, filter: "" })
+// Search: input filter theo token.configs.name
 ```
 
 ---
@@ -680,8 +752,8 @@ Tạo file `src/statics/i18n/*.yaml` cho các key chưa có:
 
 ### Bước 1 — Utility + components nền
 
-1. Viết `src/core/Utils/prices.js` — export `buildpricemap(pools)` (price graph BFS từ stables)
-2. Tạo `src/UI/components/token/` — `ui-token`: logo SVG (`/images/cryptos/`) + symbol + optional amount; fallback `ui-identicon`
+1. Xác nhận `fiatValue` và `fiatRates` trong `src/core/Utils/contracts.js` đã sẵn sàng (không cần viết mới)
+2. Tạo `src/UI/components/token/` — `ui-token`: `<ui-svg data-src="/images/cryptos/${token.configs.symbol}" />` + name + optional amount; `configs.symbol` là SVG filename trực tiếp
 3. Thêm i18n keys: `pools`, `swap`, `rate`, `liquidity`, `price`, `from`, `to`, `slippage`, `quote`, `nopoolFound`, `insufficientBalance`, `selectToken`, `searchToken`, `dex`, `gasFee`
 4. `npm run build:core`
 
@@ -690,7 +762,7 @@ Tạo file `src/statics/i18n/*.yaml` cho các key chưa có:
 5. Tạo `src/UI/components/pool/` — `ui-pool`: hiển thị 1 pool row
    - Pair tokens (2× `ui-token`)
    - Rate: `1 WBTC = 15.3 WETH`
-   - Fiat price: `≈ $X,XXX` (dùng `buildpricemap` + `Lives.forex` + `Context.get("fiat")`)
+   - Fiat price: `await fiatValue({ chain, currency: token.configs, amount: 1, fiat })` (từ `contracts.js`)
    - Liquidity fiat: `$X,XXX,XXX TVL`
    - Badges: chain + DEX name + version (V2/V3)
    - Self-subscribe `events.on("Lives.pools")` và `events.on("Lives.forex")`
@@ -700,10 +772,10 @@ Tạo file `src/statics/i18n/*.yaml` cho các key chưa có:
 ### Bước 3 — Component `ui-token-select`
 
 8. Tạo `src/UI/components/token-select/` — dropdown chọn token
-   - Xây từ unique tokens trong `Lives.pools`
-   - Mỗi option: `ui-token` + name + balance (từ `Lives.balances`)
-   - Search/filter theo symbol hoặc name
-   - Emit `CustomEvent("select", { detail: token })`
+   - Nguồn: `Chains[x].currencies` (có `configs.symbol`) + bổ sung từ `Lives.pools`
+   - Render label: `html\`<ui-svg data-src="/images/cryptos/${t.configs.symbol}" /> ${t.configs.name}\`` (giống `ui-wallets` line 152)
+   - Search input filter theo name
+   - Emit `CustomEvent("select", { detail: { address, configs } })`
 
 ### Bước 4 — Route `/swap`
 
@@ -713,7 +785,7 @@ Tạo file `src/statics/i18n/*.yaml` cho các key chưa có:
 12. `quote()` debounce 500ms:
     - V2: `dex.getAmountsOut({ token0, token1, amount })`
     - V3: `dex.quote({ token0, token1, fee: pool.fee, amountIn: amount })`
-    - Hiển thị output + fiat equivalent dùng `buildpricemap`
+    - Hiển thị output + fiat equivalent: `await fiatValue({ chain, currency: toToken.configs, amount: result.amount, fiat })`
 13. `estimategas()` debounce 500ms → `chain.fee({ from: walletAddress, to: router, amount, currency: fromToken.configs })`
 14. `submit()` → `dex.swap({ token0, token1, amount0, slippage, fee: pool?.fee })` (V2 và V3 xử lý nội bộ)
 15. Balance check: `amount ≤ Lives.balances[chain][from.address]` trước khi submit
@@ -726,7 +798,7 @@ Tạo file `src/statics/i18n/*.yaml` cho các key chưa có:
 | Vấn đề | Hiện trạng | Cần làm |
 |--------|-----------|---------|
 | Multi-hop swap path | `finddex()` chỉ tìm direct pair | Hỗ trợ A→B→C trong iteration 2; MVP chỉ direct pairs |
-| Token logo không có file | `/images/cryptos/` có 12 token | Fallback `ui-identicon`; bổ sung SVG khi có token mới |
+| Token logo không có SVG | `configs.symbol` trỏ đúng filename; `ui-svg` load fail silently | Bổ sung SVG vào `build/images/cryptos/` khi thêm token mới |
 | Gas cho swap router | `chain.fee()` tính cho ERC20 transfer, không phải router call | Cần encode swap calldata → `chain.https.estimateGas({ to: router, data })` |
 | V3 fee tier | Pool V3 cần `fee` (500/3000/10000) trong swap params | `finddex()` trả về `pool` kèm `fee` — dùng trực tiếp |
 | Balance check | `Lives.balances[chain][address]` có từ `onchain.js` | Disable submit + hiển thị `insufficientBalance` nếu amount > balance |
@@ -734,15 +806,20 @@ Tạo file `src/statics/i18n/*.yaml` cho các key chưa có:
 
 | File | Vai trò |
 |------|---------|
-| [src/core/threads/onchain.js](../../src/core/threads/onchain.js) | `scanPools()` — đã hoạt động |
+| [src/core/threads/onchain.js](../../src/core/threads/onchain.js) | `scanPools()` — gọi `loadContract` → `DB.get`, ghi vào `Indexes.Lives` |
 | [src/core/Dex.js](../../src/core/Dex.js) | Interface `getRate()`, `swap()` |
 | [src/core/DeFi/V2.js](../../src/core/DeFi/V2.js) | V2: `getAmountsOut` → `swapExactTokensForTokens` |
 | [src/core/DeFi/V3.js](../../src/core/DeFi/V3.js) | V3: `quoteExactInputSingle` → `exactInputSingle` |
 | [src/core/Chains/EVM.js](../../src/core/Chains/EVM.js) | `chain.fee()`, `chain.gas()`, `chain.gasPrice()` |
-| [src/core/Stores.js](../../src/core/Stores.js) | `Lives`, `Dexs`, `Wallets`, `Chains` globals |
+| [src/core/Chain.js](../../src/core/Chain.js) | `chain.init()` (native only), `chain.load()` (ERC-20 on-demand) |
+| [src/core/Utils/contracts.js](../../src/core/Utils/contracts.js) | `loadContract()` → memory cache → `DB.get` |
+| [src/core/DB.js](../../src/core/DB.js) | `DB.get(path)` với hash-based IDB caching via `Indexes.Statics` |
+| [src/core/Stores.js](../../src/core/Stores.js) | `Lives`, `Dexs`, `Wallets`, `Chains`, `Indexes` globals |
 | [src/core/Events.js](../../src/core/Events.js) | `events.on("Lives.pools", ...)`, `events.on("Lives.forex", ...)` |
 | [src/core/Forex.js](../../src/core/Forex.js) | `Forex.convert()` |
-| [src/core/Utils/prices.js](../../src/core/Utils/prices.js) | `buildpricemap(pools)` — **tạo mới** |
-| [build/images/cryptos/](../../build/images/cryptos/) | SVG logos: 12 token; path `/images/cryptos/` |
-| [src/UI/routes/withdraw/index.js](../../src/UI/routes/withdraw/index.js) | Pattern tham chiếu: gas estimation + submit form |
-| [src/UI/components/wallets/index.js](../../src/UI/components/wallets/index.js) | Pattern tham chiếu cho `ui-token-select` |
+| [src/core/Utils/contracts.js](../../src/core/Utils/contracts.js) | `loadContract()`, `fiatValue()`, `fiatRates()` — **đã có sẵn** |
+| [build/images/cryptos/](../../build/images/cryptos/) | SVG logos: 12 token; `configs.symbol` = filename trực tiếp |
+| [src/UI/components/svg/index.js](../../src/UI/components/svg/index.js) | `ui-svg`: fetch + inline SVG; dùng thay `<img>` |
+| [src/UI/routes/deposit/index.js](../../src/UI/routes/deposit/index.js) | Pattern tham chiếu: không gọi DB.get, dùng ui-wallets |
+| [src/UI/routes/withdraw/index.js](../../src/UI/routes/withdraw/index.js) | Pattern tham chiếu: `wallet.fee()`, `wallet.send()`, currency resolution |
+| [src/UI/components/wallets/index.js](../../src/UI/components/wallets/index.js) | Trigger `chain.load()` trong `connectedCallback`; pattern logo ui-svg |
