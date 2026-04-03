@@ -27,14 +27,15 @@ node_modules/
 /geo/
 /temp/
 /.certs/
+/src/statics/forex.yaml
+/games/
+/radata/
 
 CLAUDE.md
 .claude
 
-/src/statics/forex.yaml
-/games/
 
-# BMADT
+# BMAD
 _bmad-output/
 _bmad/
 .cursor/

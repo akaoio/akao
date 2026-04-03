@@ -1,5 +1,6 @@
 import { Lives, Statics } from "../Stores.js"
 import DB from "../DB.js"
+import Forex from "../Forex.js"
 
 export const loadContract = async ({ chain, address } = {}) => {
     if (!chain || !address) return
@@ -53,10 +54,11 @@ export const fiatValue = async ({ chain, currency, amount, fiat, forex, inverse 
     chain = chain || currency?.chain
 
     // Use global forex rates if not explicitly provided
-    forex = forex || Lives?.forex
+    // Falls back to Forex.js rates (direct API fetch) when Lives.forex is not yet populated
+    forex = forex || Lives?.forex || Forex?.rates
 
     // Exit if essential parameters are missing
-    if (!chain || !currency || !fiat || !forex) return
+    if (!chain || !currency || !fiat) return
 
     // Get fiat rates for the given chain and currency
     const rates = await fiatRates({ chain, currency })

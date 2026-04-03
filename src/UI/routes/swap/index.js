@@ -206,8 +206,11 @@ export class SWAP extends HTMLElement {
 
         const amountOut = result.token1?.quantity ?? result.amount ?? 0
         const fiat = Context.get("fiat")?.code || "USD"
+        const locale = Context.get("locale")?.code || "en"
         const fiatOut = await fiatValue({ chain, currency: to.configs, amount: amountOut, fiat })
-        const fiatLabel = fiatOut ? ` (≈ ${fiat} ${formatNumber(fiatOut, 2)})` : ""
+        const fiatLabel = fiatOut > 0
+            ? " ≈ " + new Intl.NumberFormat(locale, { style: "currency", currency: fiat, notation: "compact" }).format(fiatOut)
+            : ""
         this.$quoteOut.textContent = `${formatNumber(amountOut)} ${to.configs?.name || ""}${fiatLabel}`
 
         this.$submit.removeAttribute("disabled")

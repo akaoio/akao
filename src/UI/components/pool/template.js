@@ -9,7 +9,10 @@ export const template = html`
         <ui-token id="token1"></ui-token>
     </div>
     <div class="info">
-        <div class="rate"></div>
+        <div class="rates">
+            <div id="rate0" class="rate"></div>
+            <div id="rate1" class="rate"></div>
+        </div>
         <div class="tvl"></div>
     </div>
     <div class="badges">

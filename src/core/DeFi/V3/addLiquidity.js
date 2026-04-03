@@ -1,4 +1,5 @@
-import { BigNumber, loadContract, loadABI } from "../../Utils.js"
+import { BigNumber } from "../../Utils.js"
+import { loadContract, loadABI } from "../../Utils/contracts.js"
 
 // Helper to convert to token decimal amount
 const toTokenDecimals = (amount, decimals) => {

@@ -1,4 +1,5 @@
-import { BigNumber, loadContract, loadABI } from "../../Utils.js"
+import { BigNumber } from "../../Utils.js"
+import { loadContract, loadABI } from "../../Utils/contracts.js"
 
 export const swap = async function ({ token0: _token0, token1: _token1, amount0, slippage = 0.5, fee = 3000 } = {}) {
     if (!this.wallet) throw new Error("Wallet not connected")

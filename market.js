@@ -1,9 +1,9 @@
 import Gun from "@akaoio/gun"
 import "@akaoio/gun/sea.js"
 import { load } from "./src/core/FS.js"
+import http from "http"
 
-const air = await load("air.json").catch(() => null)
-const env = air?.env || "development"
+const env = process.env.NODE_ENV || "development"
 const pairs = await load("pairs.json").catch(() => null)
 
 const domains = await load(["src", "statics", "domains.yaml"])
@@ -19,7 +19,11 @@ if (!marketPub) {
     throw new Error("Missing market pub key. Provide pairs.market.pub or site.market.pub.")
 }
 
-export const db = Gun({ peers })
+const PORT = process.env.GUN_PORT || 8765
+const server = http.createServer(Gun.serve("./build"))
+server.listen(PORT, () => console.log(`Gun relay: http://localhost:${PORT}/gun`))
+
+export const db = Gun({ web: server, peers })
 
 const fiats = await load(["src", "statics", "fiats.yaml"])
 

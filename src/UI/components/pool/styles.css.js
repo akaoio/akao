@@ -26,6 +26,11 @@ export const styles = css`
         gap: var(--space-sm);
         font-size: var(--text-sm);
     }
+    .rates {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
     .rate {
         color: var(--color);
     }
