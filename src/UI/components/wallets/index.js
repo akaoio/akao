@@ -1,11 +1,11 @@
 import template from "./template.js"
 import { Access, setWallet } from "/core/Access.js"
 import { html, render } from "/core/UI.js"
-import { Chains, Wallets } from "/core/Stores.js"
+import { Chains, Lives, Wallets } from "/core/Stores.js"
 import States from "/core/States.js"
 import { Context } from "/core/Context.js"
 import SELECT from "/UI/components/select/index.js"
-import { fiatValue } from "/core/Utils/contracts.js"
+import logic from "./logic.js"
 
 export class WALLETS extends HTMLElement {
     constructor() {
@@ -127,49 +127,34 @@ export class WALLETS extends HTMLElement {
         this.$identicons.total = this.total
         if (this.states.get("chain") && this.states.get("currency")) {
             const wallet = Wallets[this.states.get("chain")]
+            const currency = logic.currency(wallet, this.states.get("currency"))
             const address = wallet?.address || null
             this.states.set({ address })
             this.$address.textContent = address || ""
-            const currency = Object.values(wallet.chain.currencies).find((c) => c.name === this.states.get("currency"))
-            const balance = await wallet.balance({ currency })
-            if (typeof balance !== undefined) {
-                const fiat = Context.get("fiat")?.code || "USD"
+            const fiat = Context.get("fiat")?.code || "USD"
+            const { raw, amount } = await logic.balance({ wallet, currency, fiat, forex: Lives.forex })
+            if (raw !== null) {
                 const locale = Context.get("locale")?.code || "en"
-                const fiatAmount = await fiatValue({ chain: Number(this.states.get("chain")), currency, amount: Number(balance) || 0, fiat })
-                const fiatStr = fiatAmount > 0
-                    ? " ≈ " + new Intl.NumberFormat(locale, { style: "currency", currency: fiat, notation: "compact" }).format(fiatAmount)
+                const fiatstr = amount > 0
+                    ? " ≈ " + new Intl.NumberFormat(locale, { style: "currency", currency: fiat, notation: "compact" }).format(amount)
                     : ""
-                this.$balance.textContent = `${balance}${fiatStr}`
+                this.$balance.textContent = `${raw}${fiatstr}`
             }
         }
     }
 
     get currencies() {
-        const currencies = {}
-        for (const chain of Object.values(Chains)) 
-            for (const currency of Object.values(chain.currencies)) {
-                if (!currency?.name) continue
-                currencies[currency.name] = {
-                    name: currency.name,
-                    symbol: currency.symbol
-                }
-            }
-        
-        return Object.values(currencies)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((currency) => ({
-                label: html`<ui-svg class="icon" data-src="/images/cryptos/${currency.symbol}" /> ${currency.name}`,
-                value: currency.name
-            }))
+        return logic.currencies(Chains).map(c => ({
+            label: html`<ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" /> ${c.name}`,
+            value: c.name
+        }))
     }
 
     chains(currency = null) {
-        return Object.values(Chains)
-            .filter(chain => !currency || Object.values(chain.currencies).some(c => c.name === currency))
-            .map((chain) => ({
-                label: html`<ui-svg class="icon" data-src="/images/cryptos/${chain.configs.symbol}" /> ${chain.configs.name || String(chain.id)}`,
-                value: String(chain.id)
-            }))
+        return logic.chains(Chains, currency).map(c => ({
+            label: html`<ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" /> ${c.name}`,
+            value: c.id
+        }))
     }
 }
 
