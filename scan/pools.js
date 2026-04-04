@@ -111,7 +111,7 @@ const verifyPool = async (provider, poolABIName, poolAddress, version) => {
     }
 }
 
-const getPool = async (provider, factory, token0, token1, version, fee = null) => {
+const pool = async (provider, factory, token0, token1, version, fee = null) => {
     try {
         const code = await provider.getCode(factory.address)
         if (code === "0x" || code === "0x0") return null
@@ -187,11 +187,11 @@ const scanVersion = async ({ chainName, chainConfigs, chainData, dex, version, v
                         rpc = next.rpc
                     }
 
-                    const pool = await getPool(provider, factory, ordered.token0, ordered.token1, version, fee)
-                    if (!pool || existingAddresses.has(pool.address.toLowerCase())) continue
+                    const $pool = await pool(provider, factory, ordered.token0, ordered.token1, version, fee)
+                    if (!$pool || existingAddresses.has($pool.address.toLowerCase())) continue
 
                     const poolABI = `${dex}${version}Pool`
-                    const valid = await verifyPool(provider, poolABI, pool.address, version)
+                    const valid = await verifyPool(provider, poolABI, $pool.address, version)
                     if (!valid) {
                         failedRPCs.set(rpc, Date.now())
                         await new Promise((resolve) => setTimeout(resolve, RPC_SWITCH_DELAY))
@@ -204,7 +204,7 @@ const scanVersion = async ({ chainName, chainConfigs, chainData, dex, version, v
                         dex,
                         version,
                         ABI: poolABI,
-                        ...pool
+                        ...$pool
                     }
                 }
 

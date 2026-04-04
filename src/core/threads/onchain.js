@@ -48,7 +48,7 @@ thread.scanPools = () => {
                     if (!token0.configs || !token1.configs) return console.error(`Tokens not found for pool ${pool.address}`)
 
                     // Get current rates
-                    const rates = await dex.getRate({ pool: address })
+                    const rates = await dex.rate({ pool: address })
                     if (rates.error) return console.error(`Failed to get rates for pool ${pool.address} on chain ${chain.id}:`, rates.error)
 
                     // Create token data objects efficiently
@@ -61,7 +61,7 @@ thread.scanPools = () => {
                     //     const block = await chain.https.getBlock(last)
 
                     //     if (block) {
-                    //         const lastRates = await dex.getRate({ pool: address, block: last })
+                    //         const lastRates = await dex.rate({ pool: address, block: last })
                     //         if (!lastRates.error && lastRates.token0?.rate > 0 && lastRates.token1?.rate > 0) {
                     //             token0.change24h = ((rates.token0.rate - lastRates.token0.rate) / lastRates.token0.rate) * 100
                     //             token1.change24h = ((rates.token1.rate - lastRates.token1.rate) / lastRates.token1.rate) * 100

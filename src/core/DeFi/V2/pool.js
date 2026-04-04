@@ -1,6 +1,6 @@
 import { loadContract, loadABI } from "../../Utils/contracts.js"
 
-export const getPool = async function ({ token0, token1 } = {}) {
+export const pool = async function ({ token0, token1 } = {}) {
     const configs = await loadContract({ chain: this.configs.chain, address: this.configs.factory })
     if (!configs) throw new Error("Factory contract not found")
     const ABI = await loadABI({ ABI: configs.ABI, methods: ["getPair"] })
@@ -15,4 +15,4 @@ export const getPool = async function ({ token0, token1 } = {}) {
     }
 }
 
-export default getPool
+export default pool

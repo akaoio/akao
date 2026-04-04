@@ -1,7 +1,7 @@
 import { BigNumber } from "../../Utils.js"
 import { loadContract, loadABI } from "../../Utils/contracts.js"
 
-export const calculateEarning = async function ({ position: _position, token0: _token0, amount0, token1: _token1, amount1 } = {}) {
+export const earning = async function ({ position: _position, token0: _token0, amount0, token1: _token1, amount1 } = {}) {
     try {
         // Get position manager contract
         const positionManager = { configs: await loadContract({ chain: this.configs.chain, address: this.configs.positionManager }) }
@@ -74,4 +74,4 @@ export const calculateEarning = async function ({ position: _position, token0: _
     }
 }
 
-export default calculateEarning
+export default earning

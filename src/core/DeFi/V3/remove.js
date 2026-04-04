@@ -4,7 +4,7 @@ import { loadContract, loadABI } from "../../Utils/contracts.js"
 // Max uint128 as BigNumber
 const MAX_UINT128 = new BigNumber(2).pow(128).minus(1)
 
-export const removeLiquidity = async function ({ position: _position, amount, slippage = 0.5 } = {}) {
+export const remove = async function ({ position: _position, amount, slippage = 0.5 } = {}) {
     if (!this.wallet) throw new Error("Wallet not connected")
     try {
         // Get position manager contract
@@ -105,4 +105,4 @@ export const removeLiquidity = async function ({ position: _position, amount, sl
     }
 }
 
-export default removeLiquidity
+export default remove
