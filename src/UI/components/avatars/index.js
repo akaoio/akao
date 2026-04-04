@@ -42,7 +42,6 @@ export class AVATARS extends HTMLElement {
         this.subscriptions.push(
             this.$identicons.events.on("select", ({ detail: { id } }) => { this.id = id }),
             this.$identicons.events.on("increase", () => { this.total += this.step }),
-            this.$identicons.events.on("decrease", () => { if (this.total - this.step > this.id) this.total -= this.step }),
             Access.on("authenticated", async ({ value }) => {
                 this.style.display = value ? "flex" : "none"
                 if (value) { await seed(); this.render() }

@@ -11,6 +11,7 @@ export class IDENTICONS extends HTMLElement {
         this.$id = 0
         this.$total = 0
         this.$renderPending = false
+        this._loadingMore = false
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
@@ -32,16 +33,19 @@ export class IDENTICONS extends HTMLElement {
 
     connectedCallback() {
         this.$container = this.shadowRoot.querySelector("#container")
-        const increase = () => this.events.emit("increase")
-        const decrease = () => this.events.emit("decrease")
-        const $increase = this.shadowRoot.querySelector("#increase")
-        const $decrease = this.shadowRoot.querySelector("#decrease")
-        $increase.addEventListener("click", increase)
-        $decrease.addEventListener("click", decrease)
-        this.subscriptions.push(
-            () => $increase.removeEventListener("click", increase),
-            () => $decrease.removeEventListener("click", decrease)
-        )
+
+        const onScroll = () => {
+            if (this._loadingMore) return
+            const { scrollLeft, scrollWidth, clientWidth } = this.$container
+            if (scrollWidth - scrollLeft - clientWidth < clientWidth * 0.5) {
+                this._loadingMore = true
+                this.events.emit("increase")
+                setTimeout(() => { this._loadingMore = false }, 600)
+            }
+        }
+
+        this.$container.addEventListener("scroll", onScroll, { passive: true })
+        this.subscriptions.push(() => this.$container.removeEventListener("scroll", onScroll))
     }
 
     disconnectedCallback() {
@@ -81,7 +85,10 @@ export class IDENTICONS extends HTMLElement {
         }
         render(templates, this.$container, { append: true })
         const input = this.$container.querySelector(`input#i${this.$id}`)
-        if (input) input.checked = true
+        if (input) {
+            input.checked = true
+            input.closest(".item")?.scrollIntoView({ behavior: "instant", block: "nearest", inline: "center" })
+        }
     }
 
     remove() {

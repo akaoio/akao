@@ -8,6 +8,7 @@ export const styles = css`
 
         /* ── Hero ── */
         .profile-hero {
+            --page-pad: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
             position: relative;
             overflow: visible;
             box-sizing: border-box;
@@ -20,7 +21,7 @@ export const styles = css`
                that the game-hero has but the profile hero does not. */
             padding-top: calc(var(--space-4) + var(--hero-pad-top));
             padding-bottom: calc(var(--space-6) + clamp(5rem, 10vw, 8rem));
-            padding-inline: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
+            padding-inline: var(--page-pad);
         }
 
         .profile-hero__gradient {
@@ -104,7 +105,7 @@ export const styles = css`
         .profile-avatar {
             position: absolute;
             bottom: 0;
-            left: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
+            left: var(--page-pad);
             transform: translateY(50%);
             z-index: 1;
 
@@ -118,6 +119,85 @@ export const styles = css`
                 box-shadow: var(--glow-g);
             }
         }
+
+        .profile-avatar__edit {
+            display: none;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in hsl, var(--background) 55%, transparent);
+            border: none;
+            cursor: pointer;
+            color: var(--neon-c);
+            opacity: 0;
+            transition: opacity var(--speed);
+
+            &:hover { opacity: 1; }
+            &:active { opacity: 0.7; }
+        }
+
+        #profile-avatar-wrap:hover .profile-avatar__edit,
+        #profile-avatar-wrap:focus-within .profile-avatar__edit {
+            opacity: 0.85;
+        }
+
+        /* ── Avatar picker — sits beside the avatar, same vertical overflow ── */
+        .profile-avatar-picker {
+            /* items = 75% of picker height → selected at scale(1.2) reaches 90%, leaving
+               5% breathing room each side at every breakpoint. No vertical padding needed. */
+            --icon-lg: calc(var(--avatar-size) * 0.75);
+            --identicons-pad-v: 0px;
+            display: none;
+            position: absolute;
+            bottom: 0;
+            /* start right after the avatar */
+            left: calc(var(--page-pad) + var(--avatar-size) + var(--space-3));
+            right: var(--page-pad);
+            height: var(--avatar-size);
+            transform: translateY(50%);
+            z-index: 1;
+            align-items: center;
+            overflow: hidden;
+            border: var(--border-width) solid color-mix(in hsl, var(--neon-c) 25%, transparent);
+            box-shadow: var(--glow-c);
+            background: color-mix(in hsl, var(--background) 88%, transparent);
+            backdrop-filter: blur(var(--blur-md));
+
+            &.is-open { display: flex; }
+
+            ui-avatars {
+                flex: 1;
+                min-width: 0;
+                align-self: stretch;
+            }
+        }
+
+        .profile-avatar-picker__loader {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in hsl, var(--background) 88%, transparent);
+            z-index: 1;
+
+            &::after {
+                content: "";
+                width: 1.25rem;
+                height: 1.25rem;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                border-top-color: var(--neon-c);
+                border-right-color: color-mix(in hsl, var(--neon-c) 35%, transparent);
+                box-shadow: var(--glow-c);
+                animation: picker-spin 0.7s linear infinite;
+            }
+        }
+
+        .is-loading .profile-avatar-picker__loader { display: flex; }
 
         /* ── Body ── */
         .profile-body {
@@ -299,9 +379,29 @@ export const styles = css`
             }
         }
 
-        .profile-bio-input {
+        .profile-bio:empty::before {
+            content: "Write something about yourself…";
+            opacity: 0.3;
+            font-style: italic;
+        }
+
+        .profile-bio-edit-wrap {
             display: none;
             flex: 1;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .profile-bio-count {
+            font-family: var(--content-font);
+            font-size: var(--text-xs);
+            color: var(--color);
+            opacity: 0.35;
+            text-align: right;
+            letter-spacing: 0.04em;
+        }
+
+        .profile-bio-input {
             font-family: var(--content-font);
             font-size: var(--text-sm);
             color: var(--color);
@@ -345,18 +445,12 @@ export const styles = css`
 
         .profile-bio-save {
             color: var(--neon-g);
-            &:hover {
-                border-color: color-mix(in hsl, var(--neon-g) 50%, transparent);
-                box-shadow: var(--glow-g);
-            }
+            &:hover { opacity: 0.7; }
         }
 
         .profile-bio-cancel {
             color: var(--neon-m);
-            &:hover {
-                border-color: color-mix(in hsl, var(--neon-m) 50%, transparent);
-                box-shadow: var(--glow-m);
-            }
+            &:hover { opacity: 0.7; }
         }
 
         /* ── Stats row ── */
@@ -748,6 +842,10 @@ export const styles = css`
             /* Small phones — sparse grid to avoid clutter */
             .profile-hero__gradient { --grid-v: 10%; }
         }
+    }
+
+    @keyframes picker-spin {
+        to { transform: rotate(360deg); }
     }
 `
 
