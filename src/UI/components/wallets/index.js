@@ -5,6 +5,7 @@ import { Chains, Wallets } from "/core/Stores.js"
 import States from "/core/States.js"
 import { Context } from "/core/Context.js"
 import SELECT from "/UI/components/select/index.js"
+import { fiatValue } from "/core/Utils/contracts.js"
 
 export class WALLETS extends HTMLElement {
     constructor() {
@@ -131,7 +132,15 @@ export class WALLETS extends HTMLElement {
             this.$address.textContent = address || ""
             const currency = Object.values(wallet.chain.currencies).find((c) => c.name === this.states.get("currency"))
             const balance = await wallet.balance({ currency })
-            if (typeof balance !== undefined) this.$balance.textContent = balance
+            if (typeof balance !== undefined) {
+                const fiat = Context.get("fiat")?.code || "USD"
+                const locale = Context.get("locale")?.code || "en"
+                const fiatAmount = await fiatValue({ chain: Number(this.states.get("chain")), currency, amount: Number(balance) || 0, fiat })
+                const fiatStr = fiatAmount > 0
+                    ? " ≈ " + new Intl.NumberFormat(locale, { style: "currency", currency: fiat, notation: "compact" }).format(fiatAmount)
+                    : ""
+                this.$balance.textContent = `${balance}${fiatStr}`
+            }
         }
     }
 

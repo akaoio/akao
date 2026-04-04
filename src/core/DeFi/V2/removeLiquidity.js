@@ -1,4 +1,5 @@
-import { BigNumber, loadContract, loadABI } from "../../Utils.js"
+import { BigNumber } from "../../Utils.js"
+import { loadContract, loadABI } from "../../Utils/contracts.js"
 
 export const removeLiquidity = async function ({ position: _position, token0: _token0, token1: _token1, amount, slippage = 0.5 } = {}) {
     if (!this.wallet) throw new Error("Wallet not connected")

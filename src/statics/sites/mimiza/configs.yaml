@@ -1,8 +1,0 @@
-name: mimiza
-brand:
-  text: /statics/sites/mimiza/images/branding.svg
-  symbol: /statics/sites/mimiza/images/logo.svg
-favicon: /statics/sites/mimiza/images/mimiza.svg
-env: development
-locale: en
-fiat: USD

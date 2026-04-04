@@ -9,7 +9,6 @@ integrates with external APIs to keep rates up-to-date.
 import DB from "./DB.js"
 import { NODE, BROWSER, load } from "./Utils.js"
 import { Statics } from "./Stores.js"
-import { Context } from "./Context.js"
 
 export class Forex {
     constructor() {
@@ -113,7 +112,7 @@ export class Forex {
         // Wait for initialization to complete
         await this.ready
         base = base || Statics?.site?.fiat
-        quote = quote || Context.get("fiat")?.code || Statics?.site?.fiat
+        quote = quote || globalThis.Context?.get("fiat")?.code || Statics?.site?.fiat
         if (base === quote) return amount
         // Check if rate exists, otherwise try to update
         if (!this.rates[base] || !this.rates[base][quote]) await this.update()

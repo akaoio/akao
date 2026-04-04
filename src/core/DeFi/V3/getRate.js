@@ -1,4 +1,5 @@
-import { BigNumber, loadContract, loadABI } from "../../Utils.js"
+import { BigNumber } from "../../Utils.js"
+import { loadContract, loadABI } from "../../Utils/contracts.js"
 
 export const getRate = async function ({ pool: _pool, block } = {}) {
     try {

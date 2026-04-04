@@ -1,4 +1,5 @@
-import { BigNumber, loadContract, loadABI } from "../../Utils.js"
+import { BigNumber } from "../../Utils.js"
+import { loadContract, loadABI } from "../../Utils/contracts.js"
 
 // Max uint128 as BigNumber
 const MAX_UINT128 = new BigNumber(2).pow(128).minus(1)

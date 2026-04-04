@@ -26,6 +26,11 @@ export const styles = css`
         gap: var(--space-sm);
         font-size: var(--text-sm);
     }
+    .rates {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
     .rate {
         color: var(--color);
     }
@@ -38,6 +43,9 @@ export const styles = css`
         flex-wrap: wrap;
     }
     .badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
         padding: var(--space-sm) var(--space);
         border: var(--border);
         border-radius: var(--radius);
@@ -45,6 +53,11 @@ export const styles = css`
         color: var(--color-inverted);
         font-size: var(--text-xs);
         white-space: nowrap;
+    }
+    .badge ui-svg {
+        width: 1.2em;
+        height: 1.2em;
+        flex-shrink: 0;
     }
 `
 

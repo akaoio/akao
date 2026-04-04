@@ -25,7 +25,7 @@
   "author": "mimiza",
   "type": "module",
   "scripts": {
-    "start": "node build.js crypto && node build.js core --dev && node dev.js",
+    "start": "concurrently \"npm run market\" \"node build.js crypto && node build.js core --dev && node dev.js --https\"",
     "build": "node build.js crypto && node build.js core && node build.js index && node build.js geo && node build.js hash",
     "build:core": "node build.js core",
     "build:index": "node build.js index",
@@ -44,7 +44,6 @@
     "test:core": "node test.js core",
     "test:geo": "node test.js geo",
     "test:browser": "node test-browser.js",
-    "dev": "concurrently \"npm run market\" \"npm start\"",
     "dev:ui": "node dev.js",
     "dev:https": "node dev.js --https",
     "format": "prettier --write \"src/**/*.js\"",

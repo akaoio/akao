@@ -107,7 +107,7 @@ export async function generateRoutes(locales, items, tags, games, indexContent, 
 
             const expanded = expandRouteSegments(route, { items, tags: tagList, games: gameList, gameItems })
             if (!expanded.length) {
-                if (parts.some(isDynamicSegment)) console.warn(`Skipped dynamic route '${route}' because no values were found`)
+                if (parts.some(isDynamicSegment)) {}
                 continue
             }
 
