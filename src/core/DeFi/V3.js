@@ -1,21 +1,21 @@
 import { merge } from "../Utils/data.js"
-import getPool from "./V3/getPool.js"
-import getRate from "./V3/getRate.js"
+import pool from "./V3/pool.js"
+import rate from "./V3/rate.js"
 import swap from "./V3/swap.js"
-import addLiquidity from "./V3/addLiquidity.js"
-import removeLiquidity from "./V3/removeLiquidity.js"
-import calculateEarning from "./V3/calculateEarning.js"
+import add from "./V3/add.js"
+import remove from "./V3/remove.js"
+import earning from "./V3/earning.js"
 
 export const V3 = {
     construct: async function () {
         merge(this.configs, { architecture: "V3" })
     },
-    getPool,
-    getRate,
+    pool,
+    rate,
     swap,
-    addLiquidity,
-    removeLiquidity,
-    calculateEarning
+    add,
+    remove,
+    earning
 }
 
 export default V3

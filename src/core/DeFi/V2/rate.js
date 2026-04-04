@@ -1,7 +1,7 @@
 import { BigNumber } from "../../Utils.js"
 import { loadContract, loadABI } from "../../Utils/contracts.js"
 
-export const getRate = async function ({ pool: _pool, block } = {}) {
+export const rate = async function ({ pool: _pool, block } = {}) {
     try {
         // Get pool contract to get reserves
         const pool = { configs: await loadContract({ chain: this.configs.chain, address: _pool }) }
@@ -78,4 +78,4 @@ export const getRate = async function ({ pool: _pool, block } = {}) {
     }
 }
 
-export default getRate
+export default rate

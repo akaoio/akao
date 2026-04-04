@@ -11,7 +11,7 @@ const fromTokenDecimals = (amount, decimals) => {
     return new BigNumber(amount).dividedBy(new BigNumber(10).pow(decimals)).toString()
 }
 
-export const addLiquidity = async function ({ token0: _token0, token1: _token1, amount0, amount1, fee = 3000, tickLower, tickUpper } = {}) {
+export const add = async function ({ token0: _token0, token1: _token1, amount0, amount1, fee = 3000, tickLower, tickUpper } = {}) {
     if (!this.wallet) throw new Error("Wallet not connected")
     try {
         // Get position manager contract
@@ -84,4 +84,4 @@ export const addLiquidity = async function ({ token0: _token0, token1: _token1, 
     }
 }
 
-export default addLiquidity
+export default add

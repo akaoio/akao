@@ -17,7 +17,7 @@ onchain thread
   └─ thread.scanPools()
        ├─ Construct.Chains() + Construct.Dexs()
        ├─ loop({ delay: [0, 10000] })     ← quét mỗi 10 giây
-       ├─ dex.getRate({ pool: address })  ← gọi getReserves() / slot0()
+       ├─ dex.rate({ pool: address })  ← gọi getReserves() / slot0()
        ├─ Indexes.Lives.get("pools").get(dex.id).get(pool.address).put(data)  ← IDB: key = dex.id
        └─ thread.send({ Lives: { pools: { [pool.chain]: { [pool.address]: data } } } })
               ← pool.chain là NUMERIC (e.g. 1, 11155111), không phải string "ETH"
@@ -171,7 +171,7 @@ scanPools()  (loop mỗi 10s)
        └─ DB.get(["statics","chains",chain.id,"contracts","{address}.json"])
   └─ loadContract({ chain: chain.id, address: token0Address })   ← configs.symbol ở đây
   └─ loadContract({ chain: chain.id, address: token1Address })
-  └─ dex.getRate({ pool })  ← gọi on-chain RPC
+  └─ dex.rate({ pool })  ← gọi on-chain RPC
   └─ Indexes.Lives.get("pools").get(dex.id).get(pool.address).put(data)
        ← IDB key = dex.id = "1.UniswapV2" (string)
        ← KHÁC với Lives.pools[pool.chain] = Lives.pools[1] (numeric)
@@ -936,7 +936,7 @@ Phải làm trước, nếu không pools sẽ crash hoặc không nhận live da
 | File | Vai trò |
 |------|---------|
 | [src/core/threads/onchain.js](../../src/core/threads/onchain.js) | `scanPools()` — gọi `loadContract` → `DB.get`, ghi vào `Indexes.Lives` |
-| [src/core/Dex.js](../../src/core/Dex.js) | Interface `getRate()`, `swap()` |
+| [src/core/Dex.js](../../src/core/Dex.js) | Interface `rate()`, `swap()` |
 | [src/core/DeFi/V2.js](../../src/core/DeFi/V2.js) | V2: `getAmountsOut` → `swapExactTokensForTokens` |
 | [src/core/DeFi/V3.js](../../src/core/DeFi/V3.js) | V3: `quoteExactInputSingle` → `exactInputSingle` |
 | [src/core/Chains/EVM.js](../../src/core/Chains/EVM.js) | `chain.fee()`, `chain.gas()`, `chain.gasPrice()` |
