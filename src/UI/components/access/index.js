@@ -1,9 +1,9 @@
 import { Elements } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
-import { Access, signup } from "/core/Access.js"
+import { Access } from "/core/Access.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
-import WebAuthn from "/core/WebAuthn.js"
+import logic from "./logic.js"
 
 export class ACCESS extends HTMLElement {
     constructor() {
@@ -101,7 +101,7 @@ export class ACCESS extends HTMLElement {
 
     signup() {
         const data = Object.fromEntries(new FormData(this.form))
-        signup(data).then(this.next)
+        logic.signup(data).then(this.next)
     }
 
     openWaveSignin() {
@@ -113,7 +113,7 @@ export class ACCESS extends HTMLElement {
         this.modal.showModal()
         this.show("sign-screen")
         this.shadowRoot.querySelector("#sign").addEventListener("click", () =>
-            WebAuthn.sign({ data }).then((data) => {
+            logic.sign(data).then((data) => {
                 if (typeof callback === "function") callback(data)
                 this.modal.close()
             })

@@ -2,6 +2,7 @@ import template from "./template.js"
 import { Statics } from "/core/Stores.js"
 import { Context, setFiat } from "/core/Context.js"
 import { render } from "/core/UI.js"
+import logic from "./logic.js"
 
 export class FIATS extends HTMLElement {
     constructor() {
@@ -19,13 +20,7 @@ export class FIATS extends HTMLElement {
 
         span.addEventListener("click", () => select.show())
 
-        const options = Statics.fiats.map((fiat) => {
-            return {
-                value: fiat.code,
-                label: `${fiat.name} (${fiat.symbol})`
-            }
-        })
-        select.states.set({ options, selected: Context.get("fiat")?.code })
+        select.states.set({ options: logic.options(Statics.fiats), selected: Context.get("fiat")?.code })
         select.callback = setFiat
     }
 

@@ -1,12 +1,10 @@
 import { render } from "/core/UI.js"
 import template from "./template.js"
 import Events from "/core/Events.js"
-import { wave } from "/core/Access.js"
-import WaveAuth from "./wave.js"
-import signinWithPasskey from "./passkey.js"
 import States from "/core/States.js"
 import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils/browser.js"
+import Logic from "./logic.js"
 
 export class AUTHENTICATE extends HTMLElement {
     constructor() {
@@ -15,7 +13,7 @@ export class AUTHENTICATE extends HTMLElement {
         render(template, this.shadowRoot)
         this.events = new Events(this)
         this.subscriptions = []
-        this.waveauth = new WaveAuth()
+        this.logic = new Logic()
         this.states = new States({ method: null })
         this.state = "neutral"
         this.onwave = this.onwave.bind(this)
@@ -54,14 +52,9 @@ export class AUTHENTICATE extends HTMLElement {
     }
 
     async initpair() {
-        const { sea } = globalThis
-        if (!sea?.pair) return
-        const pair = await sea.pair()
-        this.waveauth.session = pair
-        if (this.$epub) {
-            const epub = pair.epub
-            this.$epub.textContent = !epub || epub.length <= 12 ? epub || "" : `${epub.slice(0, 5)}...${epub.slice(-5)}`
-        }
+        const pair = await this.logic.pair()
+        if (!pair || !this.$epub) return
+        this.$epub.textContent = this.logic.epub(pair.epub)
     }
 
     setstate(state) {
@@ -76,7 +69,7 @@ export class AUTHENTICATE extends HTMLElement {
 
     async onwave(event) {
         const { parsed } = event?.detail || {}
-        const result = await this.waveauth.handle(parsed)
+        const result = await this.logic.handle(parsed)
         if (!result) return
         if (result.type === "deny") {
             notify({ content: Context.get(["dictionary", "accessDenied"]) })
@@ -84,7 +77,7 @@ export class AUTHENTICATE extends HTMLElement {
         }
         if (result.type === "grant") {
             this.stop()
-            wave({ seed: result.seed })
+            this.logic.wave(result.seed)
                 .then((response) => this.done(response))
                 .catch(() => {})
         }
@@ -92,7 +85,7 @@ export class AUTHENTICATE extends HTMLElement {
 
     onrequestbtn() {
         this.setstate("listening")
-        this.waveauth.request(this.$wave).catch((error) => {
+        this.logic.request(this.$wave).catch((error) => {
             this.setstate("neutral")
             if (error?.message) notify({ content: error.message })
         })
@@ -104,7 +97,7 @@ export class AUTHENTICATE extends HTMLElement {
 
     passkey() {
         this.states.set({ method: "passkey" })
-        signinWithPasskey().then((response) => this.done(response))
+        this.logic.passkey().then((response) => this.done(response))
     }
 
     wave() {
@@ -112,7 +105,7 @@ export class AUTHENTICATE extends HTMLElement {
     }
 
     stop() {
-        this.waveauth.reset()
+        this.logic.reset()
         this.$wave?.stop?.()
         this.setstate("neutral")
         this.initpair()

@@ -2,16 +2,7 @@ import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { Access } from "/core/Access.js"
 import States from "/core/States.js"
-
-const SOCIAL_PLATFORMS = [
-    { key: "twitch", label: "Twitch", url: (u) => `https://twitch.tv/${u}` },
-    { key: "discord", label: "Discord", url: null },
-    { key: "reddit", label: "Reddit", url: (u) => `https://reddit.com/u/${u}` },
-    { key: "steam", label: "Steam", url: (u) => `https://steamcommunity.com/id/${u}` },
-    { key: "youtube", label: "YouTube", url: (u) => `https://youtube.com/@${u}` },
-    { key: "instagram", label: "Instagram", url: (u) => `https://instagram.com/${u}` },
-    { key: "x", label: "X", url: (u) => `https://x.com/${u}` }
-]
+import logic, { SOCIAL_PLATFORMS } from "./logic.js"
 
 export class PROFILE extends HTMLElement {
     constructor() {
@@ -127,12 +118,12 @@ export class PROFILE extends HTMLElement {
                 }
             }),
             Access.on("avatar", async () => {
-                if (Access.get("authenticated")) await this._updateHeroIdenticon()
+                if (logic.authenticated()) await this._updateHeroIdenticon()
             })
         )
 
         // Apply initial state (component may mount after auth is already set)
-        const authenticated = Access.get("authenticated")
+        const authenticated = logic.authenticated()
         this._applyAuthState(authenticated)
         if (authenticated) {
             this._loadName()
@@ -170,29 +161,13 @@ export class PROFILE extends HTMLElement {
         if (avatarPicker && !authenticated) avatarPicker.classList.remove("is-open")
     }
 
-    _hashCode(str) {
-        let hash = 0
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i)
-            hash = (hash << 5) - hash + char
-            hash = hash & hash
-        }
-        return Math.abs(hash)
-    }
-
     async _updateHeroIdenticon() {
-        const seed = Access.get("seed")
-        if (!seed) return
-        const avatarId = Access.get("avatar")?.id ?? 0
-        const hashed = await globalThis.sea.work(seed, "avatar")
-        const idSeed = await globalThis.sea.work(hashed, avatarId)
+        const result = await logic.identiconseed()
+        if (!result) return
+        const { idSeed, h1, h2 } = result
+        const glow = (h, a) => `hsl(${h}deg 100% 65% / ${a})`
         const $icon = this.shadowRoot.querySelector("#profile-identicon")
         if ($icon) $icon.dataset.seed = idSeed
-
-        const h1 = this._hashCode(idSeed) % 360
-        const h2 = (h1 + 150) % 360
-        const glow = (h, a) => `hsl(${h}deg 100% 65% / ${a})`
-
         const $gradient = this.shadowRoot.querySelector(".profile-hero__gradient")
         if ($gradient) {
             $gradient.style.setProperty("--hero-hue-1", h1)
@@ -206,26 +181,19 @@ export class PROFILE extends HTMLElement {
     }
 
     async _loadName() {
-        const pair = Access.get("pair")
-        if (!pair) return
-        const raw = await globalThis.gun.get(`~${pair.pub}`).get("name")
-        const name = typeof raw === "string" ? raw : ""
+        const name = await logic.loadname()
+        if (name === null) return
         this.states.set({ name })
         const $name = this.shadowRoot.querySelector("#profile-name")
         if ($name) $name.textContent = name || "Anonymous"
     }
 
     async _saveName(value) {
-        value = value.trim()
-        const pair = Access.get("pair")
-        if (!pair || !value) return
-        globalThis.gun
-            .get(`~${pair.pub}`)
-            .get("name")
-            .put(value, null, { opt: { authenticator: pair } })
-        this.states.set({ name: value })
+        const saved = await logic.savename(value)
+        if (!saved) return
+        this.states.set({ name: saved })
         const $name = this.shadowRoot.querySelector("#profile-name")
-        if ($name) $name.textContent = value
+        if ($name) $name.textContent = saved
     }
 
     _enterEditMode() {
@@ -261,31 +229,24 @@ export class PROFILE extends HTMLElement {
         $saveBtn.style.display = "none"
         $cancelBtn.style.display = "none"
         $name.style.display = ""
-        if (Access.get("authenticated")) $editBtn.style.display = "inline-flex"
+        if (logic.authenticated()) $editBtn.style.display = "inline-flex"
         this.states.set({ editing: false })
     }
 
     async _loadBio() {
-        const pair = Access.get("pair")
-        if (!pair) return
-        const raw = await globalThis.gun.get(`~${pair.pub}`).get("bio")
-        const bio = typeof raw === "string" ? raw : ""
+        const bio = await logic.loadbio()
+        if (bio === null) return
         this.states.set({ bio })
         const $bio = this.shadowRoot.querySelector("#profile-bio")
         if ($bio) $bio.textContent = bio
     }
 
     async _saveBio(value) {
-        value = value.trim().slice(0, 360)
-        const pair = Access.get("pair")
-        if (!pair) return
-        globalThis.gun
-            .get(`~${pair.pub}`)
-            .get("bio")
-            .put(value, null, { opt: { authenticator: pair } })
-        this.states.set({ bio: value })
+        const saved = await logic.savebio(value)
+        if (saved === null) return
+        this.states.set({ bio: saved })
         const $bio = this.shadowRoot.querySelector("#profile-bio")
-        if ($bio) $bio.textContent = value
+        if ($bio) $bio.textContent = saved
     }
 
     _enterBioEditMode() {
@@ -309,7 +270,7 @@ export class PROFILE extends HTMLElement {
         $("#profile-bio-save").style.display = "none"
         $("#profile-bio-cancel").style.display = "none"
         $("#profile-bio").style.display = ""
-        if (Access.get("authenticated")) $("#profile-bio-edit").style.display = "inline-flex"
+        if (logic.authenticated()) $("#profile-bio-edit").style.display = "inline-flex"
         this.states.set({ editingBio: false })
     }
 
@@ -333,35 +294,15 @@ export class PROFILE extends HTMLElement {
     }
 
     async _loadLinks() {
-        const pair = Access.get("pair")
-        if (!pair) return
-        const raw = await globalThis.gun.get(`~${pair.pub}`).get("links")
-        let links = {}
-        if (typeof raw === "string")
-            try {
-                links = JSON.parse(raw)
-            } catch {
-                links = {}
-            }
-        const allowed = SOCIAL_PLATFORMS.map((p) => p.key)
-        links = Object.fromEntries(Object.entries(links).filter(([k]) => allowed.includes(k)))
+        const links = await logic.loadlinks()
+        if (!links) return
         this.states.set({ links })
         this._renderLinks()
     }
 
     async _saveLinks(obj) {
-        const pair = Access.get("pair")
-        if (!pair) return
-        const allowed = SOCIAL_PLATFORMS.map((p) => p.key)
-        const clean = Object.fromEntries(
-            Object.entries(obj)
-                .filter(([k, v]) => allowed.includes(k) && typeof v === "string" && v.trim() && /^[a-zA-Z0-9._-]{1,64}$/.test(v.trim()))
-                .map(([k, v]) => [k, v.trim()])
-        )
-        globalThis.gun
-            .get(`~${pair.pub}`)
-            .get("links")
-            .put(JSON.stringify(clean), null, { opt: { authenticator: pair } })
+        const clean = await logic.savelinks(obj)
+        if (!clean) return
         this.states.set({ links: clean })
         this._renderLinks()
     }
@@ -440,12 +381,9 @@ export class PROFILE extends HTMLElement {
     }
 
     _loadFollowing() {
-        const pair = Access.get("pair")
-        if (!pair) return
         this.states.set({ following: [] })
         this._followingScope?.off?.()
-        this._followingScope = globalThis.gun.get(`~${pair.pub}`).get("following").map()
-        this._followingScope.on((data, key) => {
+        this._followingScope = logic.loadfollowing((data, key) => {
             if (!key || key === "_") return
             const list = this.states.get("following") || []
             if (!data) {
@@ -464,31 +402,16 @@ export class PROFILE extends HTMLElement {
     }
 
     _addFollow(pub, name) {
-        pub = pub.trim()
-        if (!pub) return
-        name = name.trim() || `${pub.slice(0, 8)}…`
         const list = this.states.get("following") || []
-        if (list.some((f) => f.pub === pub)) return
-        const pair = Access.get("pair")
-        if (!pair) return
-        globalThis.gun
-            .get(`~${pair.pub}`)
-            .get("following")
-            .get(pub)
-            .put({ name, at: Date.now() }, null, { opt: { authenticator: pair } })
-        this.states.set({ following: [...list, { pub, name }] })
+        const entry = logic.addfollow(pub, name, list)
+        if (!entry) return
+        this.states.set({ following: [...list, entry] })
         this._renderFollowing()
         this._renderStats()
     }
 
     _removeFollow(pub) {
-        const pair = Access.get("pair")
-        if (!pair) return
-        globalThis.gun
-            .get(`~${pair.pub}`)
-            .get("following")
-            .get(pub)
-            .put(null, null, { opt: { authenticator: pair } })
+        logic.removefollow(pub)
         this.states.set({ following: (this.states.get("following") || []).filter((f) => f.pub !== pub) })
         this._renderFollowing()
         this._renderStats()

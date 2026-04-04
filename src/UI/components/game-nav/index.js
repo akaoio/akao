@@ -1,11 +1,11 @@
 import template from "./template.js"
-import DB from "/core/DB.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
 import { events } from "/core/Events.js"
 import "/UI/components/a/index.js"
 import "/UI/components/svg/index.js"
+import logic from "./logic.js"
 
 export class GAME_NAV extends HTMLElement {
     constructor() {
@@ -40,11 +40,7 @@ export class GAME_NAV extends HTMLElement {
     }
 
     async _loadGames() {
-        const ids = await DB.get(["statics", "games", "1.json"])
-        if (!Array.isArray(ids)) return
-
-        const metas = await Promise.all(ids.map((id) => DB.get(["statics", "games", id, "meta.json"]).then((m) => (m ? { id, ...m } : null))))
-        this.states.set({ games: metas.filter(Boolean) })
+        this.states.set({ games: await logic.games() })
     }
 
     _toggle() {

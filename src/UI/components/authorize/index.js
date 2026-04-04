@@ -2,7 +2,7 @@ import { Elements } from "/core/Stores.js"
 import { render } from "/core/UI.js"
 import template from "./template.js"
 import States from "/core/States.js"
-import { Access } from "/core/Access.js"
+import logic from "./logic.js"
 
 export class AUTHORIZE extends HTMLElement {
     constructor() {
@@ -59,12 +59,10 @@ export class AUTHORIZE extends HTMLElement {
 
     async wave(event) {
         const { parsed } = event?.detail || {}
-        if (!parsed || typeof parsed !== "object") return
-        if (parsed[":"] !== ">" || !parsed["~"]) return
+        if (!logic.isrequest(parsed)) return
         if (this.states.get("state") !== "listening") return
         this.pending = parsed
-        const epub = parsed["~"]
-        this.$epub.textContent = !epub || epub.length <= 12 ? epub || "" : `${epub.slice(0, 5)}...${epub.slice(-5)}`
+        this.$epub.textContent = logic.epub(parsed["~"])
         this.states.set({ state: "confirm" })
     }
 
@@ -85,15 +83,8 @@ export class AUTHORIZE extends HTMLElement {
 
     async grant() {
         if (!this.pending) return
-        const { sea } = globalThis
-        const pair = Access.get("pair")
-        const seed = Access.get("seed")
-        if (!Access.get("authenticated") || !pair || !seed || !sea?.secret || !sea?.encrypt) return
-        const secret = await sea.secret(this.pending["~"], pair)
-        // Uint8Array does not survive JSON serialization — convert to plain Array first
-        const seedData = seed instanceof Uint8Array ? Array.from(seed) : seed
-        const encrypted = await sea.encrypt(seedData, secret, null, { raw: true })
-        const payload = { "~": pair.epub, "!": encrypted.ct, "@": encrypted.iv, "#": encrypted.s }
+        const payload = await logic.encode(this.pending["~"])
+        if (!payload) return
         this.states.set({ state: "sending" })
         await this.$wave.send(payload)
         this.pending = null

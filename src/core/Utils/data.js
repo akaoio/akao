@@ -63,14 +63,14 @@ export function filterData(data = {}, prefix = "") {
     return Object.entries(data).filter((item) => typeof item[0] === "string" && item[0].indexOf(prefix) > -1)
 }
 
-export function logic(exp, data) {
-    const $logic = ($) => typeof $ === "object" && $ !== null && ($["&"] || $["|"]) && !Array.isArray($) && Object.keys($).length === 1
+export function evaluate(exp, data) {
+    const $evaluate = ($) => typeof $ === "object" && $ !== null && ($["&"] || $["|"]) && !Array.isArray($) && Object.keys($).length === 1
 
     const ops = {
         // AND
         "&": (arr) => {
             for (let item of arr) {
-                if ($logic(item)) item = logic(item, data)
+                if ($evaluate(item)) item = evaluate(item, data)
                 if (item == false) return false
             }
             return true
@@ -78,14 +78,14 @@ export function logic(exp, data) {
         // OR
         "|": (arr) => {
             for (let item of arr) {
-                if ($logic(item)) item = logic(item, data)
+                if ($evaluate(item)) item = evaluate(item, data)
                 if (item == true) return true
             }
             return false
         }
     }
 
-    if ($logic(exp)) {
+    if ($evaluate(exp)) {
         const op = Object.keys(exp)[0]
         const v = exp[op]
         return ops[op](v)

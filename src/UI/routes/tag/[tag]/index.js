@@ -1,10 +1,10 @@
 import template from "./template.js"
-import DB from "/core/DB.js"
 import Router from "/core/Router.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import ITEM from "/UI/components/item/index.js"
 import { render } from "/core/UI.js"
+import logic from "./logic.js"
 
 export class TAG extends HTMLElement {
     constructor() {
@@ -34,19 +34,14 @@ export class TAG extends HTMLElement {
         const locale = Context.get("locale")?.code
         if (!locale) return
 
-        const meta = await DB.get(["statics", "tags", id, "meta.json"])
+        const meta = await logic.meta(id)
         if (!meta) return
 
         const pages = Math.max(1, parseInt(meta.pages || 1))
         this.states.set({ pages })
 
-        const items = []
-        for (let page = 1; page <= pages; page++) {
-            const data = await DB.get(["statics", "tags", id, `${page}.json`])
-            if (Array.isArray(data)) items.push(...data)
-        }
-
-        const children = items.map((item) => {
+        const ids = await logic.items(id, pages)
+        const children = ids.map((item) => {
             const element = new ITEM()
             element.dataset.key = item
             return element

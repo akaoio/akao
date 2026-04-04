@@ -6,7 +6,7 @@ export { notify } from "./Utils/browser.js"
 
 export { sha256, signAndHash, base64UrlToHex, hexToBase64Url, base64ToHex, hexToBase64, bufferToBase64Url, base64UrlToBuffer, bytesToHex, concatbuffers } from "./Utils/crypto.js"
 
-export { encodeQuery, spintax, schemaToDisplay, objectToArray, arrayToString, filterData, logic, clone, diff, merge, isPromise } from "./Utils/data.js"
+export { encodeQuery, spintax, schemaToDisplay, objectToArray, arrayToString, filterData, evaluate, clone, diff, merge, isPromise } from "./Utils/data.js"
 
 export { parse as parseCSV, stringify as stringifyCSV } from "./CSV.js"
 

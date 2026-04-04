@@ -1,22 +1,18 @@
-/**
- * Wave Authentication Protocol — Requester (bên xin) side
- *
- * Wire format:
- *   Request  (B → broadcast): { "~": session.epub, ":": ">" }
- *   Deny     (A → broadcast): { ":": "!>" }
- *   Grant    (A → broadcast): { "~": pair_A.epub, "!": ct, "@": iv, "#": s }
- *
- * ECDH shared secret:
- *   A computes: sea.secret(session.epub, pair_A)
- *   B computes: sea.secret(parsed["~"], session)
- */
+import { wave, passkey } from "/core/Access.js"
 
-export class WaveAuth {
+export class Logic {
     constructor() {
         this.session = null
     }
 
-    // Send auth request. Reuses pre-generated session pair if available.
+    async pair() {
+        const { sea } = globalThis
+        if (!sea?.pair) return null
+        const pair = await sea.pair()
+        this.session = pair
+        return pair
+    }
+
     async request(waveEl) {
         const { sea } = globalThis
         if (!sea?.pair) throw new Error("SEA is not available")
@@ -28,7 +24,6 @@ export class WaveAuth {
         await waveEl.send({ "~": this.session.epub, ":": ">" })
     }
 
-    // Handle an incoming parsed message. Returns { type: "deny" }, { type: "grant", seed }, or null.
     async handle(parsed) {
         if (!parsed || typeof parsed !== "object") return null
         if (parsed[":"] === "!>") return { type: "deny" }
@@ -38,7 +33,6 @@ export class WaveAuth {
             const secret = await sea.secret(parsed["~"], this.session)
             const decrypted = await sea.decrypt({ ct: parsed["!"], iv: parsed["@"], s: parsed["#"] }, secret)
             if (!decrypted) return null
-            // Convert plain Array back to Uint8Array so sea.pair() accepts it
             const seed = Array.isArray(decrypted) ? new Uint8Array(decrypted) : decrypted
             return { type: "grant", seed }
         }
@@ -48,6 +42,19 @@ export class WaveAuth {
     reset() {
         this.session = null
     }
+
+    epub(value) {
+        if (!value || value.length <= 12) return value || ""
+        return `${value.slice(0, 5)}...${value.slice(-5)}`
+    }
+
+    async wave(seed) {
+        return wave({ seed })
+    }
+
+    async passkey() {
+        return passkey()
+    }
 }
 
-export default WaveAuth
+export default Logic

@@ -1,19 +1,11 @@
 import template from "./template.js"
 import { Context } from "/core/Context.js"
-import DB from "/core/DB.js"
 import Router from "/core/Router.js"
 import { html, render } from "/core/UI.js"
 import { notify } from "/core/Utils.js"
 import { States } from "/core/States.js"
 import Cart from "/core/Cart.js"
-
-function camelToLabel(key) {
-    return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim()
-}
-
-function resolveDisplayType(meta = {}) {
-    return meta.type || meta.itemTypeName || meta.configs?.type || ""
-}
+import logic from "./logic.js"
 
 export class GAME_ITEM_ROUTE extends HTMLElement {
     constructor() {
@@ -32,7 +24,7 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
     async connectedCallback() {
         const game = this.states.get("game")
         const id = this.states.get("id")
-        const meta = await DB.get(["statics", "items", game, id, "meta.json"])
+        const meta = await logic.meta(game, id)
         this.states.set({ meta })
         this.subscriptions.push(Context.on("locale", this.render))
         this.render()
@@ -86,7 +78,7 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
         rarityBadge.style.display = meta.rarity ? "" : "none"
 
         const typeBadge = root.querySelector("#type-badge")
-        const displayType = resolveDisplayType(meta)
+        const displayType = logic.display(meta)
         typeBadge.textContent = displayType
         typeBadge.style.display = displayType ? "" : "none"
 
@@ -110,7 +102,7 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
         const statBlock = root.querySelector("#stat-block")
         if (statBlock.children.length === 0 && meta.stat_block) {
             const rows = Object.entries(meta.stat_block).map(([key, val]) =>
-                html`<div class="stat-row"><dt>${camelToLabel(key)}</dt><dd>${val}</dd></div>`
+                html`<div class="stat-row"><dt>${logic.label(key)}</dt><dd>${val}</dd></div>`
             )
             render(rows, statBlock)
             root.querySelector("#stats").style.display = ""
@@ -121,7 +113,7 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
         const slotsEl = root.querySelector("#loadout-slots")
         if (slotsEl.children.length === 0 && meta.loadout_slots?.length) {
             const chips = meta.loadout_slots.map((slot) =>
-                html`<span class="slot-chip">${camelToLabel(slot)}</span>`
+                html`<span class="slot-chip">${logic.label(slot)}</span>`
             )
             render(chips, slotsEl)
             root.querySelector("#slots").style.display = ""
@@ -134,7 +126,7 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
         const game = this.states.get("game")
         const id = this.states.get("id")
         const meta = this.states.get("meta")
-        const data = await DB.get(["statics", "items", game, id, `${Context.get("locale").code}.json`])
+        const data = await logic.locale(game, id, Context.get("locale").code)
         if (!data) return
         this.states.set({ data })
         Router.setHead({

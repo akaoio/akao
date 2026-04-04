@@ -1,6 +1,6 @@
 import { Statics } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
-import Forex from "/core/Forex.js"
+import logic from "./logic.js"
 
 export class FIAT extends HTMLElement {
     constructor() {
@@ -32,7 +32,7 @@ export class FIAT extends HTMLElement {
         const amount = Number(this.dataset.amount) || 0
         const base = this.dataset.base || Statics?.site?.fiat
         const quote = this.dataset.quote || Context.get("fiat")?.code || Statics?.site?.fiat
-        const converted = await Forex.convert(amount, base, quote)
+        const converted = await logic.convert(amount, base, quote)
         this.shadowRoot.innerHTML = new Intl.NumberFormat(locale, {
             style: "currency",
             currency: quote,

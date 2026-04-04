@@ -1,9 +1,9 @@
 import template from "./template.js"
-import DB from "/core/DB.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { render } from "/core/UI.js"
 import "/UI/components/game-item/index.js"
+import logic from "./logic.js"
 
 export class ITEM extends HTMLElement {
     constructor() {
@@ -37,12 +37,7 @@ export class ITEM extends HTMLElement {
 
         // Support 2-tier keys ("game-id/item-id") and flat keys ("item-id")
         const key = this.dataset.key
-        const parts = key.includes("/") ? key.split("/") : null
-        const dbMetaPath = parts
-            ? ["statics", "items", ...parts, "meta.json"]
-            : ["statics", "items", key, "meta.json"]
-        const routePath = parts ? `/item/${parts.join("/")}` : `/item/${key}`
-
+        const { route: routePath } = logic.path(key)
         this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = routePath
         this.subscriptions.push(
             Context.on("locale", this.render),
@@ -55,7 +50,7 @@ export class ITEM extends HTMLElement {
                 sale.dataset.base = value
             })
         )
-        const data = await DB.get(dbMetaPath)
+        const data = await logic.meta(key)
         if (data) this.states.set(data)
         if (!this.states.has(["name", "price"])) this.render()
     }
@@ -66,11 +61,7 @@ export class ITEM extends HTMLElement {
 
     async render() {
         const key = this.dataset.key
-        const parts = key.includes("/") ? key.split("/") : null
-        const dbLocalePath = parts
-            ? ["statics", "items", ...parts, `${Context.get("locale").code}.json`]
-            : ["statics", "items", key, `${Context.get("locale").code}.json`]
-        const data = await DB.get(dbLocalePath)
+        const data = await logic.locale(key, Context.get("locale").code)
         this.states.set(data)
     }
 }
