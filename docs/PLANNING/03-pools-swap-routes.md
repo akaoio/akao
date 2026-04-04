@@ -100,7 +100,7 @@ quoter.quoteExactInputSingle(token0, token1, fee, amountIn, "0")
 ```
 
 Cả hai versions dùng chung interface: `dex.swap({ token0, token1, amount0, slippage })`.  
-`finddex()` trả về `{ dex, pool }` — `pool` cần thiết để lấy `fee` tier cho V3.
+`find()` trả về `{ dex, pool }` — `pool` cần thiết để lấy `fee` tier cho V3.
 
 ### 1.4 Gas estimation đã có trong `Chain` (EVM mixin)
 
@@ -502,6 +502,8 @@ async renderfiat(pool) {
 
 ## 3. Route `/swap`
 
+> **Trạng thái: ĐÃ TRIỂN KHAI** — `src/UI/routes/swap/index.js` và `src/UI/routes/swap/logic.js`
+
 ### 3.1 Mục đích
 
 Cho phép user **trao đổi token** thông qua DEX. UI chọn token vào (from) và token ra (to), nhập số lượng, xem preview tỉ giá, rồi thực hiện swap.
@@ -513,13 +515,14 @@ Cho phép user **trao đổi token** thông qua DEX. UI chọn token vào (from)
 /{locale}/swap?from=0xC02aaA39...&to=0x2260FAC5...&chain=ETH
 ```
 
-Các params `from`, `to`, `chain` được đọc từ URL để pre-fill form.
+Các params `from`, `to` được đọc từ URL để pre-fill form.
 
 ### 3.3 Cấu trúc file
 
 ```
 src/UI/routes/swap/
-  index.js
+  index.js       ← route component (SWAP class) — orchestration only, DOM ↔ Logic
+  logic.js       ← class Logic — static methods, pure data, testable in Node.js
   template.js
   styles.css.js
 
@@ -529,197 +532,191 @@ src/UI/components/token-select/
   styles.css.js
 ```
 
-> `ui-token-select` tái sử dụng `ui-token` component từ route pools.
+### 3.4 Kiến trúc `class Logic` (pure, testable)
 
-**Pattern từ deposit/withdraw — bắt buộc với swap:** Cả 2 route đều nhúng `<ui-wallets />`. Đây **không chỉ là UI** — `ui-wallets.connectedCallback()` là trigger duy nhất gọi `chain.load()` → `loadContract` → `DB.get` để nạp tất cả ERC-20 configs vào `chain.currencies`. Sau đó `withdraw` mới resolve được currency object qua `Object.values(wallet.chain.currencies).find(c => c.name === currencyName)`. Route swap cũng phải làm y chang: nhúng `<ui-wallets />`, lắng nghe `$wallets.states.on("address")`, rồi mới truy cập `wallet.chain.currencies`.
+`logic.js` export `class Logic` với **toàn bộ là static methods**. Không có `this`, không có DOM, không có global singletons. Mọi dependency đều được inject qua params.
 
-### 3.4 Route component pattern
+```javascript
+// src/UI/routes/swap/logic.js
+import { fiatValue } from "/core/Utils/contracts.js"
+
+export class Logic {
+    // Xây danh sách token options từ chain.currencies + pools
+    // Trả về: [{ address, configs }]
+    static options(chain, pools, Chains) { ... }
+
+    // Lấy balance của token from
+    // Trả về: number | null
+    static balance(chain, from, balances) { ... }
+
+    // Tìm pool + dex phù hợp với cặp from/to
+    // Trả về: { dex, pool, address } | null
+    static find(from, to, chain, pools, Dexs) { ... }
+
+    // Kiểm tra balance có đủ không
+    // Trả về: boolean (true nếu chưa có data balance)
+    static check(amount, chain, address, balances) { ... }
+
+    // Full quote flow: check → find → DEX call → fiat conversion + gas estimation
+    // Trả về: { error: key|message|null, amountOut: number, fiatOut: number,
+    //           gasAmount: number|null, gasSymbol: string|null }
+    static async quote({ from, to, amount, chain, pools, Dexs, balances,
+                         fiat, forex, Wallets, address }) { ... }
+
+    // Full swap flow: check → find → dex.swap()
+    // Trả về: { success: boolean, error: key|message|null }
+    static async swap({ from, to, amount, slippage, chain, pools, Dexs, balances }) { ... }
+}
+
+export default Logic
+```
+
+**Quy tắc bất biến của `logic.js`:**
+- Không import `Context`, `formatNumber`, globals (`Lives`, `Dexs`, ...)
+- Không trả về string đã format (`"Balance: 1.23 ETH"`) — chỉ trả data thô (`1.23`)
+- Không trả về i18n string — chỉ trả key (`"insufficientBalance"`)
+- `fiatValue` phải được truyền `forex` explicit để tránh phụ thuộc `Lives.forex`
+
+**Test trong Node.js:**
+```javascript
+import { Logic } from "./logic.js"
+// Không cần browser, không cần mock DOM
+Logic.find("0xAAA", "0xBBB", "1", mockPools, mockDexs)
+Logic.check(100, "1", "0xAAA", { "1": { "0xAAA": "50" } }) // → false
+await Logic.quote({ from, to, amount: 1, chain: "1", pools: mockPools,
+                    Dexs: mockDexs, balances: mockBal, fiat: "USD", forex: mockForex,
+                    Wallets: mockWallets, address: "0x..." })
+```
+
+### 3.5 Route component `index.js` (orchestration only)
+
+`index.js` chỉ làm 3 việc: **đọc DOM/stores → gọi `Logic.xxx()` → ghi lại DOM**.
 
 ```javascript
 // src/UI/routes/swap/index.js
+import { Logic } from "./logic.js"
+import { Lives, Chains, Dexs, Wallets } from "/core/Stores.js"
+import { notify, formatNumber } from "/core/Utils.js"
+import { Context } from "/core/Context.js"
+
 export class SWAP extends HTMLElement {
     constructor() {
         super()
-        this.states = new States({
-            from: null,     // { address, symbol, decimals, balance }
-            to: null,       // { address, symbol, decimals }
-            amount: "",     // số lượng token from
-            quote: null,    // kết quả getAmountsOut / quoteExactInputSingle
-            slippage: 0.5,  // % slippage tolerance
-            loading: false
-        })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.subscriptions = []
-        this.quote = this.quote.bind(this)
+        this.quote = this.quote.bind(this)   // debounce wrapper
         this.submit = this.submit.bind(this)
-        this.estimategas = this.estimategas.bind(this)
     }
 
     connectedCallback() {
-        const params = Context.get("params")
-        // Pre-fill từ URL params nếu có
-        if (params?.from || params?.to) this.prefill(params)
-
+        // Query DOM refs
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
-        this.$from = this.shadowRoot.querySelector("#from")
-        this.$to = this.shadowRoot.querySelector("#to")
-        this.$amount = this.shadowRoot.querySelector("#amount")
-        this.$quote = this.shadowRoot.querySelector("#quote")
-        this.$gas = this.shadowRoot.querySelector("#gas")
-        const $submit = this.shadowRoot.querySelector("#submit")
+        // ... các DOM refs khác
 
-        this.$amount.addEventListener("input", this.quote)
-        $submit.addEventListener("click", this.submit)
+        // Pre-fill từ URL params
+        const params = Context.get("params") || {}
+        if (params.from) this.$pfrom = params.from
+        if (params.to) this.$pto = params.to
 
         this.subscriptions.push(
-            // ui-wallets triggers chain.load() on mount — sau đó mới có chain.currencies ERC-20
-            this.$wallets.states.on("chain", ({ value: chain }) => {
-                if (chain) this.refreshtokens()
-            }),
-            this.$from.events.on("select", ({ detail }) => {
-                this.states.set({ from: detail })
-                this.quote()
-            }),
-            this.$to.events.on("select", ({ detail }) => {
-                this.states.set({ to: detail })
-                this.quote()
-            }),
-            events.on("Lives.pools", () => this.refreshtokens()),
-            () => {
-                this.$amount.removeEventListener("input", this.quote)
-                $submit.removeEventListener("click", this.submit)
-            }
+            this.$wallets.states.on("address", ({ value }) => {
+                if (value) this.options()
+            }, true),
+            this.$wallets.states.on("chain", () => this.options()),
+            events.on("Lives.pools", () => this.options()),
+            ...
         )
-
-        Elements.Access?.checkpoint()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    // Gọi Logic.options() → set vào ui-token-select components
+    options() {
+        const chain = this.$wallets.states.get("chain")
+        if (!chain) return
+        const opts = Logic.options(chain, Lives.pools?.[chain], Chains)
+        this.$fromToken.setoptions(opts)
+        this.$toToken.setoptions(opts)
+        // Pre-fill nếu có params from URL
+        if (this.$pfrom) { ... }
     }
 
-    prefill(params) {
-        if (params.from) this.states.set({ from: { address: params.from } })
-        if (params.to) this.states.set({ to: { address: params.to } })
+    // Gọi Logic.balance() → format → ghi DOM
+    balance() {
+        const bal = Logic.balance(this.$wallets.states.get("chain"), this.$from, Lives.balances)
+        if (bal === null) { this.$balanceIn.textContent = ""; return }
+        const label = Context.get(["dictionary", "balance"]) || "Balance"
+        this.$balanceIn.textContent = `${label}: ${formatNumber(bal)} ${this.$from?.configs?.name || ""}`
     }
 
-    // Tạo danh sách token unique từ tất cả pools
-    refreshtokens() {
-        const tokens = {}
-        const chain = this.states.get("chain") || Context.get("params")?.chain
-        const pools = chain ? Lives.pools?.[chain] : Lives.pools
-        for (const chainPools of Object.values(pools || {})) {
-            for (const pool of Object.values(chainPools)) {
-                tokens[pool.token0.address] = pool.token0
-                tokens[pool.token1.address] = pool.token1
-            }
+    // Gọi Logic.quote() → format data thô → ghi DOM
+    async run() {
+        const chain = this.$wallets.states.get("chain")
+        const result = await Logic.quote({
+            from: this.$from, to: this.$to,
+            amount: Number(this.$amountIn.value), chain,
+            pools: Lives.pools?.[chain], Dexs,
+            balances: Lives.balances,
+            fiat: Context.get("fiat")?.code || "USD",
+            forex: Lives.forex,           // inject explicit — không để logic tự lấy
+            Wallets,
+            address: this.$wallets.states.get("address"),
+        })
+
+        if (result.error) {
+            // i18n key → translated string — xử lý ở đây, không trong logic
+            const i18nKeys = ["insufficientBalance", "nopoolFound"]
+            this.$error.textContent = i18nKeys.includes(result.error)
+                ? Context.get(["dictionary", result.error]) || result.error
+                : result.error
+            this.$submit.setAttribute("disabled", "")
+            return
         }
-        this.$from.options = Object.values(tokens)
-        this.$to.options = Object.values(tokens)
-    }
 
-    // Debounced quote (500ms)
-    quote() {
-        clearTimeout(this._quotePending)
-        this._quotePending = setTimeout(async () => {
-            const from = this.states.get("from")
-            const to = this.states.get("to")
-            const amount = Number(this.$amount.value)
-            if (!from || !to || !amount) return
-
-const { dex, pool } = this.finddex(from.address, to.address) || {}
-            if (!dex) return
-
-            this.states.set({ loading: true })
-            // V2: getAmountsOut, V3: quoteExactInputSingle (fee lấy từ pool.fee)
-            const result = await dex.getAmountsOut?.({ token0: from.address, token1: to.address, amount })
-                        || await dex.quote?.({ token0: from.address, token1: to.address, fee: pool?.fee, amountIn: amount })
-            this.states.set({ loading: false, quote: result })
-
-            if (result && !result.error) {
-                this.$quote.textContent = `≈ ${result.amount} ${to.configs?.symbol}`
-                this.estimategas()
-            }
-        }, 500)
-    }
-
-    // Tìm DEX + pool phù hợp (có pool chứa cặp from/to)
-    // Trả về { dex, pool } — pool cần thiết để lấy fee tier cho V3
-    finddex(fromAddress, toAddress) {
-        for (const dex of Object.values(Dexs)) {
-            const chainPools = Lives.pools?.[dex.configs.chain] || {}
-            for (const pool of Object.values(chainPools)) {
-                if (
-                    (pool.token0.address === fromAddress && pool.token1.address === toAddress) ||
-                    (pool.token1.address === fromAddress && pool.token0.address === toAddress)
-                ) return { dex, pool }
-            }
+        // Format data thô thành display string — xử lý ở đây
+        const { amountOut, fiatOut, gasAmount, gasSymbol } = result
+        const fiat = Context.get("fiat")?.code || "USD"
+        const locale = Context.get("locale")?.code || "en"
+        let quoteText = `${formatNumber(amountOut)} ${this.$to?.configs?.name || ""}`
+        if (fiatOut > 0) quoteText += " ≈ " + new Intl.NumberFormat(locale,
+            { style: "currency", currency: fiat, notation: "compact" }).format(fiatOut)
+        this.$quoteOut.textContent = quoteText
+        if (gasAmount !== null) {
+            const label = Context.get(["dictionary", "gasFee"]) || "Gas fee"
+            this.$gas.textContent = `${label}: ${gasAmount} ${gasSymbol}`
         }
-        return null
+        this.$submit.removeAttribute("disabled")
     }
 
-    async estimategas() {
-        clearTimeout(this._gasPending)
-        this._gasPending = setTimeout(async () => {
-            const from = this.states.get("from")
-            const to = this.states.get("to")
-            const amount = Number(this.$amount.value)
-            if (!from || !to || !amount) return
-
-            const { dex } = this.finddex(from.address, to.address) || {}
-            if (!dex) return
-
-            // chain.fee() là EVM mixin method: fee({ from, to, amount, currency })
-            // Cho swap: encode calldata router → truyền vào chain.https.estimateGas()
-            const wallet = Wallets[dex.configs.chain]
-            if (!wallet?.address) return
-            const chain = dex.chain
-
-            // currency = token from (ERC20 config object)
-            const currency = from.configs
-            const fee = await chain.fee({ from: wallet.address, to: dex.configs.router, amount, currency })
-            if (!fee) return
-
-            const label = Context.get(["dictionary", "gasFee"])
-            this.$gas.textContent = `${label}: ${fee.amount} ${fee.symbol}`
-        }, 500)
-    }
-
+    // Gọi Logic.swap() → notify
     async submit() {
-        const from = this.states.get("from")
-        const to = this.states.get("to")
-        const amount = Number(this.$amount.value)
-        const slippage = this.states.get("slippage")
-
-        if (!from || !to || !amount)
-            return notify({ content: Context.get(["dictionary", "missingRequiredFields"]), autoClose: true })
-
-        const { dex, pool } = this.finddex(from.address, to.address) || {}
-        if (!dex)
-            return notify({ content: Context.get(["dictionary", "nopoolFound"]), autoClose: true })
-
-        this.states.set({ loading: true })
-        // dex.swap() xử lý V2 và V3 nội bộ qua architecture mixin
-        // V3 cần fee tier từ pool config
-        const tx = await dex.swap({ token0: from.address, token1: to.address, amount0: amount, slippage, fee: pool?.fee })
-        this.states.set({ loading: false })
-
-        if (tx && !tx.error) {
+        const chain = this.$wallets.states.get("chain")
+        const result = await Logic.swap({
+            from: this.$from, to: this.$to,
+            amount: Number(this.$amountIn.value),
+            slippage: Number(this.$slippage.value) || 0.5,
+            chain, pools: Lives.pools?.[chain], Dexs, balances: Lives.balances,
+        })
+        if (result.success) {
             notify({ content: Context.get(["dictionary", "transactionSent"]), autoClose: true })
-            this.states.set({ amount: "", quote: null })
-            this.$amount.value = ""
-            this.$quote.textContent = ""
+            this.$amountIn.value = ""
+            this.$quoteOut.textContent = ""
         } else {
-            notify({ content: Context.get(["dictionary", "transactionError"]), autoClose: true })
+            const keys = ["missingRequiredFields", "insufficientBalance", "nopoolFound", "transactionError"]
+            const msg = keys.includes(result.error)
+                ? Context.get(["dictionary", result.error]) : result.error
+            notify({ content: msg, autoClose: true })
         }
+    }
+
+    // Debounce wrapper — gọi run() sau 500ms
+    quote() {
+        clearTimeout(this.$qpend)
+        this.$qpend = setTimeout(() => this.run(), 500)
     }
 }
-
-customElements.define("route-swap", SWAP)
 ```
 
-### 3.5 Template pattern
+### 3.6 Template pattern
 
 ```javascript
 // src/UI/routes/swap/template.js
@@ -766,7 +763,7 @@ export const template = html`
 `
 ```
 
-### 3.6 Component `ui-token-select`
+### 3.7 Component `ui-token-select`
 
 Dropdown chọn token. Nguồn dữ liệu: `Chains[x].currencies` (có `configs.symbol` = SVG filename, giống `ui-wallets`) cộng token từ pools chưa có trong currencies.
 
@@ -906,19 +903,22 @@ Phải làm trước, nếu không pools sẽ crash hoặc không nhận live da
    - Search input filter theo name
    - Emit `CustomEvent("select", { detail: { address, configs } })`
 
-### Bước 4 — Route `/swap`
+### Bước 4 — Route `/swap` ✅ ĐÃ HOÀN THÀNH
 
-12. Tạo `src/UI/routes/swap/`
-13. Integrate `ui-token-select` (2 cái: from + to) + `ui-wallets`
-14. `finddex()` trả về `{ dex, pool }` — hỗ trợ cả V2 (direct) và V3 (direct với fee)
-15. `quote()` debounce 500ms:
-    - V2: `dex.getAmountsOut({ token0, token1, amount })`
-    - V3: `dex.quote({ token0, token1, fee: pool.fee, amountIn: amount })` — `pool.fee` từ contract JSON
-    - Hiển thị output + fiat equivalent: `await fiatValue({ chain: pool.chain, currency: toToken.configs, amount: result.amount, fiat })`
-16. `estimategas()` debounce 500ms → `chain.fee({ from: walletAddress, to: router, amount, currency: fromToken.configs })`
-17. `submit()` → `dex.swap({ token0, token1, amount0, slippage, fee: pool?.fee })` (V2 và V3 xử lý nội bộ)
-18. Balance check: `amount ≤ Lives.balances[pool.chain][from.address]` trước khi submit (chú ý `pool.chain` là numeric)
-19. `npm run build:core` → kiểm tra tại `/en/swap`; test với V2 pool và V3 pool
+12. ~~Tạo `src/UI/routes/swap/`~~ — đã có `index.js` + `logic.js`
+13. ~~Integrate `ui-token-select`~~ — đã có `ui-token-select` qua `$fromToken`/`$toToken`; `ui-wallets` đã nhúng
+14. Logic tách biệt hoàn toàn vào `class Logic` (static methods, pure data, testable in Node.js):
+    - `Logic.options(chain, pools, Chains)` — token list
+    - `Logic.balance(chain, from, balances)` → `number | null`
+    - `Logic.find(from, to, chain, pools, Dexs)` → `{ dex, pool, address } | null`
+    - `Logic.check(amount, chain, address, balances)` → `boolean`
+    - `Logic.quote({...})` → `{ error, amountOut, fiatOut, gasAmount, gasSymbol }`
+    - `Logic.swap({...})` → `{ success, error }`
+15. ~~`quote()` debounce 500ms~~ — `quote()` debounce gọi `run()` → `Logic.quote()`; DEX call nằm trong `Logic.quote()`
+16. ~~`estimategas()`~~ — gas estimation tích hợp trong `Logic.quote()`, trả về `gasAmount`/`gasSymbol`
+17. ~~`submit()`~~ — gọi `Logic.swap()`, xử lý i18n và notify trong `index.js`
+18. Balance check nằm trong `Logic.check()` → `Logic.quote()` / `Logic.swap()` đều gọi
+19. `npm run build:core` → kiểm tra tại `/en/swap`
 
 ---
 
@@ -926,11 +926,11 @@ Phải làm trước, nếu không pools sẽ crash hoặc không nhận live da
 
 | Vấn đề | Hiện trạng | Cần làm |
 |--------|-----------|---------|
-| Multi-hop swap path | `finddex()` chỉ tìm direct pair | Hỗ trợ A→B→C trong iteration 2; MVP chỉ direct pairs |
+| Multi-hop swap path | `find()` chỉ tìm direct pair | Hỗ trợ A→B→C trong iteration 2; MVP chỉ direct pairs |
 | Token logo không có SVG | `configs.symbol` trỏ đúng filename; `ui-svg` load fail silently | Bổ sung SVG vào `build/images/cryptos/` khi thêm token mới |
-| Gas cho swap router | `chain.fee()` tính cho ERC20 transfer, không phải router call | Cần encode swap calldata → `chain.https.estimateGas({ to: router, data })` |
-| V3 fee tier | Pool V3 cần `fee` (500/3000/10000) trong swap params | `finddex()` trả về `pool` kèm `fee` — dùng trực tiếp |
-| Balance check | `Lives.balances[chain][address]` có từ `onchain.js` | Disable submit + hiển thị `insufficientBalance` nếu amount > balance |
+| Gas cho swap router | `chain.fee()` tính cho ERC20 transfer, không phải router call | ⚠️ Còn open — `Logic.quote()` gọi `wallet.fee({ to: pool.address })` (pool address, không phải router); cần encode calldata swap để estimate chính xác hơn trong iteration 2 |
+| V3 fee tier | Pool V3 cần `fee` (500/3000/10000) trong swap params | ✅ `Logic.find()` trả về `pool` kèm `fee` — `Logic.swap()` dùng trực tiếp |
+| Balance check | `Lives.balances[chain][address]` có từ `onchain.js` | ✅ `Logic.check()` — dùng trong cả `Logic.quote()` và `Logic.swap()` |
 | Multi-chain pools hiển thị | `Dex.id = "{chain}.{dex}{version}"` | UI filter theo `Context.get("params").chain` nếu có |
 
 | File | Vai trò |
