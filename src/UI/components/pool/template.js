@@ -1,5 +1,6 @@
 import { html } from "/core/UI.js"
 import "/UI/components/token/index.js"
+import "/UI/components/svg/index.js"
 import styles from "./styles.css.js"
 
 export const template = html`
@@ -16,8 +17,8 @@ export const template = html`
         <div class="tvl"></div>
     </div>
     <div class="badges">
-        <span class="badge dex"></span>
-        <span class="badge chain"></span>
+        <span class="badge dex"><ui-svg class="logo"></ui-svg><span class="version"></span></span>
+        <span class="badge chain"><ui-svg class="logo"></ui-svg></span>
     </div>
 `
 

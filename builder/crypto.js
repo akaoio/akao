@@ -169,6 +169,20 @@ async function processImages() {
         for (const currency of currencies) {
             if (currency?.symbol) symbols.add(currency.symbol)
         }
+
+        const configsPath = [...chainPath, "configs.yaml"]
+        if (await exist(configsPath)) {
+            const config = await load(configsPath)
+            if (config?.symbol) symbols.add(config.symbol)
+        }
+    }
+
+    const dexsPath = [...src, "dexs.yaml"]
+    if (await exist(dexsPath)) {
+        const dexs = await load(dexsPath)
+        for (const dex of Object.values(dexs || {})) {
+            if (dex?.symbol) symbols.add(dex.symbol)
+        }
     }
 
     log.info(`Found ${symbols.size} unique symbols across all chains`)

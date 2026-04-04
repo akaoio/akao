@@ -1,9 +1,10 @@
 import { render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
-import { Lives } from "/core/Stores.js"
+import { Lives, Chains } from "/core/Stores.js"
 import { events } from "/core/Events.js"
 import { fiatValue } from "/core/Utils/contracts.js"
 import { formatNumber, beautifyNumber } from "/core/Utils.js"
+import DB from "/core/DB.js"
 import template from "./template.js"
 
 const formatrate = (rate) => {
@@ -96,10 +97,21 @@ export class POOL extends HTMLElement {
         }
 
         const $dex = this.shadowRoot.querySelector(".badge.dex")
-        if ($dex) $dex.textContent = `${pool.dex || ""} ${pool.version || ""}`
+        if ($dex) {
+            const dexs = await DB.get(["statics", "dexs.json"])
+            const dexsymbol = dexs?.[pool.dex]?.symbol
+            const $dexsvg = $dex.querySelector("ui-svg")
+            if ($dexsvg) $dexsvg.dataset.src = dexsymbol ? `/images/cryptos/${dexsymbol}` : ""
+            const $version = $dex.querySelector(".version")
+            if ($version) $version.textContent = pool.version || ""
+        }
 
         const $chain = this.shadowRoot.querySelector(".badge.chain")
-        if ($chain) $chain.textContent = `Chain ${chain}`
+        if ($chain) {
+            const chainsymbol = Chains[chain]?.configs?.symbol
+            const $chainsvg = $chain.querySelector("ui-svg")
+            if ($chainsvg) $chainsvg.dataset.src = chainsymbol ? `/images/cryptos/${chainsymbol}` : ""
+        }
     }
 }
 
