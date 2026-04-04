@@ -13,8 +13,15 @@ export const template = html`
     <layout-main>
         <header class="profile-hero">
             <div class="profile-hero__gradient"></div>
-            <div class="profile-avatar">
+            <div class="profile-avatar" id="profile-avatar-wrap">
                 <ui-identicon id="profile-identicon" data-size="11" />
+                <button class="profile-avatar__edit" id="profile-avatar-edit" aria-label="Change avatar">
+                    <ui-icon data-icon="pen" data-size="md" />
+                </button>
+            </div>
+            <div class="profile-avatar-picker" id="profile-avatar-picker">
+                <span class="profile-avatar-picker__loader" aria-hidden="true"></span>
+                <ui-avatars />
             </div>
         </header>
 
@@ -44,7 +51,10 @@ export const template = html`
                 <button class="profile-bio-edit" id="profile-bio-edit" aria-label="Edit bio">
                     <ui-icon data-icon="pen" data-size="md" />
                 </button>
-                <textarea class="profile-bio-input" id="profile-bio-input" maxlength="360" rows="3" placeholder="Write something about yourself…"></textarea>
+                <div class="profile-bio-edit-wrap" id="profile-bio-edit-wrap">
+                    <textarea class="profile-bio-input" id="profile-bio-input" maxlength="360" rows="3" placeholder="Write something about yourself…"></textarea>
+                    <span class="profile-bio-count" id="profile-bio-count">360</span>
+                </div>
                 <button class="profile-bio-save" id="profile-bio-save" aria-label="Save bio">
                     <ui-icon data-icon="check-lg" data-size="md" />
                 </button>
@@ -60,22 +70,12 @@ export const template = html`
                 </span>
             </div>
 
-            <div class="profile-actions" id="profile-actions" hidden>
-                <button class="profile-action-btn profile-action-btn--follow" disabled>Follow</button>
-                <button class="profile-action-btn profile-action-btn--message" disabled>Message</button>
-            </div>
-
             <div class="profile-gate" id="profile-gate">
                 <p>Sign in to view your profile.</p>
                 <ui-authorize />
             </div>
 
             <div id="profile-sections">
-                <section class="profile-section">
-                    <h2 class="profile-section__heading">Avatar</h2>
-                    <ui-avatars />
-                </section>
-
                 <section class="profile-section" id="profile-links-section">
                     <h2 class="profile-section__heading">Links</h2>
                     <div class="profile-links" id="profile-links-display"></div>
@@ -99,7 +99,7 @@ export const template = html`
                     <h2 class="profile-section__heading">Following</h2>
                     <div class="profile-following" id="profile-following-list"></div>
                     <form class="profile-following__add" id="profile-follow-form" autocomplete="off">
-                        <input type="text" id="profile-follow-pub" placeholder="Public key" required />
+                        <input type="text" id="profile-follow-pub" placeholder="Paste 88-char public key" required />
                         <input type="text" id="profile-follow-name" placeholder="Display name" />
                         <button type="submit" class="profile-following__add-btn">Follow</button>
                     </form>
