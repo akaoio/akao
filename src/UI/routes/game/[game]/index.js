@@ -1,10 +1,10 @@
 import template from "./template.js"
-import DB from "/core/DB.js"
 import Router from "/core/Router.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import ITEM from "/UI/components/item/index.js"
 import { html, render } from "/core/UI.js"
+import logic from "./logic.js"
 
 const INITIAL_PAGES = 3
 const LOAD_MORE_PAGES = 1
@@ -14,22 +14,6 @@ const SORT_OPTIONS = [
     { key: "rarity", label: "Rarity", asc: "rarity-asc", desc: "rarity-desc", indAsc: "↑", indDesc: "↓" },
     { key: "price", label: "Price", asc: "value-asc", desc: "value-desc", indAsc: "↑", indDesc: "↓" }
 ]
-
-function sortItems(items, sort, rarityOrder = []) {
-    const copy = [...items]
-    if (sort === "name") return copy.sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-    if (sort === "name-desc") return copy.sort((a, b) => (b.name || "").localeCompare(a.name || ""))
-    if (sort === "value-asc") return copy.sort((a, b) => (a.value || 0) - (b.value || 0))
-    if (sort === "value-desc") return copy.sort((a, b) => (b.value || 0) - (a.value || 0))
-    if (sort === "rarity-asc" || sort === "rarity-desc") {
-        const orderMap = Object.fromEntries(rarityOrder.map((r, i) => [r.toLowerCase(), i]))
-        const rank = (item) => orderMap[(item.rarity || "").toLowerCase()] ?? rarityOrder.length
-        copy.sort((a, b) => rank(a) - rank(b))
-        if (sort === "rarity-desc") copy.reverse()
-        return copy
-    }
-    return copy
-}
 
 export class GAME extends HTMLElement {
     constructor() {
@@ -217,8 +201,8 @@ export class GAME extends HTMLElement {
         const totalPages = this.states.get("totalPages")
         const count = totalPages - fromPage
 
-        const pageIdBatches = await Promise.all(Array.from({ length: count }, (_, i) => DB.get(["statics", "games", id, "items", `${fromPage + i + 1}.json`])))
-        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : [])))).filter(Boolean)
+        const pageIdBatches = await Promise.all(Array.from({ length: count }, (_, i) => logic.page(id, fromPage + i + 1)))
+        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => logic.item(id, itemId, locale)) : [])))).filter(Boolean)
 
         const allItems = [...this.states.get("allItems"), ...newItems]
         this.states.set({ allItems, loadedPages: totalPages })
@@ -254,7 +238,7 @@ export class GAME extends HTMLElement {
             const q = search.toLowerCase()
             filtered = filtered.filter((i) => (i.name || "").toLowerCase().includes(q))
         }
-        filtered = sortItems(filtered, sort, rarityOrder)
+        filtered = logic.sort(filtered, sort, rarityOrder)
 
         // Count
         const countEl = this.shadowRoot.querySelector("#count-num")
@@ -354,13 +338,6 @@ export class GAME extends HTMLElement {
         })
     }
 
-    async _loadItem(gameId, itemId, locale) {
-        const [meta, loc] = await Promise.all([DB.get(["statics", "items", gameId, itemId, "meta.json"]), DB.get(["statics", "items", gameId, itemId, `${locale}.json`])])
-        if (!meta) return null
-        const icon = meta.images?.[0] ? `/statics/items/${gameId}/${itemId}/images/${meta.images[0]}` : null
-        return { ...meta, ...(loc || {}), id: itemId, icon, catalog: "game" }
-    }
-
     async loadMore() {
         const id = this.states.get("id")
         const loadedPages = this.states.get("loadedPages")
@@ -372,8 +349,8 @@ export class GAME extends HTMLElement {
 
         const locale = Context.get("locale")?.code || "en"
         const pagesToLoad = Math.min(LOAD_MORE_PAGES, totalPages - loadedPages)
-        const pageIdBatches = await Promise.all(Array.from({ length: pagesToLoad }, (_, i) => DB.get(["statics", "games", id, "items", `${loadedPages + i + 1}.json`])))
-        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : [])))).filter(Boolean)
+        const pageIdBatches = await Promise.all(Array.from({ length: pagesToLoad }, (_, i) => logic.page(id, loadedPages + i + 1)))
+        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => logic.item(id, itemId, locale)) : [])))).filter(Boolean)
         const allItems = [...this.states.get("allItems"), ...newItems]
         this.states.set({ allItems, loadedPages: loadedPages + pagesToLoad })
 
@@ -387,7 +364,7 @@ export class GAME extends HTMLElement {
         const locale = Context.get("locale")?.code
         if (!locale) return
 
-        const [meta, data] = await Promise.all([DB.get(["statics", "games", id, "meta.json"]), DB.get(["statics", "games", id, `${locale}.json`])])
+        const [meta, data] = await Promise.all([logic.meta(id), logic.info(id, locale)])
         if (!meta || !data) return
 
         // Hero
@@ -455,7 +432,7 @@ export class GAME extends HTMLElement {
         } else gameVars.forEach((v) => document.documentElement.style.removeProperty(v))
 
         // Load items meta
-        const itemsMeta = await DB.get(["statics", "games", id, "items", "meta.json"])
+        const itemsMeta = await logic.catalog(id)
         if (!itemsMeta) return
 
         const { pages = 1, types = [] } = itemsMeta
@@ -464,8 +441,8 @@ export class GAME extends HTMLElement {
 
         // Load first N pages in parallel
         const initialPages = Math.min(INITIAL_PAGES, pages)
-        const pageIdBatches = await Promise.all(Array.from({ length: initialPages }, (_, i) => DB.get(["statics", "games", id, "items", `${i + 1}.json`])))
-        const firstItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => this._loadItem(id, itemId, locale)) : [])))).filter(Boolean)
+        const pageIdBatches = await Promise.all(Array.from({ length: initialPages }, (_, i) => logic.page(id, i + 1)))
+        const firstItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => logic.item(id, itemId, locale)) : [])))).filter(Boolean)
         this.states.set({ allItems: firstItems, loadedPages: initialPages })
 
         // Build type tabs with collapse

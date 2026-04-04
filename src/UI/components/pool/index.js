@@ -3,7 +3,6 @@ import { Context } from "/core/Context.js"
 import { Lives, Chains } from "/core/Stores.js"
 import { events } from "/core/Events.js"
 import { formatNumber, beautifyNumber } from "/core/Utils.js"
-import DB from "/core/DB.js"
 import template from "./template.js"
 import logic from "./logic.js"
 
@@ -88,8 +87,8 @@ export class POOL extends HTMLElement {
 
         const $dex = this.shadowRoot.querySelector(".badge.dex")
         if ($dex) {
-            const dexs = await DB.get(["statics", "dexs.json"])
-            const dexsymbol = dexs?.[pool.dex]?.symbol
+            const dex = await logic.dex(pool.dex)
+            const dexsymbol = dex?.symbol
             const $dexsvg = $dex.querySelector("ui-svg")
             if ($dexsvg) $dexsvg.dataset.src = dexsymbol ? `/images/cryptos/${dexsymbol}` : ""
             const $version = $dex.querySelector(".version")

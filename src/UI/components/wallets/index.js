@@ -1,5 +1,5 @@
 import template from "./template.js"
-import { Access, setWallet } from "/core/Access.js"
+import { Access } from "/core/Access.js"
 import { html, render } from "/core/UI.js"
 import { Chains, Lives, Wallets } from "/core/Stores.js"
 import States from "/core/States.js"
@@ -23,31 +23,27 @@ export class WALLETS extends HTMLElement {
     }
 
     get id() {
-        return Number(Access.get("wallet")?.id || 0)
+        return logic.id()
     }
 
     set id(value) {
-        value = Number(value)
-        const total = value >= this.total ? Math.ceil((value + 1) / this.step) * this.step : this.total
-        setWallet({ id: value, total: total !== this.total ? total : undefined })
-        return value
+        return logic.setid(value, this.step, this.total)
     }
 
     get total() {
-        return Number(typeof this.dataset.total !== "undefined" ? this.dataset.total : Access.get("wallet")?.total || this.step)
+        return Number(typeof this.dataset.total !== "undefined" ? this.dataset.total : logic.total() || this.step)
     }
 
     set total(value) {
-        return setWallet({ total: Number(value) })
+        return logic.settotal(value)
     }
 
     async connectedCallback() {
         this.$identicons = this.shadowRoot.querySelector("ui-identicons")
 
         const seed = async () => {
-            if (!Access.get("seed")) return
-            const hashed = await globalThis.sea.work(Access.get("seed"), "wallet")
-            this.$identicons.dataset.seed = hashed
+            const s = await logic.seed()
+            if (s != null) this.$identicons.dataset.seed = s
         }
 
         this.subscriptions.push(

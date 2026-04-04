@@ -3,6 +3,7 @@ import Events from "/core/Events.js"
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { notify } from "/core/Utils/browser.js"
+import logic from "./logic.js"
 
 class $QR extends HTMLElement {
     constructor() {
@@ -180,7 +181,7 @@ class $QR extends HTMLElement {
         this.$start.hidden = true
         this.$stop.hidden = false
         this.camera.dataset.status = this.camera?.captured ? "dictionary.scanningCapturedFrame" : "dictionary.scanningLiveFrames"
-        QR.request({method: "configure", params: { alsoTryWithoutScanRegion: true }}).catch((error) => { if (error?.message) notify({ content: error.message }) })
+        logic.configure(QR).catch((error) => { if (error?.message) notify({ content: error.message }) })
         this.schedule(0)
     }
 
@@ -218,8 +219,7 @@ class $QR extends HTMLElement {
         }
 
         this.pending = true
-        const transfer = frame.bitmap ? [frame.bitmap] : undefined
-        QR.decode(frame, { transfer })
+        logic.decode(frame, QR)
             .then((response) => {
                 this.pending = false
                 if (response?.ok && response?.data) {
@@ -253,7 +253,7 @@ class $QR extends HTMLElement {
             qr.innerHTML = ""
             return
         }
-        const code = QR.render(data, { border: 0 })
+        const code = logic.render(data, QR)
         render(html`${code}`, qr)
     }
 }

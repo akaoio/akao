@@ -1,6 +1,6 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
-import { events } from "/core/Events.js"
+import logic from "./logic.js"
 
 export class HEADER extends HTMLElement {
     constructor() {
@@ -11,7 +11,7 @@ export class HEADER extends HTMLElement {
 
     connectedCallback() {
         this.shadowRoot.querySelector(".games")?.addEventListener("click", () => {
-            events.emit("game-nav:open")
+            logic.open()
         })
     }
 }

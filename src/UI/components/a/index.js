@@ -1,5 +1,5 @@
-import Router from "/core/Router.js"
 import { Context } from "/core/Context.js"
+import logic from "./logic.js"
 
 export class A extends HTMLAnchorElement {
     constructor() {
@@ -29,16 +29,12 @@ export class A extends HTMLAnchorElement {
 
     click(e) {
         e.preventDefault()
-        Router.navigate(this.getAttribute("href"))
+        logic.navigate(this.getAttribute("href"))
     }
 
     render() {
-        // Calculate path
-        const router = Router.process({
-            path: this.dataset.to || this.getAttribute("href"),
-            locale: this.dataset.locale || Context.get("locale").code
-        })
-        if (this.getAttribute("href") !== router.path) this.setAttribute("href", router.path)
+        const path = logic.href(this.dataset.to || this.getAttribute("href"), this.dataset.locale || Context.get("locale").code)
+        if (this.getAttribute("href") !== path) this.setAttribute("href", path)
     }
 }
 

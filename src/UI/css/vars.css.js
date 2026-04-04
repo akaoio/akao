@@ -28,10 +28,10 @@ export const styles = css`
         --space-8: calc(var(--unit) * 32);
         --space-9: calc(var(--unit) * 48);
         --space-10: calc(var(--unit) * 64);
-        --space: var(--space-2);
-        --space-sm: var(--space-1);
-        --space-md: var(--space-2);
-        --space-lg: var(--space-3);
+        --space: var(--space-3);
+        --space-sm: var(--space-2);
+        --space-md: var(--space-3);
+        --space-lg: var(--space-4);
 
         /* Typography — fluid via clamp(min, viewport, max).
            Max values match the previous fixed sizes (0.125rem × multiplier).

@@ -1,6 +1,6 @@
 import { html, render } from "/core/UI.js"
-import { Context } from "/core/Context.js"
 import States from "/core/States.js"
+import { Context } from "/core/Context.js"
 import template from "./template.js"
 
 export class TOKENSELECT extends HTMLElement {
@@ -78,12 +78,8 @@ export class TOKENSELECT extends HTMLElement {
 
     renderselected() {
         const selected = this.states.get("selected")
-        if (!selected) {
-            this.$label.textContent = Context.get(["dictionary", "selectToken"]) || "Select token"
-            this.$icon.dataset.src = ""
-            return
-        }
-        this.$label.textContent = selected.configs?.name || ""
+        this.$label.textContent = selected?.configs?.name || Context.get(["dictionary", "selectToken"]) || "Select token"
+        if (!selected) { this.$icon.dataset.src = ""; return }
         this.$icon.dataset.src = selected.configs?.symbol ? `/images/cryptos/${selected.configs.symbol}` : ""
     }
 

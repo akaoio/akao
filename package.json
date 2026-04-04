@@ -1,6 +1,6 @@
 {
   "name": "shop",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A modern serverless eCommerce engine using pure Web Components with built-in multilingual and multi-currency capabilities.",
   "keywords": [
     "shop",

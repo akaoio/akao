@@ -5,8 +5,8 @@ import { notify, randomKey } from "/core/Utils.js"
 import { Access } from "/core/Access.js"
 import { Elements } from "/core/Stores.js"
 import States from "/core/States.js"
-import DB from "/core/DB.js"
 import "/UI/components/icon/index.js"
+import logic from "./logic.js"
 
 export class ADDRESSES extends HTMLElement {
     constructor() {
@@ -27,8 +27,7 @@ export class ADDRESSES extends HTMLElement {
     }
 
     async connectedCallback() {
-        const countries = await DB.get(["geo", "countries.json"])
-        if (countries && countries?.length) this.countries = Object.fromEntries(countries.map(country => [country.id, country]))
+        this.countries = await logic.countries()
         this.modal = this.shadowRoot.querySelector("ui-modal#deletion")
         this.form = this.shadowRoot.querySelector("#address-form")
         this.form.querySelectorAll("input[type='text'], input[type='email'], input[type='tel']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
@@ -55,15 +54,11 @@ export class ADDRESSES extends HTMLElement {
             this.states.on("addresses", this.render)
         )
         this.subscriptions.push(Access.on("authenticated", () => {
-            const { gun, sea } = globalThis
-            const pair = Access.get("pair")
-            if (pair) {
-                this.scope = this.scope || gun.get(`~${pair.pub}`).get("addresses").map()
+            if (logic.pair()) {
                 this.scope?.off?.()
-                this.scope.on(async (data, key) => {
-                    if (!data) return
+                this.scope = logic.watch((key, address) => {
                     const addresses = { ...this.states.get("addresses") }
-                    addresses[key] = await sea.decrypt(data, pair)
+                    addresses[key] = address
                     this.states.set({ addresses })
                 })
             }
@@ -86,11 +81,8 @@ export class ADDRESSES extends HTMLElement {
         if (this.states.get("current") !== id) this.states.set({ current: id })
         this.shadowRoot.querySelector("#addresses").style.display = "none"
         this.form.style.display = "flex"
-        const { gun, sea } = globalThis
-        const pair = Access.get("pair")
-        if (!pair) return
-        const encrypted = await gun.get(`~${pair.pub}`).get("addresses").get(id)
-        const data = await sea.decrypt(encrypted, pair)
+        if (!logic.pair()) return
+        const data = await logic.read(id)
         this.form.querySelectorAll("input").forEach((input) => {
             if (input.name in data) 
                 if (input.type === "checkbox") input.checked = data[input.name]
@@ -98,8 +90,7 @@ export class ADDRESSES extends HTMLElement {
                 else input.value = data[input.name]
             
         })
-        const billing = await gun.get(`~${pair.pub}`).get("billing")
-        const shipping = await gun.get(`~${pair.pub}`).get("shipping")
+        const { billing, shipping, encrypted } = await logic.defaults(id)
         if (billing === encrypted) this.form.querySelector("input[name='billing']").checked = true
         if (shipping === encrypted) this.form.querySelector("input[name='shipping']").checked = true
         const geo = this.form.querySelector("ui-geo")
@@ -123,29 +114,12 @@ export class ADDRESSES extends HTMLElement {
         delete address.billing
         delete address.shipping
         
-        const { gun, sea } = globalThis
-        const pair = Access.get("pair")
-        if (!pair) return
-        const encrypted = await sea.encrypt(address, pair)
-        const scope = gun.get(`~${pair.pub}`).get("addresses").get(address.id)
-        scope.put(encrypted, null, { opt: { authenticator: pair } })
-        if (billing) gun.get(`~${pair.pub}`).get("billing").put(scope, null, { opt: { authenticator: pair } })
-        if (shipping) gun.get(`~${pair.pub}`).get("shipping").put(scope, null, { opt: { authenticator: pair } })
-        
+        if (!logic.pair()) return
+        await logic.write(address, { billing, shipping })
+
         const element = this.shadowRoot.querySelector(`#addresses #${address.id}`)
         if (element) {
-            let area = ""
-            if (address.geo) {
-                let data = null
-                while (data == null || data?.parent) {
-                    const $id = DB.path(data?.parent || address.geo)
-                    data = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
-                    if (data) {
-                        if (!data.parent) data.name = this.countries?.[data.id]?.name || data.name
-                        area = `${area ? `${area}, ` : ""}${data.name}`
-                    }
-                }
-            }
+            const area = await logic.area(address.geo, this.countries)
             element.querySelector(".name").textContent = `${address.firstName} ${address.lastName}`
             element.querySelector(".address").innerHTML = `${address.addressLine1}<br/>${address.addressLine2}`
             element.querySelector(".postalCode").textContent = address.postalCode
@@ -163,9 +137,7 @@ export class ADDRESSES extends HTMLElement {
     confirm() {
         const id = this.states.get("current")
         if (id) {
-            const { gun } = globalThis
-            const pair = Access.get("pair")
-            if (pair) gun.get(`~${pair.pub}`).get("addresses").get(id).put(null, null, { opt: { authenticator: pair } })
+            logic.remove(id)
         }
         this.states.set({ current: null })
         const addresses = { ...this.states.get("addresses") }
@@ -197,18 +169,7 @@ export class ADDRESSES extends HTMLElement {
         const container = this.shadowRoot.querySelector("#addresses")
         const addresses = Object.entries(this.states.get("addresses"))
         for (const [id, address] of addresses) {
-            let area = ""
-            if (address.geo) {
-                let data = null
-                while (data == null || data?.parent) {
-                    const $id = DB.path(data?.parent || address.geo)
-                    data = await DB.get(["geo", ...$id.with(-1, `${$id.at(-1)}.json`)])
-                    if (data) {
-                        if (!data.parent) data.name = this.countries?.[data.id]?.name || data.name
-                        area = `${area ? `${area}, ` : ""}${data.name}`
-                    }
-                }
-            }
+            const area = await logic.area(address.geo, this.countries)
             let element = this.shadowRoot.querySelector(`#${id}`)
             if (!element) {
                 element = html`<div id="${id}">

@@ -2,7 +2,7 @@ import template from "./template.js"
 import { Context } from "/core/Context.js"
 import { html, render } from "/core/UI.js"
 import Cart from "/core/Cart.js"
-import DB from "/core/DB.js"
+import logic from "./logic.js"
 
 export class CART extends HTMLElement {
     constructor() {
@@ -28,7 +28,7 @@ export class CART extends HTMLElement {
     async render() {
         const list = []
         for (const item of Cart.states.get("list")) {
-            const $item = await DB.get(["statics", "items", item.id, `${Context.get("locale").code}.json`])
+            const $item = await logic.item(item.id, Context.get("locale").code)
             const increase = () => Cart.increase(item.key, 1)
             const decrease = () => Cart.decrease(item.key, 1)
             const remove = () => Cart.remove(item.key)

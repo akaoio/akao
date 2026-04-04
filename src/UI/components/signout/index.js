@@ -1,7 +1,7 @@
 import { Elements } from "/core/Stores.js"
-import { signout } from "/core/Access.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import logic from "./logic.js"
 
 export class SIGNOUT extends HTMLElement {
     constructor() {
@@ -29,7 +29,7 @@ export class SIGNOUT extends HTMLElement {
     }
 
     signout() {
-        signout()
+        logic.signout()
         this.shadowRoot.querySelector("ui-modal").close()
     }
 

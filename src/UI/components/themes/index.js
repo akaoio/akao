@@ -1,6 +1,7 @@
 import template from "./template.js"
 import { Context, setTheme } from "/core/Context.js"
 import { render } from "/core/UI.js"
+import logic from "./logic.js"
 
 export class THEMES extends HTMLElement {
     constructor() {
@@ -12,7 +13,7 @@ export class THEMES extends HTMLElement {
     connectedCallback() {
         const button = this.shadowRoot.querySelector("button")
         button.classList.add(Context.get("theme"))
-        button.addEventListener("click", () => setTheme(Context.get("theme") === "dark" ? "light" : "dark"))
+        button.addEventListener("click", () => setTheme(logic.toggle(Context.get("theme"))))
         this.subscription = Context.on("theme", ({ value, last }) => {
             button.classList.remove(last)
             button.classList.add(value)

@@ -1,6 +1,7 @@
 import template from "./template.js"
-import { Access, setAvatar } from "/core/Access.js"
+import { Access } from "/core/Access.js"
 import { render } from "/core/UI.js"
+import logic from "./logic.js"
 
 export class AVATARS extends HTMLElement {
     constructor() {
@@ -12,31 +13,27 @@ export class AVATARS extends HTMLElement {
     }
 
     get id() {
-        return Number(Access.get("avatar")?.id || 0)
+        return logic.id()
     }
 
     set id(value) {
-        value = Number(value)
-        const total = value >= this.total ? Math.ceil((value + 1) / this.step) * this.step : this.total
-        setAvatar({ id: value, total: total !== this.total ? total : undefined })
-        return value
+        return logic.setid(value, this.step, this.total)
     }
 
     get total() {
-        return Number(typeof this.dataset.total !== "undefined" ? this.dataset.total : Access.get("avatar")?.total || this.step)
+        return Number(typeof this.dataset.total !== "undefined" ? this.dataset.total : logic.total() || this.step)
     }
 
     set total(value) {
-        return setAvatar({ total: Number(value) })
+        return logic.settotal(value)
     }
 
     connectedCallback() {
         this.$identicons = this.shadowRoot.querySelector("ui-identicons")
 
         const seed = async () => {
-            if (!Access.get("seed")) return
-            const hashed = await globalThis.sea.work(Access.get("seed"), "avatar")
-            this.$identicons.dataset.seed = hashed
+            const s = await logic.seed()
+            if (s != null) this.$identicons.dataset.seed = s
         }
 
         this.subscriptions.push(

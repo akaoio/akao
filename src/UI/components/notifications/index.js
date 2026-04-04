@@ -1,7 +1,7 @@
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { events } from "/core/Events.js"
-import { randomKey } from "/core/Utils.js"
+import logic from "./logic.js"
 
 export class NOTIFICATIONS extends HTMLElement {
     constructor() {
@@ -20,7 +20,7 @@ export class NOTIFICATIONS extends HTMLElement {
     connectedCallback() {
         this.subscriptions.push(
             events.on("notify", ({ detail }) => {
-                const key = randomKey()
+                const key = logic.key()
                 const close = () => this.close(key)
                 const notification = html`
                     <div class="notification" data-key="${key}">

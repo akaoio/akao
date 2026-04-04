@@ -1,3 +1,4 @@
+import DB from "/core/DB.js"
 import { fiatValue } from "/core/Utils/contracts.js"
 
 export class Logic {
@@ -22,6 +23,11 @@ export class Logic {
             rate01: pool.pairs?.[t0.address]?.[t1.address] || 0,
             rate10: pool.pairs?.[t1.address]?.[t0.address] || 0,
         }
+    }
+
+    static async dex(id) {
+        const dexs = await DB.get(["statics", "dexs.json"])
+        return dexs?.[id] || null
     }
 
 }

@@ -2,6 +2,7 @@ import template from "./template.js"
 import { Statics } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
 import { render } from "/core/UI.js"
+import logic from "./logic.js"
 
 export class LOCALES extends HTMLElement {
     constructor() {
@@ -18,14 +19,8 @@ export class LOCALES extends HTMLElement {
         button.addEventListener("click", select.show)
         this.subscriptions.push(() => button.removeEventListener("click", select.show))
 
-        const options = Statics.locales.map((locale) => {
-            return {
-                value: locale.code,
-                label: `${locale.name}`
-            }
-        })
-        select.states.set({ options, selected: Context.get("locale")?.code })
-        select.callback = (code) => Context.set({ locale: Statics.locales.find((l) => l.code === code) })
+        select.states.set({ options: logic.options(Statics.locales), selected: Context.get("locale")?.code })
+        select.callback = (code) => Context.set({ locale: logic.find(code, Statics.locales) })
     }
 
     disconnectedCallback() {

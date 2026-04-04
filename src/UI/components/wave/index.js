@@ -1,9 +1,9 @@
 import { render } from "/core/UI.js"
 import template from "./template.js"
-import { Wave } from "/core/Wave.js"
 import Events from "/core/Events.js"
-import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils/browser.js"
+import { Context } from "/core/Context.js"
+import logic from "./logic.js"
 
 export class WAVE extends HTMLElement {
     constructor() {
@@ -64,16 +64,7 @@ export class WAVE extends HTMLElement {
     async prepare() {
         const context = this.ensurecontext()
         if (!context) return null
-        await Wave.request({
-            method: "configure",
-            params: {
-                sampleRate: context.sampleRate,
-                sampleRateInp: context.sampleRate,
-                sampleRateOut: context.sampleRate,
-                samplesPerFrame: 1024,
-                volume: 50
-            }
-        })
+        await logic.configure(context.sampleRate, { volume: 50 })
         return context
     }
 
@@ -109,17 +100,7 @@ export class WAVE extends HTMLElement {
         const settings = track?.getSettings ? track.getSettings() : {}
         const inputSampleRate = context.sampleRate || 48000
 
-        await Wave.request({
-            method: "configure",
-            params: {
-                sampleRate: inputSampleRate,
-                sampleRateInp: inputSampleRate,
-                sampleRateOut: inputSampleRate,
-                samplesPerFrame: 1024,
-                volume: 25,
-                reset: true
-            }
-        })
+        await logic.configure(inputSampleRate, { volume: 25, reset: true })
 
         this.source = context.createMediaStreamSource(this.stream)
         await context.audioWorklet.addModule("/UI/components/wave/worklet.js")
@@ -229,7 +210,7 @@ export class WAVE extends HTMLElement {
     }
 
     async frame(text) {
-        const response = await Wave.encode({ message: text })
+        const response = await logic.encode(text)
         if (!response?.ok || !response?.bytes) {
             notify({ content: response?.error || Context.get(["dictionary", "encodeFailed"]) })
             return null
@@ -368,7 +349,7 @@ export class WAVE extends HTMLElement {
             while (this.running && !this.sending) {
                 const bytes = this.dequeue(8)
                 if (!bytes?.length) break
-                const response = await Wave.decode({ bytes }, { transfer: [bytes.buffer] })
+                const response = await logic.decode(bytes)
                 if (response?.found && response?.message) await this.handle(response.message)
             }
         } catch (error) {
@@ -472,8 +453,6 @@ export class WAVE extends HTMLElement {
         this.last = message
         this.events.emit("message", { message, parsed }, { bubbles: true, composed: true })
     }
-
-
 }
 
 customElements.define("ui-wave", WAVE)

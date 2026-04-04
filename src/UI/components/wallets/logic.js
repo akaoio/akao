@@ -1,3 +1,4 @@
+import { Access, setWallet } from "/core/Access.js"
 import { fiatValue } from "/core/Utils/contracts.js"
 
 export class Logic {
@@ -33,6 +34,34 @@ export class Logic {
         const chain = Number(wallet.chain?.id)
         const amount = await fiatValue({ chain, currency, amount: Number(raw) || 0, fiat, forex }) || 0
         return { raw, amount }
+    }
+
+    static async seed() {
+        const rawSeed = Access.get("seed")
+        if (!rawSeed) return null
+        const { sea } = globalThis
+        if (!sea) return null
+        return sea.work(rawSeed, "wallet")
+    }
+
+    static id() {
+        return Number(Access.get("wallet")?.id || 0)
+    }
+
+    static total() {
+        return Number(Access.get("wallet")?.total || 0)
+    }
+
+    static setid(value, step, current) {
+        value = Number(value)
+        const total = value >= current ? Math.ceil((value + 1) / step) * step : current
+        setWallet({ id: value, total: total !== current ? total : undefined })
+        return value
+    }
+
+    static settotal(value) {
+        setWallet({ total: Number(value) })
+        return Number(value)
     }
 }
 

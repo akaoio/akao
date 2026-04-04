@@ -1,8 +1,8 @@
 import template from "./template.js"
 import States from "/core/States.js"
 import ITEM from "/UI/components/item/index.js"
-import DB from "/core/DB.js"
 import { render } from "/core/UI.js"
+import logic from "./logic.js"
 
 export class ITEMS extends HTMLElement {
     constructor() {
@@ -15,7 +15,7 @@ export class ITEMS extends HTMLElement {
 
     async connectedCallback() {
         this.states.on("pages", this.render)
-        const data = await DB.get(["statics", "items", "meta.json"])
+        const data = await logic.meta()
         if (data) this.states.set(data)
     }
 
@@ -23,13 +23,7 @@ export class ITEMS extends HTMLElement {
         const pages = this.states.get("pages")
         const start = this.dataset.start ? parseInt(this.dataset.start) : 1
         let end = this.dataset.end ? parseInt(this.dataset.end) : pages
-        if (end < start) end = start
-        if (end > pages) end = pages
-        const data = []
-        for (let i = start; i <= end; i++) {
-            const page = await DB.get(["statics", "items", `${i}.json`])
-            data.push(...page)
-        }
+        const data = await logic.items(start, end, pages)
         const children = data.map((item) => {
             const element = new ITEM()
             element.dataset.key = item
