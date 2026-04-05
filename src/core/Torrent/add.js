@@ -1,3 +1,5 @@
+import { $save } from "./persist.js"
+
 export async function add(input, options = {}) {
     const client = await this.$client()
 
@@ -18,6 +20,7 @@ export async function add(input, options = {}) {
             if (settled) return
             settled = true
             cleanup()
+            $save(torrent).catch(() => {})
             resolve(torrent)
         }
 

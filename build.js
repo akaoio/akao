@@ -3,14 +3,15 @@
 const args = process.argv.slice(2)
 const target = args[0]
 
-if (!target || !["core", "crypto", "geo", "games", "index", "hash"].includes(target)) {
-    console.error("Usage: node build.js <core|crypto|geo|games|index|hash> [options]")
-    console.error("  core   - Build core application (items, routes, i18n, etc.)")
-    console.error("  crypto - Build crypto statics (ABIs, chains, contracts)")
-    console.error("  geo    - Build geo data from GeoNames")
-    console.error("  games  - Build game datasets using per-game crawlers")
-    console.error("  index  - Build tags and tag routes")
-    console.error("  hash   - Generate hash files for cache validation (production)")
+if (!target || !["core", "crypto", "geo", "games", "index", "hash", "trackers"].includes(target)) {
+    console.error("Usage: node build.js <core|crypto|geo|games|index|hash|trackers> [options]")
+    console.error("  core     - Build core application (items, routes, i18n, etc.)")
+    console.error("  crypto   - Build crypto statics (ABIs, chains, contracts)")
+    console.error("  geo      - Build geo data from GeoNames")
+    console.error("  games    - Build game datasets using per-game crawlers")
+    console.error("  index    - Build tags and tag routes")
+    console.error("  hash     - Generate hash files for cache validation (production)")
+    console.error("  trackers - Fetch latest WebSocket tracker list from ngosang/trackerslist")
     console.error("")
     console.error("Examples:")
     console.error("  node build.js core")

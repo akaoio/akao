@@ -7,7 +7,8 @@ integrates with external APIs to keep rates up-to-date.
 */
 
 import DB from "./DB.js"
-import { NODE, BROWSER, load } from "./Utils.js"
+import { NODE, BROWSER } from "./Utils.js"
+import { FS } from "./FS.js"
 import { Statics } from "./Stores.js"
 
 export class Forex {
@@ -24,8 +25,8 @@ export class Forex {
     }
 
     async init() {
-        this.fiats = Statics?.fiats || (NODE ? await load(["src", "statics", "fiats.yaml"]) : BROWSER ? await DB.get(["statics", "fiats.json"]) : undefined)
-        if (NODE) this.rates = await load(["src", "statics", "forex.yaml"]) || {}
+        this.fiats = Statics?.fiats || (NODE ? await FS.load(["src", "statics", "fiats.yaml"]) : BROWSER ? await DB.get(["statics", "fiats.json"]) : undefined)
+        if (NODE) this.rates = await FS.load(["src", "statics", "forex.yaml"]) || {}
         if (BROWSER) this.rates = (await DB.get(["statics", "forex.json"])) || (await this.update())
         // Initialize rate structure for all supported fiat currencies
         // Creates a matrix where each currency has conversion rates to all others

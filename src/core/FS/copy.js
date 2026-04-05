@@ -1,4 +1,4 @@
-import { fs } from "./shared.js"
+import { fs, BROWSER, opfs } from "./shared.js"
 import { join } from "./join.js"
 import { ensure } from "./ensure.js"
 
@@ -10,6 +10,49 @@ import { ensure } from "./ensure.js"
  * @returns {Promise<{success: boolean, path: string}|undefined>} Result object or undefined
  */
 export async function copy(src, dest) {
+    if (BROWSER) {
+        if (!opfs) return
+        try {
+            // Detect if source is a directory
+            let isDir = false
+            try {
+                await opfs.$dir(opfs._path(src))
+                isDir = true
+            } catch {}
+
+            if (!isDir) {
+                let buf
+                try {
+                    buf = await opfs.read(src)
+                } catch {
+                    console.error("Source path doesn't exist:", Array.isArray(src) ? src.join("/") : src)
+                    return
+                }
+                await opfs.write(dest, buf)
+                return { success: true, path: dest.join("/") }
+            }
+
+            // Directory copy: recursive walk via handle entries
+            const walk = async (srcPath, destPath) => {
+                const handle = await opfs.$dir(opfs._path(srcPath))
+                for await (const [name, entry] of handle.entries()) {
+                    const childSrc = [...srcPath, name]
+                    const childDest = [...destPath, name]
+                    if (entry.kind === "directory") await walk(childSrc, childDest)
+                    else {
+                        const buf = await opfs.read(childSrc)
+                        await opfs.write(childDest, buf)
+                    }
+                }
+            }
+            await walk(src, dest)
+            return { success: true, path: dest.join("/") }
+        } catch (error) {
+            console.error("Error copying:", error)
+        }
+        return
+    }
+
     if (!fs) {
         console.error("File system not available in browser environment")
         return

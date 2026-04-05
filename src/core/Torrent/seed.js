@@ -1,3 +1,5 @@
+import { $save } from "./persist.js"
+
 export async function seed(input, options = {}) {
     const client = await this.$client()
 
@@ -10,6 +12,7 @@ export async function seed(input, options = {}) {
             seeded = torrent
             this.$track(torrent)
             torrent.off?.("error", onError)
+            $save(torrent).catch(() => {})
             resolve(torrent)
         }
 

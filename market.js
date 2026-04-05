@@ -1,15 +1,15 @@
 import Gun from "@akaoio/gun"
 import "@akaoio/gun/sea.js"
-import { load } from "./src/core/FS.js"
+import { FS } from "./src/core/FS.js"
 import http from "http"
 
 const env = process.env.NODE_ENV || "development"
-const pairs = await load("pairs.json").catch(() => null)
+const pairs = await FS.load("pairs.json").catch(() => null)
 
-const domains = await load(["src", "statics", "domains.yaml"])
+const domains = await FS.load(["src", "statics", "domains.yaml"])
 const preferredDomain = process.env.SITE || (env === "production" ? "mimiza.com" : "localhost")
 const siteName = domains?.[preferredDomain] || "localhost"
-const site = await load(["src", "statics", "sites", siteName, "configs.yaml"])
+const site = await FS.load(["src", "statics", "sites", siteName, "configs.yaml"])
 
 const peers = Array.isArray(site?.peers) ? site.peers : []
 const marketPair = pairs?.market
@@ -25,7 +25,7 @@ server.listen(PORT, () => console.log(`Gun relay: http://localhost:${PORT}/gun`)
 
 export const db = Gun({ web: server, peers })
 
-const fiats = await load(["src", "statics", "fiats.yaml"])
+const fiats = await FS.load(["src", "statics", "fiats.yaml"])
 
 export const rates = {}
 

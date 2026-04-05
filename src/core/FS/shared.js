@@ -11,4 +11,11 @@ if (NODE) {
     YAML = await import("yaml")
 }
 
-export { fs, YAML, NODE, BROWSER, WIN }
+// Browser OPFS singleton — lazy-created once for all FS submodules
+let opfs = null
+if (BROWSER) {
+    const { OPFS } = await import("../OPFS.js")
+    opfs = new OPFS()
+}
+
+export { fs, YAML, NODE, BROWSER, WIN, opfs }

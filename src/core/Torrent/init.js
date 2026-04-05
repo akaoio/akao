@@ -5,9 +5,9 @@ export async function $client() {
     if (this.ready) return this.ready
 
     this.ready = (async () => {
-        if (!BROWSER) throw new Error("Torrent is only available in browsers")
-
-        const { default: WebTorrent } = await import("./client.js")
+        const { default: WebTorrent } = BROWSER
+            ? await import("./client.js")
+            : await import("webtorrent")
         this.client = new WebTorrent(this.options)
 
         this.client.on("error", (error) => this.$emit("error", error))

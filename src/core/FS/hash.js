@@ -1,4 +1,4 @@
-import { fs, WIN, BROWSER } from "./shared.js"
+import { fs, WIN, BROWSER, opfs } from "./shared.js"
 import { join } from "./join.js"
 import { sha256 } from "../Utils/crypto.js"
 
@@ -9,6 +9,21 @@ import { sha256 } from "../Utils/crypto.js"
  * @returns {Promise<string>} SHA-256 hash of the file/directory/multiple paths contents
  */
 export async function hash(path, exclude = []) {
+    if (BROWSER) {
+        if (!opfs) return ""
+        // Multi-path and directory hashing deferred to §3 (Torrent.hash())
+        try {
+            const buf = await opfs.read(path)
+            const hashBuf = await crypto.subtle.digest("SHA-256", buf)
+            return Array.from(new Uint8Array(hashBuf))
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("")
+        } catch (error) {
+            console.error("Error hashing in browser:", error)
+            return ""
+        }
+    }
+
     if (!fs) {
         console.error("File system not available")
         return ""
@@ -104,6 +119,7 @@ async function hashDirectory(path, exclude = []) {
         entries.sort((a, b) => a.name.localeCompare(b.name))
 
         for (const entry of entries) {
+            // Node-only but keeping it explicit prevents future regressions)
             const fullPath = WIN && !BROWSER ? `${dirPath}\\${entry.name}` : `${dirPath}/${entry.name}`
             const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name
 

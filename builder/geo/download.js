@@ -1,6 +1,6 @@
 import { existsSync, statSync } from "fs"
 import AdmZip from "adm-zip"
-import { download } from "../../src/core/Utils.js"
+import { FS } from "../../src/core/FS.js"
 
 const base = "http://download.geonames.org/export/dump/"
 const files = ["readme.txt", "countryInfo.txt", "allCountries.zip", "featureCodes_en.txt", "hierarchy.zip", "adminCode5.zip"]
@@ -46,7 +46,7 @@ export async function downloadGeoData() {
         if (needsDownload) {
             const url = base + file
             console.log(`Downloading ${file}...`)
-            const result = await download(url, ["geo", file])
+            const result = await FS.download(url, ["geo", file])
             if (result?.success) {
                 console.log(`✓ Downloaded: ${result.path}\n`)
             } else {
