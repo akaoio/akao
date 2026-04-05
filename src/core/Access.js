@@ -6,6 +6,17 @@
 
 import WebAuthn from "/core/WebAuthn.js"
 import States from "/core/States.js"
+import { DEV } from "/core/Utils/environment.js"
+
+const DEV_SESSION_KEY = "__dev_auth__"
+
+function uint8ToB64(arr) {
+    return btoa(String.fromCharCode(...arr))
+}
+
+function b64ToUint8(str) {
+    return new Uint8Array(atob(str).split("").map((c) => c.charCodeAt(0)))
+}
 
 /**
  * Reactive state store for user authentication and access information.
@@ -132,6 +143,18 @@ async function next(credential) {
         wallet: getWallet(), // Get the wallet ID from the local storage
         avatar: getAvatar(), // Get the avatar ID from the local storage
     })
+    if (DEV && globalThis.localStorage) {
+        const idBytes = typeof credential.id === "string" ? null : new Uint8Array(credential.id instanceof ArrayBuffer ? credential.id : credential.id.buffer)
+        globalThis.localStorage.setItem(
+            DEV_SESSION_KEY,
+            JSON.stringify({
+                seed: uint8ToB64(credential.seed),
+                id: idBytes ? uint8ToB64(idBytes) : credential.id,
+                idIsString: typeof credential.id === "string",
+                pub: credential.pub || null
+            })
+        )
+    }
     return credential
 }
 
@@ -235,4 +258,26 @@ export function passkey(data) {
  */
 export function signout() {
     Access.set({ authenticated: false, id: null, seed: null, pub: null, pair: null, wallet: null, avatar: null })
+    if (DEV && globalThis.localStorage) globalThis.localStorage.removeItem(DEV_SESSION_KEY)
+}
+
+// Called from main.js after Construct.GDB() so that globalThis.sea is available
+export async function restoreDevSession() {
+    if (!DEV || !globalThis.localStorage) return
+    const stored = globalThis.localStorage.getItem(DEV_SESSION_KEY)
+    if (!stored) return
+    try {
+        const { seed, id, idIsString, pub } = JSON.parse(stored)
+        const credential = {
+            seed: b64ToUint8(seed),
+            id: idIsString ? id : b64ToUint8(id).buffer,
+            pub: pub || undefined
+        }
+        const result = await next(credential)
+        if (result?.error) globalThis.localStorage.removeItem(DEV_SESSION_KEY)
+        else if (pub) Access.set({ pub })
+        else restore()
+    } catch (e) {
+        globalThis.localStorage.removeItem(DEV_SESSION_KEY)
+    }
 }

@@ -2,15 +2,16 @@ import { css } from "/core/UI.js"
 
 export const styles = css`
     :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
         width: 100%;
         height: 100%;
-        position: relative;
     }
 
     #container {
+        flex: 1;
+        min-height: 0;
         width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -52,12 +53,12 @@ export const styles = css`
                 display: none;
 
                 &:checked + label {
-                    color: var(--neon-c);
+                    color: hsl(var(--item-hue) 100% 65%);
                     opacity: 1;
                     transform: scale(1.2);
-                    outline: 1px solid color-mix(in hsl, var(--neon-c) 70%, transparent);
+                    outline: 1px solid hsl(var(--item-hue) 100% 65% / 70%);
                     outline-offset: var(--space-1);
-                    box-shadow: var(--glow-c);
+                    box-shadow: 0 0 8px hsl(var(--item-hue) 100% 65% / 53%), 0 0 24px hsl(var(--item-hue) 100% 65% / 20%);
                 }
             }
 
@@ -79,7 +80,7 @@ export const styles = css`
 
                 &:hover {
                     opacity: 0.75;
-                    color: color-mix(in hsl, var(--neon-c) 60%, var(--color));
+                    color: hsl(var(--item-hue) 100% 65% / 60%);
                 }
             }
         }
@@ -88,6 +89,55 @@ export const styles = css`
     @media (prefers-reduced-motion: reduce) {
         #container { scroll-behavior: auto; }
         #container .item label { transition: none; }
+    }
+
+    #status {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1) var(--space-5);
+        font-size: var(--text-xs);
+        color: var(--color);
+        opacity: 0.7;
+        user-select: none;
+        pointer-events: none;
+        flex-shrink: 0;
+    }
+
+    .status-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+    }
+
+    .status-label {
+        opacity: 0.5;
+        font-size: 0.85em;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .status-num {
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+    }
+
+    .status-num--saved  { color: var(--color-accent); }
+    .status-num--preview { color: var(--neon-g); }
+
+    .status-arrow {
+        opacity: 0.4;
+        font-size: 0.85em;
+    }
+
+    .status-sep {
+        opacity: 0.25;
+        margin: 0 var(--space-1);
+    }
+
+    .status-total {
+        opacity: 0.45;
+        font-variant-numeric: tabular-nums;
     }
 `
 

@@ -2,6 +2,26 @@ import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import Events from "/core/Events.js"
 
+const _workCache = new Map()
+
+function hashHue(str) {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i)
+        hash = (hash << 5) - hash + char
+        hash = hash & hash
+    }
+    return Math.abs(hash) % 360
+}
+
+export async function cachedWork(data, salt) {
+    const key = `${data}:${salt}`
+    if (_workCache.has(key)) return _workCache.get(key)
+    const result = await globalThis.sea.work(data, salt)
+    _workCache.set(key, result)
+    return result
+}
+
 export class IDENTICONS extends HTMLElement {
     constructor() {
         super()
@@ -9,6 +29,7 @@ export class IDENTICONS extends HTMLElement {
         this.$subs = []
         this.subscriptions = []
         this.$id = 0
+        this.$savedId = 0
         this.$total = 0
         this.$renderPending = false
         this._loadingMore = false
@@ -16,9 +37,15 @@ export class IDENTICONS extends HTMLElement {
         render(template, this.shadowRoot)
     }
 
-    get name() { return this.dataset.name || "item" }
-    get size() { return Number(this.dataset.size) || 5 }
-    get step() { return Number(this.dataset.step) || 5 }
+    get name() {
+        return this.dataset.name || "item"
+    }
+    get size() {
+        return Number(this.dataset.size) || 5
+    }
+    get step() {
+        return Number(this.dataset.step) || 5
+    }
 
     static get observedAttributes() {
         return ["data-seed"]
@@ -40,7 +67,9 @@ export class IDENTICONS extends HTMLElement {
             if (scrollWidth - scrollLeft - clientWidth < clientWidth * 0.5) {
                 this._loadingMore = true
                 this.events.emit("increase")
-                setTimeout(() => { this._loadingMore = false }, 600)
+                setTimeout(() => {
+                    this._loadingMore = false
+                }, 600)
             }
         }
 
@@ -49,17 +78,24 @@ export class IDENTICONS extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach(off => off())
+        this.subscriptions.forEach((off) => off())
     }
 
     set id(value) {
         this.$id = Number(value)
         const input = this.$container?.querySelector(`input#i${this.$id}`)
         if (input) input.checked = true
+        this._updateStatus()
+    }
+
+    set savedId(value) {
+        this.$savedId = Number(value)
+        this._updateStatus()
     }
 
     set total(value) {
         this.$total = Number(value)
+        this._updateStatus()
         this.render()
     }
 
@@ -67,10 +103,13 @@ export class IDENTICONS extends HTMLElement {
         if (this.$container.children.length >= this.$total) return
         const templates = []
         for (let id = this.$container.children.length; id < this.$total; id++) {
-            const seed = await globalThis.sea.work(this.dataset.seed, id)
-            const select = () => this.events.emit("select", { id })
+            const seed = await cachedWork(this.dataset.seed, id)
+            const hue = hashHue(seed)
+            const select = () => {
+                this.events.emit("select", { id })
+            }
             templates.push(html`
-                <span class="item">
+                <span class="item" style="--item-hue: ${hue}">
                     <input id="i${id}" type="radio" name="${this.name}" value="${id}" />
                     <label
                         for="i${id}"
@@ -100,7 +139,7 @@ export class IDENTICONS extends HTMLElement {
     }
 
     clear() {
-        this.$subs.forEach(off => off())
+        this.$subs.forEach((off) => off())
         this.$subs = []
         if (!this.$container) return
         while (this.$container.firstChild) this.$container.removeChild(this.$container.firstChild)
@@ -115,6 +154,21 @@ export class IDENTICONS extends HTMLElement {
             if (this.$container.children.length < this.$total) await this.create()
             if (this.$container.children.length > this.$total) this.remove()
         })
+    }
+
+    _updateStatus() {
+        const root = this.shadowRoot
+        if (!root) return
+        const saved = this.$savedId
+        const selected = this.$id
+        const total = this.$total
+        const hasDiff = selected !== saved
+
+        root.querySelector("#status-saved").textContent = `#${saved + 1}`
+        root.querySelector("#status-preview-num").textContent = `#${selected + 1}`
+        root.querySelector("#status-preview").hidden = !hasDiff
+        root.querySelector("#status-arrow").hidden = !hasDiff
+        root.querySelector("#status-total").textContent = total ? `${total} avatars` : ""
     }
 }
 

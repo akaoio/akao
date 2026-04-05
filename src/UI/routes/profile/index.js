@@ -55,7 +55,9 @@ export class PROFILE extends HTMLElement {
         const $bioCancel = $("#profile-bio-cancel")
         const $bioInput = $("#profile-bio-input")
         const $bioCount = $("#profile-bio-count")
-        const updateBioCount = () => { $bioCount.textContent = 360 - $bioInput.value.length }
+        const updateBioCount = () => {
+            $bioCount.textContent = 360 - $bioInput.value.length
+        }
         $bioEdit.addEventListener("click", this._enterBioEditMode)
         $bioSave.addEventListener("click", () => this._exitBioEditMode(true))
         $bioCancel.addEventListener("click", () => this._exitBioEditMode(false))
@@ -67,19 +69,51 @@ export class PROFILE extends HTMLElement {
             () => $bioInput.removeEventListener("input", updateBioCount)
         )
 
-        // Wire avatar edit button
+        // Wire avatar picker
         const $avatarEdit = $("#profile-avatar-edit")
         const $avatarPicker = $("#profile-avatar-picker")
-        const togglePicker = () => {
-            const opening = !$avatarPicker.classList.contains("is-open")
-            $avatarPicker.classList.toggle("is-open")
-            if (opening) {
-                $avatarPicker.classList.add("is-loading")
-                setTimeout(() => $avatarPicker.classList.remove("is-loading"), 1200)
-            }
+        const $avatarBackdrop = $("#profile-picker-backdrop")
+        const $avatarAccept = $("#profile-avatar-accept")
+        const $avatarCancel = $("#profile-avatar-cancel")
+        const $avatars = this.shadowRoot.querySelector("ui-avatars")
+        let _originalAvatarId = null
+        let _previewUnsub = null
+
+        const openPicker = () => {
+            _originalAvatarId = Access.get("avatar")?.id ?? 0
+            _previewUnsub = $avatars.events.on("preview", async ({ detail: { id } }) => {
+                await this._updateHeroIdenticonFor(id)
+            })
+            $avatarPicker.classList.add("is-open", "is-loading")
+            $avatarBackdrop.classList.add("is-open")
+            setTimeout(() => $avatarPicker.classList.remove("is-loading"), 1200)
         }
-        $avatarEdit.addEventListener("click", togglePicker)
-        this.subscriptions.push(() => $avatarEdit.removeEventListener("click", togglePicker))
+
+        const closePicker = (revert) => {
+            if (_previewUnsub) {
+                _previewUnsub()
+                _previewUnsub = null
+            }
+            if (revert) {
+                $avatars.revert(_originalAvatarId)
+                this._updateHeroIdenticonFor(_originalAvatarId)
+            } else $avatars.commit()
+
+            $avatarPicker.classList.remove("is-open")
+            $avatarBackdrop.classList.remove("is-open")
+            _originalAvatarId = null
+        }
+
+        $avatarEdit.addEventListener("click", openPicker)
+        $avatarAccept.addEventListener("click", () => closePicker(false))
+        $avatarCancel.addEventListener("click", () => closePicker(true))
+        $avatarBackdrop.addEventListener("click", () => closePicker(true))
+        this.subscriptions.push(
+            () => $avatarEdit.removeEventListener("click", openPicker),
+            () => $avatarAccept.removeEventListener("click", () => closePicker(false)),
+            () => $avatarCancel.removeEventListener("click", () => closePicker(true)),
+            () => $avatarBackdrop.removeEventListener("click", () => closePicker(true))
+        )
 
         // Wire links edit controls
         const $linksEdit = $("#profile-links-edit")
@@ -158,11 +192,18 @@ export class PROFILE extends HTMLElement {
         if (bioRow) bioRow.style.display = authenticated ? "flex" : "none"
         if (statsRow) statsRow.style.display = authenticated ? "flex" : "none"
         if (avatarEdit) avatarEdit.style.display = authenticated ? "flex" : "none"
-        if (avatarPicker && !authenticated) avatarPicker.classList.remove("is-open")
+        if (avatarPicker && !authenticated) {
+            avatarPicker.classList.remove("is-open")
+            this.shadowRoot.querySelector("#profile-picker-backdrop")?.classList.remove("is-open")
+        }
     }
 
     async _updateHeroIdenticon() {
-        const result = await logic.identiconseed()
+        await this._updateHeroIdenticonFor(Access.get("avatar")?.id ?? 0)
+    }
+
+    async _updateHeroIdenticonFor(avatarId) {
+        const result = await logic.identiconseedfor(avatarId)
         if (!result) return
         const { idSeed, h1, h2 } = result
         const glow = (h, a) => `hsl(${h}deg 100% 65% / ${a})`

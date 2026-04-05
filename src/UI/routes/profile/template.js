@@ -10,11 +10,12 @@ import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
+    <div class="profile-picker-backdrop" id="profile-picker-backdrop"></div>
     <layout-main>
         <header class="profile-hero">
             <div class="profile-hero__gradient"></div>
             <div class="profile-avatar" id="profile-avatar-wrap">
-                <ui-identicon id="profile-identicon" data-size="11" />
+                <ui-identicon id="profile-identicon" data-size="7" />
                 <button class="profile-avatar__edit" id="profile-avatar-edit" aria-label="Change avatar">
                     <ui-icon data-icon="pen" data-size="md" />
                 </button>
@@ -22,6 +23,14 @@ export const template = html`
             <div class="profile-avatar-picker" id="profile-avatar-picker">
                 <span class="profile-avatar-picker__loader" aria-hidden="true"></span>
                 <ui-avatars />
+                <div class="profile-avatar-picker__actions">
+                    <button class="profile-avatar-picker__cancel" id="profile-avatar-cancel" aria-label="Cancel">
+                        <ui-icon data-icon="x-lg" data-size="md" /> Cancel
+                    </button>
+                    <button class="profile-avatar-picker__accept" id="profile-avatar-accept" aria-label="Apply avatar">
+                        <ui-icon data-icon="check-lg" data-size="md" /> Apply
+                    </button>
+                </div>
             </div>
         </header>
 

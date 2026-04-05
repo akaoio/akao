@@ -11,6 +11,7 @@ import styles from "/css/global.css.js"
 import ACCESS from "/UI/components/access/index.js"
 import { SPLASH } from "/UI/components/splash/index.js"
 import { DEV } from "/core/Utils/environment.js"
+import { restoreDevSession } from "/core/Access.js"
 
 const thread = new Thread()
 const components = {}
@@ -96,6 +97,7 @@ thread.init = async function () {
     Progress.set({ Dexs: await Construct.Dexs() })
     Progress.set({ Wallets: await Construct.Wallets() })
     Progress.set({ GDB: await Construct.GDB() })
+    if (DEV) await restoreDevSession()
     // Listen to the popstate event, which is triggered when the user navigates back to the previous page
     // Updates Context with the new route info
     globalThis.addEventListener("popstate", () => {
