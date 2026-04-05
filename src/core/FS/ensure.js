@@ -1,11 +1,21 @@
-import { fs } from "./shared.js"
+import { fs, BROWSER, opfs } from "./shared.js"
 
 /**
  * Ensure a directory exists, creating it recursively if needed
- * @param {string} path - Directory path to ensure exists
+ * @param {string|string[]} path - Directory path to ensure exists
  * @returns {Promise<boolean>} True if directory exists or was created, false on error
  */
 export async function ensure(path) {
+    if (BROWSER) {
+        if (!opfs) return false
+        try {
+            await opfs.mkdir(path)
+            return true
+        } catch (error) {
+            console.error("Error creating directory:", path, error)
+            return false
+        }
+    }
     // Check if file system module is available (Node.js only)
     if (!fs) {
         console.error("File system not available in browser environment")

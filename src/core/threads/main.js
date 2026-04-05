@@ -92,6 +92,7 @@ thread.init = async function () {
         themes: await DB.get(["statics", "themes.json"])
     })
     Progress.set({ Site: true })
+    globalThis.threads.call({ thread: "torrent", method: "init" })
     Progress.set({ Chains: await Construct.Chains() })
     Progress.set({ Dexs: await Construct.Dexs() })
     Progress.set({ Wallets: await Construct.Wallets() })

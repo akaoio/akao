@@ -1,7 +1,5 @@
 export { NODE, BROWSER, WIN } from "./Utils/environment.js"
 
-export { root, join, write, load, download, copy, find, dir, exist, isDirectory, hash, ensure, remove } from "./FS.js"
-
 export { notify } from "./Utils/browser.js"
 
 export { sha256, signAndHash, base64UrlToHex, hexToBase64Url, base64ToHex, hexToBase64, bufferToBase64Url, base64UrlToBuffer, bytesToHex, concatbuffers } from "./Utils/crypto.js"

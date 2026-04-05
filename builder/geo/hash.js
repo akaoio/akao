@@ -1,10 +1,11 @@
-import { dir, exist, isDirectory, load, write } from "../../src/core/FS.js"
-import { sha256 } from "../../src/core/Utils.js"
+import { FS } from "../../src/core/FS.js"
+import { hash } from "../../src/core/Torrent/hash.js"
 
+const encoder = new TextEncoder()
 let totalDirHashCount = 0
 
 export async function generateGeoDirectoryHashes(path = [], depth = 0) {
-    const entries = await dir(path)
+    const entries = await FS.dir(path)
     if (!entries || entries.length === 0) return 0
 
     const hashFiles = []
@@ -14,7 +15,7 @@ export async function generateGeoDirectoryHashes(path = [], depth = 0) {
     for (const entry of entries) {
         const entryPath = [...path, entry]
 
-        if (await isDirectory(entryPath)) {
+        if (await FS.isDirectory(entryPath)) {
             subDirs.push(entry)
         } else if (entry.endsWith(".hash") && entry !== "_.hash") {
             hashFiles.push(entry)
@@ -29,7 +30,7 @@ export async function generateGeoDirectoryHashes(path = [], depth = 0) {
     const childHashes = []
 
     for (const hashFile of hashFiles) {
-        const hashContent = await load([...path, hashFile])
+        const hashContent = await FS.load([...path, hashFile])
         if (hashContent) {
             childHashes.push(hashContent)
         }
@@ -37,8 +38,8 @@ export async function generateGeoDirectoryHashes(path = [], depth = 0) {
 
     for (const subDir of subDirs) {
         const subDirHashPath = [...path, subDir, "_.hash"]
-        if (await exist(subDirHashPath)) {
-            const hashContent = await load(subDirHashPath)
+        if (await FS.exist(subDirHashPath)) {
+            const hashContent = await FS.load(subDirHashPath)
             if (hashContent) {
                 childHashes.push(hashContent)
             }
@@ -46,8 +47,9 @@ export async function generateGeoDirectoryHashes(path = [], depth = 0) {
     }
 
     if (childHashes.length > 0) {
-        const combinedHash = sha256(childHashes.sort().join(""))
-        await write([...path, "_.hash"], combinedHash)
+        const bytes = encoder.encode(childHashes.sort().join(""))
+        const { v1: combinedHash } = await hash(bytes, path.at(-1) || "root")
+        await FS.write([...path, "_.hash"], combinedHash)
         hashCount++
         totalDirHashCount++
 

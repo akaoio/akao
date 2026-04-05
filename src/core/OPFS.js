@@ -13,6 +13,8 @@ export class OPFS {
     constructor({ root = "" } = {}) {
         // Optional subdirectory prefix — all paths are relative to this
         this.root = root
+        // Per-path write queue — instance-level so multiple OPFS instances don't share locks
+        this._locks = new Map()
     }
 
     // Prepend instance root to a user-supplied path array

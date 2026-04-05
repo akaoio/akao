@@ -1,4 +1,4 @@
-import { load, write } from "../src/core/Utils.js"
+import { FS } from "../src/core/FS.js"
 import { ethers } from "ethers"
 import { icons, color } from "../src/core/Colors.js"
 
@@ -57,7 +57,7 @@ const getWorkingRPC = async (chainName, chainConfigs) => {
 const loadABI = async (name) => {
     if (!name) return
     if (abiCache.has(name)) return abiCache.get(name)
-    const abi = await load(["src", "statics", "ABIs", `${name}.yaml`])
+    const abi = await FS.load(["src", "statics", "ABIs", `${name}.yaml`])
     if (!Array.isArray(abi) || !abi.length) return
     abiCache.set(name, abi)
     return abi
@@ -143,7 +143,7 @@ const scanChainCurrencies = async (chainName, chainData, { force = false } = {})
         }
 
         if (updated) {
-            await write(["src", "statics", "chains", chainName, "currencies.yaml"], currencies)
+            await FS.write(["src", "statics", "chains", chainName, "currencies.yaml"], currencies)
             console.log(color.ok(`Updated currencies for ${chainName}`))
         }
 
@@ -156,7 +156,7 @@ const scanChainCurrencies = async (chainName, chainData, { force = false } = {})
 export const scanTokenDecimals = async ({ chain = null, force = false } = {}) => {
     console.log(color.header(`\n${icons.start} Currency Scanner`))
 
-    const chains = await load(["src", "statics", "chains"])
+    const chains = await FS.load(["src", "statics", "chains"])
     if (!chains || typeof chains !== "object") return []
 
     const entries = Object.entries(chains).filter(([name]) => (!chain ? true : name.toLowerCase() === chain.toLowerCase()))

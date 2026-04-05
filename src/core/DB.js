@@ -14,7 +14,7 @@
  *   4. If hashes differ → re-fetch data, update both Indexes.Statics and Indexes.Hashes
  *      → fire-and-forget $syncToSQL: write to SQLite without blocking the return
  */
-import { load } from "./FS.js"
+import { FS } from "./FS.js"
 import { Indexes } from "./Stores.js"
 import { DEV } from "./Utils/environment.js"
 import { transform, ALL_TABLES } from "./DB/transformer.js"
@@ -28,8 +28,8 @@ export class DB {
 
         // Dev mode: skip hash validation, always load fresh — but still index IDB + SQL
         if (DEV) {
-            if (type === "hash") return load(path)
-            const data = await load(path)
+            if (type === "hash") return FS.load(path)
+            const data = await FS.load(path)
             if (typeof data !== "undefined") {
                 await Indexes.Statics.get(path).put(data)
                 DB.$syncToSQL(path, data)
@@ -38,11 +38,11 @@ export class DB {
         }
 
         const memory = await Indexes.Hashes.get(path).once()
-        const hash = await load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
+        const hash = await FS.load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
         if (memory && hash && memory === hash) return type === "hash" ? hash : await Indexes.Statics.get(path).once()
         if (hash) await Indexes.Hashes.get(path).put(hash)
         if (type === "hash") return hash
-        const data = await load(path)
+        const data = await FS.load(path)
         if (typeof data !== "undefined") {
             await Indexes.Statics.get(path).put(data)
             DB.$syncToSQL(path, data)

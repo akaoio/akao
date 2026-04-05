@@ -1,4 +1,4 @@
-import { fs } from "./shared.js"
+import { fs, BROWSER, opfs } from "./shared.js"
 import { join } from "./join.js"
 
 /**
@@ -7,6 +7,19 @@ import { join } from "./join.js"
  * @returns {Promise<boolean>} True if removed successfully, false on error
  */
 export async function remove(path) {
+    if (BROWSER) {
+        if (!opfs) return false
+        const exists = await opfs.exist(path).catch(() => false)
+        if (!exists) return true
+        try {
+            await opfs.del(path)
+            return true
+        } catch (error) {
+            console.error("Error removing path:", path, error)
+            return false
+        }
+    }
+
     if (!fs) {
         console.error("File system not available in browser environment")
         return false

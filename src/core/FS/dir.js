@@ -1,4 +1,4 @@
-import { fs } from "./shared.js"
+import { fs, BROWSER, opfs } from "./shared.js"
 import { join } from "./join.js"
 
 /**
@@ -7,6 +7,31 @@ import { join } from "./join.js"
  * @returns {Promise<string[]>} Array of file and directory names, or empty array on error
  */
 export async function dir(path, pattern = null) {
+    if (BROWSER) {
+        if (!opfs) return []
+        if (!pattern) return opfs.list(path).catch(() => [])
+        // Recursive pattern walk via raw FileSystemDirectoryHandle entries
+        const results = []
+        const walk = async (currentPath) => {
+            let handle
+            try {
+                handle = await opfs.$dir(opfs._path(currentPath))
+            } catch {
+                return
+            }
+            for await (const [name, entry] of handle.entries()) {
+                const childPath = [...currentPath, name]
+                if (entry.kind === "directory") await walk(childPath)
+                else if (entry.kind === "file") {
+                    const relPath = childPath.join("/")
+                    if (pattern.test(relPath)) results.push(relPath)
+                }
+            }
+        }
+        await walk(Array.isArray(path) ? path : [path])
+        return results
+    }
+
     if (!fs) {
         console.error("File system not available in browser environment")
         return []

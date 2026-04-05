@@ -1,4 +1,4 @@
-import { exist } from "../src/core/FS.js"
+import { FS } from "../src/core/FS.js"
 import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
 import { generateHashFiles } from "./core/hash.js"
@@ -7,7 +7,7 @@ log.start("Starting hash generation...")
 
 const buildRoot = paths.build.root
 
-if (!(await exist(buildRoot))) {
+if (!(await FS.exist(buildRoot))) {
     log.info("Build directory not found — run build:core first")
     process.exit(1)
 }

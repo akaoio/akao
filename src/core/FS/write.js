@@ -1,4 +1,4 @@
-import { fs, YAML } from "./shared.js"
+import { fs, YAML, BROWSER, opfs } from "./shared.js"
 import { join } from "./join.js"
 import { ensure } from "./ensure.js"
 import { stringify as stringifyCSV } from "../CSV.js"
@@ -11,6 +11,7 @@ import { stringify as stringifyCSV } from "../CSV.js"
  */
 export async function write(path = [], content) {
     if (content === undefined || content === null) return
+    path = [...path]
     const file = path.at(-1)
     const hasExtension = file.includes(".")
 
@@ -25,6 +26,43 @@ export async function write(path = [], content) {
         return
     }
 
+    // Binary shortcut: Uint8Array written as-is, bypassing text serialization
+    if (content instanceof Uint8Array) {
+        if (BROWSER) {
+            if (!opfs) return
+            await opfs.write(path, content)
+            return { success: true, path: path.join("/") }
+        }
+        path.pop()
+        const dir = join(path)
+        const filePath = join([...path, file])
+        if (!(await ensure(dir))) return
+        try {
+            fs.writeFileSync(filePath, content)
+            return { success: true, path: filePath }
+        } catch (error) {
+            console.error("Error writing to", filePath)
+        }
+        return
+    }
+
+    // Serialize content based on file extension
+    let data
+    if (file.endsWith(".json")) data = JSON.stringify(content, null, 4)
+    else if (file.endsWith(".csv")) data = stringifyCSV(content, { delimiter: "," })
+    else if (file.endsWith(".tsv")) data = stringifyCSV(content, { delimiter: "\t" })
+    else if (file.endsWith(".yaml") || file.endsWith(".yml"))
+        if (!BROWSER) data = YAML.stringify(content)
+        else data = typeof content === "string" ? content : JSON.stringify(content, null, 4)
+    else data = typeof content === "string" ? content : JSON.stringify(content, null, 4)
+
+    if (BROWSER) {
+        if (!opfs) return
+        const encoded = new TextEncoder().encode(data)
+        await opfs.write(path, encoded)
+        return { success: true, path: path.join("/") }
+    }
+
     // If the last item is a file, remove it from path to make dir
     path.pop()
     const dir = join(path)
@@ -33,13 +71,6 @@ export async function write(path = [], content) {
     if (!(await ensure(dir))) return
 
     try {
-        let data
-        // Serialize content based on file extension
-        if (file.endsWith(".json")) data = JSON.stringify(content, null, 4)
-        else if (file.endsWith(".yaml") || file.endsWith(".yml")) data = YAML.stringify(content)
-        else if (file.endsWith(".csv")) data = stringifyCSV(content, { delimiter: "," })
-        else if (file.endsWith(".tsv")) data = stringifyCSV(content, { delimiter: "\t" })
-        else data = content
         fs.writeFileSync(filePath, data, "utf8")
         return { success: true, path: filePath }
     } catch (error) {

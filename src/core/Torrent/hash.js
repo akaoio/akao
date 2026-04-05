@@ -430,6 +430,7 @@ async function computeInfohash(files, name, opts = {}) {
     return {
         v1: bytesToHex(new Uint8Array(await crypto.subtle.digest("SHA-1", bencodedInfo))),
         v2: opts.v2 ? bytesToHex(new Uint8Array(await crypto.subtle.digest("SHA-256", bencodedInfo))) : null,
+        bytes: bencodedInfo,
     }
 }
 
@@ -461,7 +462,7 @@ async function computeInfohash(files, name, opts = {}) {
  * @param {string}  [options.source]            — embed info.source (private tracker announce)
  * @param {Function}[options.onRetry]           — (path, attempt, error) => void — called before each retry
  * @param {object}  [options.customCrypto]      — inject a crypto implementation (testing / non-standard runtimes)
- * @returns {Promise<{v1: string, v2: string|null}>}
+ * @returns {Promise<{v1: string, v2: string|null, bytes: Uint8Array}>}
  * @throws {TorrentError}
  */
 export async function hash(inputData, fileName, options = {}) {

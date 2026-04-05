@@ -1,4 +1,4 @@
-import { fs, YAML, NODE, BROWSER } from "./shared.js"
+import { fs, YAML, NODE, BROWSER, opfs } from "./shared.js"
 import { join } from "./join.js"
 import { parse as parseCSV } from "../CSV.js"
 
@@ -16,19 +16,73 @@ export async function load(path) {
     if (Array.isArray(path)) {
         const _path = join(path)
         let text
-        // Browser environment - use fetch API to load files
-        if (BROWSER)
+        // Browser environment - OPFS directory check first, then HTTP + OPFS fallback for files
+        if (BROWSER) {
+            if (opfs) {
+                let isOPFSDir = false
+                try {
+                    await opfs.$dir(opfs._path(path))
+                    isOPFSDir = true
+                } catch {}
+
+                if (isOPFSDir) {
+                    const names = await opfs.list(path).catch(() => [])
+                    const files = {}
+                    for (const name of names) {
+                        const childContent = await load([...path, name])
+                        if (childContent !== undefined) {
+                            const base = name.replace(/\.\w{2,4}$/, "")
+                            files[base] = childContent
+                        }
+                    }
+                    return files
+                }
+            }
+
+            // File load: HTTP first, OPFS fallback
+            const textExts = ["json", "yaml", "yml", "csv", "tsv", "txt", "md", "html", "js", "css", "hash"]
+            const fileExt = _path.match(/\.\w+$/)?.[0]?.slice(1).toLowerCase() || ""
+            const isBinary = fileExt && !textExts.includes(fileExt)
+
+            let httpText = null
             try {
                 const response = await fetch(_path)
-                if (!response.ok) {
-                    console.error("Path doesn't exist", _path)
-                    return
+                if (response.ok) {
+                    if (isBinary) {
+                        const buf = await response.arrayBuffer()
+                        if (opfs) opfs.write(path, new Uint8Array(buf)).catch(() => {})
+                        return new Uint8Array(buf)
+                    }
+                    httpText = await response.text()
+                    // Background: cache to OPFS — best-effort, failures are expected (quota etc.)
+                    if (opfs) {
+                        const encoded = new TextEncoder().encode(httpText)
+                        opfs.write(path, encoded).catch(() => {})
+                    }
                 }
-                text = await response.text()
-            } catch (error) {
-                console.error("Error loading from", _path)
+            } catch {}
+
+            if (isBinary) {
+                const buf = await opfs?.read(path).catch(() => null)
+                if (buf) return new Uint8Array(buf)
+                console.error("Path not found in HTTP or OPFS:", _path)
                 return
             }
+
+            if (httpText !== null) text = httpText
+            else if (opfs) {
+                // Fallback: serve from OPFS if HTTP failed
+                const buf = await opfs.read(path).catch(() => null)
+                if (buf) text = new TextDecoder().decode(buf)
+                else {
+                    console.error("Path not found in HTTP or OPFS:", _path)
+                    return
+                }
+            } else {
+                console.error("Path doesn't exist", _path)
+                return
+            }
+        }
         // Node.js environment - use fs module for file operations
         else if (NODE)
             try {
@@ -49,7 +103,10 @@ export async function load(path) {
                     }
                     return files
                 }
-                text = fs.readFileSync(_path, "utf8")
+                const textExts = ["json", "yaml", "yml", "csv", "tsv", "txt", "md", "html", "js", "css", "hash"]
+                const fileExt = _path.match(/\.\w+$/)?.[0]?.slice(1).toLowerCase() || ""
+                if (textExts.includes(fileExt)) text = fs.readFileSync(_path, "utf8")
+                else return new Uint8Array(fs.readFileSync(_path))
             } catch (error) {
                 console.error("Error reading from", _path)
                 return
@@ -72,7 +129,7 @@ export async function load(path) {
                     data = parseCSV(text, { delimiter })
                 }
                 // Return ABI property if present, otherwise return full data
-                return data?.abi || data
+                return data?.abi !== undefined ? data.abi : data
             } catch {
                 // If parsing fails, return raw text
                 return text

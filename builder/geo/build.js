@@ -2,8 +2,8 @@ import { readFileSync, createReadStream, existsSync, statSync, unlinkSync } from
 import { createInterface } from "readline"
 import AdmZip from "adm-zip"
 import DB from "../../src/core/DB.js"
-import { write, parseCSV, sha256 } from "../../src/core/Utils.js"
-import { load, dir, exist, isDirectory } from "../../src/core/FS.js"
+import { parseCSV, sha256 } from "../../src/core/Utils.js"
+import { FS } from "../../src/core/FS.js"
 import { generateGeoDirectoryHashes, resetGeoHashCounter } from "./hash.js"
 import { validateHierarchy } from "./validate.js"
 import { ADMIN_FEATURE_REGEX, COUNTRY_FEATURE_REGEX, resolveParent, normalizeAdminCodes } from "./shared.js"
@@ -88,9 +88,9 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
             equivalentFipsCode: row.EquivalentFipsCode || ""
         }))
 
-        await write([outputBase, "geo", "countries.json"], countries)
+        await FS.write([outputBase, "geo", "countries.json"], countries)
         const countriesHash = sha256(JSON.stringify(countries))
-        await write([outputBase, "geo", "countries.hash"], countriesHash)
+        await FS.write([outputBase, "geo", "countries.hash"], countriesHash)
         console.log(`✓ Created ${outputBase}/geo/countries.json with ${countries.length} countries\n`)
     } catch (error) {
         console.error("Error processing countries:", error)
@@ -114,9 +114,9 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
             description: row[2] || ""
         }))
 
-        await write([outputBase, "geo", "features.json"], features)
+        await FS.write([outputBase, "geo", "features.json"], features)
         const featuresHash = sha256(JSON.stringify(features))
-        await write([outputBase, "geo", "features.hash"], featuresHash)
+        await FS.write([outputBase, "geo", "features.hash"], featuresHash)
         console.log(`✓ Created ${outputBase}/geo/features.json with ${features.length} feature codes\n`)
     } catch (error) {
         console.error("Error processing feature codes:", error)
@@ -436,9 +436,9 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
 
             if (needsWrite) {
                 try {
-                    await write(filePath, record)
+                    await FS.write(filePath, record)
                     const fileHash = sha256(JSON.stringify(record))
-                    await write(hashFilePath, fileHash)
+                    await FS.write(hashFilePath, fileHash)
                     writtenCount++
                 } catch (error) {
                     console.error(`Error writing record ${id}:`, error.message)
@@ -547,7 +547,7 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
                     const content = readFileSync(fullPath, "utf8")
                     const record = JSON.parse(content)
                     record.children = children
-                    await write(filePath, record)
+                    await FS.write(filePath, record)
                     updatedCount++
 
                     if (updatedCount % 10000 === 0) {

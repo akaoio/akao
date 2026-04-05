@@ -76,6 +76,16 @@ export const Construct = {
         console.log("Constructed: Wallets")
         return true
     },
+    Torrent: async function () {
+        const trackers = await DB.get(["statics", "trackers.json"])
+        const { Torrent } = await import("./Torrent.js")
+        const instance = new Torrent()
+        instance.tracker(trackers || [])
+        await instance.init()
+        Statics.torrent = instance
+        console.log("Constructed: Torrent")
+        return true
+    },
     Context: async function () {
         const router = Router.process()
         Context.set({

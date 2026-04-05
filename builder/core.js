@@ -1,4 +1,4 @@
-import { write, load, copy, dir, remove, isDirectory, exist } from "../src/core/FS.js"
+import { FS } from "../src/core/FS.js"
 import { color, icons } from "../src/core/Colors.js"
 import { paths } from "./core/config.js"
 import { log } from "./core/logger.js"
@@ -11,13 +11,13 @@ import fs from "fs"
 // ============ Helper Functions ============
 async function copyAssets(assets) {
     for (const { src, dest, label } of assets) {
-        await copy(src, dest)
+        await FS.copy(src, dest)
         log.ok(`Copied ${label}`)
     }
 }
 
 async function processYamlDirectory(srcPath, destPath, { recursive = false, filter = null } = {}) {
-    const files = await dir(srcPath)
+    const files = await FS.dir(srcPath)
     const filtered = filter ? files.filter(filter) : files
     let processed = 0
 
@@ -25,34 +25,34 @@ async function processYamlDirectory(srcPath, destPath, { recursive = false, filt
         const fullSrcPath = [...srcPath, file]
 
         if (recursive) {
-            const subFiles = await dir(fullSrcPath)
+            const subFiles = await FS.dir(fullSrcPath)
             for (const subFile of subFiles) {
                 const fullSubPath = [...fullSrcPath, subFile]
 
                 // Check if it's a directory - if so, copy it entirely
-                if (await isDirectory(fullSubPath)) {
-                    await copy(fullSubPath, [...destPath, file, subFile])
+                if (await FS.isDirectory(fullSubPath)) {
+                    await FS.copy(fullSubPath, [...destPath, file, subFile])
                     continue
                 }
 
                 // Otherwise, try to load and convert YAML/JSON
-                const data = await load(fullSubPath)
+                const data = await FS.load(fullSubPath)
                 if (data) {
                     const jsonName = subFile.replace(/\.(yaml|yml)$/, ".json")
-                    await write([...destPath, file, jsonName], data)
+                    await FS.write([...destPath, file, jsonName], data)
                     processed++
-                } else await copy(fullSubPath, [...destPath, file, subFile])
+                } else await FS.copy(fullSubPath, [...destPath, file, subFile])
             }
         } else {
-            if (await isDirectory(fullSrcPath)) {
-                await copy(fullSrcPath, [...destPath, file])
+            if (await FS.isDirectory(fullSrcPath)) {
+                await FS.copy(fullSrcPath, [...destPath, file])
                 continue
             }
 
-            const data = await load(fullSrcPath)
+            const data = await FS.load(fullSrcPath)
             if (data) {
                 const jsonName = file.replace(/\.(yaml|yml)$/, ".json")
-                await write([...destPath, jsonName], data)
+                await FS.write([...destPath, jsonName], data)
                 processed++
             }
         }
@@ -96,14 +96,14 @@ try {
 // Clean build folder, preserving build/geo and crypto outputs if they exist
 log.info("Cleaning build folder...")
 const geoPath = [paths.build.root, "geo"]
-const hasGeo = await exist(geoPath)
+const hasGeo = await FS.exist(geoPath)
 
 // Crypto-generated directories inside build/statics
 const cryptoDirs = ["ABIs", "chains"]
 const preservedStaticsDirs = [...cryptoDirs, "items"]
-const hasCryptoDirs = (await Promise.all(cryptoDirs.map((d) => exist([...paths.build.statics, d])))).some(Boolean)
-const hasItemsDir = await exist([...paths.build.statics, "items"])
-const hasCryptoImages = await exist([...paths.build.root, "images", "cryptos"])
+const hasCryptoDirs = (await Promise.all(cryptoDirs.map((d) => FS.exist([...paths.build.statics, d])))).some(Boolean)
+const hasItemsDir = await FS.exist([...paths.build.statics, "items"])
+const hasCryptoImages = await FS.exist([...paths.build.root, "images", "cryptos"])
 
 if (hasGeo || hasCryptoDirs || hasItemsDir) {
     const preserved = []
@@ -113,44 +113,44 @@ if (hasGeo || hasCryptoDirs || hasItemsDir) {
     if (hasCryptoImages) preserved.push("images/cryptos")
     log.info(`Preserving: ${preserved.join(", ")}, cleaning other build files...`)
 
-    const buildItems = await dir([paths.build.root])
+    const buildItems = await FS.dir([paths.build.root])
     for (const item of buildItems) {
         if (item === "geo" && hasGeo) continue
 
         if (item === "statics" && (hasCryptoDirs || hasItemsDir)) {
             // Clean statics selectively, preserving configured subdirs
-            const staticsItems = await dir(paths.build.statics)
+            const staticsItems = await FS.dir(paths.build.statics)
             for (const staticsItem of staticsItems) {
                 if (preservedStaticsDirs.includes(staticsItem)) continue
-                await remove([...paths.build.statics, staticsItem])
+                await FS.remove([...paths.build.statics, staticsItem])
             }
             continue
         }
 
         if (item === "images" && hasCryptoImages) {
             // Clean images selectively, preserving cryptos subfolder
-            const imageItems = await dir([...paths.build.root, "images"])
+            const imageItems = await FS.dir([...paths.build.root, "images"])
             for (const imageItem of imageItems) {
                 if (imageItem === "cryptos") continue
-                await remove([...paths.build.root, "images", imageItem])
+                await FS.remove([...paths.build.root, "images", imageItem])
             }
             continue
         }
 
-        await remove([paths.build.root, item])
+        await FS.remove([paths.build.root, item])
     }
-} else await remove([paths.build.root])
+} else await FS.remove([paths.build.root])
 
 log.ok("Cleaned build folder")
 
 // Load configuration
 log.info("Loading configuration and data...")
-const localesConfig = await load([...paths.src.statics, "locales.yaml"])
+const localesConfig = await FS.load([...paths.src.statics, "locales.yaml"])
 const locales = localesConfig.map((locale) => locale.code)
-const system = (await load([...paths.src.statics, "system.yaml"])) || { pagination: 10 }
+const system = (await FS.load([...paths.src.statics, "system.yaml"])) || { pagination: 10 }
 
 // Load items metadata — distinguish core-managed (flat) from game-derived (nested)
-const itemDirs = await dir(paths.src.items)
+const itemDirs = await FS.dir(paths.src.items)
 const coreItems = [] // flat item-ids under src/statics/items/<item-id>/
 const gameItemsMap = {} // { gameId: [item-id, ...] }
 const gameTypesMap = {} // { gameId: Set<string> }
@@ -158,18 +158,18 @@ const allTags = new Set()
 
 for (const name of itemDirs) {
     const rootMetaPath = [...paths.src.items, name, "meta.yaml"]
-    const meta = (await exist(rootMetaPath)) ? await load(rootMetaPath) : null
+    const meta = (await FS.exist(rootMetaPath)) ? await FS.load(rootMetaPath) : null
     if (meta) {
         // Has meta.yaml directly → core-managed item
         coreItems.push(name)
         normalizeTags(meta.tags).forEach((tag) => allTags.add(tag))
     } else {
         // No meta.yaml → check if it's a game namespace containing item subdirs
-        const subDirs = await dir([...paths.src.items, name])
+        const subDirs = await FS.dir([...paths.src.items, name])
         const nested = []
         for (const sub of subDirs)
-            if (await isDirectory([...paths.src.items, name, sub])) {
-                const subMeta = await load([...paths.src.items, name, sub, "meta.yaml"])
+            if (await FS.isDirectory([...paths.src.items, name, sub])) {
+                const subMeta = await FS.load([...paths.src.items, name, sub, "meta.yaml"])
                 if (subMeta) {
                     nested.push(sub)
                     normalizeTags(subMeta.tags).forEach((tag) => allTags.add(tag))
@@ -187,10 +187,10 @@ const totalItemCount = coreItems.length + Object.values(gameItemsMap).reduce((s,
 log.ok(`Loaded: ${locales.length} locales, ${coreItems.length} core items, ${Object.keys(gameItemsMap).length} game namespaces (${totalItemCount} total), ${allTags.size} unique tags`)
 
 // Load games metadata
-const gameDirs = await dir(paths.src.games)
+const gameDirs = await FS.dir(paths.src.games)
 const games = []
 for (const name of gameDirs) {
-    const meta = await load([...paths.src.games, name, "meta.yaml"])
+    const meta = await FS.load([...paths.src.games, name, "meta.yaml"])
     if (meta) games.push(name)
 }
 log.ok(`Loaded: ${games.length} games`)
@@ -202,7 +202,7 @@ await forex.init()
 
 if (shouldUpdateForex) {
     await forex.update()
-    await write([...paths.src.statics, "forex.yaml"], forex.rates)
+    await FS.write([...paths.src.statics, "forex.yaml"], forex.rates)
     log.ok("Fetched and saved new forex rates")
 } else log.ok("Using cached forex rates")
 
@@ -213,10 +213,10 @@ log.ok(`Built ${staticCount} static files`)
 
 // Build domains mapping
 log.info("Building domains mapping...")
-const domainsData = await load([...paths.src.statics, "domains.yaml"])
+const domainsData = await FS.load([...paths.src.statics, "domains.yaml"])
 let domainCount = 0
 for (const [domain, value] of Object.entries(domainsData)) {
-    await write([...paths.build.statics, "domains", `${domain}.json`], { site: value })
+    await FS.write([...paths.build.statics, "domains", `${domain}.json`], { site: value })
     domainCount++
 }
 log.ok(`Built ${domainCount} domain mappings`)
@@ -227,8 +227,8 @@ for (const itemId of coreItems) await processYamlDirectory([...paths.src.items, 
 
 for (const itemId of coreItems) {
     const metaPath = [...paths.build.statics, "items", itemId, "meta.json"]
-    const meta = await load(metaPath)
-    if (meta?.tags) await write(metaPath, { ...meta, tags: normalizeTags(meta.tags) })
+    const meta = await FS.load(metaPath)
+    if (meta?.tags) await FS.write(metaPath, { ...meta, tags: normalizeTags(meta.tags) })
 }
 log.ok(`Built ${coreItems.length} core-managed items`)
 
@@ -244,26 +244,26 @@ const allItemKeys = [...coreItems, ...Object.entries(gameItemsMap).flatMap(([gam
 
 // Clean legacy/previous pagination outputs while preserving item directories
 const itemsRoot = [...paths.build.statics, "items"]
-if (await exist(itemsRoot)) {
-    const entries = await dir(itemsRoot)
+if (await FS.exist(itemsRoot)) {
+    const entries = await FS.dir(itemsRoot)
     for (const entry of entries) {
         if (entry === "all") {
-            await remove([...itemsRoot, entry])
+            await FS.remove([...itemsRoot, entry])
             continue
         }
-        if (entry === "meta.json" || /^\d+\.json$/.test(entry)) await remove([...itemsRoot, entry])
+        if (entry === "meta.json" || /^\d+\.json$/.test(entry)) await FS.remove([...itemsRoot, entry])
     }
 }
 
 const totalAllItemPages = Math.ceil(allItemKeys.length / pagination)
-await write([...paths.build.statics, "items", "meta.json"], {
+await FS.write([...paths.build.statics, "items", "meta.json"], {
     children: allItemKeys.length,
     pages: Math.max(1, totalAllItemPages)
 })
 for (let page = 1; page <= Math.max(1, totalAllItemPages); page++) {
     const start = (page - 1) * pagination
     const pageItems = allItemKeys.slice(start, start + pagination)
-    await write([...paths.build.statics, "items", `${page}.json`], pageItems)
+    await FS.write([...paths.build.statics, "items", `${page}.json`], pageItems)
 }
 log.ok(`Generated ${Math.max(1, totalAllItemPages)} item page(s) (${allItemKeys.length} items)`)
 
@@ -277,14 +277,14 @@ log.ok(`Built ${games.length} games`)
 // Generate games pagination
 log.info("Generating games pagination...")
 const totalGamePages = Math.ceil(games.length / pagination)
-await write([...paths.build.statics, "games", "meta.json"], {
+await FS.write([...paths.build.statics, "games", "meta.json"], {
     children: games.length,
     pages: totalGamePages
 })
 for (let page = 1; page <= totalGamePages; page++) {
     const start = (page - 1) * pagination
     const pageGames = games.slice(start, start + pagination)
-    await write([...paths.build.statics, "games", `${page}.json`], pageGames)
+    await FS.write([...paths.build.statics, "games", `${page}.json`], pageGames)
 }
 log.ok(`Generated ${totalGamePages} game pages`)
 
@@ -292,7 +292,7 @@ log.ok(`Generated ${totalGamePages} game pages`)
 log.info("Generating per-game item pagination...")
 for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
     const totalGameItemPages = Math.ceil(itemIds.length / pagination)
-    await write([...paths.build.statics, "games", gameId, "items", "meta.json"], {
+    await FS.write([...paths.build.statics, "games", gameId, "items", "meta.json"], {
         children: itemIds.length,
         pages: Math.max(1, totalGameItemPages),
         types: [...(gameTypesMap[gameId] || new Set())].sort()
@@ -300,14 +300,14 @@ for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
     for (let page = 1; page <= Math.max(1, totalGameItemPages); page++) {
         const start = (page - 1) * pagination
         const pageItems = itemIds.slice(start, start + pagination)
-        await write([...paths.build.statics, "games", gameId, "items", `${page}.json`], pageItems)
+        await FS.write([...paths.build.statics, "games", gameId, "items", `${page}.json`], pageItems)
     }
 }
 log.ok(`Generated per-game item pagination for ${Object.keys(gameItemsMap).length} game namespace(s)`)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")
-const siteDirs = await dir(paths.src.sites)
+const siteDirs = await FS.dir(paths.src.sites)
 await processYamlDirectory(paths.src.sites, [...paths.build.statics, "sites"], { recursive: true })
 log.ok(`Built ${siteDirs.length} sites`)
 
@@ -322,38 +322,38 @@ await copyAssets([
 
 // Prepare ggwave under build/core/Wave/ for worker imports
 const ggwaveCode = fs.readFileSync("node_modules/ggwave/ggwave.js", "utf8")
-await write([...paths.build.core, "Wave", "ggwave.js"], `${ggwaveCode}\n\nexport default ggwave_factory\n`)
+await FS.write([...paths.build.core, "Wave", "ggwave.js"], `${ggwaveCode}\n\nexport default ggwave_factory\n`)
 log.ok("Prepared ggwave → build/core/Wave/ggwave.js")
 
 // Copy uqr ESM library
 log.info("Copying uqr to build...")
-await copy(["node_modules", "uqr", "dist", "index.mjs"], [...paths.build.core, "QR", "encoder.js"])
+await FS.copy(["node_modules", "uqr", "dist", "index.mjs"], [...paths.build.core, "QR", "encoder.js"])
 log.ok("Copied uqr → build/core/QR/encoder.js")
 
 // Copy qr-scanner ESM library
 log.info("Copying qr-scanner to build...")
-await copy(["node_modules", "qr-scanner", "qr-scanner.min.js"], [...paths.build.core, "QR", "decoder.js"])
+await FS.copy(["node_modules", "qr-scanner", "qr-scanner.min.js"], [...paths.build.core, "QR", "decoder.js"])
 log.ok("Copied qr-scanner → build/core/QR/decoder.js")
-await copy(["node_modules", "qr-scanner", "qr-scanner-worker.min.js"], [...paths.build.core, "QR", "qr-scanner-worker.min.js"])
+await FS.copy(["node_modules", "qr-scanner", "qr-scanner-worker.min.js"], [...paths.build.core, "QR", "qr-scanner-worker.min.js"])
 log.ok("Copied qr-scanner worker → build/core/QR/qr-scanner-worker.min.js")
 
 // Copy WebTorrent browser bundle and service worker companion
 log.info("Copying WebTorrent to build...")
-await copy(["node_modules", "webtorrent", "dist", "webtorrent.min.js"], [...paths.build.core, "Torrent", "client.js"])
-await copy(["node_modules", "webtorrent", "dist", "sw.min.js"], [...paths.build.core, "Torrent", "sw.min.js"])
+await FS.copy(["node_modules", "webtorrent", "dist", "webtorrent.min.js"], [...paths.build.core, "Torrent", "client.js"])
+await FS.copy(["node_modules", "webtorrent", "dist", "sw.min.js"], [...paths.build.core, "Torrent", "sw.min.js"])
 log.ok("Copied WebTorrent → build/core/Torrent/client.js + sw.min.js")
 
 // Copy three.js ESM module (three.module.js imports three.core.js internally)
 log.info("Copying three.js to build...")
-await copy(["node_modules", "three", "build", "three.module.js"], [...paths.build.core, "Three", "three.js"])
-await copy(["node_modules", "three", "build", "three.core.js"], [...paths.build.core, "Three", "three.core.js"])
+await FS.copy(["node_modules", "three", "build", "three.module.js"], [...paths.build.core, "Three", "three.js"])
+await FS.copy(["node_modules", "three", "build", "three.core.js"], [...paths.build.core, "Three", "three.core.js"])
 log.ok("Copied three.js → build/core/Three/three.js + three.core.js")
 
 // Copy sqlite-wasm for the sql worker (OPFS backend)
 log.info("Copying sqlite-wasm to build...")
-await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "index.mjs"], [...paths.build.core, "SQL", "sqlite3.js"])
-await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3.wasm"], [...paths.build.core, "SQL", "sqlite3.wasm"])
-await copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3-opfs-async-proxy.js"], [...paths.build.core, "SQL", "sqlite3-opfs-async-proxy.js"])
+await FS.copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "index.mjs"], [...paths.build.core, "SQL", "sqlite3.js"])
+await FS.copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3.wasm"], [...paths.build.core, "SQL", "sqlite3.wasm"])
+await FS.copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3-opfs-async-proxy.js"], [...paths.build.core, "SQL", "sqlite3-opfs-async-proxy.js"])
 log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite3-opfs-async-proxy.js")
 
 // Copy gun library files to GDB folder
@@ -362,13 +362,13 @@ const gunFiles = ["gun.js", "sea.js", ["lib", "radix.js"], ["lib", "radisk.js"],
 for (const filePath of gunFiles) {
     const src = Array.isArray(filePath) ? ["node_modules", "@akaoio", "gun", ...filePath] : ["node_modules", "@akaoio", "gun", filePath]
     const dest = [...paths.build.core, "GDB", Array.isArray(filePath) ? filePath[filePath.length - 1] : filePath]
-    await copy(src, dest)
+    await FS.copy(src, dest)
 }
 log.ok(`Copied gun files to GDB`)
 
 // Build routes list using regex pattern and post-process
 log.info("Building routes list...")
-const found = await dir(paths.src.routes, /index\.js$/)
+const found = await FS.dir(paths.src.routes, /index\.js$/)
 // Keep only directories that have index.js by stripping the suffix
 // Sort: fixed-first-segment routes before fully-dynamic ones to ensure correct Router matching order
 const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, ""))))
@@ -380,7 +380,7 @@ const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js"))
         if (!aFirstDynamic && bFirstDynamic) return -1
         return a.localeCompare(b)
     })
-await write([...paths.build.statics, "routes.json"], routeDirs)
+await FS.write([...paths.build.statics, "routes.json"], routeDirs)
 log.ok(`Built routes list with ${routeDirs.length} routes`)
 
 // Process i18n
@@ -400,17 +400,17 @@ if (isNetlify) log.info("Detected Netlify — static prefixes + _redirects...")
 else if (devMode) log.info("Generating routes (dev — SPA mode)...")
 else log.info("Generating routes (all static files)...")
 
-const indexContent = await load(paths.src.index)
+const indexContent = await FS.load(paths.src.index)
 const routeCount = await generateRoutes(locales, coreItems, [], games, indexContent, "build", routeDirs, gameItemsMap, { skipDynamic })
 log.ok(`Created ${routeCount} route files`)
 
 if (isNetlify) {
-    await write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
+    await FS.write([...paths.build.root, "_redirects"], "/*  /index.html  200\n")
     log.ok("Created _redirects for Netlify SPA fallback")
 }
 
 // 404.html — platform-agnostic SPA fallback for unknown routes
-await write([...paths.build.root, "404.html"], indexContent)
+await FS.write([...paths.build.root, "404.html"], indexContent)
 log.ok("Created 404.html fallback")
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
@@ -426,7 +426,7 @@ console.log(`${icons.done} ${color.ok("Items (Total)")}: ${totalItemCount}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)
-if (await exist(geoPath)) console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
+if (await FS.exist(geoPath)) console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
 
 log.section("========================================")
 log.start("Build completed successfully!")
