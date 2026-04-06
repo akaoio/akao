@@ -10,17 +10,17 @@ import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
+    <div class="profile-picker-backdrop" id="profile-picker-backdrop"></div>
     <layout-main>
         <header class="profile-hero">
             <div class="profile-hero__gradient"></div>
             <div class="profile-avatar" id="profile-avatar-wrap">
-                <ui-identicon id="profile-identicon" data-size="11" />
+                <ui-identicon id="profile-identicon" data-size="7" />
                 <button class="profile-avatar__edit" id="profile-avatar-edit" aria-label="Change avatar">
                     <ui-icon data-icon="pen" data-size="md" />
                 </button>
             </div>
             <div class="profile-avatar-picker" id="profile-avatar-picker">
-                <span class="profile-avatar-picker__loader" aria-hidden="true"></span>
                 <ui-avatars />
             </div>
         </header>

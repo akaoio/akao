@@ -23,16 +23,19 @@ export class Logic {
 
     static authenticated() { return Access.get("authenticated") }
 
-    static async identiconseed() {
+    static async identiconseedfor(avatarId) {
         const seed = Access.get("seed")
         if (!seed) return null
-        const avatarId = Access.get("avatar")?.id ?? 0
         const { sea } = globalThis
         const hashed = await sea.work(seed, "avatar")
         const idSeed = await sea.work(hashed, avatarId)
         const h1 = Logic.hashcode(idSeed) % 360
         const h2 = (h1 + 150) % 360
         return { idSeed, h1, h2 }
+    }
+
+    static async identiconseed() {
+        return Logic.identiconseedfor(Access.get("avatar")?.id ?? 0)
     }
 
     static async loadname() {

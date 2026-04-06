@@ -21,6 +21,8 @@ export class Logic {
         value = Number(value)
         const total = value >= current ? Math.ceil((value + 1) / step) * step : current
         setAvatar({ id: value, total: total !== current ? total : undefined })
+        const pair = Access.get("pair")
+        if (pair) globalThis.gun.get(`~${pair.pub}`).get("avatar").put(value, null, { opt: { authenticator: pair } })
         return value
     }
 
