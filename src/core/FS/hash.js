@@ -1,4 +1,4 @@
-import { fs, WIN, BROWSER, opfs } from "./shared.js"
+import { BROWSER, driver } from "./shared.js"
 import { join } from "./join.js"
 import { sha256 } from "../Utils/crypto.js"
 
@@ -10,133 +10,78 @@ import { sha256 } from "../Utils/crypto.js"
  */
 export async function hash(path, exclude = []) {
     if (BROWSER) {
-        if (!opfs) return ""
         // Multi-path and directory hashing deferred to §3 (Torrent.hash())
-        try {
-            const buf = await opfs.read(path)
-            const hashBuf = await crypto.subtle.digest("SHA-256", buf)
-            return Array.from(new Uint8Array(hashBuf))
-                .map((b) => b.toString(16).padStart(2, "0"))
-                .join("")
-        } catch (error) {
-            console.error("Error hashing in browser:", error)
-            return ""
-        }
-    }
-
-    if (!fs) {
-        console.error("File system not available")
-        return ""
+        const buf = await driver.readBytes(path)
+        if (!buf) return ""
+        const hashBuf = await crypto.subtle.digest("SHA-256", buf)
+        return Array.from(new Uint8Array(hashBuf))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("")
     }
 
     // Detect if path is a 2D array (multiple paths) or 1D array (single path)
     const isMultiplePaths = Array.isArray(path[0])
 
-    // If multiple paths, hash each path and combine the results
     if (isMultiplePaths) {
         let combined = ""
 
-        // Sort paths to ensure consistent hashing
-        const sorted = [...path].sort((a, b) => {
-            const pathA = join(a)
-            const pathB = join(b)
-            return pathA.localeCompare(pathB)
-        })
+        const sorted = [...path].sort((a, b) => join(a).localeCompare(join(b)))
 
         for (const segments of sorted) {
+            if (!await driver.exists(segments)) {
+                console.error("Path doesn't exist:", join(segments))
+                continue
+            }
             const item = join(segments)
-
-            try {
-                if (!fs.existsSync(item)) {
-                    console.error("Path doesn't exist:", item)
-                    continue
-                }
-
-                const stats = fs.statSync(item)
-
-                // If it's a file, add its content
-                if (stats.isFile()) {
-                    combined += item // Include path for uniqueness
-                    const content = fs.readFileSync(item, "utf8")
-                    combined += content
-                }
-                // If it's a directory, process it recursively
-                else if (stats.isDirectory()) {
-                    combined += item // Include path for uniqueness
-                    combined += await hashDirectory(item, exclude)
-                }
-            } catch (error) {
-                console.error("Error hashing path:", item, error)
+            if (await driver.isDir(segments)) {
+                combined += item
+                combined += await hashDir(segments, exclude)
+            } else {
+                combined += item
+                const bytes = await driver.readBytes(segments)
+                combined += new TextDecoder().decode(bytes)
             }
         }
 
         return sha256(combined)
     }
 
-    // Single path processing (1D array)
-    const item = join(path)
+    // Single path
+    if (!await driver.exists(path)) {
+        console.error("Path doesn't exist:", join(path))
+        return ""
+    }
 
     try {
-        if (!fs.existsSync(item)) {
-            console.error("Path doesn't exist:", item)
-            return ""
-        }
-
-        const stats = fs.statSync(item)
-
-        // If it's a file, hash its content directly
-        if (stats.isFile()) {
-            const content = fs.readFileSync(item, "utf8")
-            return sha256(content)
-        }
-
-        // If it's a directory, hash all files recursively
-        if (stats.isDirectory()) {
-            const directoryContent = await hashDirectory(item, exclude)
-            return sha256(directoryContent)
-        }
-
-        return ""
+        if (await driver.isDir(path)) return sha256(await hashDir(path, exclude))
+        const bytes = await driver.readBytes(path)
+        return sha256(new TextDecoder().decode(bytes))
     } catch (error) {
         console.error("Error hashing:", error)
         return ""
     }
 }
 
-/**
- * Helper function to hash a directory's contents recursively
- * @param {string} path - Full path to the directory
- * @param {string[]} exclude - Array of file paths to exclude
- * @returns {Promise<string>} Combined content of all files in the directory
- */
-async function hashDirectory(path, exclude = []) {
+async function hashDir(pathArr, exclude = []) {
     let combined = ""
 
-    async function processDirectory(dirPath, relativePath = "") {
-        const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-
-        // Sort entries to ensure consistent hashing
+    async function processDir(currentArr, relativePath = "") {
+        const entries = await driver.entries(currentArr)
         entries.sort((a, b) => a.name.localeCompare(b.name))
 
-        for (const entry of entries) {
-            // Node-only but keeping it explicit prevents future regressions)
-            const fullPath = WIN && !BROWSER ? `${dirPath}\\${entry.name}` : `${dirPath}/${entry.name}`
-            const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name
-
-            // Skip excluded files/directories
+        for (const { name, isDir } of entries) {
+            const relPath = relativePath ? `${relativePath}/${name}` : name
             if (exclude.some((ex) => relPath === ex || relPath.startsWith(ex + "/"))) continue
 
-            if (entry.isDirectory()) {
-                combined += entry.name
-                await processDirectory(fullPath, relPath)
-            } else if (entry.isFile()) {
-                combined += entry.name
-                const content = fs.readFileSync(fullPath, "utf8")
-                combined += content
+            combined += name
+            if (isDir) await processDir([...currentArr, name], relPath)
+            else {
+                const bytes = await driver.readBytes([...currentArr, name])
+                combined += new TextDecoder().decode(bytes)
             }
         }
     }
 
-    await processDirectory(path)
+    await processDir(pathArr)
     return combined
 }

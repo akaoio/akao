@@ -1,12 +1,12 @@
 import { $root } from "./OPFS/root.js"
 import { $dir } from "./OPFS/dir.js"
 import { $handle } from "./OPFS/handle.js"
-import { read } from "./OPFS/read.js"
+import { load } from "./OPFS/load.js"
 import { write } from "./OPFS/write.js"
-import { del } from "./OPFS/del.js"
+import { remove } from "./OPFS/remove.js"
 import { move } from "./OPFS/move.js"
 import { mkdir } from "./OPFS/mkdir.js"
-import { list } from "./OPFS/list.js"
+import { dir } from "./OPFS/dir.js"
 import { exist } from "./OPFS/exist.js"
 
 export class OPFS {
@@ -23,12 +23,12 @@ export class OPFS {
     }
 
     // Public API
-    read = read
+    load = load
     write = write
-    del = del
+    remove = remove
     move = move
     mkdir = mkdir
-    list = list
+    dir = dir
     exist = exist
 
     // Internal helpers

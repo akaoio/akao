@@ -3,7 +3,7 @@ import { NODE } from "../Utils.js"
 
 export async function init() {
     // Create indexed directory if it doesn't exist
-    await FS.ensure(FS.join(["indexed"]))
+    await FS.ensure(["indexed"])
     // Load initial data from filesystem
     await this.load()
 }
