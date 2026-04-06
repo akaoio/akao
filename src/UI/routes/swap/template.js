@@ -10,7 +10,7 @@ export const template = html`
     <layout-main>
         <h1><ui-context data-key="dictionary.swap" /></h1>
         <main>
-            <ui-wallets />
+            <ui-wallets data-currency="false" />
             <div class="field">
                 <label><ui-context data-key="dictionary.from" /></label>
                 <div class="row">
