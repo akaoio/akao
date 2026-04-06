@@ -15,7 +15,7 @@ export const styles = css`
         gap: var(--space-sm);
         font-weight: 600;
     }
-    .pair ui-token + ui-token::before {
+    .pair ui-crypto + ui-crypto::before {
         content: "/";
         margin-right: var(--space-sm);
         opacity: 0.5;

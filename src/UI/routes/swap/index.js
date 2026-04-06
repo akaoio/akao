@@ -1,9 +1,10 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
+import { html, render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
 import { events } from "/core/Events.js"
 import { Elements, Lives, Chains, Dexs, Wallets } from "/core/Stores.js"
 import { notify, formatNumber } from "/core/Utils.js"
+import SELECT from "/UI/components/select/index.js"
 import logic from "./logic.js"
 
 export class SWAP extends HTMLElement {
@@ -18,8 +19,6 @@ export class SWAP extends HTMLElement {
 
     connectedCallback() {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
-        this.$fromToken = this.shadowRoot.querySelector("#from-token")
-        this.$toToken = this.shadowRoot.querySelector("#to-token")
         this.$amountIn = this.shadowRoot.querySelector("#amount-in")
         this.$quoteOut = this.shadowRoot.querySelector("#quote-out")
         this.$balanceIn = this.shadowRoot.querySelector("#balance-in")
@@ -28,20 +27,37 @@ export class SWAP extends HTMLElement {
         this.$error = this.shadowRoot.querySelector("#error")
         this.$submit = this.shadowRoot.querySelector("#submit")
 
+        this.$fromToken = new SELECT({
+            name: "from-token",
+            options: [],
+            placeholder: "dictionary.selectToken",
+            change: (e) => {
+                const opt = this.tokenMap.get(e.target.value)
+                if (opt) {
+                    this.$from = opt
+                    this.quote()
+                    this.balance()
+                }
+            }
+        })
+        render(this.$fromToken, this.shadowRoot.querySelector("#from-token"), { append: true })
+
+        this.$toToken = new SELECT({
+            name: "to-token",
+            options: [],
+            placeholder: "dictionary.selectToken",
+            change: (e) => {
+                const opt = this.tokenMap.get(e.target.value)
+                if (opt) {
+                    this.$to = opt
+                    this.quote()
+                }
+            }
+        })
+        render(this.$toToken, this.shadowRoot.querySelector("#to-token"), { append: true })
+
         this.$amountIn.addEventListener("input", this.quote)
         this.$submit.addEventListener("click", this.submit)
-
-        this.$sfrom = (e) => {
-            this.$from = e.detail
-            this.quote()
-            this.balance()
-        }
-        this.$sto = (e) => {
-            this.$to = e.detail
-            this.quote()
-        }
-        this.$fromToken.addEventListener("select", this.$sfrom)
-        this.$toToken.addEventListener("select", this.$sto)
 
         this.subscriptions.push(
             this.$wallets.states.on("address", ({ value }) => {
@@ -61,8 +77,6 @@ export class SWAP extends HTMLElement {
             () => {
                 this.$amountIn.removeEventListener("input", this.quote)
                 this.$submit.removeEventListener("click", this.submit)
-                this.$fromToken.removeEventListener("select", this.$sfrom)
-                this.$toToken.removeEventListener("select", this.$sto)
             }
         )
 
@@ -81,16 +95,33 @@ export class SWAP extends HTMLElement {
         const chain = this.$wallets.states.get("chain")
         if (!chain) return
         const opts = logic.options(chain, Lives.pools?.[chain], Chains)
-        this.$fromToken.setoptions(opts)
-        this.$toToken.setoptions(opts)
+        
+        this.tokenMap = new Map()
+        const selectOpts = opts.map(opt => {
+            this.tokenMap.set(opt.address, opt)
+            return {
+                label: html`<ui-svg class="icon" data-src="/images/cryptos/${opt.configs?.symbol || ""}" /> ${opt.configs?.name || opt.address}`,
+                value: opt.address
+            }
+        })
+        
+        this.$fromToken.states.set({ options: selectOpts })
+        this.$toToken.states.set({ options: selectOpts })
+        
         if (this.$pfrom) {
             const found = opts.find((o) => o.address.toLowerCase() === this.$pfrom.toLowerCase())
-            if (found) { this.$from = found; this.$fromToken.states.set({ selected: found }) }
+            if (found) { 
+                this.$from = found
+                this.$fromToken.states.set({ selected: found.address })
+            }
             this.$pfrom = null
         }
         if (this.$pto) {
             const found = opts.find((o) => o.address.toLowerCase() === this.$pto.toLowerCase())
-            if (found) { this.$to = found; this.$toToken.states.set({ selected: found }) }
+            if (found) { 
+                this.$to = found
+                this.$toToken.states.set({ selected: found.address })
+            }
             this.$pto = null
         }
     }

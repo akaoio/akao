@@ -1,13 +1,13 @@
 import { html } from "/core/UI.js"
-import "/UI/components/token/index.js"
+import "/UI/components/crypto/index.js"
 import "/UI/components/svg/index.js"
 import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
     <div class="pair">
-        <ui-token id="token0"></ui-token>
-        <ui-token id="token1"></ui-token>
+        <ui-crypto id="token0"></ui-crypto>
+        <ui-crypto id="token1"></ui-crypto>
     </div>
     <div class="info">
         <div class="rates">

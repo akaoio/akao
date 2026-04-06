@@ -138,7 +138,7 @@ Pattern render **giống hệt `ui-wallets`** (dùng `ui-svg`, không phải `<i
 // ui-wallets (reference — wallets/index.js line 152):
 html`<ui-svg class="icon" data-src="/images/cryptos/${currency.symbol}" /> ${currency.name}`
 
-// ui-token dùng cùng pattern:
+// ui-crypto dùng cùng pattern:
 html`<ui-svg class="icon" data-src="/images/cryptos/${token.configs.symbol}" /> ${token.configs.name}`
 ```
 
@@ -326,13 +326,13 @@ src/UI/components/pool/
   template.js
   styles.css.js
 
-src/UI/components/token/
-  index.js       ← ui-token component (logo + symbol + amount)
+src/UI/components/crypto/
+  index.js       ← ui-crypto component (logo + symbol + amount cho native coins và tokens)
   template.js
   styles.css.js
 ```
 
-> **Chú ý:** Component `pool` và `token` sẽ được tái sử dụng trong route swap.
+> **Chú ý:** Component `pool` và `crypto` sẽ được tái sử dụng. `crypto` thay vì `token` vì native coins (BTC, ETH, BNB) không phải tokens.
 
 ### 2.4 Route component pattern
 
@@ -526,11 +526,13 @@ src/UI/routes/swap/
   template.js
   styles.css.js
 
-src/UI/components/token-select/
-  index.js       ← ui-token-select: dropdown chọn token (tên + logo + balance)
-  template.js
-  styles.css.js
+~~src/UI/components/token-select/~~ ← ĐÃ XÓA, dùng ui-select thay thế
+  ~~index.js       ← ui-token-select: dropdown chọn token (tên + logo + balance)~~
+  ~~template.js~~
+  ~~styles.css.js~~
 ```
+
+> **Cập nhật 2026-04-06:** `ui-token-select` đã bị xóa vì trùng lặp chức năng với `ui-select` đã có sẵn. Route swap giờ dùng `ui-select` với pattern giống `ui-wallets`.
 
 ### 3.4 Kiến trúc `class Logic` (pure, testable)
 
@@ -629,7 +631,7 @@ export class SWAP extends HTMLElement {
         )
     }
 
-    // Gọi Logic.options() → set vào ui-token-select components
+    // Gọi Logic.options() → set vào ui-select components (fromToken, toToken)
     options() {
         const chain = this.$wallets.states.get("chain")
         if (!chain) return
@@ -732,7 +734,7 @@ export const template = html`
             <div class="swap-box">
                 <div class="field">
                     <label><ui-context data-key="dictionary.from" /></label>
-                    <ui-token-select id="from" />
+                    <div id="from-token"></div>
                     <input type="number" id="amount" min="0" step="any" />
                 </div>
 
@@ -740,7 +742,7 @@ export const template = html`
 
                 <div class="field">
                     <label><ui-context data-key="dictionary.to" /></label>
-                    <ui-token-select id="to" />
+                    <div id="to-token"></div>
                     <div id="quote"></div>
                 </div>
 
@@ -763,9 +765,9 @@ export const template = html`
 `
 ```
 
-### 3.7 Component `ui-token-select`
+### 3.7 Component `ui-select` (thay thế ui-token-select)
 
-Dropdown chọn token. Nguồn dữ liệu: `Chains[x].currencies` (có `configs.symbol` = SVG filename, giống `ui-wallets`) cộng token từ pools chưa có trong currencies.
+Dùng component `ui-select` đã có sẵn thay vì tạo `ui-token-select` mới. Nguồn dữ liệu: `Chains[x].currencies` (có `configs.symbol` = SVG filename, giống `ui-wallets`) cộng token từ pools chưa có trong currencies.
 
 ```javascript
 // Nhận: options = [{ address, configs: { symbol, name, decimals } }]
@@ -879,14 +881,14 @@ Phải làm trước, nếu không pools sẽ crash hoặc không nhận live da
 ### Bước 1 — Utility + components nền
 
 4. Xác nhận `fiatValue` và `fiatRates` trong `src/core/Utils/contracts.js` đã sẵn sàng (Bước 0 phải hoàn thành trước để `fiatRates` đọc được `Statics.chains[chain].stables`)
-5. Tạo `src/UI/components/token/` — `ui-token`: `<ui-svg data-src="/images/cryptos/${token.configs.symbol}" />` + name + optional amount; `configs.symbol` là SVG filename trực tiếp
+5. Tạo `src/UI/components/crypto/` — `ui-crypto`: `<ui-svg data-src="/images/cryptos/${token.configs.symbol}" />` + name + optional amount; `configs.symbol` là SVG filename trực tiếp
 6. Thêm i18n keys: `pools`, `swap`, `rate`, `liquidity`, `price`, `from`, `to`, `slippage`, `quote`, `nopoolFound`, `insufficientBalance`, `selectToken`, `searchToken`, `dex`, `gasFee`
 7. `npm run build:core`
 
 ### Bước 2 — Route `/pools`
 
 8. Tạo `src/UI/components/pool/` — `ui-pool`: hiển thị 1 pool row
-   - Pair tokens (2× `ui-token`)
+   - Pair tokens (2× `ui-crypto`)
    - Rate: `pool.pairs[t0][t1]` hiển thị `"1 WBTC = 15.3 WETH"`
    - Fiat price: `await fiatValue({ chain: pool.chain, currency: pool.token0.configs, amount: 1, fiat })` — `pool.chain` là **numeric**
    - Liquidity fiat: `$X,XXX,XXX TVL`
@@ -895,18 +897,18 @@ Phải làm trước, nếu không pools sẽ crash hoặc không nhận live da
 9. Tạo `src/UI/routes/pools/` — subscribe `events.on("Lives.pools")`, đọc cache `Indexes.Lives`, flatten từ `dex.id` key sang `chain` key khi đọc IDB
 10. `npm run build:core` → kiểm tra tại `/en/pools`; V2 và V3 pools phải đều hiển thị
 
-### Bước 3 — Component `ui-token-select`
+### Bước 3 — ~~Component `ui-token-select`~~ → Dùng `ui-select` thay thế ✅
 
-11. Tạo `src/UI/components/token-select/` — dropdown chọn token
+11. ~~Tạo `src/UI/components/token-select/`~~ — KHÔNG cần tạo, dùng `ui-select` đã có
+   - Dùng `new SELECT({ options, change })` constructor pattern như `ui-wallets`
    - Nguồn: `Chains[x].currencies` (có `configs.symbol`) + bổ sung từ `Lives.pools`
-   - Render label: `html\`<ui-svg data-src="/images/cryptos/${t.configs.symbol}" /> ${t.configs.name}\`` (giống `ui-wallets` line 152)
-   - Search input filter theo name
-   - Emit `CustomEvent("select", { detail: { address, configs } })`
+   - Render label: `html\`<ui-svg data-src="/images/cryptos/${t.configs.symbol}" /> ${t.configs.name}\`` (giống `ui-wallets` line 144)
+   - Dùng `tokenMap` để map từ `value` (address) sang full token object
 
-### Bước 4 — Route `/swap` ✅ ĐÃ HOÀN THÀNH
+### Bước 4 — Route `/swap` ✅ ĐÃ HOÀN THÀNH & REFACTORED
 
 12. ~~Tạo `src/UI/routes/swap/`~~ — đã có `index.js` + `logic.js`
-13. ~~Integrate `ui-token-select`~~ — đã có `ui-token-select` qua `$fromToken`/`$toToken`; `ui-wallets` đã nhúng
+13. ~~Integrate `ui-token-select`~~ — đã REFACTOR dùng `ui-select` thay thế; pattern giống `ui-wallets`
 14. Logic tách biệt hoàn toàn vào `class Logic` (static methods, pure data, testable in Node.js):
     - `Logic.options(chain, pools, Chains)` — token list
     - `Logic.balance(chain, from, balances)` → `number | null`
