@@ -1,4 +1,4 @@
-import { fs, NODE, BROWSER } from "./shared.js"
+import { NODE, BROWSER, driver } from "./shared.js"
 import { join } from "./join.js"
 import { ensure } from "./ensure.js"
 
@@ -34,8 +34,12 @@ export async function download(url, path = []) {
 
     // Extract filename from URL
     const pathname = urlObj.pathname
-    const urlFilename = pathname.split("/").filter((s) => s).pop() || "downloaded-file"
-    
+    const urlFilename =
+        pathname
+            .split("/")
+            .filter((s) => s)
+            .pop() || "downloaded-file"
+
     // Determine if path ends with a file or is a directory
     const lastSegment = path.at(-1) || ""
     const hasExtension = lastSegment.includes(".")
@@ -65,44 +69,31 @@ export async function download(url, path = []) {
     }
 
     // Download based on environment
-    if (NODE) {
-        // Node.js environment - use fetch + fs
-        if (!fs) {
-            console.error("File system not available")
-            return
-        }
-
+    if (NODE)
         try {
             const response = await fetch(url)
-            
             if (!response.ok) {
                 console.error(`Failed to download: ${url} (Status: ${response.status})`)
                 return
             }
-
-            // Get response as buffer
-            const buffer = Buffer.from(await response.arrayBuffer())
-            
-            // Write buffer to file
-            fs.writeFileSync(filePath, buffer)
-            
-            return { success: true, path: filePath }
+            const bytes = new Uint8Array(await response.arrayBuffer())
+            return driver.writeBytes([...dirPath, filename], bytes)
         } catch (error) {
             console.error("Error downloading file:", error)
             return
         }
-    } else if (BROWSER) 
+    else if (BROWSER)
         // Browser environment - use fetch API
         try {
             const response = await fetch(url)
-            
+
             if (!response.ok) {
                 console.error(`Failed to download: ${url} (Status: ${response.status})`)
                 return
             }
 
             const blob = await response.blob()
-            
+
             // Create a download link and trigger download
             const downloadUrl = window.URL.createObjectURL(blob)
             const a = document.createElement("a")
@@ -110,15 +101,14 @@ export async function download(url, path = []) {
             a.download = filename
             document.body.appendChild(a)
             a.click()
-            
+
             // Cleanup
             window.URL.revokeObjectURL(downloadUrl)
             document.body.removeChild(a)
-            
+
             return { success: true, path: filename }
         } catch (error) {
             console.error("Error downloading from:", url, error)
             return
         }
-    
 }

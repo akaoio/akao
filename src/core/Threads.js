@@ -5,7 +5,7 @@
  */
 
 import { NODE, randomKey, diff, merge } from "./Utils.js"
-import { join } from "./FS.js"
+import { FS } from "./FS.js"
 import { Lives } from "./Stores.js"
 import { events } from "./Events.js"
 
@@ -29,7 +29,7 @@ export class Threads {
         if (this.threads[name]) return this.threads[name]
 
         // Create path to thread file
-        const path = join(["core", "threads", `${name}.js`])
+        const path = FS.join(["core", "threads", `${name}.js`])
         // If main thread, import the module directly
         if (configs?.main) this.threads[name] = import(`/core/threads/${name}.js`)
         // If worker thread, create a new Worker

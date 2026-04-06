@@ -1,4 +1,6 @@
 import { init, $client } from "./Torrent/init.js"
+import { restore } from "./Torrent/restore.js"
+import { $save, $load, $delete } from "./Torrent/persist.js"
 import { on } from "./Torrent/on.js"
 import { off } from "./Torrent/off.js"
 import { add } from "./Torrent/add.js"
@@ -50,7 +52,11 @@ export class Torrent {
     $emit = $emit
     $track = $track
     $snapshot = $snapshot
+    $save = $save
+    $load = $load
+    $delete = $delete
 
+    restore = restore
     hash = hash
 }
 

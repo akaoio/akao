@@ -1,4 +1,4 @@
-import { write } from "../../src/core/FS.js"
+import { FS } from "../../src/core/FS.js"
 import { paths } from "./config.js"
 
 // ============ Routes Generation ============
@@ -115,7 +115,7 @@ export async function generateRoutes(locales, items, tags, games, indexContent, 
         }
     }
 
-    for (const route of routeTargets) await write(route.split("/"), indexContent)
+    for (const route of routeTargets) await FS.write(route.split("/"), indexContent)
 
     return routeTargets.size
 }

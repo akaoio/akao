@@ -7,14 +7,14 @@ function fsRoot() { return `__test_opfs_${_counter++}` }
 function enc(str) { return new TextEncoder().encode(str) }
 function dec(buf) { return new TextDecoder().decode(buf) }
 
-// ─── write + read ─────────────────────────────────────────────────────────────
+// ─── write + load ─────────────────────────────────────────────────────────────
 
-Test.describe("OPFS — write + read", () => {
+Test.describe("OPFS — write + load", () => {
 
     Test.it("round-trips a string value", async () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["hello.txt"], enc("hello world"))
-        const buf = await fs.read(["hello.txt"])
+        const buf = await fs.load(["hello.txt"])
         Test.assert.equal(dec(buf), "hello world")
     }, { browser: true })
 
@@ -22,14 +22,14 @@ Test.describe("OPFS — write + read", () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["f.txt"], enc("first"))
         await fs.write(["f.txt"], enc("second"))
-        const buf = await fs.read(["f.txt"])
+        const buf = await fs.load(["f.txt"])
         Test.assert.equal(dec(buf), "second")
     }, { browser: true })
 
     Test.it("writes into a subdirectory", async () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["sub", "data.txt"], enc("nested"))
-        const buf = await fs.read(["sub", "data.txt"])
+        const buf = await fs.load(["sub", "data.txt"])
         Test.assert.equal(dec(buf), "nested")
     }, { browser: true })
 
@@ -61,15 +61,15 @@ Test.describe("OPFS — exist", () => {
 
 })
 
-// ─── list ─────────────────────────────────────────────────────────────────────
+// ─── dir ──────────────────────────────────────────────────────────────────────
 
-Test.describe("OPFS — list", () => {
+Test.describe("OPFS — dir", () => {
 
     Test.it("lists files in a directory", async () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["a.txt"], enc("a"))
         await fs.write(["b.txt"], enc("b"))
-        const names = await fs.list([])
+        const names = await fs.dir([])
         Test.assert.truthy(names.includes("a.txt"))
         Test.assert.truthy(names.includes("b.txt"))
     }, { browser: true })
@@ -78,7 +78,7 @@ Test.describe("OPFS — list", () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["sub", "x.txt"], enc("x"))
         await fs.write(["sub", "y.txt"], enc("y"))
-        const names = await fs.list(["sub"])
+        const names = await fs.dir(["sub"])
         Test.assert.truthy(names.includes("x.txt"))
         Test.assert.truthy(names.includes("y.txt"))
         Test.assert.equal(names.length, 2)
@@ -87,20 +87,20 @@ Test.describe("OPFS — list", () => {
     Test.it("returns empty array for an empty directory", async () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.mkdir(["empty"])
-        const names = await fs.list(["empty"])
+        const names = await fs.dir(["empty"])
         Test.assert.deepEqual(names, [])
     }, { browser: true })
 
 })
 
-// ─── del ──────────────────────────────────────────────────────────────────────
+// ─── remove ───────────────────────────────────────────────────────────────────
 
-Test.describe("OPFS — del", () => {
+Test.describe("OPFS — remove", () => {
 
     Test.it("removes a file", async () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["bye.txt"], enc("bye"))
-        await fs.del(["bye.txt"])
+        await fs.remove(["bye.txt"])
         const exists = await fs.exist(["bye.txt"])
         Test.assert.falsy(exists)
     }, { browser: true })
@@ -108,7 +108,7 @@ Test.describe("OPFS — del", () => {
     Test.it("removes a directory recursively", async () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["dir", "child.txt"], enc("c"))
-        await fs.del(["dir"])
+        await fs.remove(["dir"])
         const exists = await fs.exist(["dir"])
         Test.assert.falsy(exists)
     }, { browser: true })
@@ -124,7 +124,7 @@ Test.describe("OPFS — mkdir", () => {
         await fs.mkdir(["newdir"])
         const exists = await fs.exist(["newdir"])
         Test.assert.truthy(exists)
-        const names = await fs.list(["newdir"])
+        const names = await fs.dir(["newdir"])
         Test.assert.deepEqual(names, [])
     }, { browser: true })
 
@@ -145,7 +145,7 @@ Test.describe("OPFS — move", () => {
         const fs = new OPFS({ root: fsRoot() })
         await fs.write(["src.txt"], enc("moved"))
         await fs.move(["src.txt"], ["dst.txt"])
-        const buf = await fs.read(["dst.txt"])
+        const buf = await fs.load(["dst.txt"])
         Test.assert.equal(dec(buf), "moved")
     }, { browser: true })
 
@@ -162,7 +162,7 @@ Test.describe("OPFS — move", () => {
         await fs.mkdir(["target"])
         await fs.write(["file.txt"], enc("content"))
         await fs.move(["file.txt"], ["target", "file.txt"])
-        const buf = await fs.read(["target", "file.txt"])
+        const buf = await fs.load(["target", "file.txt"])
         Test.assert.equal(dec(buf), "content")
     }, { browser: true })
 

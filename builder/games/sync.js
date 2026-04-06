@@ -15,7 +15,7 @@
 import crypto from "node:crypto"
 import fsNative from "node:fs"
 import pathNative from "node:path"
-import { write, load, exist, dir, copy, isDirectory } from "../../src/core/FS.js"
+import { FS } from "../../src/core/FS.js"
 import { sha256 } from "../../src/core/Utils/crypto.js"
 import { paths } from "../core/config.js"
 import { log } from "../core/logger.js"
@@ -137,7 +137,7 @@ function normalizeShopMeta(meta = {}, itemId) {
 }
 
 async function getLocaleCodes() {
-    const config = await load(LOCALES_PATH)
+    const config = await FS.load(LOCALES_PATH)
     return config ? config.map((l) => l.code) : []
 }
 
@@ -185,9 +185,9 @@ function sortImageNames(names = []) {
 
 async function buildSourceImageMap(gameId) {
     const imageDir = ["games", gameId, "images"]
-    if (!(await exist(imageDir))) return new Map()
+    if (!(await FS.exist(imageDir))) return new Map()
 
-    const files = await dir(imageDir)
+    const files = await FS.dir(imageDir)
     const map = new Map()
 
     for (const file of files) {
@@ -206,8 +206,8 @@ async function buildSourceImageMap(gameId) {
 
 async function listItemImages(itemDir) {
     const imagesDir = [...itemDir, "images"]
-    if (!(await exist(imagesDir))) return []
-    const files = await dir(imagesDir)
+    if (!(await FS.exist(imagesDir))) return []
+    const files = await FS.dir(imagesDir)
     return sortImageNames(files.filter((name) => isImageFile(name)))
 }
 
@@ -244,7 +244,7 @@ async function syncItemImages(gameId, srcDir, sourceFiles = []) {
 
         const ext = sourceFile.includes(".") ? sourceFile.slice(sourceFile.lastIndexOf(".")) : ".webp"
         const targetName = `${nextIndex}${ext.toLowerCase()}`
-        await copy(["games", gameId, "images", sourceFile], [...srcDir, "images", targetName])
+        await FS.copy(["games", gameId, "images", sourceFile], [...srcDir, "images", targetName])
         existingHashes.add(sourceHash)
         copied++
         nextIndex++
@@ -254,7 +254,7 @@ async function syncItemImages(gameId, srcDir, sourceFiles = []) {
 
 async function copyItemImagesToBuild(srcDir, buildDir, imageNames) {
     for (const name of imageNames) {
-        await copy([...srcDir, "images", name], [...buildDir, "images", name])
+        await FS.copy([...srcDir, "images", name], [...buildDir, "images", name])
     }
 }
 
@@ -275,7 +275,7 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
     const buildDir = [...paths.build.statics, "items", gameId, itemId]
 
     // ── raw.yaml (always overwrite: tracks latest crawler output, verbatim) ──
-    await write([...srcDir, "raw.yaml"], raw)
+    await FS.write([...srcDir, "raw.yaml"], raw)
 
     // ── images: hash-based dedupe, append new, mirror to build ──
     stats.imagesSeeded += await syncItemImages(gameId, srcDir, sourceImageMap)
@@ -297,17 +297,17 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
 
     // ── meta.yaml (patch/create) ──
     const srcMetaPath = [...srcDir, "meta.yaml"]
-    const existingMeta = (await exist(srcMetaPath)) ? await load(srcMetaPath) : null
+    const existingMeta = (await FS.exist(srcMetaPath)) ? await FS.load(srcMetaPath) : null
     const mergedMeta = ensureConfigs(mergeMeta(existingMeta, normalizedMeta))
     for (const field of FORBIDDEN_META_FIELDS) delete mergedMeta[field]
-    await write(srcMetaPath, mergedMeta)
+    await FS.write(srcMetaPath, mergedMeta)
 
     // ── meta.json (patch/create) ──
     const buildMetaPath = [...buildDir, "meta.json"]
-    const existingBuildMeta = (await exist(buildMetaPath)) ? await load(buildMetaPath) : null
+    const existingBuildMeta = (await FS.exist(buildMetaPath)) ? await FS.load(buildMetaPath) : null
     const mergedBuildMeta = ensureConfigs(mergeMeta(existingBuildMeta, normalizedMeta))
     for (const field of FORBIDDEN_META_FIELDS) delete mergedBuildMeta[field]
-    await write(buildMetaPath, mergedBuildMeta)
+    await FS.write(buildMetaPath, mergedBuildMeta)
 
     if (!existingMeta) stats.items++
     else stats.metaPatched++
@@ -317,86 +317,86 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
     const enSrcPath = [...srcDir, "en.yaml"]
     const enBuildPath = [...buildDir, "en.json"]
 
-    const existingEn = (await exist(enSrcPath)) ? await load(enSrcPath) : null
+    const existingEn = (await FS.exist(enSrcPath)) ? await FS.load(enSrcPath) : null
     const enSeed = normalizeLocaleData(existingEn, localeSeed)
 
-    if (!(await exist(enSrcPath))) stats.locales++
-    await write(enSrcPath, enSeed)
-    await write(enBuildPath, enSeed)
+    if (!(await FS.exist(enSrcPath))) stats.locales++
+    await FS.write(enSrcPath, enSeed)
+    await FS.write(enBuildPath, enSeed)
 
     // Seed and sanitize non-en locales from canonical locale shape
     for (const code of localeCodes) {
         if (code === "en") continue
         const srcLocalePath = [...srcDir, `${code}.yaml`]
-        const existingLocale = (await exist(srcLocalePath)) ? await load(srcLocalePath) : null
+        const existingLocale = (await FS.exist(srcLocalePath)) ? await FS.load(srcLocalePath) : null
         const nextLocale = normalizeLocaleData(existingLocale, enSeed)
-        if (!(await exist(srcLocalePath))) stats.locales++
-        await write(srcLocalePath, nextLocale)
+        if (!(await FS.exist(srcLocalePath))) stats.locales++
+        await FS.write(srcLocalePath, nextLocale)
 
         const buildLocalePath = [...buildDir, `${code}.json`]
-        await write(buildLocalePath, nextLocale)
+        await FS.write(buildLocalePath, nextLocale)
     }
 }
 
 async function sanitizeExistingGameItems(gameId, localeCodes) {
     const gameSrcDir = [...paths.src.items, gameId]
-    if (!(await exist(gameSrcDir))) return { items: 0, locales: 0, metaPatched: 0, imagesSeeded: 0, itemIds: new Set() }
+    if (!(await FS.exist(gameSrcDir))) return { items: 0, locales: 0, metaPatched: 0, imagesSeeded: 0, itemIds: new Set() }
 
-    const entries = await dir(gameSrcDir)
+    const entries = await FS.dir(gameSrcDir)
     const itemIds = new Set()
     let metaPatched = 0
 
     for (const entry of entries) {
         const itemDir = [...gameSrcDir, entry]
-        if (!(await isDirectory(itemDir))) continue
+        if (!(await FS.isDirectory(itemDir))) continue
 
         itemIds.add(entry)
 
         const srcMetaPath = [...itemDir, "meta.yaml"]
-        if (await exist(srcMetaPath)) {
-            const srcMeta = await load(srcMetaPath)
+        if (await FS.exist(srcMetaPath)) {
+            const srcMeta = await FS.load(srcMetaPath)
             if (srcMeta && typeof srcMeta === "object") {
                 const patched = ensureConfigs(normalizeShopMeta({ ...srcMeta }, entry))
                 delete patched.icon
                 for (const field of FORBIDDEN_META_FIELDS) delete patched[field]
-                await write(srcMetaPath, patched)
+                await FS.write(srcMetaPath, patched)
                 metaPatched++
 
                 const buildMetaPath = [...paths.build.statics, "items", gameId, entry, "meta.json"]
-                if (await exist(buildMetaPath)) {
-                    const buildMeta = await load(buildMetaPath)
+                if (await FS.exist(buildMetaPath)) {
+                    const buildMeta = await FS.load(buildMetaPath)
                     if (buildMeta && typeof buildMeta === "object") {
                         const patchedBuildMeta = ensureConfigs(normalizeShopMeta({ ...buildMeta }, entry))
                         delete patchedBuildMeta.icon
                         for (const field of FORBIDDEN_META_FIELDS) delete patchedBuildMeta[field]
-                        await write(buildMetaPath, patchedBuildMeta)
+                        await FS.write(buildMetaPath, patchedBuildMeta)
                     }
                 }
             }
         }
 
         const enSrcPath = [...itemDir, "en.yaml"]
-        const enExisting = (await exist(enSrcPath)) ? await load(enSrcPath) : null
+        const enExisting = (await FS.exist(enSrcPath)) ? await FS.load(enSrcPath) : null
         const enSeed = normalizeLocaleData(enExisting, { name: "", description: "" })
-        if (await exist(enSrcPath)) await write(enSrcPath, enSeed)
+        if (await FS.exist(enSrcPath)) await FS.write(enSrcPath, enSeed)
 
         const enBuildPath = [...paths.build.statics, "items", gameId, entry, "en.json"]
-        if (await exist(enBuildPath)) await write(enBuildPath, enSeed)
+        if (await FS.exist(enBuildPath)) await FS.write(enBuildPath, enSeed)
 
         for (const code of localeCodes) {
             if (code === "en") continue
             const srcLocalePath = [...itemDir, `${code}.yaml`]
-            if (await exist(srcLocalePath)) {
-                const existingLocale = await load(srcLocalePath)
+            if (await FS.exist(srcLocalePath)) {
+                const existingLocale = await FS.load(srcLocalePath)
                 const nextLocale = normalizeLocaleData(existingLocale, enSeed)
-                await write(srcLocalePath, nextLocale)
+                await FS.write(srcLocalePath, nextLocale)
             }
 
             const buildLocalePath = [...paths.build.statics, "items", gameId, entry, `${code}.json`]
-            if (await exist(buildLocalePath)) {
-                const existingBuildLocale = await load(buildLocalePath)
+            if (await FS.exist(buildLocalePath)) {
+                const existingBuildLocale = await FS.load(buildLocalePath)
                 const nextBuildLocale = normalizeLocaleData(existingBuildLocale, enSeed)
-                await write(buildLocalePath, nextBuildLocale)
+                await FS.write(buildLocalePath, nextBuildLocale)
             }
         }
     }
@@ -420,12 +420,12 @@ export async function syncGameItems(gameId, detailMapper, imageResolver = null) 
     }
 
     const rawItemsPath = ["games", gameId, "items.json"]
-    if (!(await exist(rawItemsPath))) {
+    if (!(await FS.exist(rawItemsPath))) {
         log.info(`  ${gameId}: games/${gameId}/items.json not found, skipping sync`)
         return sanitizeExistingGameItems(gameId, await getLocaleCodes())
     }
 
-    const rawItems = await load(rawItemsPath)
+    const rawItems = await FS.load(rawItemsPath)
     if (!Array.isArray(rawItems) || rawItems.length === 0) {
         log.info(`  ${gameId}: no items in crawl output, skipping sync`)
         return sanitizeExistingGameItems(gameId, await getLocaleCodes())

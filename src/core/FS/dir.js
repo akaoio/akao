@@ -1,50 +1,17 @@
-import { fs } from "./shared.js"
-import { join } from "./join.js"
+import { driver } from "./shared.js"
 
-/**
- * Read directory contents and return list of file/folder names
- * @param {string[]} path - Path segments to the directory
- * @returns {Promise<string[]>} Array of file and directory names, or empty array on error
- */
 export async function dir(path, pattern = null) {
-    if (!fs) {
-        console.error("File system not available in browser environment")
-        return []
+    if (!Array.isArray(path)) path = path.split("/").filter(Boolean)
+    if (!pattern) return driver.list(path)
+
+    const results = []
+    const walk = async (currentPath) => {
+        for (const { name, isDir } of await driver.entries(currentPath)) {
+            const childPath = [...currentPath, name]
+            if (isDir) await walk(childPath)
+            else if (pattern.test(childPath.join("/"))) results.push(childPath.join("/"))
+        }
     }
-
-    const dirPath = join(path)
-    try {
-        if (!fs.existsSync(dirPath)) {
-            console.error("Directory doesn't exist:", dirPath)
-            return []
-        }
-
-        const stats = fs.statSync(dirPath)
-        if (!stats.isDirectory()) {
-            console.error("Path is not a directory:", dirPath)
-            return []
-        }
-        // If no pattern provided, return immediate children (non-recursive)
-        if (!pattern) return fs.readdirSync(dirPath)
-
-        const results = []
-
-        const walk = async (baseItems, prefix = "") => {
-            const currentPath = join(baseItems)
-            if (!fs.existsSync(currentPath)) return
-            const entries = fs.readdirSync(currentPath, { withFileTypes: true })
-            for (const entry of entries) {
-                const nextItems = [...baseItems, entry.name]
-                const relPath = prefix ? `${prefix}/${entry.name}` : entry.name
-                if (entry.isDirectory()) await walk(nextItems, relPath)
-                else if (entry.isFile() && pattern.test(relPath)) results.push(relPath)
-            }
-        }
-
-        await walk(path, "")
-        return results
-    } catch (error) {
-        console.error("Error reading directory:", dirPath, error)
-        return []
-    }
+    await walk(path)
+    return results
 }

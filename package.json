@@ -33,6 +33,7 @@
     "build:geo": "node build.js geo",
     "build:games": "node build.js games",
     "build:hash": "node build.js hash",
+    "build:trackers": "node build.js trackers",
     "scan:crypto": "node scan.js",
     "market": "node market.js",
     "scan:crypto:currencies": "node scan.js currencies",

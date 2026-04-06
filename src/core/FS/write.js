@@ -1,48 +1,34 @@
-import { fs, YAML } from "./shared.js"
-import { join } from "./join.js"
-import { ensure } from "./ensure.js"
+import { YAML, BROWSER, driver } from "./shared.js"
 import { stringify as stringifyCSV } from "../CSV.js"
 
 /**
- * Write content to a file in JSON, YAML, or plain text format
+ * Write content to a file — serializes based on extension, then delegates I/O to writeRaw.
  * @param {string[]} path - Path segments including filename
- * @param {*} content - Content to write (will be serialized based on file extension)
- * @returns {Promise<{success: boolean, path: string}|undefined>} Result object or undefined
+ * @param {*} content - Content to write
+ * @returns {Promise<{success: boolean, path: string}|undefined>}
  */
 export async function write(path = [], content) {
     if (content === undefined || content === null) return
     const file = path.at(-1)
-    const hasExtension = file.includes(".")
 
-    // Smart detection: treat as file if:
-    // 1. Has extension (explicit file like .json, .txt, etc.)
-    // 2. Content is string/number/boolean (not object/array) - indicates text file
-    // This prevents accidentally writing to directories while supporting extension-less files
-    const isFile = hasExtension || typeof content !== "object" || content instanceof String
-
-    if (!isFile) {
-        console.error("Attempted to write object/array to path without extension:", join(path))
+    if (!file.includes(".") && typeof content === "object" && !(content instanceof String)) {
+        console.error("Attempted to write object/array to path without extension:", path.join("/"))
         return
     }
 
-    // If the last item is a file, remove it from path to make dir
-    path.pop()
-    const dir = join(path)
-    const filePath = join([...path, file])
-    // Ensure directory exists before writing
-    if (!(await ensure(dir))) return
+    // Binary: pass through directly, no serialization needed
+    if (content instanceof Uint8Array) return driver.writeBytes(path, content)
 
-    try {
-        let data
-        // Serialize content based on file extension
-        if (file.endsWith(".json")) data = JSON.stringify(content, null, 4)
-        else if (file.endsWith(".yaml") || file.endsWith(".yml")) data = YAML.stringify(content)
-        else if (file.endsWith(".csv")) data = stringifyCSV(content, { delimiter: "," })
-        else if (file.endsWith(".tsv")) data = stringifyCSV(content, { delimiter: "\t" })
-        else data = content
-        fs.writeFileSync(filePath, data, "utf8")
-        return { success: true, path: filePath }
-    } catch (error) {
-        console.error("Error writing to", filePath)
-    }
+    // Serialize to string based on file extension
+    let data
+    const ext = file.slice(file.lastIndexOf(".") + 1).toLowerCase()
+    if (ext === "json")                    data = JSON.stringify(content, null, 4)
+    else if (ext === "csv")                data = stringifyCSV(content, { delimiter: "," })
+    else if (ext === "tsv")                data = stringifyCSV(content, { delimiter: "\t" })
+    else if (ext === "yaml" || ext === "yml")
+        // Browser has no YAML library — JSON is valid YAML so readers will parse it correctly
+        data = !BROWSER ? YAML.stringify(content) : typeof content === "string" ? content : JSON.stringify(content, null, 4)
+    else data = typeof content === "string" ? content : JSON.stringify(content, null, 4)
+
+    return driver.writeBytes(path, new TextEncoder().encode(data))
 }

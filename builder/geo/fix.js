@@ -1,7 +1,7 @@
 import { readFileSync, createReadStream, existsSync, unlinkSync } from "fs"
 import { createInterface } from "readline"
 import DB from "../../src/core/DB.js"
-import { write } from "../../src/core/Utils.js"
+import { FS } from "../../src/core/FS.js"
 import { ADMIN_FEATURE_REGEX, COUNTRY_FEATURE_REGEX, normalizeAdminCodes, resolveParent } from "./shared.js"
 import { loadHierarchyMap } from "./hierarchy.js"
 import { generateGeoDirectoryHashes, resetGeoHashCounter } from "./hash.js"
@@ -204,7 +204,7 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
                 const content = readFileSync(fullPath, "utf8")
                 const record = JSON.parse(content)
                 record.children = children
-                await write(filePath, record)
+                await FS.write(filePath, record)
                 updatedCount++
 
                 if (updatedCount % 10000 === 0) {
@@ -274,7 +274,7 @@ export async function fixChildrenRelationships({ isTestMode = false, testCountry
                 const content = readFileSync(fullPath, "utf8")
                 const record = JSON.parse(content)
                 record.parent = parentId ?? null
-                await write(filePath, record)
+                await FS.write(filePath, record)
                 parentFieldUpdatedCount++
 
                 if (parentFieldUpdatedCount % 10000 === 0) {
