@@ -146,24 +146,115 @@ R[8+] = Custom  // App-defined
 // 1. User writes data
 gun.get("$abc...soul").put({ key: "value" }, ack => { ... })
 
-// 2. Gun pipeline intercepts write
-// 3. Pen decodes soul bytecode
-// 4. Populates registers:
-const registers = {
-  [0]: "key",           // The key being written
-  [1]: "value",         // The value
-  [2]: "$abc...soul",   // The soul
-  [3]: { /* state */ }, // Gun metadata
-  [4]: Date.now(),      // Current time
-  [5]: "pub_xyz",       // From SEA signature
-  // ... custom registers from soul encoding
+// 2. Gun pipeline intercepts write (check stage)
+// 3. Detects soul starts with "$" → triggers penStage()
+// 4. penStage() decodes soul bytecode: pen.unpack(soul.slice(1))
+// 5. Populates registers (HOST INJECTION):
+const registers = [
+  ctx.key,                              // R[0] = "key"
+  ctx.val,                              // R[1] = JSON.stringify(value)
+  soul,                                 // R[2] = "$abc...soul"
+  ctx.state || 0,                       // R[3] = HAM state timestamp
+  Date.now(),                           // R[4] = CURRENT TIME (injected by Gun)
+  ctx.at.user.is.pub || ''              // R[5] = writer's public key
+]
+
+// 6. Executes bytecode in WASM
+pen.ready.then(() => {
+  const ok = pen.run(bytecode, registers)  // true/false
+  if (ok) next()      // Continue Gun pipeline
+  else reject('PEN validation failed')
+})
+```
+
+**Key point**: `R[4] = Date.now()` is **injected by Gun's JavaScript layer** (`lib/pen.js`), NOT by Pen WASM.
+
+### Pen Core Doesn't Know Time
+
+**Pen WASM** (`lib/pen.wasm`):
+- ❌ No access to system time
+- ❌ No `Date.now()` call inside WASM
+- ❌ No network access for NTP
+- ✅ Only receives `registers[]` array from host
+
+**Gun Bridge** (`lib/pen.js`):
+- ✅ Calls `Date.now()` in JavaScript
+- ✅ Injects timestamp into R[4] register
+- ✅ Passes registers to Pen WASM
+- ✅ Pen bytecode uses `DIVU(R[4], 300000)` to calculate candle
+
+**Architecture**:
+```
+┌─────────────────────────────────────────────┐
+│  JavaScript Host (lib/pen.js)               │
+│  - Calls Date.now() ← BROWSER/NODE API      │
+│  - Injects into R[4]                        │
+│  - ctx.state (HAM timestamp) → R[3]         │
+│  - ctx.at.user.is.pub → R[5]                │
+└──────────────┬──────────────────────────────┘
+               │ registers = [key, val, soul, state, NOW, pub]
+               ▼
+┌─────────────────────────────────────────────┐
+│  Pen WASM (lib/pen.wasm)                    │
+│  - Pure computation (no I/O)                │
+│  - Receives R[0-5] from host                │
+│  - Executes: DIVU(R[4], 300000)             │
+│  - Returns: boolean (pass/fail)             │
+└─────────────────────────────────────────────┘
+```
+
+### Where Date.now() Comes From
+
+**In Browser**:
+```javascript
+// lib/pen.js line ~598:
+var regs = [
+  ctx.key, 
+  ctx.val, 
+  soul,
+  ctx.state || 0, 
+  Date.now(),        // ← window.performance.now() or new Date()
+  ctx.at.user.is.pub || ''
+];
+```
+
+**In Node.js**:
+```javascript
+Date.now()  // ← process.hrtime() wrapped by V8
+```
+
+**Time Sources**:
+1. **Browser**: `window.performance.now()` (high-res timer since page load)
+2. **Node.js**: System clock via `clock_gettime()` syscall
+3. **Both**: Can be affected by:
+   - System clock changes (NTP sync)
+   - User manual clock adjustment
+   - VM time drift
+
+### Candle Calculation Flow
+
+```javascript
+// 1. Gun intercepts write
+gun.get("$abc...").get("5777152_item_buy_nonce").put(data)
+
+// 2. lib/pen.js injects timestamp
+const now = Date.now()  // e.g., 1733145600000 (Unix ms)
+const registers = [key, val, soul, state, now, pub]
+
+// 3. Pen bytecode extracts candle from key
+// Bytecode: LET(0, DIVU(R[4], 300000))  ← current = floor(now / 300000)
+const current_candle = Math.floor(now / 300000)  // 5777152
+
+// 4. Compare with candle in key (segment 0)
+const key_candle = parseInt(key.split('_')[0])  // 5777152
+
+// 5. Validate window
+if (key_candle >= current_candle - 100 &&   // Not too old
+    key_candle <= current_candle + 2) {     // Not too future
+  return true  // ACCEPT
+} else {
+  return false // REJECT
 }
-
-// 5. Executes bytecode in WASM
-const result = pen_wasm_eval(bytecode, registers)
-
-// 6. If result === true, write succeeds
-// 7. If result === false, write rejected
 ```
 
 ### SEA.pen() API
@@ -197,26 +288,69 @@ const policy = await SEA.pen({
 
 ### SEA.candle() Helper
 
-Creates temporal validation window:
+Creates **flexible temporal validation window** (epoch lỏng).
+
+**Candle number** = `Math.floor(Date.now() / size_ms)` - chia thời gian thành các "nến" rời rạc.
 
 ```javascript
-const candle = SEA.candle({ back: 100, fwd: 2 })
-// Returns: { back: timestamp_100_candles_ago, fwd: timestamp_2_candles_future }
+const candle = SEA.candle({ 
+  seg: 0,        // Key segment index (split by sep)
+  sep: ":",      // Separator character (colon for consistency)
+  size: 300000,  // Candle size in ms (default: 5 minutes)
+  back: 100,     // Accept 100 candles in past (default)
+  fwd: 2         // Accept 2 candles in future (default)
+})
 
-// Candle = 15 seconds by default
-// back: 100 = 1500 seconds ago (25 minutes)
-// fwd: 2 = 30 seconds in future
+// With 5-min candles:
+// back: 100 = 500 minutes = ~8.3 hours past
+// fwd: 2 = 10 minutes future (clock skew tolerance)
 ```
 
-**Use case**: Prevent replay attacks and time-travel writes.
+**Use case**: Flexible time windows that slide automatically.
 
 ```javascript
-// Validate write timestamp is within candle window
-["AND",
-  ["GE", ["R", 3], ["R", 6]], // state >= candle_back
-  ["LE", ["R", 3], ["R", 7]]  // state <= candle_fwd
+// Validate key's candle number is within sliding window
+// Compiles to:
+["LET", 128,  // local[0] = current candle = floor(now / size)
+  ["DIVU", ["R", 4], size],
+  ["LET", 129,  // local[1] = candle from key segment
+    ["TONUM", ["SEG", ["R", 0], sep, seg]],
+    ["AND",
+      ["GTE", ["R", 129], ["SUB", ["R", 128], back]],  // >= current - 100
+      ["LTE", ["R", 129], ["ADD", ["R", 128], fwd]]    // <= current + 2
+    ]
+  ]
 ]
+
+// Example: Order with key "5777152:organic-tea:buy:abc"
+// - Extract candle: 5777152 (from segment 0)
+// - Current candle: 5777250
+// - Valid if: 5777150 <= 5777152 <= 5777252 ✓
 ```
+
+**Why "loose epoch"** (so với fixed timestamps):
+- ✅ **Sliding window**: Automatically moves with time (no hardcoded dates)
+- ✅ **Self-expiring**: Orders older than `back` candles auto-reject
+- ✅ **Clock skew tolerant**: `fwd` buffer accepts slightly-future writes
+- ✅ **Compact keys**: Candle numbers shorter than timestamps (7 vs 13 digits)
+
+**Flexible configurations**:
+
+```javascript
+// Tight window (market orders: ±15 minutes)
+SEA.candle({ size: 300000, back: 3, fwd: 3 })
+
+// Medium window (limit orders: ±4 hours)  
+SEA.candle({ size: 300000, back: 48, fwd: 2 })
+
+// Loose window (GTC orders: ±8 hours) - DEFAULT
+SEA.candle({ size: 300000, back: 100, fwd: 2 })
+
+// Ultra loose (escrow: ±30 days)
+SEA.candle({ size: 3600000, back: 720, fwd: 10 })
+```
+
+See also: [`docs/thoughts/temporal-proof-of-work-gossip-protocol.md`](../thoughts/temporal-proof-of-work-gossip-protocol.md) for original candle concept.
 
 ---
 
@@ -284,22 +418,28 @@ const policy = await SEA.pen({
 })
 ```
 
-### Pattern 5: Temporal Order Validity
+### Pattern 5: Temporal Order Validity (Flexible Epoch)
 
 ```javascript
-// Order only valid within time window
+// Order valid within sliding window (8 hours past, 10 min future)
 const policy = await SEA.pen({
   expression: ["AND",
     ["SGN", ["R", 5]],
-    ["GE", ["R", 4], start_time],  // R[4] = Date.now()
-    ["LE", ["R", 4], end_time]
-  ],
-  registers: { 
-    10: start_time,
-    11: end_time 
-  }
+    SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 })
+  ]
 })
+
+// Key format: <candle>:<item>:<type>:<nonce>
+// Example: "5777152:organic-tea:buy:a3f7"
+// - Candle 5777152 extracted from segment 0
+// - Validates against current candle ± window
+// - Auto-expires after ~8 hours
 ```
+
+**Why better than fixed timestamps**:
+- No need to know start/end time in advance
+- Window slides automatically with current time
+- Orders self-expire (no manual cleanup)
 
 ---
 
@@ -313,7 +453,7 @@ gun.get("orders").map().on(order => { ... })
 // Anyone can overwrite gun.get("orders")!
 ```
 
-✅ **Do this**: Per-item deterministic Pen souls
+✅ **Do this**: Per-item deterministic Pen souls with candle-based keys
 
 ```javascript
 // 1. Create deterministic soul for each item
@@ -322,10 +462,11 @@ async function getItemOrderSoul(itemSlug) {
     expression: ["AND",
       ["EQ", ["R", 8], itemSlug],
       ["SGN", ["R", 5]],
-      ["POW", 2]
+      ["POW", 2],
+      // Temporal window: 8 hours past, 10 min future
+      SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 })
     ],
-    registers: { 8: itemSlug },
-    candle: { back: 100, fwd: 2 }
+    registers: { 8: itemSlug }
   })
   return policy.soul
 }
@@ -333,13 +474,21 @@ async function getItemOrderSoul(itemSlug) {
 // 2. Everyone knows where to look for "organic-green-tea" orders
 const soul = await getItemOrderSoul("organic-green-tea")
 
-// 3. Subscribe to all orders for this item
-gun.get(soul).map().on((order, orderId) => {
+// 3. Subscribe to orders in current time window
+const candle = Math.floor(Date.now() / 300000)
+gun.get(soul).get({
+  '>': `${candle}:`,     // Current candle onwards
+  '<': `${candle}:~`     // Within current candle
+}).on((order, orderId) => {
   console.log("New order:", order)
 })
 
-// 4. Create new order (must provide signature + PoW)
-gun.get(soul).get("order_123").put({
+// 4. Create new order (must provide signature + PoW + valid candle)
+const candle = Math.floor(Date.now() / 300000)
+const nonce = Math.random().toString(36).slice(2, 8)
+const key = `${candle}:organic-green-tea:buy:${nonce}`
+
+gun.get(soul).get(key).put({
   type: "buy",
   quantity: 10,
   price: 1500,
@@ -347,14 +496,21 @@ gun.get(soul).get("order_123").put({
 })
 ```
 
+**Key format benefits**:
+- **Candle-first**: Enables time-range LEX queries
+- **Compact**: 7 digits vs 13-digit timestamp
+- **Self-expiring**: Old candles auto-reject (no cleanup needed)
+- **Discovery-friendly**: Query by item + time range
+
 ### Multi-Item Order Replication
 
 For orders spanning multiple items, replicate to each item's soul:
 
 ```javascript
 const items = ["green-tea", "coffee", "honey"]
+const candle = Math.floor(Date.now() / 300000)
+const orderId = `${candle}_multi_buy_${nonce}`
 const order = {
-  id: "order_456",
   type: "buy",
   items: items,
   trader: my_pub
@@ -363,10 +519,27 @@ const order = {
 // Write to each item's soul
 for (const item of items) {
   const soul = await getItemOrderSoul(item)
-  gun.get(soul).get(order.id).put(order)
+  gun.get(soul).get(orderId).put(order)
 }
 
 // Discovery: traders watching ANY of these items will find the order
+```
+
+**Time-based discovery patterns**:
+
+```javascript
+// Current candle only (most recent orders)
+const now = Math.floor(Date.now() / 300000)
+gun.get(soul).get({ '>': `${now}_`, '<': `${now}_~` })
+
+// Last 10 candles (50 minutes of orders)
+const start = now - 10
+gun.get(soul).get({ '>': `${start}_`, '<': `${now}_~` })
+
+// Subscribe to future orders (realtime)
+gun.get(soul).get({ '>': `${now}_` }).on(order => {
+  console.log("New order created:", order)
+})
 ```
 
 ---
@@ -496,16 +669,20 @@ export async function createOrderSoul(itemSlug) {
     // 1. Order must be for this specific item
     // 2. Must be signed by creator
     // 3. Must have PoW to prevent spam
-    // 4. Must be within temporal window
+    // 4. Must be within temporal window (8h past, 10min future)
     expression: ["AND",
       ["EQ", ["R", 8], itemSlug],      // R[8] = item slug
       ["SGN", ["R", 5]],                // R[5] = creator pub
       ["POW", 3],                        // 2^3 = 8 hashes
-      ["GE", ["R", 3], ["R", 6]],       // timestamp >= back
-      ["LE", ["R", 3], ["R", 7]]        // timestamp <= fwd
+      SEA.candle({
+        seg: 0,                          // Candle in first segment
+        sep: "_",
+        size: 300000,                    // 5-minute candles
+        back: 100,                       // 500 minutes past
+        fwd: 2                           // 10 minutes future
+      })
     ],
-    registers: { 8: itemSlug },
-    candle: { back: 100, fwd: 2 }  // 25min past, 30sec future
+    registers: { 8: itemSlug }
   })
   
   return policy.soul
@@ -521,10 +698,18 @@ import { createOrderSoul } from "/core/OrderPen.js"
 
 export async function createOrder({ item, type, quantity, price, trader }) {
   const soul = await createOrderSoul(item)
-  const orderId = `${trader}:${Date.now()}`
+  
+  // Calculate current candle
+  const candle = Math.floor(Date.now() / 300000)
+  
+  // Generate random nonce for uniqueness
+  const nonce = Math.random().toString(36).slice(2, 8)
+  
+  // Key format: <candle>:<item>:<type>:<nonce>
+  const key = `${candle}:${item}:${type}:${nonce}`
   
   // Must be signed with trader's key pair (happens in SEA layer)
-  gun.get(soul).get(orderId).put({
+  gun.get(soul).get(key).put({
     type,      // "buy" or "sell"
     quantity,
     price,
@@ -533,8 +718,17 @@ export async function createOrder({ item, type, quantity, price, trader }) {
     created: Date.now(),
     status: "open"
   }, ack => {
-    if (ack.err) console.error("Order rejected:", ack.err)
-    else console.log("Order created:", orderId)
+    if (ack.err) {
+      console.error("Order rejected:", ack.err)
+      // Possible rejections:
+      // 1. Candle outside window (too old/new)
+      // 2. Item slug mismatch
+      // 3. Invalid type
+      // 4. Missing signature
+      // 5. Insufficient PoW
+    } else {
+      console.log("Order created:", key)
+    }
   })
 }
 ```
@@ -545,13 +739,17 @@ export async function createOrder({ item, type, quantity, price, trader }) {
 // src/UI/routes/order/logic.js
 export async function subscribeToOrders(itemSlug, callback) {
   const soul = await createOrderSoul(itemSlug)
+  const candle = Math.floor(Date.now() / 300000)
   
-  gun.get(soul).map().on((order, orderId) => {
+  // Subscribe to orders in current candle window
+  gun.get(soul).get({
+    '>': `${candle}_${itemSlug}_`,
+    '<': `${candle}_${itemSlug}_~`
+  }).on((order, orderId) => {
     // Filter out null/deleted
     if (!order || !order.type) return
     
     // Pen already validated signature, PoW, timestamp
-    // Just process the order
     callback({ ...order, id: orderId })
   })
 }
@@ -583,6 +781,7 @@ export async function matchOrder(makerOrderId, takerOrder) {
     }
     
     // 3. Create trade escrow (see Lock.js)
+    const candle = Math.floor(Date.now() / 300000)
     const trade = {
       maker: makerOrder.trader,
       taker: takerOrder.trader,
@@ -599,6 +798,14 @@ export async function matchOrder(makerOrderId, takerOrder) {
   })
 }
 ```
+
+**Key format**: `<candle>:<item>:<type>:<nonce>`
+
+Example: `5777152:organic-green-tea:buy:a3f7b2`
+- Candle: `5777152` (segment 0) - auto-validated against current ±window
+- Item: `organic-green-tea` (segment 1) - must match soul's item
+- Type: `buy` (segment 2) - used for discovery queries  
+- Nonce: `a3f7b2` (segment 3) - ensures uniqueness
 
 ---
 
