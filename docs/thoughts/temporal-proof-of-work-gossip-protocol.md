@@ -93,7 +93,7 @@ var regs = [
   soul,                       // R[2]
   ctx.state || 0,            // R[3] - HAM timestamp
   Date.now(),                // R[4] ← INJECTED BY GUN.JS
-  ctx.at.user.is.pub || ''   // R[5]
+  sec.upub || ''            // R[5] ← from opts.authenticator (SEA.check.$sea)
 ]
 pen.run(bytecode, regs)  // Pass to WASM
 ```
@@ -127,7 +127,7 @@ async function getConsensusTime() {
 // Inject consensus time thay vì Date.now()
 var regs = [ctx.key, ctx.val, soul, ctx.state, 
             await getConsensusTime(),  // Thay vì Date.now()
-            ctx.at.user.is.pub]
+            sec.upub]       // from opts.authenticator
 ```
 
 **Current implementation**: Gun dùng `Date.now()` trực tiếp (đơn giản, đủ cho ±10 phút clock skew tolerance).
@@ -185,23 +185,21 @@ Candle validation được implement trong Pen DSL (WASM bytecode):
 ```javascript
 import SEA from "/core/SEA.js"
 
-// Tạo soul với temporal validation
-const policy = await SEA.pen({
-  expression: ["AND",
-    SEA.candle({
-      seg: 0,        // Candle ở segment đầu tiên của key
-      sep: "_",      // Phân tách bởi "_"
-      size: 300000,  // 5 phút
-      back: 100,     // -500 phút
-      fwd: 2         // +10 phút
-    }),
-    ["SGN", ["R", 5]],  // Phải có chữ ký
-    ["POW", 3]           // PoW difficulty = 3
-  ]
+// Tạo soul với temporal validation (synchronous)
+const soul = SEA.pen({
+  key: SEA.candle({
+    seg: 0,        // Candle ở segment đầu tiên của key
+    sep: "_",      // Phân tách bởi "_"
+    size: 300000,  // 5 phút
+    back: 100,     // -500 phút (-8.3 giờ)
+    fwd: 2         // +10 phút
+  }),
+  sign: true,                          // Yêu cầu authenticator
+  pow: { field: 0, difficulty: 3 }     // PoW trên key, difficulty = 3
 })
 
 // Soul = "$abc..." (base62-encoded bytecode)
-gun.get(policy.soul).get(key).put(data)
+gun.get(soul).get(key).put(data, null, { authenticator: myPair })
 ```
 
 **Compile thành bytecode**:
@@ -364,6 +362,6 @@ back: 288-720, fwd: 10   // Days to weeks
 ## References
 
 - **Pen DSL Implementation**: [`pen-dsl-guide.md`](./pen-dsl-guide.md)
-- **P2P Trading Use Case**: [`white-paper-v2-p2p-trading.md`](./white-paper-v2-p2p-trading.md)
+- **P2P Trading Use Case**: [`white-paper.md`](./white-paper.md)
 - **Gun Source**: `node_modules/@akaoio/gun/docs/pen.md`
 - **SEA.candle() Source**: `node_modules/@akaoio/gun/lib/pen.js`

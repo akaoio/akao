@@ -545,7 +545,7 @@ const orderSoul = SEA.pen({
         
         // Item slug validation
         { seg: { sep: ":", idx: 1, of: { reg: 0 },
-                 match: { type: "string" } } },
+                 match: { length: [1, 128] } } },
         
         // Order type: buy or sell
         { seg: { sep: ":", idx: 2, of: { reg: 0 },
@@ -553,7 +553,7 @@ const orderSoul = SEA.pen({
     ]},
     val: { type: "string" },  // JSON order metadata (includes price)
     sign: true,               // Require signature
-    pow: { field: 1, difficulty: 2 }  // Anti-spam PoW
+    pow: { field: 0, difficulty: 2 }  // Anti-spam PoW (field 0 = key, client iterates nonce at seg 3)
 })
 ```
 

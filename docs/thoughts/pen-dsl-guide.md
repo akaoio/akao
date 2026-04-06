@@ -1,235 +1,238 @@
-# Pen DSL - Complete Guide for Gun Validation
+﻿# Pen DSL - Developer Reference
+
+> **Source of truth**: `gun/lib/pen.js` (compiler + bridge), `pen/src/pen.zig` (VM), `pen/src/wasm.zig` (WASM boundary)
 
 ## Overview
 
-Pen is a WASM-based predicate language that validates **who can write** to Gun souls. It compiles validation logic into ~26KB bytecode, encodes it to ~77 base62 characters, and uses that as the soul name (`$abc...`). This prevents spam and unauthorized writes without requiring centralized permission systems.
+Pen là WASM-based predicate engine validate **ai được phép ghi** vào Gun souls. Nó compile validation logic thành bytecode, encode thành base62, dùng chuỗi đó làm soul name (`$abc...`). Điều này ngăn spam và ghi trái phép mà không cần hệ thống permission tập trung.
 
-**Key insight**: Pen is NOT a query language. It's a validation engine that runs AFTER someone attempts to write, checking: signature, proof-of-work, temporal windows, and custom logic.
-
-### Why Pen Exists
-
-Gun is a decentralized graph database. Without validation:
-- Anyone can overwrite `gun.get("orders")` causing chaos
-- No spam protection
-- No access control
-- No schema enforcement
-
-Pen solves this by making the **soul itself encode the validation rules**. Only writes that pass the Pen bytecode execute successfully.
+**Pen KHÔNG phải query language.** Nó là validation engine chạy SAU khi ai đó cố gắng ghi, kiểm tra: signature, proof-of-work, temporal windows, và custom logic.
 
 ---
 
 ## Architecture (3 Layers)
 
-### Tầng 0: pen.wasm (WASM VM)
-- 26KB Zig-compiled WASM runtime
-- Executes bytecode against host-provided registers
-- Returns boolean (pass/fail)
-- No I/O, pure computation
+### Layer 0: pen.wasm (WASM VM)
 
-### Tầng 1: lib/pen.js (Compiler + Bridge)
-- JavaScript compiler: source → bytecode
-- Gun pipeline integration (`Gun.chain.pen()`)
-- SEA integration (`SEA.pen()`, `SEA.candle()`)
-- Register population from Gun graph data
+Compiled từ Zig (`pen/src/pen.zig`). Pure computation — không có I/O, không có system time. Nhận bytecode + registers từ host, trả về boolean.
 
-### Tầng 2: Application Code
+Memory layout (shared 64KB buffer):
+```
+[0..3]     u32 LE  = bytecode length
+[4..N+3]   bytecode bytes
+[N+4..N+7] u32 LE  = register count
+[N+8..]    register wire encoding
+```
+
+Return codes từ `exp.run()`:
+- `1` = true (pass)
+- `0` = false (fail)
+- `-1` = runtime error
+- `-2` = bad version byte
+- `-3` = max recursion depth exceeded
+
+### Layer 1: lib/pen.js (Compiler + Bridge)
+
+JavaScript layer trong Gun (`gun/lib/pen.js`) làm 4 việc:
+1. Load `pen.wasm` (Node.js: từ file; Browser: fetch)
+2. Expose `pen.run(bytecode, regs)` — write registers vào shared buffer, call `exp.run()`
+3. Expose `pen.bc.*` — bytecode builder helpers
+4. Hook vào Gun SEA pipeline: detect `$`-soul → gọi `penStage()`
+
+### Layer 2: Application Code
+
 ```javascript
-// Define validation logic
-const policy = await SEA.pen({
-  expression: ["AND", 
-    ["SGN", ["R", 5]], // Must be signed by R[5] (pub)
-    ["POW", 3]         // Must have proof-of-work >= 3
-  ]
+// SEA.pen() là SYNCHRONOUS — không cần await
+const soul = SEA.pen({
+  key: SEA.candle({ back: 100, fwd: 2 }),
+  sign: true
 })
+// soul = "$abc123..." — STRING, không phải object
 
-// Use as soul
-gun.get(policy.soul).put({ data: "value" }, ack => {
-  // Only succeeds if signature + PoW valid
-})
+gun.get(soul).get(key).put(data, null, { authenticator: myPair })
+// Chỉ thành công nếu key trong candle window + có authenticator hợp lệ
 ```
 
 ---
 
-## ISA v1 Bytecode Format
+## Registers
 
-### Expression Tree Structure
-Pen bytecode is a **post-order traversal** of an expression tree:
-
-```
-Expression: ["AND", ["EQ", ["R", 0], "item:123"], ["SGN", ["R", 5]]]
-
-Tree:
-       AND
-      /   \
-    EQ    SGN
-   /  \     \
-  R0  "123" R5
-
-Bytecode (pseudo): PUSH_R0 PUSH_STR("123") EQ PUSH_R5 SGN AND
-```
-
-### Opcodes Categories
-
-#### 1. Constants & Literals
-- `0x00` - Boolean false
-- `0x01` - Boolean true
-- `0x02` - Null
-- `0x10-0x17` - Small integers 0-7
-- `0x18` - Varint (1-9 bytes, LEB128)
-- `0x20` - String literal (length + UTF-8)
-
-#### 2. Registers
-- `0x30` - Generic register access `["R", N]`
-- `0xF0-0xFF` - Shorthand for R[0-15] (optimization)
-
-**Standard Register Convention**:
-```javascript
-R[0]  = key     // The key being written
-R[1]  = val     // The value being written  
-R[2]  = soul    // The soul being written to
-R[3]  = state   // Gun metadata (timestamp)
-R[4]  = Date.now()  // Current Unix ms
-R[5]  = pub     // Public key (from signature)
-R[6]  = candle_back   // Temporal window start
-R[7]  = candle_fwd    // Temporal window end
-R[8+] = Custom  // App-defined
-```
-
-#### 3. Logic Operations
-- `0x40` - `NOT` - Logical negation
-- `0x41` - `AND` - Logical AND (short-circuit)
-- `0x42` - `OR` - Logical OR (short-circuit)
-
-#### 4. Comparison
-- `0x50` - `EQ` - Equality (deep compare)
-- `0x51` - `NE` - Not equal
-- `0x52` - `LT` - Less than
-- `0x53` - `LE` - Less or equal
-- `0x54` - `GT` - Greater than
-- `0x55` - `GE` - Greater or equal
-
-#### 5. Arithmetic
-- `0x60` - `ADD` - Addition
-- `0x61` - `SUB` - Subtraction
-- `0x62` - `MUL` - Multiplication
-- `0x63` - `DIV` - Division
-- `0x64` - `MOD` - Modulo
-
-#### 6. String Operations
-- `0x70` - `CAT` - Concatenation
-- `0x71` - `LEN` - String length
-- `0x72` - `SUB` - Substring
-- `0x73` - `IDX` - Index of substring
-- `0x74` - `SPL` - Split string
-- `0x75` - `LOW` - Lowercase
-- `0x76` - `UPP` - Uppercase
-
-#### 7. Advanced
-- `0x80` - `SEGR` - Segment register (slice R[N:M])
-- `0x81` - `SEGR2` - 2D segment (matrix access)
-- `0x90` - `LET` - Local variable (R[128-255])
-- `0x91` - `GET` - Read local variable
-
-#### 8. Policy Opcodes (Appended AFTER expression)
-- `0xC0` - `SGN` - Verify signature by public key
-- `0xC1` - `CRT` - Create-only (no updates)
-- `0xC3` - `NOA` - No append (disable Gun's `gun.set()` append)
-- `0xC4` - `POW` - Proof-of-work difficulty
-
----
-
-## Gun-Pen Bridge: How Validation Works
-
-### Write Flow
+Khi Gun intercept write vào `$soul`, `penStage()` populate 6 registers:
 
 ```javascript
-// 1. User writes data
-gun.get("$abc...soul").put({ key: "value" }, ack => { ... })
-
-// 2. Gun pipeline intercepts write (check stage)
-// 3. Detects soul starts with "$" → triggers penStage()
-// 4. penStage() decodes soul bytecode: pen.unpack(soul.slice(1))
-// 5. Populates registers (HOST INJECTION):
-const registers = [
-  ctx.key,                              // R[0] = "key"
-  ctx.val,                              // R[1] = JSON.stringify(value)
-  soul,                                 // R[2] = "$abc...soul"
-  ctx.state || 0,                       // R[3] = HAM state timestamp
-  Date.now(),                           // R[4] = CURRENT TIME (injected by Gun)
-  ctx.at.user.is.pub || ''              // R[5] = writer's public key
-]
-
-// 6. Executes bytecode in WASM
-pen.ready.then(() => {
-  const ok = pen.run(bytecode, registers)  // true/false
-  if (ok) next()      // Continue Gun pipeline
-  else reject('PEN validation failed')
-})
-```
-
-**Key point**: `R[4] = Date.now()` is **injected by Gun's JavaScript layer** (`lib/pen.js`), NOT by Pen WASM.
-
-### Pen Core Doesn't Know Time
-
-**Pen WASM** (`lib/pen.wasm`):
-- ❌ No access to system time
-- ❌ No `Date.now()` call inside WASM
-- ❌ No network access for NTP
-- ✅ Only receives `registers[]` array from host
-
-**Gun Bridge** (`lib/pen.js`):
-- ✅ Calls `Date.now()` in JavaScript
-- ✅ Injects timestamp into R[4] register
-- ✅ Passes registers to Pen WASM
-- ✅ Pen bytecode uses `DIVU(R[4], 300000)` to calculate candle
-
-**Architecture**:
-```
-┌─────────────────────────────────────────────┐
-│  JavaScript Host (lib/pen.js)               │
-│  - Calls Date.now() ← BROWSER/NODE API      │
-│  - Injects into R[4]                        │
-│  - ctx.state (HAM timestamp) → R[3]         │
-│  - ctx.at.user.is.pub → R[5]                │
-└──────────────┬──────────────────────────────┘
-               │ registers = [key, val, soul, state, NOW, pub]
-               ▼
-┌─────────────────────────────────────────────┐
-│  Pen WASM (lib/pen.wasm)                    │
-│  - Pure computation (no I/O)                │
-│  - Receives R[0-5] from host                │
-│  - Executes: DIVU(R[4], 300000)             │
-│  - Returns: boolean (pass/fail)             │
-└─────────────────────────────────────────────┘
-```
-
-### Where Date.now() Comes From
-
-**In Browser**:
-```javascript
-// lib/pen.js line ~598:
+// lib/pen.js — penStage()
+var sec = SEA.check.$sea(ctx.msg, ctx.at.user || '', null)
 var regs = [
-  ctx.key, 
-  ctx.val, 
-  soul,
-  ctx.state || 0, 
-  Date.now(),        // ← window.performance.now() or new Date()
-  ctx.at.user.is.pub || ''
-];
+  ctx.key,           // R[0] = key đang ghi
+  ctx.val,           // R[1] = value (JSON string)
+  soul,              // R[2] = soul name (bắt đầu '$')
+  ctx.state || 0,    // R[3] = Gun HAM state timestamp
+  Date.now(),        // R[4] = Unix ms hiện tại (injected by JS, NOT by WASM)
+  sec.upub || ''     // R[5] = pub key từ opts.authenticator (không phải gun.user())
+]
+pen.run(bytecode, regs)
 ```
 
-**In Node.js**:
+**R[5] nguồn**: Lấy từ `msg._.sea.authenticator` (truyền qua `put(data, cb, { authenticator: pair })`). Không cần `gun.user()` auth session — chỉ cần pass authenticator vào opts.
+
+---
+
+## ISA v1 Opcode Reference
+
+Nguồn: `pen/src/pen.zig`. Version byte `0x01` bắt đầu mọi program (added bởi `bc.prog()`).
+
+### Constants & Literals
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0x00` | `NULL` | null value |
+| `0x01` | `TRUE` | boolean true |
+| `0x02` | `FALSE` | boolean false |
+| `0x03 [len] [bytes]` | `STR` | string literal (1-byte length + UTF-8, max 255 bytes) |
+| `0x04 [uleb128]` | `UINT` | unsigned int (ULEB128 variable length) |
+| `0x07 [sleb128]` | `INT` | signed int (SLEB128 variable length) |
+| `0x08 [8bytes]` | `F64` | float64 (big-endian 8 bytes) |
+| `0x23` | `PASS` | always true |
+| `0x24` | `FAIL` | always false |
+| `0xE0..0xEF` | `intn(0–15)` | inline small integers 0–15 |
+
+### Registers & Locals
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0x10 [n]` | `REG(n)` | register R[n] nếu n<128; local[n-128] nếu n≥128 |
+| `0xF0` | `r0` | shorthand R[0] = key |
+| `0xF1` | `r1` | shorthand R[1] = val |
+| `0xF2` | `r2` | shorthand R[2] = soul |
+| `0xF3` | `r3` | shorthand R[3] = state |
+| `0xF4` | `r4` | shorthand R[4] = Date.now() |
+| `0xF5` | `r5` | shorthand R[5] = upub |
+| `0xF8..0xFB` | `local(0–3)` | local variables 0–3 (shorthands) |
+
+### Logic
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0x20 [n] [e...]` | `AND(n, exprs)` | short-circuit AND, n sub-expressions |
+| `0x21 [n] [e...]` | `OR(n, exprs)` | short-circuit OR, n sub-expressions |
+| `0x22 [e]` | `NOT(e)` | logical negation |
+
+### Comparison
+
+| Opcode | Assembly |
+|--------|----------|
+| `0x30` | `EQ(a, b)` — strings: deep equal; numbers: numeric |
+| `0x31` | `NE(a, b)` |
+| `0x32` | `LT(a, b)` — strings: lexicographic; numbers: numeric |
+| `0x33` | `GT(a, b)` |
+| `0x34` | `LTE(a, b)` |
+| `0x35` | `GTE(a, b)` |
+
+### Arithmetic
+
+| Opcode | Assembly | Ghi chú |
+|--------|----------|---------|
+| `0x40` | `ADD(a, b)` | int+int=int; else float |
+| `0x41` | `SUB(a, b)` | |
+| `0x42` | `MUL(a, b)` | |
+| `0x43` | `DIVU(a, b)` | floor division (integer) |
+| `0x44` | `MOD(a, b)` | |
+| `0x45` | `DIVF(a, b)` | float division |
+| `0x46` | `ABS(a)` | absolute value |
+| `0x47` | `NEG(a)` | negation |
+
+### String Operations
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0x50` | `LEN(a)` | string length → int |
+| `0x51` | `SLICE(str, start, end)` | substring [start, end) |
+| `0x52 [sep] [idx]` | `SEG(str, sep_byte, idx)` | split str by sep char, get segment idx → string |
+| `0x53` | `TONUM(a)` | parse string → float64 |
+| `0x54` | `TOSTR(a)` | value → string |
+| `0x55` | `CONCAT(a, b)` | concatenate strings |
+| `0x56` | `PRE(a, b)` | a.startsWith(b) |
+| `0x57` | `SUF(a, b)` | a.endsWith(b) |
+| `0x58` | `INCLUDES(a, b)` | a.includes(b) |
+| `0x59` | `REGEX(a, b)` | **always false** — not implemented in core |
+| `0x5A` | `UPPER(a)` | uppercase |
+| `0x5B` | `LOWER(a)` | lowercase |
+
+### Type Checks
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0x60` | `ISS(a)` | is string |
+| `0x61` | `ISN(a)` | is number (int hoặc float) |
+| `0x62` | `ISX(a)` | is null |
+| `0x63` | `ISB(a)` | is boolean |
+| `0x64 [mn] [mx]` | `LNG(a, min, max)` | string length in [mn, mx]; **mn và mx mỗi cái là 1 byte (0–255)** |
+
+### Control Flow
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0x70 [slot]` | `LET(slot, def, body)` | bind local[slot] = def; evaluate body |
+| `0x71` | `IF(cond, then, else)` | lazy — chỉ evaluate nhánh được chọn |
+
+### Macros
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0x80 [reg] [sep] [idx]` | `SEGR(reg, sep, idx)` | shorthand SEG: split R[reg] by sep → segment idx (string) |
+| `0x81 [reg] [sep] [idx]` | `SEGRN(reg, sep, idx)` | như SEGR nhưng parse số → TONUM(SEG(...)) |
+
+### Policy Opcodes (appended AFTER expression tree)
+
+Policy bytes được append VÀO SAU cây expression khi compile. WASM VM **không** thực thi chúng — chúng được đọc bởi `scanpolicy()` ở JS bridge layer.
+
+| Opcode | Assembly | Mô tả |
+|--------|----------|--------|
+| `0xC0` | `sign` | Yêu cầu valid authenticator hoặc valid signature trong val |
+| `0xC1 [len] [bytes]` | `cert` | Yêu cầu val chứa cert JSON được ký bởi cert issuer pub |
+| `0xC3` | `open` | Không cần auth, forward trực tiếp |
+| `0xC4 [field] [diff]` | `pow` | SHA-256 hex của R[field] phải bắt đầu bằng `diff` ký tự '0' |
+
+### Constraints & Limits
+
+| Limit | Value | Ghi chú |
+|-------|-------|---------|
+| `MAX_STR` | 128 bytes | Strings truncated tới 128 bytes trong WASM |
+| `MAX_LOCALS` | 32 | Local slots 0–31; accessed via `reg(128+n)` |
+| `MAX_REGS` | 64 | R[0]–R[63] |
+| `MAX_DEPTH` | 32 | Expression recursion depth |
+| `LNG` min/max | 0–255 | Single byte each |
+| `STR` literal | 0–255 bytes | 1-byte length prefix |
+| `REGEX` | always false | Not implemented in core |
+
+---
+
+## Write Flow
+
 ```javascript
-Date.now()  // ← process.hrtime() wrapped by V8
+// 1. Trader viết data
+gun.get("$abc...").get("5777152:tea:buy:x3f7").put(order, null, { authenticator: myPair })
+
+// 2. Gun pipeline intercepts write
+// 3. penStage() detect soul[0] === '$'
+// 4. Decode bytecode: pen.unpack(soul.slice(1))
+// 5. scanpolicy() → tìm policy bytes sau expression tree
+// 6. Populate registers (JS injects):
+var regs = [ctx.key, ctx.val, soul, ctx.state||0, Date.now(), sec.upub||'']
+
+// 7. pen.run(bytecode, regs) → true/false
+// 8. Nếu false → reject("PEN: predicate failed")
+// 9. Nếu true → check pow (nếu có) → applypolicy()
 ```
 
-**Time Sources**:
-1. **Browser**: `window.performance.now()` (high-res timer since page load)
-2. **Node.js**: System clock via `clock_gettime()` syscall
-3. **Both**: Can be affected by:
-   - System clock changes (NTP sync)
-   - User manual clock adjustment
-   - VM time drift
+**WASM không biết thời gian** — `R[4] = Date.now()` được inject bởi JS trước khi gọi WASM.
+
+### Policy Enforcement sau predicate pass
+
+1. **pow (0xC4)**: `SEA.work(regs[field], null, cb, {name:'SHA-256',encode:'hex'})` → check prefix
+2. **cert (0xC1)**: Verify `val['+']` được ký bởi cert issuer
+3. **sign (0xC0)**: Có `authenticator` → ký fresh; không có → verify signature trong `val['*']`
+4. **open (0xC3)** hoặc không có policy: Forward trực tiếp
 
 ### Candle Calculation Flow
 
@@ -239,716 +242,416 @@ gun.get("$abc...").get("5777152_item_buy_nonce").put(data)
 
 // 2. lib/pen.js injects timestamp
 const now = Date.now()  // e.g., 1733145600000 (Unix ms)
-const registers = [key, val, soul, state, now, pub]
 
 // 3. Pen bytecode extracts candle from key
 // Bytecode: LET(0, DIVU(R[4], 300000))  ← current = floor(now / 300000)
-const current_candle = Math.floor(now / 300000)  // 5777152
+const current_candle = Math.floor(now / 300000)  // e.g., 5777152
 
-// 4. Compare with candle in key (segment 0)
+// 4. Compare with candle from key segment 0
 const key_candle = parseInt(key.split('_')[0])  // 5777152
 
 // 5. Validate window
-if (key_candle >= current_candle - 100 &&   // Not too old
-    key_candle <= current_candle + 2) {     // Not too future
+if (key_candle >= current_candle - 100 &&   // Not too old (±8h)
+    key_candle <= current_candle + 2) {     // Not too future (±10min)
   return true  // ACCEPT
 } else {
   return false // REJECT
 }
 ```
 
-### SEA.pen() API
+---
+
+## SEA.pen(spec) — Compiler API
+
+**Synchronous**. Trả về soul string `'$...'` trực tiếp.
 
 ```javascript
-const policy = await SEA.pen({
-  // Expression tree
-  expression: ["AND", 
-    ["EQ", ["R", 0], "allowed_key"],
-    ["SGN", ["R", 5]]
-  ],
-  
-  // Additional registers (optional)
-  registers: {
-    8: "custom_value",
-    9: 12345
+const soul = SEA.pen(spec)
+// Returns: "$abc123..." — string
+// NOT async, NOT object
+```
+
+### spec fields
+
+```javascript
+SEA.pen({
+  // Predicate fields (compile thành expression tree):
+  key:   expr,    // validate R[0] = key
+  val:   expr,    // validate R[1] = value
+  soul:  expr,    // validate R[2] = soul string
+  state: expr,    // validate R[3] = HAM timestamp
+
+  // Policy fields (appended AFTER expression tree):
+  sign: true,             // 0xC0 — require authenticator
+  cert: "ownerPubKey",    // 0xC1 — cert-gated writes
+  open: true,             // 0xC3 — no auth required
+  pow: {
+    field: 0,             // R[field] hash (0=key, 1=val, ...)
+    difficulty: 3,        // SHA-256 hex phải bắt đầu bằng 3 ký tự '0'
   },
-  
-  // Temporal candle (optional)
-  candle: { back: 100, fwd: 2 } // ±100 candles, +2 future
 })
-
-// Returns:
-{
-  soul: "$7f3a9b...",     // base62-encoded bytecode
-  bytecode: Uint8Array,   // Raw WASM bytecode
-  policy: "...",          // base62 string
-  registers: { 6: ..., 7: ... } // Candle times if provided
-}
 ```
 
-### SEA.candle() Helper
+Nếu nhiều predicate fields được chỉ định → AND lại. Nếu không có → `PASS` (always true).
 
-Creates **flexible temporal validation window** (epoch lỏng).
+### expr format
 
-**Candle number** = `Math.floor(Date.now() / size_ms)` - chia thời gian thành các "nến" rời rạc.
+`expr` truyền vào `spec.key`, `spec.val`, `spec.soul`, `spec.state`:
 
 ```javascript
-const candle = SEA.candle({ 
-  seg: 0,        // Key segment index (split by sep)
-  sep: ":",      // Separator character (colon for consistency)
-  size: 300000,  // Candle size in ms (default: 5 minutes)
-  back: 100,     // Accept 100 candles in past (default)
-  fwd: 2         // Accept 2 candles in future (default)
+// String literal → EQ(field, "value")
+key: "exact-key"
+
+// Equality / inequality:
+key: { eq: "x" }               // field === "x"
+key: { ne: "x" }               // field !== "x"
+
+// String predicates:
+key: { pre: "order_" }         // field.startsWith("order_")
+key: { suf: "_v2" }            // field.endsWith("_v2")
+key: { inc: "item" }           // field.includes("item")
+
+// Numeric comparison (scalar — so với field):
+state: { lt: 9999 }
+state: { gt: 0 }
+state: { lte: 9999 }
+state: { gte: 1 }
+
+// Numeric comparison (array — so với arbitrary values):
+key: { lt:  [{ reg: 4 }, 9999999] }
+key: { gte: [{ reg: 129 }, { sub: [{ reg: 128 }, 10] }] }
+
+// Logical:
+key: { and: [expr1, expr2] }
+key: { or:  [expr1, expr2] }
+key: { not: expr }
+
+// Type checks:
+val: { type: 'string' }        // ISS
+val: { type: 'number' }        // ISN
+val: { type: 'null' }          // ISX
+val: { type: 'bool' }          // ISB
+
+// String length:
+key: { length: [3, 64] }       // 3 ≤ len(field) ≤ 64 (max 255 each)
+
+// Segment (split string by sep, get segment at idx):
+key: { seg: { sep: ':', idx: 0 } }
+key: { seg: { sep: ':', idx: 1, of: { reg: 0 } } }
+key: { seg: { sep: ':', idx: 0, match: { gte: 100 } } }
+key: { seg: { sep: ':', idx: 1, match: { length: [1, 64] } } }
+
+// LET — bind local variable (slot 0–31):
+key: { let: { bind: 0, def: { divu: [{ reg: 4 }, 300000] }, body: exprUsingLocal128 } }
+
+// IF — conditional lazy evaluation:
+key: { if: { cond: expr, then: expr, else: expr } }
+
+// Arithmetic (array of 2 compileVal values):
+{ add:  [{ reg: 4 }, 1000] }
+{ sub:  [{ reg: 128 }, 5] }
+{ divu: [{ reg: 4 }, 300000] }
+{ mod:  [{ reg: 0 }, 100] }
+{ mul:  [{ reg: 3 }, 2] }
+
+// Register / local reference:
+{ reg: 0 }    // R[0] = key
+{ reg: 4 }    // R[4] = Date.now()
+{ reg: 128 }  // local[0] (bind: 0)
+{ reg: 129 }  // local[1] (bind: 1)
+
+// Coercion:
+{ tonum: { reg: 0 } }
+{ tostr: { reg: 3 } }
+```
+
+**Lưu ý**:
+- `seg` luôn trả về **string** — dùng `{ tonum: ... }` để convert sang số trước khi so sánh
+- `length: [min, max]` — min và max mỗi cái tối đa 255 (1 byte)
+
+---
+
+## SEA.candle(opts) — Temporal Window Helper
+
+**Synchronous**. Trả về một **expr object** (dùng làm giá trị cho `spec.key`).
+
+```javascript
+const expr = SEA.candle(opts)
+// Returns: { let: { bind: 0, def: ..., body: { let: { bind: 1, ... } } } }
+
+// Dùng trực tiếp trong spec.key:
+const soul = SEA.pen({ key: SEA.candle({ back: 100, fwd: 2 }), sign: true })
+```
+
+### opts
+
+```javascript
+SEA.candle({
+  seg:  0,        // index segment trong key chứa candle number (default 0)
+  sep:  '_',      // separator chia key thành segments (default '_')
+  size: 300000,   // candle size tính bằng ms (default 300000 = 5 phút)
+  back: 100,      // cho phép tối đa back candles trong quá khứ (default 100)
+  fwd:  2,        // cho phép tối đa fwd candles trong tương lai (default 2)
 })
-
-// With 5-min candles:
-// back: 100 = 500 minutes = ~8.3 hours past
-// fwd: 2 = 10 minutes future (clock skew tolerance)
 ```
 
-**Use case**: Flexible time windows that slide automatically.
+### Compiled bytecode (equivalent logic)
 
 ```javascript
-// Validate key's candle number is within sliding window
-// Compiles to:
-["LET", 128,  // local[0] = current candle = floor(now / size)
-  ["DIVU", ["R", 4], size],
-  ["LET", 129,  // local[1] = candle from key segment
-    ["TONUM", ["SEG", ["R", 0], sep, seg]],
-    ["AND",
-      ["GTE", ["R", 129], ["SUB", ["R", 128], back]],  // >= current - 100
-      ["LTE", ["R", 129], ["ADD", ["R", 128], fwd]]    // <= current + 2
-    ]
-  ]
-]
-
-// Example: Order with key "5777152:organic-tea:buy:abc"
-// - Extract candle: 5777152 (from segment 0)
-// - Current candle: 5777250
-// - Valid if: 5777150 <= 5777152 <= 5777252 ✓
+// SEA.candle({ seg: 0, sep: ':', size: 300000, back: 100, fwd: 2 }) compiles to:
+LET(local[0] = floor(R[4] / 300000))       // current candle
+  LET(local[1] = tonum(seg(R[0], ':', 0))) // candle from key's segment 0
+    AND(
+      local[1] >= local[0] - 100,           // không quá cũ
+      local[1] <= local[0] + 2              // không quá xa tương lai
+    )
 ```
 
-**Why "loose epoch"** (so với fixed timestamps):
-- ✅ **Sliding window**: Automatically moves with time (no hardcoded dates)
-- ✅ **Self-expiring**: Orders older than `back` candles auto-reject
-- ✅ **Clock skew tolerant**: `fwd` buffer accepts slightly-future writes
-- ✅ **Compact keys**: Candle numbers shorter than timestamps (7 vs 13 digits)
+**Candle number** = `floor(Date.now() / size)`. Key phải chứa candle number tại segment `seg`:
 
-**Flexible configurations**:
-
-```javascript
-// Tight window (market orders: ±15 minutes)
-SEA.candle({ size: 300000, back: 3, fwd: 3 })
-
-// Medium window (limit orders: ±4 hours)  
-SEA.candle({ size: 300000, back: 48, fwd: 2 })
-
-// Loose window (GTC orders: ±8 hours) - DEFAULT
-SEA.candle({ size: 300000, back: 100, fwd: 2 })
-
-// Ultra loose (escrow: ±30 days)
-SEA.candle({ size: 3600000, back: 720, fwd: 10 })
 ```
+key = "5777152_alice_buy_x3f7"
+       ^^^^^^^
+       floor(Date.now() / 300000) ≈ candle number hiện tại
+```
+
+Window với `back=100`, `fwd=2`, `size=300000`:
+- **back**: 100 × 5 phút = 500 phút ≈ 8.3 giờ quá khứ
+- **fwd**: 2 × 5 phút = 10 phút tương lai (clock skew tolerance)
 
 See also: [`docs/thoughts/temporal-proof-of-work-gossip-protocol.md`](../thoughts/temporal-proof-of-work-gossip-protocol.md) for original candle concept.
 
 ---
 
-## Common Patterns for P2P Trading
+## Common Patterns
 
-### Pattern 1: Signed Write by Specific User
+### Pattern 1: Signed write — bất kỳ ai có authenticator
 
 ```javascript
-// Only user with pub_key can write
-const policy = await SEA.pen({
-  expression: ["SGN", "pub_abc123..."]
-})
+const soul = SEA.pen({ sign: true })
 
-gun.get(policy.soul).put({ order: "data" })
-// Must be signed by pub_abc123's key pair
+gun.get(soul).put(data, null, { authenticator: myPair })
 ```
 
-### Pattern 2: Item-Scoped Orders
+### Pattern 2: Key prefix bắt buộc + signed
 
 ```javascript
-// Orders for specific item, signed by creator, with PoW
-const item = "organic-green-tea"
-const policy = await SEA.pen({
-  expression: ["AND",
-    ["EQ", ["R", 8], item],    // R[8] = item slug
-    ["SGN", ["R", 5]],          // Must be signed
-    ["POW", 3]                  // PoW difficulty 3
-  ],
-  registers: { 8: item },
-  candle: { back: 100, fwd: 2 }
+const soul = SEA.pen({
+  key: { pre: 'order_' },
+  sign: true
 })
 
-// Soul = $<base62_bytecode>
-gun.get(policy.soul).put({ 
-  type: "buy", 
-  quantity: 10,
-  price: 1500
-})
+gun.get(soul).get('order_123').put(data, null, { authenticator: myPair })
 ```
 
-### Pattern 3: Multi-Party Escrow Updates
+### Pattern 3: Candle window (anti-replay) + signed
 
 ```javascript
-// Trade escrow: only maker, taker, or platform can update
-const policy = await SEA.pen({
-  expression: ["OR",
-    ["SGN", maker_pub],
-    ["SGN", taker_pub],
-    ["SGN", platform_pub]
-  ]
+const soul = SEA.pen({
+  key: SEA.candle({ back: 100, fwd: 2 }),
+  sign: true
 })
 
-gun.get(policy.soul).put({ status: "delivered" })
-```
-
-### Pattern 4: Create-Only (No Updates)
-
-```javascript
-// Order can be created but never modified
-const policy = await SEA.pen({
-  expression: ["AND",
-    ["SGN", ["R", 5]],
-    ["CRT"]  // Create-only policy
-  ]
-})
-```
-
-### Pattern 5: Temporal Order Validity (Flexible Epoch)
-
-```javascript
-// Order valid within sliding window (8 hours past, 10 min future)
-const policy = await SEA.pen({
-  expression: ["AND",
-    ["SGN", ["R", 5]],
-    SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 })
-  ]
-})
-
-// Key format: <candle>:<item>:<type>:<nonce>
-// Example: "5777152:organic-tea:buy:a3f7"
-// - Candle 5777152 extracted from segment 0
-// - Validates against current candle ± window
-// - Auto-expires after ~8 hours
-```
-
-**Why better than fixed timestamps**:
-- No need to know start/end time in advance
-- Window slides automatically with current time
-- Orders self-expire (no manual cleanup)
-
----
-
-## Discovery Strategy for Orders
-
-### Problem: No Public Namespaces
-
-❌ **Don't do this**:
-```javascript
-gun.get("orders").map().on(order => { ... })
-// Anyone can overwrite gun.get("orders")!
-```
-
-✅ **Do this**: Per-item deterministic Pen souls with candle-based keys
-
-```javascript
-// 1. Create deterministic soul for each item
-async function getItemOrderSoul(itemSlug) {
-  const policy = await SEA.pen({
-    expression: ["AND",
-      ["EQ", ["R", 8], itemSlug],
-      ["SGN", ["R", 5]],
-      ["POW", 2],
-      // Temporal window: 8 hours past, 10 min future
-      SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 })
-    ],
-    registers: { 8: itemSlug }
-  })
-  return policy.soul
-}
-
-// 2. Everyone knows where to look for "organic-green-tea" orders
-const soul = await getItemOrderSoul("organic-green-tea")
-
-// 3. Subscribe to orders in current time window
+// Khi ghi, key phải bắt đầu bằng candle number hiện tại:
 const candle = Math.floor(Date.now() / 300000)
-gun.get(soul).get({
-  '>': `${candle}:`,     // Current candle onwards
-  '<': `${candle}:~`     // Within current candle
-}).on((order, orderId) => {
-  console.log("New order:", order)
-})
+gun.get(soul).get(`${candle}_${orderId}`).put(data, null, { authenticator: myPair })
+```
 
-// 4. Create new order (must provide signature + PoW + valid candle)
-const candle = Math.floor(Date.now() / 300000)
-const nonce = Math.random().toString(36).slice(2, 8)
-const key = `${candle}:organic-green-tea:buy:${nonce}`
+### Pattern 4: Key segments validation + candle + signed + PoW (P2P orders)
 
-gun.get(soul).get(key).put({
-  type: "buy",
-  quantity: 10,
-  price: 1500,
-  trader: my_pub
+```javascript
+// Soul cho orders của item "organic-green-tea"
+// Key format: <candle>:<itemSlug>:<type>:<nonce>
+const soul = SEA.pen({
+  key: { and: [
+    SEA.candle({ seg: 0, sep: ':', size: 300000, back: 100, fwd: 2 }),
+    { seg: { sep: ':', idx: 1, of: { reg: 0 }, match: { length: [1, 128] } } },
+    { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { or: [{ eq: 'buy' }, { eq: 'sell' }] } } },
+    { seg: { sep: ':', idx: 3, of: { reg: 0 }, match: { length: [1, 20] } } },
+  ]},
+  val: { type: 'string' },
+  sign: true,
+  pow: { field: 0, difficulty: 2 }
 })
 ```
 
-**Key format benefits**:
-- **Candle-first**: Enables time-range LEX queries
-- **Compact**: 7 digits vs 13-digit timestamp
-- **Self-expiring**: Old candles auto-reject (no cleanup needed)
-- **Discovery-friendly**: Query by item + time range
-
-### Multi-Item Order Replication
-
-For orders spanning multiple items, replicate to each item's soul:
+### Pattern 5: Platform-controlled writes (cert-gated)
 
 ```javascript
-const items = ["green-tea", "coffee", "honey"]
-const candle = Math.floor(Date.now() / 300000)
-const orderId = `${candle}_multi_buy_${nonce}`
-const order = {
-  type: "buy",
-  items: items,
-  trader: my_pub
-}
-
-// Write to each item's soul
-for (const item of items) {
-  const soul = await getItemOrderSoul(item)
-  gun.get(soul).get(orderId).put(order)
-}
-
-// Discovery: traders watching ANY of these items will find the order
-```
-
-**Time-based discovery patterns**:
-
-```javascript
-// Current candle only (most recent orders)
-const now = Math.floor(Date.now() / 300000)
-gun.get(soul).get({ '>': `${now}_`, '<': `${now}_~` })
-
-// Last 10 candles (50 minutes of orders)
-const start = now - 10
-gun.get(soul).get({ '>': `${start}_`, '<': `${now}_~` })
-
-// Subscribe to future orders (realtime)
-gun.get(soul).get({ '>': `${now}_` }).on(order => {
-  console.log("New order created:", order)
+// Chỉ holders của cert do platformPub ký mới được write
+const soul = SEA.pen({
+  key: { length: [1, 128] },
+  cert: platformPub
 })
 ```
 
 ---
 
-## Optimization Techniques
+## P2P Order Book — Ví dụ Hoàn Chỉnh
 
-### 1. Register Shorthands
-
-Use `0xF0-0xFF` for common registers instead of `["R", N]`:
-
-```javascript
-// Before: ["EQ", ["R", 0], "key"]
-// Bytecode: 0x30 0x00 0x20 0x03 "key" 0x50
-
-// After: ["EQ", 0xF0, "key"]  // 0xF0 = R[0]
-// Bytecode: 0xF0 0x20 0x03 "key" 0x50
-// Saves 1 byte per register access
-```
-
-### 2. Small Integer Literals
-
-Use `0x10-0x17` for values 0-7:
-
-```javascript
-// Before: ["POW", 3]
-// Bytecode: 0x18 0x03 0xC4
-
-// After: ["POW", 0x13]  // 0x13 = integer 3
-// Bytecode: 0x13 0xC4
-// Saves 1 byte
-```
-
-### 3. SEGR Macro
-
-Access sub-ranges of registers without multiple operations:
-
-```javascript
-// Get registers 8-12 as array
-["SEGR", 8, 12]
-
-// 2D access (nested arrays)
-["SEGR2", 8, 12, 0, 5] // R[8-12][0-5]
-```
-
-### 4. LET for Reuse
-
-Store intermediate results to avoid recomputation:
-
-```javascript
-["LET", 128,           // Store in R[128]
-  ["ADD", ["R", 10], ["R", 11]]
-]
-["MUL", ["GET", 128], 2]  // Reuse R[128]
-```
-
----
-
-## Security Considerations
-
-### 1. Replay Attacks
-
-**Problem**: Attacker intercepts valid signed write, replays later.
-
-**Solution**: Temporal candles + nonce
-
-```javascript
-const policy = await SEA.pen({
-  expression: ["AND",
-    ["SGN", ["R", 5]],
-    ["GE", ["R", 3], ["R", 6]],  // state >= candle_back
-    ["LE", ["R", 3], ["R", 7]]   // state <= candle_fwd
-  ],
-  candle: { back: 100, fwd: 2 }
-})
-```
-
-### 2. Proof-of-Work
-
-Forces cost on writes (prevents spam):
-
-```javascript
-["POW", 4]  // Requires ~16 hash attempts (2^4)
-```
-
-**Trade-off**: Higher PoW = more spam protection but slower writes.
-
-### 3. Soul Disclosure
-
-Pen souls are **public by design**. Anyone who knows the soul can:
-- Read data (Gun is eventually consistent, public by default)
-- Attempt writes (will fail validation)
-
-**Don't encode secrets in souls**: Use SEA encryption for sensitive data.
-
-### 4. Signature Verification
-
-`SGN` checks signature matches public key, but doesn't verify authorization:
-
-```javascript
-// ❌ This allows ANY signed write:
-["SGN", ["R", 5]]
-
-// ✅ This restricts to specific user:
-["SGN", "pub_specific_user"]
-
-// ✅ Or check against whitelist:
-["OR",
-  ["SGN", "pub_alice"],
-  ["SGN", "pub_bob"],
-  ["SGN", "pub_charlie"]
-]
-```
-
----
-
-## Practical Example: P2P Order Book
-
-### Define Order Schema Pen
+### createOrderSoul
 
 ```javascript
 // src/core/OrderPen.js
 import SEA from "/core/SEA.js"
 
-export async function createOrderSoul(itemSlug) {
-  const policy = await SEA.pen({
-    // Validation rules:
-    // 1. Order must be for this specific item
-    // 2. Must be signed by creator
-    // 3. Must have PoW to prevent spam
-    // 4. Must be within temporal window (8h past, 10min future)
-    expression: ["AND",
-      ["EQ", ["R", 8], itemSlug],      // R[8] = item slug
-      ["SGN", ["R", 5]],                // R[5] = creator pub
-      ["POW", 3],                        // 2^3 = 8 hashes
-      SEA.candle({
-        seg: 0,                          // Candle in first segment
-        sep: "_",
-        size: 300000,                    // 5-minute candles
-        back: 100,                       // 500 minutes past
-        fwd: 2                           // 10 minutes future
-      })
-    ],
-    registers: { 8: itemSlug }
+// SEA.pen() là synchronous — không cần await, không cần async
+function createOrderSoul(itemSlug) {
+  return SEA.pen({
+    key: { and: [
+      // 1. Candle window: ±8 giờ past, ±10 phút future
+      SEA.candle({ seg: 0, sep: ':', size: 300000, back: 100, fwd: 2 }),
+      // 2. Segment 1 phải là item slug này
+      { seg: { sep: ':', idx: 1, of: { reg: 0 }, match: { eq: itemSlug } } },
+      // 3. Segment 2 phải là "buy" hoặc "sell"
+      { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { or: [{ eq: 'buy' }, { eq: 'sell' }] } } },
+    ]},
+    sign: true,
+    pow: { field: 0, difficulty: 2 }
   })
-  
-  return policy.soul
+  // Returns: "$abc123..." — string (soul ID)
 }
 ```
 
-### Create Order
+### createOrder
 
 ```javascript
 // src/UI/routes/order/logic.js
 import gun from "/core/Gun.js"
 import { createOrderSoul } from "/core/OrderPen.js"
+import { Access } from "/core/Access.js"
 
-export async function createOrder({ item, type, quantity, price, trader }) {
-  const soul = await createOrderSoul(item)
-  
-  // Calculate current candle
+async function createorder({ item, type, quantity, price }) {
+  const soul = createOrderSoul(item)         // synchronous
   const candle = Math.floor(Date.now() / 300000)
-  
-  // Generate random nonce for uniqueness
-  const nonce = Math.random().toString(36).slice(2, 8)
-  
+  const nonce = String.random(6)             // gun/src/shim.js
+
   // Key format: <candle>:<item>:<type>:<nonce>
   const key = `${candle}:${item}:${type}:${nonce}`
-  
-  // Must be signed with trader's key pair (happens in SEA layer)
+
   gun.get(soul).get(key).put({
-    type,      // "buy" or "sell"
+    type,
     quantity,
     price,
-    trader,
+    trader: Access.states.pub,
     item,
     created: Date.now(),
-    status: "open"
+    status: 'open'
   }, ack => {
-    if (ack.err) {
-      console.error("Order rejected:", ack.err)
-      // Possible rejections:
-      // 1. Candle outside window (too old/new)
-      // 2. Item slug mismatch
-      // 3. Invalid type
-      // 4. Missing signature
-      // 5. Insufficient PoW
-    } else {
-      console.log("Order created:", key)
-    }
-  })
+    if (ack.err) console.error('Order rejected:', ack.err)
+    else console.log('Order created:', key)
+  }, { authenticator: Access.states.pair })
 }
 ```
 
-### Discover Orders
+### subscribeorders
 
 ```javascript
-// src/UI/routes/order/logic.js
-export async function subscribeToOrders(itemSlug, callback) {
-  const soul = await createOrderSoul(itemSlug)
+async function subscribeorders(itemSlug, callback) {
+  const soul = createOrderSoul(itemSlug)    // synchronous
   const candle = Math.floor(Date.now() / 300000)
-  
-  // Subscribe to orders in current candle window
+
+  // LEX range query: orders của candle hiện tại cho item này
   gun.get(soul).get({
-    '>': `${candle}_${itemSlug}_`,
-    '<': `${candle}_${itemSlug}_~`
+    '>': `${candle}:${itemSlug}:`,
+    '<': `${candle}:${itemSlug}:~`
   }).on((order, orderId) => {
-    // Filter out null/deleted
     if (!order || !order.type) return
-    
-    // Pen already validated signature, PoW, timestamp
     callback({ ...order, id: orderId })
   })
 }
-
-// Usage:
-subscribeToOrders("organic-green-tea", order => {
-  console.log("New order:", order)
-  // Update UI order book
-})
 ```
 
-### Match Orders
+### Key Format
 
-```javascript
-export async function matchOrder(makerOrderId, takerOrder) {
-  // 1. Read maker order
-  const makerSoul = await createOrderSoul(takerOrder.item)
-  gun.get(makerSoul).get(makerOrderId).once(makerOrder => {
-    
-    // 2. Validate match
-    if (makerOrder.type === takerOrder.type) {
-      console.error("Cannot match same type orders")
-      return
-    }
-    
-    if (makerOrder.quantity !== takerOrder.quantity) {
-      console.error("Quantity mismatch")
-      return
-    }
-    
-    // 3. Create trade escrow (see Lock.js)
-    const candle = Math.floor(Date.now() / 300000)
-    const trade = {
-      maker: makerOrder.trader,
-      taker: takerOrder.trader,
-      item: makerOrder.item,
-      quantity: makerOrder.quantity,
-      price: makerOrder.price,
-      status: "locked",
-      created: Date.now()
-    }
-    
-    // 4. Write to trade soul (different Pen policy allowing maker/taker/platform)
-    const tradeSoul = await createTradeSoul(trade.maker, trade.taker)
-    gun.get(tradeSoul).put(trade)
-  })
-}
+```
+<candle>:<item>:<type>:<nonce>
+
+Ví dụ: 5777152:organic-green-tea:buy:a3f7b2
+
+└─ seg 0: 5777152              — candle number, validated bởi SEA.candle()
+   seg 1: organic-green-tea    — item slug, phải match soul's eq constraint
+   seg 2: buy                  — type, phải là "buy" hoặc "sell"
+   seg 3: a3f7b2               — nonce random 6 chars, iterated cho PoW
 ```
 
-**Key format**: `<candle>:<item>:<type>:<nonce>`
-
-Example: `5777152:organic-green-tea:buy:a3f7b2`
-- Candle: `5777152` (segment 0) - auto-validated against current ±window
-- Item: `organic-green-tea` (segment 1) - must match soul's item
-- Type: `buy` (segment 2) - used for discovery queries  
-- Nonce: `a3f7b2` (segment 3) - ensures uniqueness
+**Vì sao candle phải ở đầu**:
+- Pen validation dùng `seg: 0` để extract candle number
+- LEX range queries hiệu quả: `{ '>': '5777150:', '<': '5777252:~' }`
+- Tự expire sau `back` candles, không cần cleanup
 
 ---
 
-## Debugging Pen Validation
+## Debugging
 
-### Check Bytecode
+### Inspect soul bytecode
 
 ```javascript
-const policy = await SEA.pen({ expression: ["SGN", ["R", 5]] })
-console.log("Soul:", policy.soul)
-console.log("Bytecode:", policy.bytecode)
-console.log("Base62:", policy.policy)
+// Soul là base62-encoded bytecode
+const soul = SEA.pen({ key: { pre: 'x_' }, sign: true })
+console.log(soul)  // "$abc123..."
+
+// Unpack bytecode để inspect:
+import pen from "/gun/lib/pen.js"
+const bc = pen.unpack(soul.slice(1))
+console.log(bc)    // Uint8Array
 ```
 
-### Test Validation Manually
+### Test validation thủ công
 
 ```javascript
-// In Gun source, Pen exposes test interface:
-import pen from "@akaoio/gun/lib/pen.js"
+import pen from "/gun/lib/pen.js"
 
-const result = pen.test({
-  bytecode: policy.bytecode,
-  registers: {
-    0: "test_key",
-    1: "test_value",
-    5: "pub_xyz"
-  }
+const soul = SEA.pen({ key: { pre: 'order_' }, sign: true })
+const bytecode = pen.unpack(soul.slice(1))
+
+pen.ready.then(() => {
+  const ok = pen.run(bytecode, [
+    'order_123',   // R[0] = key
+    '{"test":1}',  // R[1] = val
+    soul,          // R[2] = soul
+    0,             // R[3] = state
+    Date.now(),    // R[4] = now
+    'myPubKey'     // R[5] = upub
+  ])
+  console.log('Validation:', ok)  // true/false
 })
-
-console.log("Validation:", result) // true/false
 ```
 
 ### Common Errors
 
-**"Pen validation failed"**: Check:
-1. Signature present and valid?
-2. PoW computed (if required)?
-3. Timestamp within candle window?
-4. Custom registers match expected values?
-
-**"Soul not found"**: 
-- Pen souls are content-addressed, not human-readable
-- Must use exact soul from `SEA.pen()` output
-- Don't try to manually construct souls
+| Error | Nguyên nhân |
+|-------|-------------|
+| `PEN: predicate failed` | Key/val không match expression trong soul |
+| `PEN: valid signature required` | sign policy nhưng không có authenticator và không có `val['*']` |
+| `PEN: PoW insufficient` | SHA-256(R[field]) không bắt đầu đủ '0' |
+| `PEN: cert required` | cert policy nhưng val không có `{ '+', '*' }` |
 
 ---
 
-## Performance Characteristics
-
-### Bytecode Size
-- Simple validation: ~20-50 bytes → ~27-68 base62 chars
-- Complex logic: ~100-200 bytes → ~136-273 base62 chars
-- WASM runtime: 26KB (loaded once, cached)
-
-### Execution Time
-- WASM eval: <1ms for typical policies
-- Signature verification: ~5-10ms (SEA layer)
-- PoW computation: 2^difficulty × hash time
-
-### Network Overhead
-- Soul transmitted with every write (part of Gun message)
-- Base62 encoding: ~1.37× raw bytecode size
-- Typical soul: 50-100 characters
-
----
-
-## Comparison with Other Systems
-
-| Feature | Pen | Smart Contracts | ACLs |
-|---------|-----|-----------------|------|
-| Language | Bytecode DSL | Solidity/Vyper | Config |
-| Execution | Client-side WASM | On-chain VM | Server |
-| Cost | Free (local CPU) | Gas fees | Free |
-| Decentralization | Full | Full | Centralized |
-| Flexibility | High | Very High | Low |
-| Complexity | Medium | High | Low |
-
-**Pen sweet spot**: Decentralized validation without blockchain gas fees, more flexible than static ACLs.
-
----
-
-## Advanced Topics
-
-### Custom Opcodes (Future)
-
-Pen ISA is versioned. Future versions may add:
-- Cryptographic primitives (ECDSA, BLS)
-- Hash functions (SHA-256, Blake3)
-- JSON path queries
-- Regular expressions
-
-Currently, complex logic must use Gun-side preprocessing.
-
-### Pen Composition
-
-Combine multiple policies:
+## Candle Window Configurations
 
 ```javascript
-// Policy A: Signed by owner
-const policyA = await SEA.pen({ expression: ["SGN", owner_pub] })
+// Tight (market orders: ±15 phút)
+SEA.candle({ size: 300000, back: 3,   fwd: 3 })
 
-// Policy B: Within time window
-const policyB = await SEA.pen({ expression: ["LE", ["R", 4], deadline] })
+// Medium (limit orders: ±4 giờ)
+SEA.candle({ size: 300000, back: 48,  fwd: 2 })
 
-// Compose: AND both policies
-const combined = await SEA.pen({
-  expression: ["AND",
-    policyA.expression,
-    policyB.expression
-  ]
-})
+// Loose (GTC orders: ±8 giờ) — DEFAULT
+SEA.candle({ size: 300000, back: 100, fwd: 2 })
+
+// Ultra loose (escrow: ±30 ngày)
+SEA.candle({ size: 3600000, back: 720, fwd: 10 })
 ```
 
-### Pen Versioning
-
-Soul format: `$<version><base62_bytecode>`
-
-Currently version is implicit (ISA v1). Future versions will have explicit prefix.
-
 ---
 
-## Resources
+## References
 
-- **Source**: `node_modules/@akaoio/gun/docs/pen.md` (731 lines, authoritative spec)
-- **WASM Runtime**: `node_modules/@akaoio/gun/lib/pen.wasm` (26,036 bytes)
-- **Compiler**: `node_modules/@akaoio/gun/lib/pen.js` (JavaScript bridge)
-- **Examples**: `node_modules/@akaoio/gun/docs/pen.md` section 7 (order namespace)
-
----
-
-## Summary
-
-**Pen DSL enables trustless, decentralized validation for Gun writes** by:
-
-1. **Encoding validation rules as bytecode** in the soul name
-2. **Executing client-side** in WASM (no server, no blockchain)
-3. **Preventing unauthorized writes** through signature + PoW + custom logic
-4. **Enabling discovery** through deterministic soul generation
-
-**For P2P trading**:
-- Create per-item order souls (deterministic from item slug)
-- Replicate multi-item orders to each item's soul
-- Validate orders with: signature + PoW + temporal candle
-- No central registry, no spam, no overwrites
-
-**Key mental model**: Pen is a **distributed smart contract** running in WASM on every peer's machine, validating writes before they enter the Gun graph.
+- **VM source**: `pen/src/pen.zig`
+- **WASM interface**: `pen/src/wasm.zig`
+- **Bridge + compiler**: `gun/lib/pen.js`
+- **Test suite**: `pen/test/test.js`
+- **Temporal concept**: [`docs/thoughts/temporal-proof-of-work-gossip-protocol.md`](./temporal-proof-of-work-gossip-protocol.md)
+- **P2P trading protocol**: [`docs/thoughts/white-paper.md`](./white-paper.md)
