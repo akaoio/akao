@@ -39,14 +39,34 @@ export class AVATARS extends HTMLElement {
             if (s != null) this.$identicons.dataset.seed = s
         }
 
+        const $cancel = this.shadowRoot.querySelector("#avatar-cancel")
+        const $accept = this.shadowRoot.querySelector("#avatar-accept")
+        const onCancel = () => this.events.emit("cancel")
+        const onAccept = () => this.events.emit("accept")
+        $cancel.addEventListener("click", onCancel)
+        $accept.addEventListener("click", onAccept)
+
+        this.subscriptions.push(
+            () => $cancel.removeEventListener("click", onCancel),
+            () => $accept.removeEventListener("click", onAccept)
+        )
+
         this.subscriptions.push(
             this.$identicons.events.on("select", ({ detail: { id } }) => {
                 this._previewId = id
                 this.$identicons.id = id
                 this.events.emit("preview", { id })
             }),
-            this.$identicons.events.on("increase", () => {
+            this.$identicons.events.on("increase", ({ detail }) => {
+                if (detail?.scrollToNew) this.$identicons.render(true)
                 this.total += this.step
+                this.$identicons.total = this.total
+            }),
+            this.$identicons.events.on("decrease", () => {
+                if (this.total - this.step > (this._previewId ?? this.id)) {
+                    this.total -= this.step
+                    this.$identicons.total = this.total
+                }
             }),
             Access.on("authenticated", async ({ value }) => {
                 this.style.display = value ? "flex" : "none"
@@ -55,8 +75,7 @@ export class AVATARS extends HTMLElement {
                     await seed()
                     this.render()
                 } else this.$identicons.clear()
-            }),
-            Access.on("avatar", () => this.render())
+            })
         )
         if (Access.get("authenticated")) seed().then(() => this.render())
     }
@@ -68,6 +87,7 @@ export class AVATARS extends HTMLElement {
     commit() {
         if (this._previewId === null) return
         logic.setid(this._previewId, this.step, this.total)
+        this.$identicons.savedId = this._previewId
         this._previewId = null
     }
 

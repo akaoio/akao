@@ -32,7 +32,7 @@ export class IDENTICONS extends HTMLElement {
         this.$savedId = 0
         this.$total = 0
         this.$renderPending = false
-        this._loadingMore = false
+        this._scrollToNew = false
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
@@ -60,21 +60,27 @@ export class IDENTICONS extends HTMLElement {
 
     connectedCallback() {
         this.$container = this.shadowRoot.querySelector("#container")
+        this.$loader = this.shadowRoot.querySelector("#loader")
 
-        const onScroll = () => {
-            if (this._loadingMore) return
-            const { scrollLeft, scrollWidth, clientWidth } = this.$container
-            if (scrollWidth - scrollLeft - clientWidth < clientWidth * 0.5) {
-                this._loadingMore = true
-                this.events.emit("increase")
-                setTimeout(() => {
-                    this._loadingMore = false
-                }, 600)
-            }
+        const onWheel = (e) => {
+            if (e.deltaY === 0) return
+            e.preventDefault()
+            const delta = (e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY) * 3
+            this.$container.scrollBy({ left: delta, behavior: "auto" })
         }
+        this.$container.addEventListener("wheel", onWheel, { passive: false })
+        this.subscriptions.push(() => this.$container.removeEventListener("wheel", onWheel))
 
-        this.$container.addEventListener("scroll", onScroll, { passive: true })
-        this.subscriptions.push(() => this.$container.removeEventListener("scroll", onScroll))
+        const onDecrease = () => this.events.emit("decrease")
+        const onIncrease = () => this.events.emit("increase", { scrollToNew: true })
+        const $dec = this.shadowRoot.querySelector("#status-decrease")
+        const $inc = this.shadowRoot.querySelector("#status-increase")
+        $dec.addEventListener("click", onDecrease)
+        $inc.addEventListener("click", onIncrease)
+        this.subscriptions.push(
+            () => $dec.removeEventListener("click", onDecrease),
+            () => $inc.removeEventListener("click", onIncrease)
+        )
     }
 
     disconnectedCallback() {
@@ -124,10 +130,7 @@ export class IDENTICONS extends HTMLElement {
         }
         render(templates, this.$container, { append: true })
         const input = this.$container.querySelector(`input#i${this.$id}`)
-        if (input) {
-            input.checked = true
-            input.closest(".item")?.scrollIntoView({ behavior: "instant", block: "nearest", inline: "center" })
-        }
+        if (input) input.checked = true
     }
 
     remove() {
@@ -145,15 +148,34 @@ export class IDENTICONS extends HTMLElement {
         while (this.$container.firstChild) this.$container.removeChild(this.$container.firstChild)
     }
 
-    render() {
+    render(scrollToNew = false) {
+        if (scrollToNew) this._scrollToNew = true
         if (this.$renderPending) return
         this.$renderPending = true
         queueMicrotask(async () => {
             this.$renderPending = false
+            const doScroll = this._scrollToNew
+            this._scrollToNew = false
             if (!this.$total || !this.dataset.seed || !this.$container) return
-            if (this.$container.children.length < this.$total) await this.create()
+            if (this.$container.children.length < this.$total) {
+                const firstNewIndex = this.$container.children.length
+                this._setLoading(true)
+                await this.create()
+                if (doScroll) {
+                    const firstNew = this.$container.children[firstNewIndex]
+                    if (firstNew) firstNew.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
+                }
+                this._setLoading(false)
+            }
             if (this.$container.children.length > this.$total) this.remove()
         })
+    }
+
+    _setLoading(on) {
+        if (!this.$loader) return
+        this.$loader.hidden = !on
+        const $inc = this.shadowRoot.querySelector("#status-increase")
+        if ($inc) $inc.disabled = on
     }
 
     _updateStatus() {
@@ -169,6 +191,7 @@ export class IDENTICONS extends HTMLElement {
         root.querySelector("#status-preview").hidden = !hasDiff
         root.querySelector("#status-arrow").hidden = !hasDiff
         root.querySelector("#status-total").textContent = total ? `${total} avatars` : ""
+        root.querySelector("#status-decrease").disabled = total - this.step <= selected
     }
 }
 

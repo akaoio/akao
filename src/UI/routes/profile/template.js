@@ -21,16 +21,7 @@ export const template = html`
                 </button>
             </div>
             <div class="profile-avatar-picker" id="profile-avatar-picker">
-                <span class="profile-avatar-picker__loader" aria-hidden="true"></span>
                 <ui-avatars />
-                <div class="profile-avatar-picker__actions">
-                    <button class="profile-avatar-picker__cancel" id="profile-avatar-cancel" aria-label="Cancel">
-                        <ui-icon data-icon="x-lg" data-size="md" /> Cancel
-                    </button>
-                    <button class="profile-avatar-picker__accept" id="profile-avatar-accept" aria-label="Apply avatar">
-                        <ui-icon data-icon="check-lg" data-size="md" /> Apply
-                    </button>
-                </div>
             </div>
         </header>
 

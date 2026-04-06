@@ -73,8 +73,6 @@ export class PROFILE extends HTMLElement {
         const $avatarEdit = $("#profile-avatar-edit")
         const $avatarPicker = $("#profile-avatar-picker")
         const $avatarBackdrop = $("#profile-picker-backdrop")
-        const $avatarAccept = $("#profile-avatar-accept")
-        const $avatarCancel = $("#profile-avatar-cancel")
         const $avatars = this.shadowRoot.querySelector("ui-avatars")
         let _originalAvatarId = null
         let _previewUnsub = null
@@ -84,35 +82,28 @@ export class PROFILE extends HTMLElement {
             _previewUnsub = $avatars.events.on("preview", async ({ detail: { id } }) => {
                 await this._updateHeroIdenticonFor(id)
             })
-            $avatarPicker.classList.add("is-open", "is-loading")
+            $avatarPicker.classList.add("is-open")
             $avatarBackdrop.classList.add("is-open")
-            setTimeout(() => $avatarPicker.classList.remove("is-loading"), 1200)
         }
 
         const closePicker = (revert) => {
-            if (_previewUnsub) {
-                _previewUnsub()
-                _previewUnsub = null
-            }
+            if (_previewUnsub) { _previewUnsub(); _previewUnsub = null }
             if (revert) {
                 $avatars.revert(_originalAvatarId)
                 this._updateHeroIdenticonFor(_originalAvatarId)
             } else $avatars.commit()
-
             $avatarPicker.classList.remove("is-open")
             $avatarBackdrop.classList.remove("is-open")
             _originalAvatarId = null
         }
 
         $avatarEdit.addEventListener("click", openPicker)
-        $avatarAccept.addEventListener("click", () => closePicker(false))
-        $avatarCancel.addEventListener("click", () => closePicker(true))
         $avatarBackdrop.addEventListener("click", () => closePicker(true))
         this.subscriptions.push(
             () => $avatarEdit.removeEventListener("click", openPicker),
-            () => $avatarAccept.removeEventListener("click", () => closePicker(false)),
-            () => $avatarCancel.removeEventListener("click", () => closePicker(true)),
-            () => $avatarBackdrop.removeEventListener("click", () => closePicker(true))
+            () => $avatarBackdrop.removeEventListener("click", () => closePicker(true)),
+            $avatars.events.on("accept", () => closePicker(false)),
+            $avatars.events.on("cancel", () => closePicker(true))
         )
 
         // Wire links edit controls

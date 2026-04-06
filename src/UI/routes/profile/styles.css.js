@@ -166,7 +166,7 @@ export const styles = css`
             bottom: 0;
             left: 0;
             right: 0;
-            height: calc(var(--avatar-size) * 2 + var(--space-8) + var(--space-6));
+            height: calc(var(--avatar-size) * 2 + var(--space-9) + var(--space-6));
             z-index: 1200;
             flex-direction: column;
             overflow: hidden;
@@ -184,79 +184,6 @@ export const styles = css`
             }
         }
 
-        .profile-avatar-picker__actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: var(--space-3);
-            padding: var(--space-2) var(--space-4);
-            border-top: var(--border-width) solid color-mix(in hsl, var(--neon-c) 15%, transparent);
-            flex-shrink: 0;
-        }
-
-        .profile-avatar-picker__accept,
-        .profile-avatar-picker__cancel {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-2);
-            background: none;
-            border: var(--border-width) solid transparent;
-            cursor: pointer;
-            font-family: var(--header-font);
-            font-size: var(--text-xs);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: var(--space-2) var(--space-4);
-            transition:
-                border-color var(--speed),
-                box-shadow var(--speed),
-                opacity var(--speed);
-
-            &:active { opacity: 0.7; }
-        }
-
-        .profile-avatar-picker__accept {
-            color: var(--neon-g);
-            border-color: color-mix(in hsl, var(--neon-g) 40%, transparent);
-
-            &:hover {
-                border-color: var(--neon-g);
-                box-shadow: var(--glow-g);
-            }
-        }
-
-        .profile-avatar-picker__cancel {
-            color: var(--neon-m);
-            border-color: color-mix(in hsl, var(--neon-m) 40%, transparent);
-
-            &:hover {
-                border-color: var(--neon-m);
-                box-shadow: var(--glow-m);
-            }
-        }
-
-        .profile-avatar-picker__loader {
-            display: none;
-            position: absolute;
-            inset: 0;
-            align-items: center;
-            justify-content: center;
-            background: color-mix(in hsl, var(--background) 88%, transparent);
-            z-index: 1;
-
-            &::after {
-                content: "";
-                width: 1.25rem;
-                height: 1.25rem;
-                border-radius: 50%;
-                border: 2px solid transparent;
-                border-top-color: var(--neon-c);
-                border-right-color: color-mix(in hsl, var(--neon-c) 35%, transparent);
-                box-shadow: var(--glow-c);
-                animation: picker-spin 0.7s linear infinite;
-            }
-        }
-
-        .is-loading .profile-avatar-picker__loader { display: flex; }
 
         /* ── Body ── */
         .profile-body {
@@ -903,9 +830,7 @@ export const styles = css`
         }
     }
 
-    @keyframes picker-spin {
-        to { transform: rotate(360deg); }
-    }
+
 `
 
 export default styles
