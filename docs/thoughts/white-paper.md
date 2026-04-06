@@ -1,273 +1,705 @@
-# Four-Party Escrow Protocol
+# P2P Trading Escrow Protocol
 
-**Version** 1.0 · **Status** Draft · **Date** 2026-03-12
+**Version** 2.0 · **Status** Production · **Date** 2026-04-06
+
+> **Supersedes**: v1.0 eCommerce model (deprecated - see `white-paper-v1-ecommerce-deprecated.md`)
+>
+> **Philosophy**: DEX-inspired P2P trading where all participants are symmetric traders. Platform provides infrastructure, not custody.
 
 ---
 
 ## Abstract
 
-This document specifies a trustless, serverless escrow protocol for four-party commerce transactions. The protocol enables a marketplace operator to mediate payments between buyers, sellers, and affiliates using deterministic cryptographic key derivation — eliminating the need for smart contracts, custodial accounts, or trusted third-party oracles. All escrow wallet addresses are derived client-side from Diffie-Hellman shared secrets and BIP-32 hierarchical deterministic key derivation, ensuring that each party holds exactly the access rights the protocol intends, and no more.
+This document specifies a **trustless, serverless escrow protocol for peer-to-peer trading** of digital assets (game items, NFTs, digital goods). The protocol enables a platform operator to mediate trades between two traders (maker and taker) using deterministic cryptographic key derivation — eliminating the need for smart contracts, custodial accounts, or trusted third-party oracles.
+
+All escrow wallet addresses are derived client-side from **Diffie-Hellman shared secrets** and **BIP-32 hierarchical deterministic key derivation**, ensuring that each party holds exactly the access rights the protocol intends, and no more.
+
+### Think DEX, Not Marketplace
+
+**Traditional marketplace** (v1.0 - deprecated):
+- ❌ Fixed roles: Buyer pays, Seller sells
+- ❌ Item-centric: Each item has separate escrow tree
+- ❌ One-directional: Only buyers initiate trades
+- ❌ Custodial mindset: Platform holds listings
+
+**DEX/Trading mindset** (v2.0 - current):
+- ✅ **Symmetric roles**: Anyone can create buy OR sell orders
+- ✅ **Trader-centric**: Maker/Taker like Uniswap, dYdX, Binance
+- ✅ **Bi-directional**: Orders are just intentions (buy intention = sell intention from other side)
+- ✅ **Order book**: Decentralized discovery via Gun + Pen validation
+- ✅ **Affiliate economy**: Built-in referral commissions
+- ✅ **Non-custodial (happy path)**: Platform arbitrates disputes/refunds, not involved in normal trades
+
+**Key innovations**:
+- **Dual escrow wallets** per trade: Payment Lock (PL) + Affiliate Lock (AL)
+- **Temporal validation**: Orders auto-expire using candle-based epochs (Pen DSL)
+- **Post-match deposits**: Both order types deposit after matching (pure P2P, no Platform involvement)
+- **Trustless verification**: Anyone can verify escrow addresses on-chain before accepting
 
 ---
 
 ## 1. Roles and Trust Model
 
+### 1.1 Parties
+
 | Role | Symbol | Description |
 |---|---|---|
-| Escrow / Platform | **E** | Marketplace operator. Holds the authority to release or refund escrow funds. Acts as the trusted arbiter in disputes. |
-| Seller | **S** | Lists items on the platform. Receives payment upon successful order fulfilment. |
-| Buyer | **B** | Purchases items. Initiates payment into escrow. |
-| Affiliate | **A** | Refers buyers to the platform. Earns commission upon successful order. |
+| **Platform** | **P** | Marketplace operator. Holds authority to release or refund escrow funds. Acts as trusted arbiter in disputes. |
+| **Maker** | **M** | Trader who creates an order (buy or sell). |
+| **Taker** | **T** | Trader who accepts/matches an existing order. |
+| **Affiliate** | **A** | Referrer who brought the payer to the platform. Earns commission on successful trades. |
 
-### Trust assumptions
+**Note:** M and T are symmetric — both are traders. A trader can be M in one trade and T in another. The distinction only matters during a specific trade execution. A is optional — if payer has no referrer, no affiliate commission is paid.
 
-- E is trusted to act honestly as arbiter. This is a **semi-centralised** model: custody of funds is enforced cryptographically, but dispute resolution depends on E's judgement.
-- No party other than E can unilaterally move funds from an escrow wallet prior to order resolution.
-- All parties are assumed to have valid SEA key pairs registered with the platform.
+### 1.2 Escrow Wallets
+
+| Wallet | Symbol | Full Name | Purpose | Derived From |
+|--------|--------|-----------|---------|--------------|
+| Payment escrow | **PL** | Payment Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` |
+| Commission escrow | **AL** | Affiliate Lock | Holds affiliate commission (payer → affiliate) | `root_AP` |
+
+**Note:** Each trade creates exactly 2 lock wallets: 1 PL (payment) + 1 AL (commission, if affiliate exists).
+
+### Trust Assumptions
+
+- **P is trusted** to act honestly as arbiter (semi-centralized model)
+- **No party other than P** can unilaterally move funds from escrow before trade resolution
+- **Both traders trust P** to resolve disputes fairly
+- All parties have valid **SEA key pairs** registered via WebAuthn
 
 ---
 
 ## 2. Cryptographic Primitives
 
-The protocol is built entirely on primitives already present in the platform's technology stack. No additional dependencies are required.
+Same as v1.0 (no changes):
 
 ### 2.1 ECDH Shared Secret — `sea.secret`
 
-`sea.secret(theirPublicKey, myKeyPair)` implements Elliptic-Curve Diffie-Hellman (ECDH) over the Curve25519 as provided by the GunDB SEA library. It produces a shared secret known exclusively to the two parties whose keys are used.
+`sea.secret(theirPublicKey, myKeyPair)` over Curve25519 (GunDB SEA library).
 
-**Key properties:**
-- **Symmetric** — both parties arrive at the same secret independently: `sea.secret(E.pub, S.pair) === sea.secret(S.pub, E.pair)`
-- **Deterministic** — identical inputs always produce identical outputs
-- **Pair-scoped** — `sea.secret(E.pub, S.pair) ≠ sea.secret(E.pub, A.pair)`, so each bilateral relationship yields a distinct secret
+**Properties:**
+- **Symmetric:** `sea.secret(P.pub, M.pair) === sea.secret(M.pub, P.pair)`
+- **Deterministic:** Same inputs → same output
+- **Pair-scoped:** `secret_MP ≠ secret_TP`
 
 ```javascript
-// Both calls produce the same secret — only S and E can compute it
-const secret_SE = await sea.secret(E.pub, S.pair)   // computed by S
-const secret_SE = await sea.secret(S.pub, E.pair)   // computed by E
+const secret_MP = await sea.secret(P.pub, M.pair)  // M computes
+const secret_MP = await sea.secret(M.pub, P.pair)  // P computes (same result)
 ```
 
-### 2.2 BIP-32 Hierarchical Deterministic Wallets — `HDNodeWallet`
+### 2.2 BIP-32 Hierarchical Deterministic Wallets
 
-The `ethers.js` library (bundled in the platform) provides a full BIP-32 implementation via `HDNodeWallet` and `HDNodeVoidWallet`.
-
-**Key operations used by this protocol:**
+From `ethers.js`:
 
 ```javascript
 import { HDNodeWallet, getBytes } from "/core/Ethers.js"
 
-// Derive a root HD node from a 32-byte seed
 const root = HDNodeWallet.fromSeed(getBytes("0x" + seedHex))
-
-// Serialise to extended key strings
-root.extendedKey              // xprv — full node, contains private key
-root.neuter().extendedKey     // xpub — public node, no private key
-
-// Deserialise
-HDNodeWallet.fromExtendedKey("xprv...")  // => HDNodeWallet  (spending)
-HDNodeWallet.fromExtendedKey("xpub...")  // => HDNodeVoidWallet (watch-only)
-
-// Derive a non-hardened child at a given index (0 – 2³¹ − 1)
-const child = root.deriveChild(index)
-child.address      // EVM address
-child.privateKey   // spending key — only present on full HDNodeWallet
+const xpub = root.neuter().extendedKey     // watch-only
+const child = root.deriveChild(index)       // non-hardened derivation
 ```
 
-**The non-hardened property is fundamental to this protocol.** It allows any party holding only an `xpub` to independently derive the same child address that the holder of the corresponding `xprv` would derive. This is what enables buyers to trustlessly verify escrow addresses without ever having access to the spending key.
+**Critical property:** Anyone with `xpub` can derive child addresses, but only the holder of `xprv` can spend.
 
 ### 2.3 SHA-256 — `sha256`
 
-`sha256(str)` from `Utils/crypto.js` returns a 64-character hexadecimal string (32 bytes). It is used throughout the protocol to derive deterministic seeds from concatenated secrets, ensuring domain separation between different key hierarchies.
+From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 
 ---
 
-## 3. Key Derivation Specification
+## 3. Order Types and Lifecycle
 
-### 3.1 Notation
+### 3.1 Order Types
+
+**Buy Order:**
+```javascript
+{
+    type: "buy",
+    trader: "maker_pub_key",
+    item: "diablo-4/penitent-greaves-d76bc",
+    quantity: 1,
+    price: 100,        // willing to pay
+    currency: "USDT",
+    chain: 1,          // Ethereum
+    status: "open"
+}
+```
+
+**Sell Order:**
+```javascript
+{
+    type: "sell",
+    trader: "maker_pub_key",
+    item: "diablo-4/penitent-greaves-d76bc",
+    quantity: 1,
+    price: 95,         // willing to accept
+    currency: "USDT",
+    chain: 1,
+    status: "open"
+}
+```
+
+### 3.2 Trade Execution Flow
+
+```
+1. Maker creates order → writes to Gun with Pen-validated key (no deposit)
+2. Taker discovers order → Gun .map() query
+3. Taker accepts order → trade status: "open" → "matched" (both parties known)
+4. Payer deposits to escrow (Maker for buy, Taker for sell):
+   - Computes PL/AL from recipient's xpub + payer's index
+   - Deposits within 10-min timeout or trade auto-cancels
+5. In-game item delivery (trade/mail/drop)
+6. Buyer confirms → reveals index to seller/affiliate
+7. Recipients withdraw using own root + revealed index
+8. Trade status: "matched" → "deposited" → "delivered" → "completed"
+```
+
+### 3.3 Key Derivation Strategy
+
+**Changes from v1.0:**
+- **No per-item roots** (items don't need separate xpub trees)
+- **One root per trader-platform pair**
+- **Two escrow wallets per trade:**
+  - **Payment escrow (PL)** — holds trade payment (M/P or T/P root)
+  - **Affiliate escrow (AL)** — holds affiliate commission (A/P root)
+
+---
+
+## 4. Key Derivation Specification
+
+### 4.1 Notation
 
 | Symbol | Description |
 |---|---|
 | `⊕` | String concatenation with `":"` separator |
-| `sha256(x)` | SHA-256 of string `x`, returned as 64-char hex |
+| `sha256(x)` | SHA-256 hex (64 chars) |
 | `fromSeed(h)` | `HDNodeWallet.fromSeed(getBytes("0x" + h))` |
-| `index(h)` | `parseInt(h.substring(0, 8), 16) & 0x7fffffff` — 31-bit non-hardened index derived from hash |
+| `index(h)` | `parseInt(h.substring(0, 8), 16) & 0x7fffffff` (31-bit non-hardened) |
 
-### 3.2 Per-Item Root Keys
+### 4.2 Root Key for Each Trader/Affiliate
 
-For each listed item, two independent HD root key pairs are derived — one scoped to the S/E relationship, one to the A/E relationship. The `itemId` acts as a domain separator ensuring root keys are unique per item.
+Each party derives a single root HD key with Platform:
 
-```
-secret_SE  =  sea.secret(E.pub, S.pair)
-secret_AE  =  sea.secret(E.pub, A.pair)
+```javascript
+secret_MP  =  sea.secret(P.pub, M.pair)
+secret_TP  =  sea.secret(P.pub, T.pair)
+secret_AP  =  sea.secret(P.pub, A.pair)
 
-seed_SE    =  sha256(secret_SE ⊕ itemId)
-seed_AE    =  sha256(secret_AE ⊕ itemId)
+seed_MP    =  sha256(secret_MP)
+seed_TP    =  sha256(secret_TP)
+seed_AP    =  sha256(secret_AP)
 
-root_SE    =  fromSeed(seed_SE)    // full node — known to S and E
-root_AE    =  fromSeed(seed_AE)    // full node — known to A and E
-```
-
-The seller publishes `root_SE.neuter().extendedKey` (i.e. `xpub_SE`) to the platform's public data layer. The private root `xprv_SE` is never transmitted.
-
-### 3.3 Per-Order Child Keys (Escrow Wallets)
-
-For each order, a buyer-specific index is derived from the B/E shared secret and the `orderId`. This index is used to derive a unique child address from each item's root key.
-
-```
-secret_BE  =  sea.secret(E.pub, B.pair)
-seed_BE    =  sha256(secret_BE ⊕ orderId)
-index_BE   =  index(seed_BE)             // 31-bit non-hardened index
-
-VSE        =  root_SE.deriveChild(index_BE)   // Escrow wallet: S/E, for this order
-VAE        =  root_AE.deriveChild(index_BE)   // Commission wallet: A/E, for this order
+root_MP    =  fromSeed(seed_MP)    // full node — known to M and P
+root_TP    =  fromSeed(seed_TP)    // full node — known to T and P
+root_AP    =  fromSeed(seed_AP)    // full node — known to A and P
 ```
 
-`VSE` and `VAE` are the two on-chain escrow wallets for any given order. Their addresses can be computed by any party with the appropriate public key material, but only E possesses the spending keys for both.
+**Each party publishes their xpub:**
+- Maker: `xpub_MP = root_MP.neuter().extendedKey` (in user profile on Gun)
+- Taker: `xpub_TP = root_TP.neuter().extendedKey`
+- Affiliate: `xpub_AP = root_AP.neuter().extendedKey` (in referral link)
+
+### 4.3 Per-Payment Lock Wallets (Dual Escrow)
+
+**Key principle from original design**: Escrow wallet = **RECIPIENT's root xpub** + **INDEX from PAYER's secret**
+
+**Critical design decision**: Both buy and sell orders deposit **AFTER matching** to preserve pure P2P architecture (Platform not involved in happy path).
+
+For each trade, derive **two escrow wallets**:
+
+#### 4.3.1 Payment Lock (PL)
+
+**Symmetric flow for both order types** (Maker always uses Taker's xpub after match):
+
+```javascript
+// AFTER MATCHING (both parties known)
+tradeId = sha256(orderId + M.pub + T.pub + timestamp)
+
+// Step 1: Recipient (Taker for buy order, Maker for sell order) publishes xpub
+secret_recipient = sea.secret(P.pub, recipient.pair)
+root_recipient = fromSeed(sha256(secret_recipient))
+xpub_recipient = root_recipient.neuter().extendedKey  // Public
+
+// Step 2: Payer (Maker for buy order, Taker for sell order) computes index
+secret_payer = sea.secret(P.pub, payer.pair)
+seed_index = sha256(secret_payer + ":" + tradeId)
+index_PL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
+
+// Step 3: Payer derives escrow from RECIPIENT's xpub + PAYER's index
+PL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_PL)
+//   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Recipient's root (watch-only)
+//                                               ^^^^^^^^^ Payer's index
+
+// PL.address — Payer deposits HERE (after matching)
+// PL.privateKey — Payer doesn't have (only has xpub, not xprv)
+// Recipient needs index_PL revealed to derive spending key
+```
+
+**Who is payer/recipient?**
+- **Buy order**: Maker (buyer) is payer, Taker (seller) is recipient
+- **Sell order**: Taker (buyer) is payer, Maker (seller) is recipient
+
+#### 4.3.2 Affiliate Lock (AL)
+
+**Same pattern - payer uses affiliate's xpub + payer's index:**
+
+```javascript
+// AFTER MATCHING (payer known)
+tradeId = sha256(orderId + M.pub + T.pub + timestamp)
+
+// Affiliate publishes xpub
+secret_AP = sea.secret(P.pub, A.pair)
+root_AP = fromSeed(sha256(secret_AP))
+xpub_AP = root_AP.neuter().extendedKey
+
+// Payer computes index from own secret
+secret_payer = sea.secret(P.pub, payer.pair)
+seed_index = sha256(secret_payer + ":" + tradeId)
+index_AL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
+
+// Payer derives from AFFILIATE's xpub + PAYER's index
+AL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_AL)
+
+// AL.address — payer deposits commission here (after matching)
+// AL.privateKey — Affiliate needs index revealed to spend
+```
+
+**Security properties**:
+- Payer derives escrow address from **recipient's xpub** (watch-only)
+- Payer uses index from **own secret** (knows index)
+- Payer **cannot spend** (doesn't have recipient's xprv, only xpub)
+- Recipient **cannot spend yet** (doesn't know index)
+- Platform **can always spend** (knows all secrets → can compute all indexes + has all xprvs)
+
+**Who pays (AFTER matching):**
+- **Buy order:** Maker deposits to `PL` + `AL` (both use Taker's/Affiliate's xpub + Maker's index)
+- **Sell order:** Taker deposits to `PL` + `AL` (both use Maker's/Affiliate's xpub + Taker's index)
+
+**When deposit happens:**
+- **Both order types**: Deposit occurs AFTER matching (when both parties known)
+- No pre-deposit required → Platform not involved in happy path → pure P2P
+
+**Access control:**
+- **Payer (M or T):** Computes escrow addresses from recipient's xpub + own index. **Cannot spend** (has xpub only, not xprv).
+- **Recipient (seller):** 
+  - Buy order: Taker receives `index_PL` from Maker → derives spending key from own `root_TP`
+  - Sell order: Maker receives `index_PL` from Taker → derives spending key from own `root_MP`
+- **Affiliate (A):** Receives `index_AL` from payer (or Platform) → derives spending key from own `root_AP`
+- **Platform (P):** Knows all secrets → can compute all indexes + derive all spending keys (arbitration power)
+
+**Unlock mechanism**:
+```
+BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
+
+1. Maker posts order (no deposit)
+2. Taker accepts → tradeId created
+3. Payer computes PL/AL from Recipient's xpub + Payer's index
+4. Payer deposits to PL.address + AL.address (within deposit timeout)
+5. Seller delivers item
+6. Buyer confirms receipt → reveals index_PL and index_AL
+7. Recipient uses own root + revealed index → derives spending key → withdraws
+```
+
+**Why payer cannot withdraw**:
+- Payer only has recipient's **xpub** (public extended key, watch-only)
+- Even though payer knows the **index**, cannot derive private key without xprv
+- BIP-32 non-hardened derivation: `xpub + index → child address` ✅ (watch-only)
+- But: `xpub + index → child private key` ❌ (impossible, needs xprv)
+
+**Why recipient cannot withdraw early**:
+- Recipient has **root xprv** (own wallet)
+- But doesn't know which **index** was used (payer's secret + entropy)
+- Without index, 2^31 possible child keys to try (infeasible)
+
+**Original security mindset preserved**: Escrow wallet = recipient's root + payer's index
 
 ---
 
-## 4. Protocol Walkthrough
+## 5. Protocol Walkthrough
 
-### Step 1 — Seller lists an item
+### Step 1 — Maker Creates Order
 
-1. S creates item data and computes `itemId = sha256(itemData)`.
-2. S computes `secret_SE` and derives `root_SE`.
-3. S publishes `xpub_SE = root_SE.neuter().extendedKey` to the platform's distributed data layer, keyed by `itemId`. The `xprv` is never transmitted.
-4. E independently recomputes `root_SE` at any time using `sea.secret(S.pub, E.pair)`.
+**Both order types follow same pattern** (symmetric design):
 
-### Step 2 — Affiliate generates a referral link
+1. M creates order on UI (buy or sell)
+2. M generates `orderId = sha256(M.pub ⊕ item ⊕ price ⊕ timestamp)`
+3. M retrieves referrer (if any) from localStorage: `Context.getReferrer()`
+4. M writes order to Gun with Pen-validated key:
+   ```
+   <candle>:<item_slug>:<type>:<nonce>
+   
+   Example buy:  5820000:penitent-greaves:buy:a3f7b2
+   Example sell: 5820000:penitent-greaves:sell:x8k2m1
+   ```
+5. Order includes metadata: `{ orderId, type, item, price, currency, chain, referrer }`
+6. Order status: `"open"` (no funds locked yet, waiting for Taker)
 
-1. A computes `secret_AE` and derives `root_AE`.
-2. A encodes `xpub_AE = root_AE.neuter().extendedKey` into a referral URL and distributes it to prospective buyers.
+**No pre-deposit** for either order type → pure P2P (Platform not involved)
 
-### Step 3 — Buyer places an order and pays
+### Step 2 — Taker Discovers and Accepts Order
 
-1. B generates `orderId` (e.g. `sha256(itemId ⊕ B.pub ⊕ timestamp)`).
-2. B computes `secret_BE`, derives `seed_BE`, and calculates `index_BE`.
-3. B retrieves `xpub_SE` from the platform data layer and derives:
+1. T queries Gun order book:
+   ```javascript
+   gun.get(orderSoul).map({
+       '.': { '*': `${candle}:penitent-greaves:buy:` }
+   })
+   ```
+2. T sees M's order, clicks "Accept"
+3. **Trade matching** (creates `tradeId`):
+   ```javascript
+   tradeId = sha256(orderId + M.pub + T.pub + timestamp)
+   ```
+4. Trade status → `"matched"` (both parties known, waiting for deposit)
 
-```javascript
-const VSE = HDNodeWallet.fromExtendedKey(xpub_SE).deriveChild(index_BE)
-// VSE.address — the escrow wallet address for this order
-```
+### Step 3 — Payer Deposits to Escrow
 
-4. B verifies the address is valid on-chain before sending funds.
-5. B broadcasts three transactions from their on-chain wallet:
-   - Platform fee → E's operational address
-   - Commission → `VAE.address` (derived analogously from `xpub_AE`)
-   - Item payment → `VSE.address`
-
-The buyer does not hold a spending key for either `VSE` or `VAE`. The funds are cryptographically locked.
-
-### Step 4 — Seller fulfils the order
-
-Upon fulfilment, S requests confirmation from B.
-
-| Outcome | Resolution |
-|---|---|
-| B confirms receipt | B transmits `index_BE` (or the `seed_BE`) to S. S computes `VSE.privateKey` using `root_SE.deriveChild(index_BE)` and self-executes the release transaction. |
-| B does not respond within 24 hours | Auto-release: E transmits `index_BE` to S on B's behalf. |
-| B disputes the order | Dispute resolution is initiated (see Step 5). |
-| S does not request confirmation | Funds remain in `VSE` indefinitely until a party acts. |
-
-### Step 5 — Escrow resolution by E
-
-E can independently recompute the spending keys for any escrow wallet at any time:
+**Payer** (Maker for buy order, Taker for sell order) now computes escrow addresses:
 
 ```javascript
-// E recomputes root_SE
-const secret_SE = await sea.secret(S.pub, E.pair)
-const root_SE   = HDNodeWallet.fromSeed(getBytes("0x" + sha256(secret_SE + ":" + itemId)))
+// Determine payer and recipient based on order type
+const payer = (orderType === 'buy') ? Maker : Taker
+const recipient = (orderType === 'buy') ? Taker : Maker
 
-// E recomputes index_BE
-const secret_BE = await sea.secret(B.pub, E.pair)
-const index_BE  = parseInt(sha256(secret_BE + ":" + orderId).substring(0, 8), 16) & 0x7fffffff
+// Get recipient's xpub (published in their profile)
+const xpub_recipient = await gun.user(recipient.pub).get('xpub')
 
-// E derives the escrow wallet with full spending authority
-const VSE = root_SE.deriveChild(index_BE)
-// VSE.privateKey — E uses this to sign the release or refund transaction
+// Get affiliate's xpub (if referrer exists)
+const referrer = payer.getReferrer()
+const xpub_affiliate = referrer ? await gun.user(referrer).get('xpub') : null
+
+// Compute payer's index
+const secret_payer = await sea.secret(P.pub, payer.pair)
+const seed_index = sha256(secret_payer + ":" + tradeId)
+const index_PL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
+
+// Derive Payment Lock from recipient's xpub + payer's index
+const PL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_PL)
+
+// Derive Affiliate Lock (if affiliate exists)
+const AL = referrer ? 
+    HDNodeWallet.fromExtendedKey(xpub_affiliate).deriveChild(index_PL) : 
+    null
+
+// Payer deposits
+await payer.wallet.sendTransaction({ to: PL.address, value: paymentAmount })
+if (AL) {
+    await payer.wallet.sendTransaction({ to: AL.address, value: commissionAmount })
+}
+await payer.wallet.sendTransaction({ 
+    to: Platform.operationalWallet, 
+    value: platformFee 
+})
 ```
+
+**Deposit timeout**: If payer doesn't deposit within 10 minutes → trade auto-cancels → order returns to "open"
+
+**After confirmations**: Trade status → `"deposited"` (funds locked)
+
+### Step 4 — Item Delivery
+
+**Seller** (Taker for buy order, Maker for sell order) delivers in-game:
+- Trade window in-game
+- In-game mail system
+- Drop/pickup coordination
+
+**Seller marks:** "Delivered" in UI → updates Gun trade record → status: `"delivered"`
+
+### Step 5 — Buyer Confirms Receipt and Unlocks Payment
+
+**Buyer** (Maker for buy order, Taker for sell order) marks "Received" in UI
+
+**Buyer reveals index to seller** (symmetric for both order types):
+
+```javascript
+// Buyer computes index from own secret
+const secret_buyer = await sea.secret(P.pub, buyer.pair)
+const index_PL = index(sha256(secret_buyer + ":" + tradeId))
+
+// Buyer transmits via Gun
+gun.get(tradeRecordSoul).put({ 
+    unlock_index_PL: index_PL,
+    unlock_index_AL: index_PL,  // Same index for affiliate
+    status: 'completed'
+})
+
+// Seller receives index and unlocks using OWN root
+const secret_seller = await sea.secret(P.pub, seller.pair)
+const root_seller = HDNodeWallet.fromSeed(sha256(secret_seller))
+const PL = root_seller.deriveChild(index_PL)  // Now has private key!
+
+// Seller self-releases payment
+await PL.sendTransaction({
+    to: seller.wallet,
+    value: paymentAmount
+})
+
+// Affiliate (if exists) self-releases commission
+if (affiliate) {
+    const secret_affiliate = await sea.secret(P.pub, affiliate.pair)
+    const root_affiliate = HDNodeWallet.fromSeed(sha256(secret_affiliate))
+    const AL = root_affiliate.deriveChild(index_PL)
+    
+    await AL.sendTransaction({
+        to: affiliate.wallet,
+        value: commissionAmount
+    })
+}
+```
+
+Trade status → `"completed"`
+
+**OR via Platform auto-release:**
+- If buyer doesn't confirm within 24h → P computes indexes and releases to seller + affiliate
+
+### Step 6 — Dispute Resolution and Refunds by P
+
+**Critical limitation**: Refunds REQUIRE Platform involvement due to escrow design.
+
+**Why payer cannot self-refund:**
+```javascript
+// Escrow = Recipient's xpub + Payer's index
+PL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
+
+// Payer has:
+// - Recipient's xpub (watch-only, public)
+// - Own index (secret)
+// BUT: Cannot derive private key from xpub alone!
+
+// Only recipient has xprv → only recipient can spend
+// Payer is cryptographically locked out (by design)
+```
+
+**This means:**
+- ✅ Happy path (delivery + confirmation): Pure P2P, Platform not involved
+- ⚠️ **Unhappy path (timeouts/disputes): Platform MUST intervene to refund**
+- This is **not** centralization — Platform acts as trusted arbiter (per Section 1.1)
+
+**Platform-initiated refund mechanism:**
+
+P can always recompute both escrow spending keys:
+
+```javascript
+// P knows all parties' pub keys
+const secret_recipient = await sea.secret(recipient.pub, P.pair)
+const root_recipient = fromSeed(sha256(secret_recipient))
+
+// P can compute payer's index (knows both secrets)
+const secret_payer = await sea.secret(payer.pub, P.pair)
+const index_PL = index(sha256(secret_payer + ":" + tradeId))
+
+// P derives escrow spending key
+const PL = root_recipient.deriveChild(index_PL)
+// PL.privateKey → P can release to seller OR refund to payer
+
+// Same for affiliate lock
+const secret_affiliate = await sea.secret(affiliate.pub, P.pair)
+const root_affiliate = fromSeed(sha256(secret_affiliate))
+const AL = root_affiliate.deriveChild(index_PL)
+// AL.privateKey → P can release to affiliate OR refund to payer
+```
+
+**Refund triggers** (Platform monitors for these conditions):
+
+1. **Payer requests refund** (after timeout)
+   - Payer submits refund request via UI
+   - Platform verifies timeout conditions met
+   - Platform executes refund
+
+2. **Automatic timeout** (optional - Platform worker)
+   - Platform's `update.js` thread polls trades
+   - If trade >24h in "deposited" state with no delivery confirmation
+   - Platform auto-refunds to payer
+
+3. **Dispute resolution**
+   - Either party files dispute via UI
+   - Platform investigates (chat logs, screenshots, etc.)
+   - Platform decides: refund to payer OR release to seller
 
 **Resolution matrix:**
 
-| Scenario | VSE outcome | VAE outcome |
+| Scenario | PL (Payment) Action | AL (Commission) Action |
 |---|---|---|
-| Order successful, no dispute | E releases `VSE` to S | E releases `VAE` spending key to A |
-| Order failed, S at fault | E refunds `VSE` to B | E refunds `VAE` to B |
-| Dispute resolved in S's favour | E releases `VSE` to S | E releases `VAE` spending key to A |
-| Dispute resolved in B's favour | E refunds `VSE` to B | E refunds `VAE` to B |
+| Trade completed successfully | Buyer reveals index → Seller withdraws | Buyer reveals index → Affiliate withdraws |
+| Buyer disputes, seller proven wrong | Platform refunds to payer (transfers) | Platform refunds to payer (transfers) |
+| Buyer disputes, seller proven right | Platform reveals index to seller → Seller withdraws | Platform reveals index to affiliate → Affiliate withdraws |
+| Both parties inactive 7+ days | Platform refunds to payer (transfers) | Platform refunds to payer (transfers) |
+| Auto-release (24h no confirmation) | Platform reveals index to seller → Seller withdraws | Platform reveals index to affiliate → Affiliate withdraws |
+
+**Note**: Platform can either:
+- **Reveal index** (seller/affiliate self-withdraws) — preferred for transparency
+- **Transfer directly** (Platform executes withdrawal) — faster but less transparent
 
 ---
 
-## 5. Security Analysis
+## 6. Order Book with Pen DSL
 
-### 5.1 Access control guarantees
+### 6.1 Temporal Validation
+
+Orders use **candle-based expiry** to prevent stale orders:
+
+```javascript
+const orderSoul = SEA.pen({
+    key: { and: [
+        // Candle window: current ± 100 candles (5-min candles = ~8 hours)
+        SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 }),
+        
+        // Item slug validation
+        { seg: { sep: ":", idx: 1, of: { reg: 0 },
+                 match: { length: [1, 128] } } },
+        
+        // Order type: buy or sell
+        { seg: { sep: ":", idx: 2, of: { reg: 0 },
+                 match: { or: [{ eq: "buy" }, { eq: "sell" }] } } }
+    ]},
+    val: { type: "string" },  // JSON order metadata (includes price)
+    sign: true,               // Require signature
+    pow: { field: 0, difficulty: 2 }  // Anti-spam PoW (field 0 = key, client iterates nonce at seg 3)
+})
+```
+
+### 6.2 Key Format
+
+```
+<candle>:<item_slug>:<type>:<nonce>
+
+Example buy:  5820000:penitent-greaves:buy:a3f7b2
+Example sell: 5820000:penitent-greaves:sell:x8k2m1
+```
+
+**Note**: Price is stored in order metadata (value), not in key. This allows:
+- Orders with same item/type to be grouped
+- Price changes without key recreation
+- Simpler LEX range queries by time (candle-first)
+
+**Candle calculation:**
+```javascript
+const candle = Math.floor(Date.now() / 300000)  // 5-minute candles
+```
+
+**Benefits:**
+- Old orders auto-expire (can't write keys outside window)
+- Discovery queries scoped to recent candles
+- No manual cleanup needed
+
+---
+
+## 7. Security Analysis
+
+### 7.1 The Refund Limitation
+
+**Critical design constraint**: Payer cannot self-refund in the current escrow model.
+
+**Why this limitation exists:**
+
+The escrow security relies on **asymmetric key access**:
+```
+Escrow = Recipient's xpub (watch-only) + Payer's index (secret)
+
+Payer has:
+├─ Recipient's xpub (public extended key)
+└─ Own index (secret)
+
+Recipient has:
+├─ Own xprv (private extended key)
+└─ Unknown index (until reveal)
+
+Platform has:
+├─ Recipient's xprv (via shared secret)
+└─ Payer's index (via shared secret)
+```
+
+**BIP-32 cryptographic property**:
+- `xpub + index → child address` ✅ (anyone can compute)
+- `xprv + index → child private key` ✅ (only xprv holder can derive)
+- `xpub + index → child private key` ❌ **IMPOSSIBLE** (by design)
+
+**This means:**
+- ✅ **Happy path**: Payer deposits → Recipient delivers → Payer reveals index → Recipient withdraws (pure P2P, Platform not involved)
+- ⚠️ **Unhappy path**: Payer deposits → Recipient ghosts → Payer wants refund → **Platform MUST intervene** (Payer cannot derive private key from xpub alone)
+
+**Trade-off accepted:**
+- Security against payer withdrawal (prevents rug pulls)
+- Cost: Refunds require Platform arbitration
+
+**Alternative (not implemented):**
+- Use smart contracts with time-locks (enables self-refund after timeout)
+- Cost: Adds smart contract dependency, gas fees, complexity
+
+**Current design philosophy**: Accept Platform as trusted arbiter for exceptional cases (disputes, timeouts) to maintain pure P2P for normal trades.
+
+### 7.2 Access Control Guarantees
 
 | Property | Mechanism |
 |---|---|
-| E holds full authority over `VSE` and `VAE` | E knows every party's public key → recomputes all DH secrets → derives all root xprv and child spending keys |
-| S cannot unilaterally withdraw from `VSE` | S holds `xpub_SE` but not `index_BE`. Without `secret_BE`, the child index is unknowable. |
-| B cannot retain funds | B derives only a watch-only address via `xpub_SE`. B never possesses a private key for `VSE`. |
-| A cannot withdraw commission prematurely | A holds `xpub_AE` but not `index_BE`. The commission is unlocked only when E transmits the spending key post-resolution. |
-| No third-party involvement | All derivations are deterministic and local. No server, oracle, or smart contract is required. |
+| P holds full escrow authority | P knows all pub keys → recomputes all DH secrets → derives all root xprv and child spending keys for both PL and AL |
+| Payer cannot withdraw (even for refund) | Payer has recipient's xpub only (watch-only). Cannot derive private key from xpub. **Refunds require Platform intervention.** |
+| Recipient cannot claim early | Recipient has xprv but doesn't know index until payer reveals it |
+| Affiliate cannot claim prematurely | A has xpub_AP but not `index_AL`; receives index only after successful trade completion |
+| No third-party involvement (happy path) | All derivations local and deterministic. Platform only involved for disputes/refunds. |
 
-### 5.2 Per-order address isolation
+### 7.3 Per-Trade Address Isolation
 
-Because `orderId` is unique per order, `seed_BE` and therefore `index_BE` are unique per order. Each order produces a distinct `VSE` and `VAE` address. Compromise of one order's escrow wallet does not affect any other order.
+Each `tradeId` is unique → `index_PL` and `index_AL` unique → escrow addresses never collide across trades.
 
-### 5.3 xpub publication safety
+Even if same affiliate refers multiple trades, each trade gets unique AL wallet (different `tradeId` → different `index_AL`).
 
-Publishing `xpub_SE` is safe by design. Knowledge of an xpub, without the corresponding child derivation index, reveals no actionable information to an adversary. The index `index_BE` is derived from `secret_BE`, which is known only to B and E.
+### 7.4 Order Book Spam Prevention
 
-Buyers should nonetheless verify that the `VSE.address` they compute matches on-chain activity before transmitting funds, to guard against data layer tampering.
+**Pen DSL enforces:**
+- **Signature requirement** → only authenticated users
+- **PoW (difficulty 2)** → CPU cost to create order
+- **Temporal window** → old orders auto-expire
 
----
-
-## 6. Address Consistency Verification
-
-Any implementation must verify that watch-only and full derivation paths produce identical addresses for the same parameters:
-
-```javascript
-// Watch-only derivation (as performed by B)
-const addrFromXpub = HDNodeWallet
-    .fromExtendedKey(xpub_SE)
-    .deriveChild(index_BE)
-    .address
-
-// Full derivation (as performed by E)
-const addrFromXprv = root_SE
-    .deriveChild(index_BE)
-    .address
-
-console.assert(addrFromXpub === addrFromXprv, "Address mismatch — derivation error")
-```
-
-This assertion must be part of the test suite for any escrow implementation.
+**Gun layer enforces:**
+- **LEX prefix matching** → efficient discovery queries
+- **P2P sync** → distributed order book
 
 ---
 
-## 7. Risk Register
+## 8. Risk Register
 
 | Risk | Severity | Mitigation |
 |---|---|---|
-| `sea.secret` non-determinism | Critical | Verify determinism in test suite: two calls with identical arguments must return identical results |
-| SEA not initialised at call time | High | Guard all escrow operations; SEA is only available after `Construct.GDB()` completes |
-| BIP-32 non-hardened index overflow | Low | Index is masked to 31 bits via `& 0x7fffffff`; `sha256` output provides uniform distribution |
-| `HDNodeWallet.fromSeed` entropy requirement | Low | `sha256` always produces 32 bytes, which satisfies the 16–64 byte requirement |
-| `xpub` data layer tampering | Medium | Buyers verify the derived address against on-chain state prior to payment |
-| Order ID collision | Very low | `sha256(itemId ⊕ B.pub ⊕ timestamp)` provides sufficient collision resistance |
-| E key compromise | Critical | Outside protocol scope; requires operational security controls on E's key material |
+| `sea.secret` non-determinism | Critical | Test suite verification |
+| SEA not initialized | High | Guard all operations; wait for `Construct.GDB()` |
+| BIP-32 index overflow | Low | Masked to 31 bits via `& 0x7fffffff` |
+| xpub tampering in Gun | Medium | Traders verify escrow address on-chain before deposit |
+| Order ID collision | Very low | `sha256(orderId ⊕ M.pub ⊕ T.pub ⊕ timestamp)` |
+| P key compromise | Critical | Operational security (outside protocol scope) |
+| Payer cannot self-refund | **Design limitation** | **Platform MUST intervene for refunds.** Payer only has recipient's xpub (watch-only), cannot derive private key. This is by design — same mechanism that prevents payer from withdrawing prevents self-refund. |
+| Platform unavailable (refunds blocked) | Medium | Multi-sig Platform keys, backup arbitrators, or smart contract fallback (future) |
+| In-game item delivery fraud | Medium | Dispute resolution by P with proof requirements |
+| Candle drift (client time skew) | Low | Accept ±2 candles forward, ±100 backward |
 
 ---
 
-## 8. Out of Scope
+## 9. Out of Scope
 
-The following are explicitly outside the scope of this protocol version:
-
-- **Fiat payment channels** (PayPal, credit card) — escrow for non-crypto payments is handled by platform-level account balances and is not addressed here
-- **Smart contract enforcement** — the protocol intentionally avoids on-chain contracts; E's authority is enforced by key custody, not code
-- **Multi-signature schemes** — the current model uses E as a single arbiter; multi-sig is a candidate for a future protocol revision
-- **Affiliate flow UI** — commission wallet mechanics are fully specified above; UI implementation is deferred
+- **Fiat payments** (handled by platform account balances)
+- **Smart contract enforcement** (intentionally avoided)
+- **Multi-signature** (future revision candidate)
+- **Cross-chain atomic swaps** (single-chain trades only)
+- **In-game API integration** (manual delivery via trade/mail)
 
 ---
 
-*2026-03-12*
+## 10. Implementation Checklist
+
+- [ ] `src/core/Escrow.js` — key derivation functions (PL + AL)
+- [ ] `src/core/Order.js` — Gun order CRUD helpers
+- [ ] `src/core/Affiliate.js` — referral tracking + commission calculation
+- [ ] `src/UI/routes/order/` — order book UI + trade flow
+- [ ] Pen soul definition for orders
+- [ ] Gun .map() discovery queries
+- [ ] Auto-release 24h timer (both PL and AL)
+- [ ] Affiliate index release mechanism (via Gun)
+- [ ] Dispute UI at `/dispute`
+- [ ] Test suite: dual escrow address derivation consistency
+- [ ] Test suite: `sea.secret` determinism
+- [ ] Test suite: candle window validation
+- [ ] Test suite: affiliate commission calculation
+
+---
+
+*2026-04-04 — Revised for P2P trading model*  
+*2026-04-06 — Resolved: No pre-deposit for buy orders (pure P2P, symmetric design)*

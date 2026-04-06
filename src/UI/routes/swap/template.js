@@ -3,7 +3,6 @@ import "/UI/layouts/main/index.js"
 import "/UI/components/wallets/index.js"
 import "/UI/components/context/index.js"
 import "/UI/components/button/index.js"
-import "/UI/components/token-select/index.js"
 import styles from "./styles.css.js"
 
 export const template = html`
@@ -11,11 +10,11 @@ export const template = html`
     <layout-main>
         <h1><ui-context data-key="dictionary.swap" /></h1>
         <main>
-            <ui-wallets />
+            <ui-wallets data-currency="false" />
             <div class="field">
                 <label><ui-context data-key="dictionary.from" /></label>
                 <div class="row">
-                    <ui-token-select id="from-token"></ui-token-select>
+                    <div id="from-token"></div>
                     <input type="number" id="amount-in" min="0" step="any" disabled />
                 </div>
                 <div class="info" id="balance-in"></div>
@@ -23,7 +22,7 @@ export const template = html`
             <div class="field">
                 <label><ui-context data-key="dictionary.to" /></label>
                 <div class="row">
-                    <ui-token-select id="to-token"></ui-token-select>
+                    <div id="to-token"></div>
                     <div id="quote-out"></div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { render } from "/core/UI.js"
 import template from "./template.js"
 
-export class TOKEN extends HTMLElement {
+export class CRYPTO extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -30,6 +30,6 @@ export class TOKEN extends HTMLElement {
     }
 }
 
-customElements.define("ui-token", TOKEN)
+customElements.define("ui-crypto", CRYPTO)
 
-export default TOKEN
+export default CRYPTO
