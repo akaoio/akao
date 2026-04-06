@@ -84,6 +84,7 @@ export class PROFILE extends HTMLElement {
             })
             $avatarPicker.classList.add("is-open")
             $avatarBackdrop.classList.add("is-open")
+            requestAnimationFrame(() => $avatars.scrollToSelected())
         }
 
         const closePicker = (revert) => {

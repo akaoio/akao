@@ -84,6 +84,10 @@ export class AVATARS extends HTMLElement {
         this.subscriptions.forEach((off) => off())
     }
 
+    scrollToSelected() {
+        this.$identicons.scrollTo(this._previewId ?? this.id)
+    }
+
     commit() {
         if (this._previewId === null) return
         logic.setid(this._previewId, this.step, this.total)

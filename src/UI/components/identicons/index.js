@@ -87,6 +87,11 @@ export class IDENTICONS extends HTMLElement {
         this.subscriptions.forEach((off) => off())
     }
 
+    scrollTo(id, behavior = "instant") {
+        const item = this.$container?.querySelector(`input#i${id}`)?.closest(".item")
+        if (item) item.scrollIntoView({ behavior, inline: "center", block: "nearest" })
+    }
+
     set id(value) {
         this.$id = Number(value)
         const input = this.$container?.querySelector(`input#i${this.$id}`)
