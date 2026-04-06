@@ -1,5 +1,6 @@
 import template from "./template.js"
 import { Access } from "/core/Access.js"
+import Events from "/core/Events.js"
 import { render } from "/core/UI.js"
 import logic from "./logic.js"
 
@@ -8,7 +9,9 @@ export class AVATARS extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this.events = new Events()
         this.subscriptions = []
+        this._previewId = null
         this.step = 5
     }
 
@@ -36,25 +39,70 @@ export class AVATARS extends HTMLElement {
             if (s != null) this.$identicons.dataset.seed = s
         }
 
+        const $cancel = this.shadowRoot.querySelector("#avatar-cancel")
+        const $accept = this.shadowRoot.querySelector("#avatar-accept")
+        const onCancel = () => this.events.emit("cancel")
+        const onAccept = () => this.events.emit("accept")
+        $cancel.addEventListener("click", onCancel)
+        $accept.addEventListener("click", onAccept)
+
         this.subscriptions.push(
-            this.$identicons.events.on("select", ({ detail: { id } }) => { this.id = id }),
-            this.$identicons.events.on("increase", () => { this.total += this.step }),
+            () => $cancel.removeEventListener("click", onCancel),
+            () => $accept.removeEventListener("click", onAccept)
+        )
+
+        this.subscriptions.push(
+            this.$identicons.events.on("select", ({ detail: { id } }) => {
+                this._previewId = id
+                this.$identicons.id = id
+                this.events.emit("preview", { id })
+            }),
+            this.$identicons.events.on("increase", ({ detail }) => {
+                if (detail?.scrollToNew) this.$identicons.render(true)
+                this.total += this.step
+                this.$identicons.total = this.total
+            }),
+            this.$identicons.events.on("decrease", () => {
+                if (this.total - this.step > (this._previewId ?? this.id)) {
+                    this.total -= this.step
+                    this.$identicons.total = this.total
+                }
+            }),
             Access.on("authenticated", async ({ value }) => {
                 this.style.display = value ? "flex" : "none"
-                if (value) { await seed(); this.render() }
-                else this.$identicons.clear()
-            }),
-            Access.on("avatar", () => this.render())
+                this._previewId = null
+                if (value) {
+                    await seed()
+                    this.render()
+                } else this.$identicons.clear()
+            })
         )
         if (Access.get("authenticated")) seed().then(() => this.render())
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach(off => off())
+        this.subscriptions.forEach((off) => off())
+    }
+
+    scrollToSelected() {
+        this.$identicons.scrollTo(this._previewId ?? this.id)
+    }
+
+    commit() {
+        if (this._previewId === null) return
+        logic.setid(this._previewId, this.step, this.total)
+        this.$identicons.savedId = this._previewId
+        this._previewId = null
+    }
+
+    revert(originalId) {
+        this._previewId = null
+        this.$identicons.id = originalId
     }
 
     render() {
-        this.$identicons.id = this.id
+        this.$identicons.savedId = this.id
+        this.$identicons.id = this._previewId ?? this.id
         this.$identicons.total = this.total
     }
 }

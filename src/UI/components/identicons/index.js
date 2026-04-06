@@ -2,6 +2,26 @@ import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import Events from "/core/Events.js"
 
+const _workCache = new Map()
+
+function hashHue(str) {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i)
+        hash = (hash << 5) - hash + char
+        hash = hash & hash
+    }
+    return Math.abs(hash) % 360
+}
+
+export async function cachedWork(data, salt) {
+    const key = `${data}:${salt}`
+    if (_workCache.has(key)) return _workCache.get(key)
+    const result = await globalThis.sea.work(data, salt)
+    _workCache.set(key, result)
+    return result
+}
+
 export class IDENTICONS extends HTMLElement {
     constructor() {
         super()
@@ -9,16 +29,23 @@ export class IDENTICONS extends HTMLElement {
         this.$subs = []
         this.subscriptions = []
         this.$id = 0
+        this.$savedId = 0
         this.$total = 0
         this.$renderPending = false
-        this._loadingMore = false
+        this._scrollToNew = false
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
 
-    get name() { return this.dataset.name || "item" }
-    get size() { return Number(this.dataset.size) || 5 }
-    get step() { return Number(this.dataset.step) || 5 }
+    get name() {
+        return this.dataset.name || "item"
+    }
+    get size() {
+        return Number(this.dataset.size) || 5
+    }
+    get step() {
+        return Number(this.dataset.step) || 5
+    }
 
     static get observedAttributes() {
         return ["data-seed"]
@@ -33,33 +60,53 @@ export class IDENTICONS extends HTMLElement {
 
     connectedCallback() {
         this.$container = this.shadowRoot.querySelector("#container")
+        this.$loader = this.shadowRoot.querySelector("#loader")
 
-        const onScroll = () => {
-            if (this._loadingMore) return
-            const { scrollLeft, scrollWidth, clientWidth } = this.$container
-            if (scrollWidth - scrollLeft - clientWidth < clientWidth * 0.5) {
-                this._loadingMore = true
-                this.events.emit("increase")
-                setTimeout(() => { this._loadingMore = false }, 600)
-            }
+        const onWheel = (e) => {
+            if (e.deltaY === 0) return
+            e.preventDefault()
+            const delta = (e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY) * 3
+            this.$container.scrollBy({ left: delta, behavior: "auto" })
         }
+        this.$container.addEventListener("wheel", onWheel, { passive: false })
+        this.subscriptions.push(() => this.$container.removeEventListener("wheel", onWheel))
 
-        this.$container.addEventListener("scroll", onScroll, { passive: true })
-        this.subscriptions.push(() => this.$container.removeEventListener("scroll", onScroll))
+        const onDecrease = () => this.events.emit("decrease")
+        const onIncrease = () => this.events.emit("increase", { scrollToNew: true })
+        const $dec = this.shadowRoot.querySelector("#status-decrease")
+        const $inc = this.shadowRoot.querySelector("#status-increase")
+        $dec.addEventListener("click", onDecrease)
+        $inc.addEventListener("click", onIncrease)
+        this.subscriptions.push(
+            () => $dec.removeEventListener("click", onDecrease),
+            () => $inc.removeEventListener("click", onIncrease)
+        )
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach(off => off())
+        this.subscriptions.forEach((off) => off())
+    }
+
+    scrollTo(id, behavior = "instant") {
+        const item = this.$container?.querySelector(`input#i${id}`)?.closest(".item")
+        if (item) item.scrollIntoView({ behavior, inline: "center", block: "nearest" })
     }
 
     set id(value) {
         this.$id = Number(value)
         const input = this.$container?.querySelector(`input#i${this.$id}`)
         if (input) input.checked = true
+        this._updateStatus()
+    }
+
+    set savedId(value) {
+        this.$savedId = Number(value)
+        this._updateStatus()
     }
 
     set total(value) {
         this.$total = Number(value)
+        this._updateStatus()
         this.render()
     }
 
@@ -67,10 +114,13 @@ export class IDENTICONS extends HTMLElement {
         if (this.$container.children.length >= this.$total) return
         const templates = []
         for (let id = this.$container.children.length; id < this.$total; id++) {
-            const seed = await globalThis.sea.work(this.dataset.seed, id)
-            const select = () => this.events.emit("select", { id })
+            const seed = await cachedWork(this.dataset.seed, id)
+            const hue = hashHue(seed)
+            const select = () => {
+                this.events.emit("select", { id })
+            }
             templates.push(html`
-                <span class="item">
+                <span class="item" style="--item-hue: ${hue}">
                     <input id="i${id}" type="radio" name="${this.name}" value="${id}" />
                     <label
                         for="i${id}"
@@ -85,10 +135,7 @@ export class IDENTICONS extends HTMLElement {
         }
         render(templates, this.$container, { append: true })
         const input = this.$container.querySelector(`input#i${this.$id}`)
-        if (input) {
-            input.checked = true
-            input.closest(".item")?.scrollIntoView({ behavior: "instant", block: "nearest", inline: "center" })
-        }
+        if (input) input.checked = true
     }
 
     remove() {
@@ -100,21 +147,56 @@ export class IDENTICONS extends HTMLElement {
     }
 
     clear() {
-        this.$subs.forEach(off => off())
+        this.$subs.forEach((off) => off())
         this.$subs = []
         if (!this.$container) return
         while (this.$container.firstChild) this.$container.removeChild(this.$container.firstChild)
     }
 
-    render() {
+    render(scrollToNew = false) {
+        if (scrollToNew) this._scrollToNew = true
         if (this.$renderPending) return
         this.$renderPending = true
         queueMicrotask(async () => {
             this.$renderPending = false
+            const doScroll = this._scrollToNew
+            this._scrollToNew = false
             if (!this.$total || !this.dataset.seed || !this.$container) return
-            if (this.$container.children.length < this.$total) await this.create()
+            if (this.$container.children.length < this.$total) {
+                const firstNewIndex = this.$container.children.length
+                this._setLoading(true)
+                await this.create()
+                if (doScroll) {
+                    const firstNew = this.$container.children[firstNewIndex]
+                    if (firstNew) firstNew.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
+                }
+                this._setLoading(false)
+            }
             if (this.$container.children.length > this.$total) this.remove()
         })
+    }
+
+    _setLoading(on) {
+        if (!this.$loader) return
+        this.$loader.hidden = !on
+        const $inc = this.shadowRoot.querySelector("#status-increase")
+        if ($inc) $inc.disabled = on
+    }
+
+    _updateStatus() {
+        const root = this.shadowRoot
+        if (!root) return
+        const saved = this.$savedId
+        const selected = this.$id
+        const total = this.$total
+        const hasDiff = selected !== saved
+
+        root.querySelector("#status-saved").textContent = `#${saved + 1}`
+        root.querySelector("#status-preview-num").textContent = `#${selected + 1}`
+        root.querySelector("#status-preview").hidden = !hasDiff
+        root.querySelector("#status-arrow").hidden = !hasDiff
+        root.querySelector("#status-total").textContent = total ? `${total} avatars` : ""
+        root.querySelector("#status-decrease").disabled = total - this.step <= selected
     }
 }
 

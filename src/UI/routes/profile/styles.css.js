@@ -144,60 +144,46 @@ export const styles = css`
             opacity: 0.85;
         }
 
-        /* ── Avatar picker — sits beside the avatar, same vertical overflow ── */
+        /* ── Avatar picker backdrop ── */
+        .profile-picker-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1100;
+            background: color-mix(in hsl, var(--background) 40%, transparent);
+            backdrop-filter: blur(var(--blur-md));
+            -webkit-backdrop-filter: blur(var(--blur-md));
+
+            &.is-open { display: block; }
+        }
+
+        /* ── Avatar picker — full-width fixed panel from bottom ── */
         .profile-avatar-picker {
-            /* items = 75% of picker height → selected at scale(1.2) reaches 90%, leaving
-               5% breathing room each side at every breakpoint. No vertical padding needed. */
-            --icon-lg: calc(var(--avatar-size) * 0.75);
+            --icon-lg: calc(var(--avatar-size) * 1.5);
             --identicons-pad-v: 0px;
             display: none;
-            position: absolute;
+            position: fixed;
             bottom: 0;
-            /* start right after the avatar */
-            left: calc(var(--page-pad) + var(--avatar-size) + var(--space-3));
-            right: var(--page-pad);
-            height: var(--avatar-size);
-            transform: translateY(50%);
-            z-index: 1;
-            align-items: center;
+            left: 0;
+            right: 0;
+            height: calc(var(--avatar-size) * 2 + var(--space-9) + var(--space-6));
+            z-index: 1200;
+            flex-direction: column;
             overflow: hidden;
-            border: var(--border-width) solid color-mix(in hsl, var(--neon-c) 25%, transparent);
-            box-shadow: var(--glow-c);
-            background: color-mix(in hsl, var(--background) 88%, transparent);
+            border-top: var(--border-width) solid color-mix(in hsl, var(--neon-c) 25%, transparent);
+            box-shadow: 0 -4px 32px color-mix(in hsl, var(--neon-c) 12%, transparent);
+            background: color-mix(in hsl, var(--background) 92%, transparent);
             backdrop-filter: blur(var(--blur-md));
 
             &.is-open { display: flex; }
 
             ui-avatars {
                 flex: 1;
-                min-width: 0;
+                min-height: 0;
                 align-self: stretch;
             }
         }
 
-        .profile-avatar-picker__loader {
-            display: none;
-            position: absolute;
-            inset: 0;
-            align-items: center;
-            justify-content: center;
-            background: color-mix(in hsl, var(--background) 88%, transparent);
-            z-index: 1;
-
-            &::after {
-                content: "";
-                width: 1.25rem;
-                height: 1.25rem;
-                border-radius: 50%;
-                border: 2px solid transparent;
-                border-top-color: var(--neon-c);
-                border-right-color: color-mix(in hsl, var(--neon-c) 35%, transparent);
-                box-shadow: var(--glow-c);
-                animation: picker-spin 0.7s linear infinite;
-            }
-        }
-
-        .is-loading .profile-avatar-picker__loader { display: flex; }
 
         /* ── Body ── */
         .profile-body {
@@ -844,9 +830,7 @@ export const styles = css`
         }
     }
 
-    @keyframes picker-spin {
-        to { transform: rotate(360deg); }
-    }
+
 `
 
 export default styles
