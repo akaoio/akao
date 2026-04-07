@@ -27,7 +27,10 @@ export function isBinary(filePath) {
 // Cannot import join.js here (join.js imports shared.js → circular), so inline the logic.
 function _nodePath(path) {
     const sep = WIN ? "\\" : "/"
-    return process.cwd() + sep + path.filter(Boolean).join(sep)
+    const joined = path.filter(Boolean).join(sep)
+    // Guard: if already absolute (abs path or drive letter), return as-is
+    if (joined.startsWith("/") || /^[A-Za-z]:/.test(joined)) return joined
+    return process.cwd() + sep + joined
 }
 
 // Unified I/O driver — env resolved ONCE at module load, never branches at call time.
