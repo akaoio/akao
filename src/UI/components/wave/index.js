@@ -157,6 +157,10 @@ export class WAVE extends HTMLElement {
         this.events.emit("stream", { stream: null })
         this.events.emit("analyser", { analyser: null })
         this.status.dataset.key = "dictionary.stopped"
+        if (this.audioContext) {
+            this.audioContext.close()
+            this.audioContext = null
+        }
     }
 
     sleep(ms = 0) {

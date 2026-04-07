@@ -1,5 +1,4 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils.js"
 import { Elements, Wallets } from "/core/Stores.js"
@@ -8,9 +7,7 @@ import logic from "./logic.js"
 
 export class WITHDRAW extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
+        super(template)
         this.submit = this.submit.bind(this)
         this.estimateGas = this.estimateGas.bind(this)
     }
@@ -43,6 +40,9 @@ export class WITHDRAW extends BaseRoute {
 
         Elements.Access?.checkpoint()
     }
+
+    onDisconnect() {
+        clearTimeout(this.$gaspend)
     }
 
     estimateGas() {

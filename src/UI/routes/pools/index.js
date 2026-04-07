@@ -1,5 +1,4 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
 import { events } from "/core/Events.js"
 import { Indexes, Lives, Chains } from "/core/Stores.js"
@@ -10,9 +9,7 @@ const PAGE_SIZE = 25
 
 export class POOLS extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
+        super(template)
 
         this._elements = new Map()
         this._allRows = []

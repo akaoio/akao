@@ -5,33 +5,33 @@ import { html, render } from "/core/UI.js"
 import { notify } from "/core/Utils.js"
 import { States } from "/core/States.js"
 import Cart from "/core/Cart.js"
+import BaseRoute from "/UI/BaseRoute.js"
 import logic from "./logic.js"
 
-export class GAME_ITEM_ROUTE extends HTMLElement {
+export class GAME_ITEM_ROUTE extends BaseRoute {
     constructor() {
-        super()
+        super(template)
         const params = Context.get("params") || globalThis.history.state?.params || {}
         this.states = new States({ game: params.game, id: params.item })
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
-        this.subscriptions = []
         this.render = this.render.bind(this)
         this.increase = this.increase.bind(this)
         this.decrease = this.decrease.bind(this)
         this.add = this.add.bind(this)
     }
 
-    async connectedCallback() {
+    async onConnect() {
         const game = this.states.get("game")
         const id = this.states.get("id")
         const meta = await logic.meta(game, id)
         this.states.set({ meta })
-        this.subscriptions.push(Context.on("locale", this.render))
+        this.subscribe(Context.on("locale", this.render))
+        this.listen(this.shadowRoot.querySelector("#decrease"), "click", this.decrease)
+        this.listen(this.shadowRoot.querySelector("#increase"), "click", this.increase)
+        this.listen(this.shadowRoot.querySelector("#add"), "click", this.add)
         this.render()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onDisconnect() {
         Context.del("item")
     }
 
@@ -164,15 +164,6 @@ export class GAME_ITEM_ROUTE extends HTMLElement {
             )
             render(attributes, root.querySelector("#attributes"))
         }
-
-        root.querySelector("#decrease").addEventListener("click", this.decrease)
-        root.querySelector("#increase").addEventListener("click", this.increase)
-        root.querySelector("#add").addEventListener("click", this.add)
-        this.subscriptions.push(
-            () => root.querySelector("#decrease").removeEventListener("click", this.decrease),
-            () => root.querySelector("#increase").removeEventListener("click", this.increase),
-            () => root.querySelector("#add").removeEventListener("click", this.add)
-        )
     }
 }
 

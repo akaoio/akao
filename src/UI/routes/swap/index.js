@@ -10,9 +10,7 @@ import logic from "./logic.js"
 
 export class SWAP extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
+        super(template)
         this.quote = this.quote.bind(this)
         this.submit = this.submit.bind(this)
     }

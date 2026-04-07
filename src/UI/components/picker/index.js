@@ -28,6 +28,12 @@ export class PICKER extends BaseElement {
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.modal.dataset.header = this.dataset.header
         this.watch(this.states, "options", this.render, true)
+        this.listen(this.modal, "change", (e) => {
+            if (e.target.type === "radio" && e.target.name === this.name) {
+                this.select(e.target.value)
+                this.modal.close()
+            }
+        })
     }
 
     show() {
@@ -58,24 +64,10 @@ export class PICKER extends BaseElement {
         // Create single template with all options
         const options = this.states
             .get("options")
-            .filter((option) => {
-                // Only process options that don't exist yet
-                const exist = this.modal.querySelector(`input[type="radio"][id="${option.value}"]`)
-                return !exist && option.value
-            })
             .map((option) => {
-                const select = () => {
-                    this.select(option.value)
-                    this.modal.close()
-                }
                 return html`
                     <input id="${option.value}" type="radio" name="${name}" value="${option.value}" ${option.value == this.selected ? "checked" : ""} />
-                    <label
-                        for="${option.value}"
-                        ${({ element }) => {
-                            element.addEventListener("click", select)
-                            this.subscriptions.push(() => element.removeEventListener("click", select))
-                        }}>
+                    <label for="${option.value}">
                         ${option.label}
                     </label>
                 `

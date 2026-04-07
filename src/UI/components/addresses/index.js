@@ -53,6 +53,7 @@ export class ADDRESSES extends BaseElement {
                         addresses[key] = address
                         this.states.set({ addresses })
                     })
+                    this.subscribe(() => this.scope?.off?.())
                 }
             })
         )

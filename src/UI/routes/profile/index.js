@@ -7,9 +7,7 @@ import logic, { SOCIAL_PLATFORMS } from "./logic.js"
 
 export class PROFILE extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
+        super(template)
         this.states = new States({ name: "", bio: "", links: {}, following: [], editing: false, editingBio: false, editingLinks: false })
         this._followingSubs = []
         this._followingScope = null
