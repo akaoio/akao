@@ -1,6 +1,7 @@
 id: blaze-grenade-4f6ab
 game: arc-raiders
 type: Throwable
+catalog: game
 tags:
   - rare
   - throwable

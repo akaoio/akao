@@ -1,6 +1,7 @@
 id: fireworks-box-blueprint-2f729
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

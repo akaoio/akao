@@ -1,6 +1,7 @@
 id: ruined-parachute-baa00
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

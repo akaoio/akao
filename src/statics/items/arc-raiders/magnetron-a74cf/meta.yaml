@@ -1,6 +1,7 @@
 id: magnetron-a74cf
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - epic
   - recyclable

@@ -1,6 +1,7 @@
 id: arc-synthetic-resin-c3b0c
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

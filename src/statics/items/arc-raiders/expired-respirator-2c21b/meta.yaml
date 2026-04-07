@@ -1,6 +1,7 @@
 id: expired-respirator-2c21b
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

@@ -1,6 +1,7 @@
 id: arc-powercell-8e3bb
 game: arc-raiders
 type: Topside Material
+catalog: game
 tags:
   - common
   - topside material

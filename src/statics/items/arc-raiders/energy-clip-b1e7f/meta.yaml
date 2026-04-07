@@ -1,6 +1,7 @@
 id: energy-clip-b1e7f
 game: arc-raiders
 type: Ammunition
+catalog: game
 tags:
   - rare
   - ammunition

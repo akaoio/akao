@@ -1,6 +1,7 @@
 id: hornet-driver-9a00e
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

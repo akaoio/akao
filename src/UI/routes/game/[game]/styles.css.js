@@ -20,7 +20,6 @@ export const styles = css`
             padding-top: calc(var(--space-4) + var(--hero-pad-top));
             padding-bottom: var(--space-6);
             padding-inline: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
-            border-bottom: var(--border-width) solid var(--game-text-color, var(--game-primary, var(--color)));
             display: flex;
             flex-direction: column;
             gap: var(--space-2);

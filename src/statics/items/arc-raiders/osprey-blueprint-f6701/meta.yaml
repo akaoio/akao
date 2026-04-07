@@ -1,6 +1,7 @@
 id: osprey-blueprint-f6701
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

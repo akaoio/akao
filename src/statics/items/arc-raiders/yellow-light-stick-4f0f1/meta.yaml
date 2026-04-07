@@ -1,6 +1,7 @@
 id: yellow-light-stick-4f0f1
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

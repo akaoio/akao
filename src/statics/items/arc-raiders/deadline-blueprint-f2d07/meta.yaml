@@ -1,6 +1,7 @@
 id: deadline-blueprint-f2d07
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

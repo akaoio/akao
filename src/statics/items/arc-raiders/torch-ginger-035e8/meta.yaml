@@ -1,6 +1,7 @@
 id: torch-ginger-035e8
 game: arc-raiders
 type: Material
+catalog: game
 tags:
   - uncommon
   - material

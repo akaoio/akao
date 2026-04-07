@@ -1,6 +1,7 @@
 id: rotary-encoder-b9fd6
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

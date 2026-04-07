@@ -1,6 +1,7 @@
 id: fresh-meat-fe62c
 game: diablo-4
 type: Currency
+catalog: game
 tags:
   - diablo-4
   - special

@@ -1,6 +1,7 @@
 id: jupiter-blueprint-e8ee6
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

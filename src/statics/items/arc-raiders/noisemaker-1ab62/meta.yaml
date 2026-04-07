@@ -1,6 +1,7 @@
 id: noisemaker-1ab62
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

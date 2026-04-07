@@ -1,6 +1,7 @@
 id: torrente-blueprint-6b634
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

@@ -1,6 +1,7 @@
 id: thermostat-181be
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

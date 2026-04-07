@@ -1,6 +1,7 @@
 id: damaged-rocketeer-driver-c4665
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - common
   - recyclable

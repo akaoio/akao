@@ -1,6 +1,7 @@
 id: duct-tape-acdf0
 game: arc-raiders
 type: Topside Material
+catalog: game
 tags:
   - uncommon
   - topside material

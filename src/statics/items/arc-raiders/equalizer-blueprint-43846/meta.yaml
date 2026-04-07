@@ -1,6 +1,7 @@
 id: equalizer-blueprint-43846
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

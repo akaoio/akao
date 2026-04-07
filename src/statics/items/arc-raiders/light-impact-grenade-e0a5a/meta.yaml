@@ -1,6 +1,7 @@
 id: light-impact-grenade-e0a5a
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

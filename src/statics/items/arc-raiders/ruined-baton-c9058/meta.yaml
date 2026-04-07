@@ -1,6 +1,7 @@
 id: ruined-baton-c9058
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

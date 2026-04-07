@@ -1,6 +1,7 @@
 id: anvil-iv-3ae00
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - uncommon
   - weapon

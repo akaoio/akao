@@ -1,6 +1,7 @@
 id: acoustic-guitar-ba4df
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - legendary
   - quick use

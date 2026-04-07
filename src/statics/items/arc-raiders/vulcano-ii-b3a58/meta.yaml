@@ -1,6 +1,7 @@
 id: vulcano-ii-b3a58
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - epic
   - weapon

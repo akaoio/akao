@@ -1,6 +1,7 @@
 id: blue-light-stick-blueprint-b86cf
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

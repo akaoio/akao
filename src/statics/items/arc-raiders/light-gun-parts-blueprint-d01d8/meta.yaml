@@ -1,6 +1,7 @@
 id: light-gun-parts-blueprint-d01d8
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

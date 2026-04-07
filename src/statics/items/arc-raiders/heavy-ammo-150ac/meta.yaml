@@ -1,6 +1,7 @@
 id: heavy-ammo-150ac
 game: arc-raiders
 type: Ammunition
+catalog: game
 tags:
   - common
   - ammunition

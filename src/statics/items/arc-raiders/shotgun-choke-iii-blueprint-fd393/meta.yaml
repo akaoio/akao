@@ -1,6 +1,7 @@
 id: shotgun-choke-iii-blueprint-fd393
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

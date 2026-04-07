@@ -1,6 +1,7 @@
 id: spring-cushion-95fab
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

@@ -1,6 +1,7 @@
 id: broken-taser-af5ca
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

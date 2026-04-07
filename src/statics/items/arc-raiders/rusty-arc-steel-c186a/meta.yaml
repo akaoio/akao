@@ -1,6 +1,7 @@
 id: rusty-arc-steel-c186a
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

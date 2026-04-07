@@ -1,6 +1,7 @@
 id: elixir-of-advantage-ef09c
 game: diablo-4
 type: Elixir
+catalog: game
 tags:
   - diablo-4
   - normal

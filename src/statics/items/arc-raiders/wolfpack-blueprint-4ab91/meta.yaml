@@ -1,6 +1,7 @@
 id: wolfpack-blueprint-4ab91
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

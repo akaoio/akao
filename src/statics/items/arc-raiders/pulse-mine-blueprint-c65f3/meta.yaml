@@ -1,6 +1,7 @@
 id: pulse-mine-blueprint-c65f3
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

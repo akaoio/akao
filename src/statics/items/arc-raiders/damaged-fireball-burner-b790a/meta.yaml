@@ -1,6 +1,7 @@
 id: damaged-fireball-burner-b790a
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - common
   - recyclable

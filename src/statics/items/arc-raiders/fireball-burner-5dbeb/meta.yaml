@@ -1,6 +1,7 @@
 id: fireball-burner-5dbeb
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

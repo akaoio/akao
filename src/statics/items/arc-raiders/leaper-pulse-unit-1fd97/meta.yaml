@@ -1,6 +1,7 @@
 id: leaper-pulse-unit-1fd97
 game: arc-raiders
 type: Throwable
+catalog: game
 tags:
   - epic
   - throwable

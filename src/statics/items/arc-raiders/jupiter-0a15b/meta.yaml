@@ -1,6 +1,7 @@
 id: jupiter-0a15b
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - legendary
   - weapon

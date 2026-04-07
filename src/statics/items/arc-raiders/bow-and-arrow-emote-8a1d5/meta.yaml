@@ -1,6 +1,7 @@
 id: bow-and-arrow-emote-8a1d5
 game: arc-raiders
 type: Misc
+catalog: game
 tags:
   - misc
 rarity: Common

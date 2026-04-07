@@ -1,6 +1,7 @@
 id: shrapnel-grenade-37447
 game: arc-raiders
 type: Throwable
+catalog: game
 tags:
   - uncommon
   - throwable

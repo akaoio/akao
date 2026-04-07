@@ -1,6 +1,7 @@
 id: snitch-scanner-a20a2
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

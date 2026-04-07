@@ -1,6 +1,7 @@
 id: metal-parts-a0921
 game: arc-raiders
 type: Basic Material
+catalog: game
 tags:
   - common
   - basic material

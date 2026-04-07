@@ -1,6 +1,7 @@
 id: gas-grenade-trap-8d7ce
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

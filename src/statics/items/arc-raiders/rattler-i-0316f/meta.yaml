@@ -1,6 +1,7 @@
 id: rattler-i-0316f
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - common
   - weapon

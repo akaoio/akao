@@ -1,6 +1,7 @@
 id: jolt-mine-blueprint-0ccb8
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

@@ -1,6 +1,7 @@
 id: raider-tokens-f5d7b
 game: arc-raiders
 type: Misc
+catalog: game
 tags:
   - common
   - misc

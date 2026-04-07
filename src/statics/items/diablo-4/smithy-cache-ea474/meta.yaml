@@ -1,6 +1,7 @@
 id: smithy-cache-ea474
 game: diablo-4
 type: Cache
+catalog: game
 tags:
   - diablo-4
   - unique

@@ -1,6 +1,7 @@
 id: toaster-a0bb2
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

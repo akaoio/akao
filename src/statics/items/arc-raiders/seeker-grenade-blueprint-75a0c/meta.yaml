@@ -1,6 +1,7 @@
 id: seeker-grenade-blueprint-75a0c
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

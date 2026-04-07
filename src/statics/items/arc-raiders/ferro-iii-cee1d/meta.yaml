@@ -1,6 +1,7 @@
 id: ferro-iii-cee1d
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - common
   - weapon

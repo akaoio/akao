@@ -1,6 +1,7 @@
 id: snap-blast-grenade-7c6c2
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - uncommon
   - quick use

@@ -1,6 +1,7 @@
 id: li-l-smoke-grenade-42ca8
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

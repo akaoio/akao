@@ -1,6 +1,7 @@
 id: camera-lens-c89da
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

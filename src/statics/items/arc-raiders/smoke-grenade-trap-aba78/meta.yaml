@@ -1,6 +1,7 @@
 id: smoke-grenade-trap-aba78
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - rare
   - quick use

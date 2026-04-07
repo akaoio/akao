@@ -1,6 +1,7 @@
 id: shield-recharger-40f2c
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - uncommon
   - quick use

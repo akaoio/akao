@@ -1,6 +1,7 @@
 id: showstopper-3e3fc
 game: arc-raiders
 type: Throwable
+catalog: game
 tags:
   - rare
   - throwable

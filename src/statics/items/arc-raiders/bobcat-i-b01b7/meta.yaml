@@ -1,6 +1,7 @@
 id: bobcat-i-b01b7
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - epic
   - weapon

@@ -1,6 +1,7 @@
 id: signal-amplifier-cd21c
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

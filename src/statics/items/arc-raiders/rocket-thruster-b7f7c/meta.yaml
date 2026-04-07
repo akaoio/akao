@@ -1,6 +1,7 @@
 id: rocket-thruster-b7f7c
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

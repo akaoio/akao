@@ -1,6 +1,7 @@
 id: murmuring-cache-7b19c
 game: diablo-4
 type: Quest Reward Cache
+catalog: game
 tags:
   - diablo-4
   - common

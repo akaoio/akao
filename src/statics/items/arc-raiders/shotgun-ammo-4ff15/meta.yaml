@@ -1,6 +1,7 @@
 id: shotgun-ammo-4ff15
 game: arc-raiders
 type: Ammunition
+catalog: game
 tags:
   - common
   - ammunition

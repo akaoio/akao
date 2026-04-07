@@ -1,6 +1,7 @@
 id: bobcat-iii-ce1eb
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - epic
   - weapon

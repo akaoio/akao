@@ -1,6 +1,7 @@
 id: bobcat-iv-0dc19
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - epic
   - weapon

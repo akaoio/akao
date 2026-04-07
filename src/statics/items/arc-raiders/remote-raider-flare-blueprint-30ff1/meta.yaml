@@ -1,6 +1,7 @@
 id: remote-raider-flare-blueprint-30ff1
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

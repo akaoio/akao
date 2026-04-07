@@ -1,6 +1,7 @@
 id: firefly-burner-3c9b2
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

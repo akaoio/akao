@@ -1,6 +1,7 @@
 id: coolant-fd93a
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

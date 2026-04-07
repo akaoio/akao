@@ -1,6 +1,7 @@
 id: tempest-iv-00627
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - epic
   - weapon

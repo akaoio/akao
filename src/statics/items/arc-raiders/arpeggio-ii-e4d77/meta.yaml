@@ -1,6 +1,7 @@
 id: arpeggio-ii-e4d77
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - uncommon
   - weapon

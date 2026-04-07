@@ -1,6 +1,7 @@
 id: green-light-stick-blueprint-89aac
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint
