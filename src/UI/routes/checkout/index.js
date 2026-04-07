@@ -1,11 +1,9 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
+import BaseRoute from "/UI/BaseRoute.js"
 
-export class CHECKOUT extends HTMLElement {
+export class CHECKOUT extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
+        super(template)
     }
 }
 

@@ -1,24 +1,18 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
+import BaseRoute from "/UI/BaseRoute.js"
 import stories from "./stories/index.js"
 
-export class SHOWCASE extends HTMLElement {
+export class SHOWCASE extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
+        super(template)
         this._stories = stories
         this._onHashChange = this._onHashChange.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         this._renderSidebar()
         this._renderCanvas()
-        globalThis.addEventListener("hashchange", this._onHashChange)
-    }
-
-    disconnectedCallback() {
-        globalThis.removeEventListener("hashchange", this._onHashChange)
+        this.listen(globalThis, "hashchange", this._onHashChange)
     }
 
     _currentGroup() {

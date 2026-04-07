@@ -1,7 +1,8 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 
-export class ICON extends HTMLElement {
+export class ICON extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -12,7 +13,7 @@ export class ICON extends HTMLElement {
         return ["data-icon", "class"]
     }
 
-    connectedCallback() {
+    onConnect() {
         if (!this.dataset.icon) return
         this.render()
     }

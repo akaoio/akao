@@ -1,14 +1,15 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 
-export class GAME_ITEM extends HTMLElement {
+export class GAME_ITEM extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
 
-    connectedCallback() {
+    onConnect() {
         this._populate()
     }
 
