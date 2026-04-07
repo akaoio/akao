@@ -3,40 +3,33 @@ import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
 import { events } from "/core/Events.js"
+import BaseElement from "/UI/BaseElement.js"
 import "/UI/components/a/index.js"
 import "/UI/components/svg/index.js"
 import logic from "./logic.js"
 
-export class GAME_NAV extends HTMLElement {
+export class GAME_NAV extends BaseElement {
     constructor() {
         super()
         this.states = new States({ open: false, games: [] })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this._toggle = this._toggle.bind(this)
         this._close = this._close.bind(this)
         this._render = this._render.bind(this)
     }
 
-    async connectedCallback() {
-        this.shadowRoot.querySelector(".game-nav__toggle")?.addEventListener("click", this._toggle)
-        this.shadowRoot.querySelector(".game-nav__close")?.addEventListener("click", this._close)
-        this.shadowRoot.querySelector(".game-nav__backdrop")?.addEventListener("click", this._close)
-        this.subscriptions.push(
+    async onConnect() {
+        this.listen(this.shadowRoot.querySelector(".game-nav__toggle"), "click", this._toggle)
+        this.listen(this.shadowRoot.querySelector(".game-nav__close"), "click", this._close)
+        this.listen(this.shadowRoot.querySelector(".game-nav__backdrop"), "click", this._close)
+        this.subscribe(
             Context.on("locale", this._render),
             Context.on("params", this._render),
-            events.on("game-nav:open", this._toggle),
-            () => this.shadowRoot.querySelector(".game-nav__toggle")?.removeEventListener("click", this._toggle),
-            () => this.shadowRoot.querySelector(".game-nav__close")?.removeEventListener("click", this._close),
-            () => this.shadowRoot.querySelector(".game-nav__backdrop")?.removeEventListener("click", this._close)
+            events.on("game-nav:open", this._toggle)
         )
         await this._loadGames()
         this._render()
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     async _loadGames() {

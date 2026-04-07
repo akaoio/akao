@@ -1,14 +1,14 @@
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { events } from "/core/Events.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class NOTIFICATIONS extends HTMLElement {
+export class NOTIFICATIONS extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.close = this.close.bind(this)
     }
 
@@ -17,8 +17,8 @@ export class NOTIFICATIONS extends HTMLElement {
         if (notification) this.shadowRoot.removeChild(notification)
     }
 
-    connectedCallback() {
-        this.subscriptions.push(
+    onConnect() {
+        this.subscribe(
             events.on("notify", ({ detail }) => {
                 const key = logic.key()
                 const close = () => this.close(key)
@@ -28,8 +28,7 @@ export class NOTIFICATIONS extends HTMLElement {
                         <ui-icon
                             data-icon="x-lg"
                             ${({ element }) => {
-                                element.addEventListener("click", close)
-                                this.subscriptions.push(() => element.removeEventListener("click", close))
+                                this.listen(element, "click", close)
                             }} />
                     </div>
                 `
@@ -38,10 +37,6 @@ export class NOTIFICATIONS extends HTMLElement {
                 setTimeout(close, detail?.delay || 5000)
             })
         )
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 }
 

@@ -1,28 +1,24 @@
 import template from "./template.js"
 import { Context } from "/core/Context.js"
 import { html, render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 import Cart from "/core/Cart.js"
 import logic from "./logic.js"
 
-export class CART extends HTMLElement {
+export class CART extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.render = this.render.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         const button = this.shadowRoot.querySelector("ui-icon")
         this.modal = this.shadowRoot.querySelector("ui-modal")
-        button.addEventListener("click", this.modal.toggleModal)
-        this.subscriptions.push(() => button.removeEventListener("click", this.modal.toggleModal), Cart.states.on("list", this.render), Context.on("locale", this.render))
+        this.listen(button, "click", this.modal.toggleModal.bind(this.modal))
+        this.subscribe(Cart.states.on("list", this.render), Context.on("locale", this.render))
         this.render()
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     async render() {

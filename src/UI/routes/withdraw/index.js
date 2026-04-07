@@ -3,33 +3,32 @@ import { render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils.js"
 import { Elements, Wallets } from "/core/Stores.js"
+import BaseRoute from "/UI/BaseRoute.js"
 import logic from "./logic.js"
 
-export class WITHDRAW extends HTMLElement {
+export class WITHDRAW extends BaseRoute {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.submit = this.submit.bind(this)
         this.estimateGas = this.estimateGas.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.$form = this.shadowRoot.querySelector("#form")
         this.$gas = this.shadowRoot.querySelector("#gas")
         const $submit = this.shadowRoot.querySelector("#submit")
 
         this.$form.querySelectorAll("input[type='text'], input[type='number']").forEach((input) => {
-            this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"]))
-            input.addEventListener("input", this.estimateGas)
-            this.subscriptions.push(() => input.removeEventListener("input", this.estimateGas))
+            this.subscribe(Context.on(["dictionary", input.name], [input, "placeholder"]))
+            this.listen(input, "input", this.estimateGas)
         })
 
-        $submit.addEventListener("click", this.submit)
+        this.listen($submit, "click", this.submit)
 
-        this.subscriptions.push(
+        this.subscribe(
             this.$wallets.states.on("address", ({ value }) => {
                 this.$form.querySelectorAll("input").forEach((el) => (el.disabled = !value))
                 $submit.toggleAttribute("disabled", !value)
@@ -39,15 +38,11 @@ export class WITHDRAW extends HTMLElement {
                 } else 
                     this.estimateGas()
                 
-            }, true),
-            () => $submit.removeEventListener("click", this.submit)
+            }, true)
         )
 
         Elements.Access?.checkpoint()
     }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     estimateGas() {

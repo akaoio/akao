@@ -4,15 +4,15 @@ import Events from "/core/Events.js"
 import States from "/core/States.js"
 import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils/browser.js"
+import BaseElement from "/UI/BaseElement.js"
 import Logic from "./logic.js"
 
-export class AUTHENTICATE extends HTMLElement {
+export class AUTHENTICATE extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.events = new Events(this)
-        this.subscriptions = []
         this.logic = new Logic()
         this.states = new States({ method: null })
         this.state = "neutral"
@@ -25,20 +25,16 @@ export class AUTHENTICATE extends HTMLElement {
         this.wave = this.wave.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         this.$wave = this.shadowRoot.querySelector("ui-wave")
         this.$requestbtn = this.shadowRoot.querySelector("#request-btn")
         this.$stopbtn = this.shadowRoot.querySelector("#stop-btn")
         this.$epub = this.shadowRoot.querySelector("#epub")
-        this.$requestbtn.addEventListener("click", this.onrequestbtn)
-        this.$stopbtn.addEventListener("click", this.onstopbtn)
-        this.shadowRoot.querySelector("#passkey").addEventListener("click", this.passkey)
-        this.shadowRoot.querySelector("#wave").addEventListener("click", this.wave)
-        this.subscriptions.push(
-            () => this.$requestbtn.removeEventListener("click", this.onrequestbtn),
-            () => this.$stopbtn.removeEventListener("click", this.onstopbtn),
-            () => this.shadowRoot.querySelector("#passkey").removeEventListener("click", this.passkey),
-            () => this.shadowRoot.querySelector("#wave").removeEventListener("click", this.wave),
+        this.listen(this.$requestbtn, "click", this.onrequestbtn)
+        this.listen(this.$stopbtn, "click", this.onstopbtn)
+        this.listen(this.shadowRoot.querySelector("#passkey"), "click", this.passkey)
+        this.listen(this.shadowRoot.querySelector("#wave"), "click", this.wave)
+        this.subscribe(
             this.$wave.events.on("message", this.onwave),
             this.states.on("method", this.render)
         )
@@ -46,8 +42,7 @@ export class AUTHENTICATE extends HTMLElement {
         this.initpair()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onDisconnect() {
         this.stop()
     }
 

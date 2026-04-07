@@ -4,20 +4,20 @@ import { Context } from "/core/Context.js"
 import { events } from "/core/Events.js"
 import { Elements, Lives, Chains, Dexs, Wallets } from "/core/Stores.js"
 import { notify, formatNumber } from "/core/Utils.js"
+import BaseRoute from "/UI/BaseRoute.js"
 import SELECT from "/UI/components/select/index.js"
 import logic from "./logic.js"
 
-export class SWAP extends HTMLElement {
+export class SWAP extends BaseRoute {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.quote = this.quote.bind(this)
         this.submit = this.submit.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.$amountIn = this.shadowRoot.querySelector("#amount-in")
         this.$quoteOut = this.shadowRoot.querySelector("#quote-out")
@@ -56,10 +56,10 @@ export class SWAP extends HTMLElement {
         })
         render(this.$toToken, this.shadowRoot.querySelector("#to-token"), { append: true })
 
-        this.$amountIn.addEventListener("input", this.quote)
-        this.$submit.addEventListener("click", this.submit)
+        this.listen(this.$amountIn, "input", this.quote)
+        this.listen(this.$submit, "click", this.submit)
 
-        this.subscriptions.push(
+        this.subscribe(
             this.$wallets.states.on("address", ({ value }) => {
                 const active = !!value
                 this.$amountIn.disabled = !active
@@ -73,11 +73,7 @@ export class SWAP extends HTMLElement {
                 }
             }, true),
             this.$wallets.states.on("chain", () => this.options()),
-            events.on("Lives.pools", () => this.options()),
-            () => {
-                this.$amountIn.removeEventListener("input", this.quote)
-                this.$submit.removeEventListener("click", this.submit)
-            }
+            events.on("Lives.pools", () => this.options())
         )
 
         const params = Context.get("params") || {}
@@ -85,10 +81,6 @@ export class SWAP extends HTMLElement {
         if (params.to) this.$pto = params.to
 
         Elements.Access?.checkpoint()
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     options() {

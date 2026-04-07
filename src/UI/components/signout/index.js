@@ -1,31 +1,22 @@
 import { Elements } from "/core/Stores.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class SIGNOUT extends HTMLElement {
+export class SIGNOUT extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.toggle = this.toggle.bind(this)
         this.signout = this.signout.bind(this)
     }
 
-    connectedCallback() {
-        this.shadowRoot.querySelector("#signout").addEventListener("click", this.toggle)
-        this.shadowRoot.querySelector("#confirm").addEventListener("click", this.signout)
-        this.shadowRoot.querySelector("#back").addEventListener("click", this.toggle)
-        this.subscriptions.push(
-            () => this.shadowRoot.querySelector("#signout").removeEventListener("click", this.toggle),
-            () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signout),
-            () => this.shadowRoot.querySelector("#back").removeEventListener("click", this.toggle)
-        )
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onConnect() {
+        this.listen(this.shadowRoot.querySelector("#signout"), "click", this.toggle)
+        this.listen(this.shadowRoot.querySelector("#confirm"), "click", this.signout)
+        this.listen(this.shadowRoot.querySelector("#back"), "click", this.toggle)
     }
 
     signout() {

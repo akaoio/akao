@@ -1,15 +1,15 @@
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 import { template } from "./template.js"
 
-export class SELECT extends HTMLElement {
+export class SELECT extends BaseElement {
     constructor(props = {}) {
         super()
         this.props = props || {}
         this.states = new States({ options: props?.options || [], selected: props?.selected || null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.change = this.change.bind(this)
         this.render = this.render.bind(this)
     }
@@ -34,23 +34,16 @@ export class SELECT extends HTMLElement {
         }
     }
 
-    connectedCallback() {
+    onConnect() {
         this.select = this.select || this.shadowRoot.querySelector("select")
         this.select.setAttribute("name", this.props.name || this.dataset.name)
         this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")
         if (this.dataset.required || this.props.required) this.select.setAttribute("required", "required")
         if (this.dataset.name) this.select.setAttribute("name", this.dataset.name)
         this.placeholder.forEach(e => e.dataset.key = this.props.placeholder || this.dataset.placeholder || "")
-        this.select.addEventListener("change", this.change)
-        this.subscriptions.push(
-            this.states.on("options", this.render),
-            () => this.select.removeEventListener("change", this.change)
-        )
+        this.listen(this.select, "change", this.change)
+        this.watch(this.states, "options", this.render)
         this.render()
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     change(event) {

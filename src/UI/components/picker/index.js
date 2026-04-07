@@ -1,14 +1,14 @@
 import template from "./template.js"
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 
-export class PICKER extends HTMLElement {
+export class PICKER extends BaseElement {
     constructor() {
         super()
         this.states = new States({ options: [], selected: null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.show = this.show.bind(this)
         this.close = this.close.bind(this)
         this.select = this.select.bind(this)
@@ -24,14 +24,10 @@ export class PICKER extends HTMLElement {
         this.states.set({ [name.replace("data-", "")]: value })
     }
 
-    connectedCallback() {
+    onConnect() {
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.modal.dataset.header = this.dataset.header
-        this.subscriptions.push(this.states.on("options", this.render, true))
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+        this.watch(this.states, "options", this.render, true)
     }
 
     show() {

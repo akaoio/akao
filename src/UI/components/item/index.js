@@ -3,18 +3,18 @@ import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { render } from "/core/UI.js"
 import "/UI/components/game-item/index.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class ITEM extends HTMLElement {
+export class ITEM extends BaseElement {
     constructor() {
         super()
         this.states = new States()
         this.attachShadow({ mode: "open" })
-        this.subscriptions = []
         this.render = this.render.bind(this)
     }
 
-    async connectedCallback() {
+    async onConnect() {
         if ("item" in this.dataset) {
             const item = JSON.parse(this.dataset.item || "{}")
             const catalog = item.catalog || (item.game ? "game" : null)
@@ -39,7 +39,7 @@ export class ITEM extends HTMLElement {
         const key = this.dataset.key
         const { route: routePath } = logic.path(key)
         this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = routePath
-        this.subscriptions.push(
+        this.subscribe(
             Context.on("locale", this.render),
             this.states.on("name", [name, "textContent"]),
             this.states.on("description", [description, "textContent"]),
@@ -53,10 +53,6 @@ export class ITEM extends HTMLElement {
         const data = await logic.meta(key)
         if (data) this.states.set(data)
         if (!this.states.has(["name", "price"])) this.render()
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     async render() {

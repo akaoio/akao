@@ -2,15 +2,15 @@ import template from "./template.js"
 import { Access } from "/core/Access.js"
 import Events from "/core/Events.js"
 import { render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class AVATARS extends HTMLElement {
+export class AVATARS extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.events = new Events()
-        this.subscriptions = []
         this._previewId = null
         this.step = 5
     }
@@ -31,7 +31,7 @@ export class AVATARS extends HTMLElement {
         return logic.settotal(value)
     }
 
-    connectedCallback() {
+    onConnect() {
         this.$identicons = this.shadowRoot.querySelector("ui-identicons")
 
         const seed = async () => {
@@ -43,15 +43,10 @@ export class AVATARS extends HTMLElement {
         const $accept = this.shadowRoot.querySelector("#avatar-accept")
         const onCancel = () => this.events.emit("cancel")
         const onAccept = () => this.events.emit("accept")
-        $cancel.addEventListener("click", onCancel)
-        $accept.addEventListener("click", onAccept)
+        this.listen($cancel, "click", onCancel)
+        this.listen($accept, "click", onAccept)
 
-        this.subscriptions.push(
-            () => $cancel.removeEventListener("click", onCancel),
-            () => $accept.removeEventListener("click", onAccept)
-        )
-
-        this.subscriptions.push(
+        this.subscribe(
             this.$identicons.events.on("select", ({ detail: { id } }) => {
                 this._previewId = id
                 this.$identicons.id = id

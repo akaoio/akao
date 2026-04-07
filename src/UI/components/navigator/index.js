@@ -1,15 +1,15 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 
-export class NAVIGATOR extends HTMLElement {
+export class NAVIGATOR extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
     }
 
-    connectedCallback() {
+    onConnect() {
         const state = this.shadowRoot.querySelector("#state")
         const label = this.shadowRoot.querySelector("label")
         const icon = this.shadowRoot.querySelector("ui-icon")
@@ -20,8 +20,7 @@ export class NAVIGATOR extends HTMLElement {
             if (this.dataset.icon) icon.dataset.icon = this.dataset.icon
             else delete icon.dataset.icon
 
-        label.addEventListener("click", vibrate)
-        this.subscriptions.push(() => label.removeEventListener("click", vibrate))
+        this.listen(label, "click", vibrate)
 
         const active = () => {
             let i = -1
@@ -33,8 +32,7 @@ export class NAVIGATOR extends HTMLElement {
             }
             el.style.setProperty("--active", i)
         }
-        state.addEventListener("change", active)
-        this.subscriptions.push(() => state.removeEventListener("change", active))
+        this.listen(state, "change", active)
 
         // Count the number of children in slot
         // Set --total for parent, and --i for each child
@@ -45,14 +43,9 @@ export class NAVIGATOR extends HTMLElement {
         children.forEach((child, i) => {
             child.style.setProperty("--i", i + 1)
             if (child.tagName !== "UI-NAVIGATOR") {
-                child.addEventListener("click", vibrate)
-                this.subscriptions.push(() => child.removeEventListener("click", vibrate))
+                this.listen(child, "click", vibrate)
             }
         })
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 }
 
