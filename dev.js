@@ -122,10 +122,17 @@ function runBuild(script) {
     })
 }
 
-function injectDevClient(htmlContent) {
+async function injectDevClient(htmlContent) {
     if (htmlContent.includes(DEV_CLIENT_MARKER)) return htmlContent
 
-    const injected = `<script data-dev-client="${DEV_CLIENT_MARKER}">(function(){\n  if (typeof window === "undefined" || !window.EventSource) return;\n  window.__devSseState = window.__devSseState || { connectedAt: null, lastMessageAt: null, messageCount: 0, readyState: null };\n  var source = new EventSource("${DEV_EVENTS_PATH}");\n  source.onopen = function(){\n    window.__devSseState.connectedAt = Date.now();\n    window.__devSseState.readyState = source.readyState;\n  };\n  source.onmessage = function(e){\n    window.__devSseState.messageCount += 1;\n    window.__devSseState.lastMessageAt = Date.now();\n    window.__devSseState.readyState = source.readyState;\n    if (e && e.data === "reload") {\n      try {\n        sessionStorage.setItem("__dev_last_reload_at", String(Date.now()));\n      } catch (_) {}\n      window.location.reload();\n    }\n  };\n  source.onerror = function(){\n    window.__devSseState.readyState = source.readyState;\n  };\n})();</script>`
+    // Read HMR client code from file
+    let hmrClientCode = ""
+    const hmrClientPath = path.join("build", "core", "HMR", "client.js")
+    if (await exists(hmrClientPath)) {
+        hmrClientCode = await fs.readFile(hmrClientPath, "utf8")
+    }
+
+    const injected = `<script type="module" data-dev-client="${DEV_CLIENT_MARKER}">\n${hmrClientCode}\n</script>`
 
     if (/<\/body>/i.test(htmlContent)) return htmlContent.replace(/<\/body>/i, `${injected}</body>`)
     if (/<\/head>/i.test(htmlContent)) return htmlContent.replace(/<\/head>/i, `${injected}</head>`)
@@ -140,6 +147,26 @@ function broadcastReload() {
             sseClients.delete(client)
         }
     }
+}
+
+function broadcastHMR(updates) {
+    const message = JSON.stringify(updates)
+    for (const client of sseClients) {
+        try {
+            client.write(`data: ${message}\n\n`)
+        } catch {
+            sseClients.delete(client)
+        }
+    }
+}
+
+function determineUpdateType(normalizedPath) {
+    if (normalizedPath.includes('/template.js')) return 'template'
+    if (normalizedPath.endsWith('.css.js')) return 'css'
+    if (normalizedPath.endsWith('.js')) return 'js'
+    if (normalizedPath.endsWith('.json')) return 'json'
+    if (normalizedPath.endsWith('.yaml') || normalizedPath.endsWith('.yml')) return 'yaml'
+    return 'other'
 }
 
 function getMimeType(filePath) {
@@ -305,7 +332,7 @@ async function startStaticServer() {
             }
             if (mimeType.startsWith("text/html")) {
                 const content = await fs.readFile(filePath, "utf8")
-                const withClient = injectDevClient(content)
+                const withClient = await injectDevClient(content)
                 res.writeHead(200, { "Content-Type": mimeType, ...coiHeaders })
                 res.end(withClient)
                 return
@@ -387,6 +414,7 @@ async function processQueue() {
             const batch = Array.from(pendingChanges.values())
             pendingChanges.clear()
             let batchChanged = false
+            const hmrUpdates = []
 
             const hasGlobalChange = batch.some(({ normalizedPath }) => shouldFullRebuild(normalizedPath))
             if (hasGlobalChange) {
@@ -408,9 +436,33 @@ async function processQueue() {
                 if (cryptoPaths.test(change.normalizedPath)) continue
                 await handleChange(change)
                 batchChanged = true
+                
+                // Determine HMR update type
+                const updateType = determineUpdateType(change.normalizedPath)
+                const buildPath = toBuildPath(change.normalizedPath)
+                
+                if (buildPath && (updateType === 'js' || updateType === 'css' || updateType === 'template')) {
+                    // Convert to browser-accessible path
+                    const browserPath = normalizePath(buildPath).replace(/^build\//, '/')
+                    
+                    hmrUpdates.push({
+                        type: 'hmr',
+                        path: browserPath,
+                        updateType,
+                        timestamp: Date.now()
+                    })
+                }
             }
 
-            if (batchChanged) broadcastReload()
+            // Send HMR updates or fallback to full reload
+            if (hmrUpdates.length > 0) {
+                console.log(`🔥 HMR: Broadcasting ${hmrUpdates.length} update(s)`)
+                for (const update of hmrUpdates) {
+                    broadcastHMR(update)
+                }
+            } else if (batchChanged) {
+                broadcastReload()
+            }
         }
         console.log("✅ Incremental rebuild completed")
     } catch (error) {
