@@ -28,8 +28,10 @@ node_modules/
 /temp/
 /.certs/
 /src/statics/forex.yaml
+/src/statics/trackers.yaml
 /games/
 /radata/
+/.playwright-mcp/
 
 CLAUDE.md
 .claude

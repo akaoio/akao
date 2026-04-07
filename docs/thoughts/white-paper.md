@@ -31,10 +31,31 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 - ✅ **Non-custodial (happy path)**: Platform arbitrates disputes/refunds, not involved in normal trades
 
 **Key innovations**:
-- **Dual escrow wallets** per trade: Payment Lock (PL) + Affiliate Lock (AL)
+- **Dual escrow wallets** per trade: Payment Lock (PL) + Commission Lock (CL)
 - **Temporal validation**: Orders auto-expire using candle-based epochs (Pen DSL)
 - **Post-match deposits**: Both order types deposit after matching (pure P2P, no Platform involvement)
 - **Trustless verification**: Anyone can verify escrow addresses on-chain before accepting
+
+---
+
+## Glossary of Abbreviations
+
+| Abbreviation | Full Name | Description |
+|--------------|-----------|-------------|
+| **P** | Platform | Marketplace operator and trusted arbiter |
+| **M** | Maker | Trader who creates an order (buy or sell) |
+| **T** | Taker | Trader who accepts/matches an order |
+| **A** | Affiliate | Referrer who earns commission on trades |
+| **CW** | Commitment Wallet | Pre-deposit wallet for buy orders (proof of funds) |
+| **PL** | Payment Lock | Escrow wallet holding trade payment |
+| **CL** | Commission Lock | Escrow wallet holding affiliate commission |
+| **SEA** | Security, Encryption, Authorization | GunDB's cryptography library (Curve25519) |
+| **BIP-32** | Bitcoin Improvement Proposal 32 | Hierarchical deterministic wallet standard |
+| **ECDH** | Elliptic Curve Diffie-Hellman | Shared secret key exchange protocol |
+| **HD** | Hierarchical Deterministic | Wallet derivation system (BIP-32) |
+| **xpub** | Extended Public Key | Watch-only public key for address derivation |
+| **xprv** | Extended Private Key | Root private key for spending |
+| **DSL** | Domain-Specific Language | Pen validation language for order keys |
 
 ---
 
@@ -55,10 +76,14 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 
 | Wallet | Symbol | Full Name | Purpose | Derived From |
 |--------|--------|-----------|---------|--------------|
-| Payment escrow | **PL** | Payment Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` |
-| Commission escrow | **AL** | Affiliate Lock | Holds affiliate commission (payer → affiliate) | `root_AP` |
+| Commitment wallet | **CW** | Commitment Wallet | Pre-deposit for buy orders (proof of funds) | `root_M` (Maker's own root) |
+| Payment escrow | **PL** | Payment Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` (recipient's root) |
+| Commission escrow | **CL** | Commission Lock | Holds affiliate commission (payer → affiliate) | `root_AP` (affiliate's root) |
 
-**Note:** Each trade creates exactly 2 lock wallets: 1 PL (payment) + 1 AL (commission, if affiliate exists).
+**Notes:** 
+- **CW** (buy orders only): Maker deposits before posting order → Taker verifies on-chain → funds transfer to PL/CL after matching
+- Each trade creates exactly 2 lock wallets: 1 PL (payment) + 1 CL (commission, if affiliate exists)
+- CW uses **maker's own root** (maker controls funds), PL/CL use **recipient's root** (trustless escrow)
 
 ### Trust Assumptions
 
@@ -146,7 +171,7 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 2. Taker discovers order → Gun .map() query
 3. Taker accepts order → trade status: "open" → "matched" (both parties known)
 4. Payer deposits to escrow (Maker for buy, Taker for sell):
-   - Computes PL/AL from recipient's xpub + payer's index
+   - Computes PL/CL from recipient's xpub + payer's index
    - Deposits within 10-min timeout or trade auto-cancels
 5. In-game item delivery (trade/mail/drop)
 6. Buyer confirms → reveals index to seller/affiliate
@@ -161,7 +186,7 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 - **One root per trader-platform pair**
 - **Two escrow wallets per trade:**
   - **Payment escrow (PL)** — holds trade payment (M/P or T/P root)
-  - **Affiliate escrow (AL)** — holds affiliate commission (A/P root)
+  - **Affiliate escrow (CL)** — holds affiliate commission (A/P root)
 
 ---
 
@@ -239,7 +264,7 @@ PL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_PL)
 - **Buy order**: Maker (buyer) is payer, Taker (seller) is recipient
 - **Sell order**: Taker (buyer) is payer, Maker (seller) is recipient
 
-#### 4.3.2 Affiliate Lock (AL)
+#### 4.3.2 Commission Lock (CL)
 
 **Same pattern - payer uses affiliate's xpub + payer's index:**
 
@@ -258,10 +283,10 @@ seed_index = sha256(secret_payer + ":" + tradeId)
 index_AL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
 
 // Payer derives from AFFILIATE's xpub + PAYER's index
-AL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_AL)
+CL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_AL)
 
-// AL.address — payer deposits commission here (after matching)
-// AL.privateKey — Affiliate needs index revealed to spend
+// CL.address — payer deposits commission here (after matching)
+// CL.privateKey — Affiliate needs index revealed to spend
 ```
 
 **Security properties**:
@@ -272,8 +297,8 @@ AL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_AL)
 - Platform **can always spend** (knows all secrets → can compute all indexes + has all xprvs)
 
 **Who pays (AFTER matching):**
-- **Buy order:** Maker deposits to `PL` + `AL` (both use Taker's/Affiliate's xpub + Maker's index)
-- **Sell order:** Taker deposits to `PL` + `AL` (both use Maker's/Affiliate's xpub + Taker's index)
+- **Buy order:** Maker deposits to `PL` + `CL` (both use Taker's/Affiliate's xpub + Maker's index)
+- **Sell order:** Taker deposits to `PL` + `CL` (both use Maker's/Affiliate's xpub + Taker's index)
 
 **When deposit happens:**
 - **Both order types**: Deposit occurs AFTER matching (when both parties known)
@@ -293,8 +318,8 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 
 1. Maker posts order (no deposit)
 2. Taker accepts → tradeId created
-3. Payer computes PL/AL from Recipient's xpub + Payer's index
-4. Payer deposits to PL.address + AL.address (within deposit timeout)
+3. Payer computes PL/CL from Recipient's xpub + Payer's index
+4. Payer deposits to PL.address + CL.address (within deposit timeout)
 5. Seller delivers item
 6. Buyer confirms receipt → reveals index_PL and index_AL
 7. Recipient uses own root + revealed index → derives spending key → withdraws
@@ -336,6 +361,58 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 
 **No pre-deposit** for either order type → pure P2P (Platform not involved)
 
+### Step 1.5 — Order Wallet (Proof of Funds) for Buy Orders
+
+**Problem**: Takers waste time accepting buy orders from makers who don't actually have funds.
+
+**Solution**: Buy order makers deposit funds into a **deterministic order wallet** before creating the order. This provides **trustless proof of budget** without locking funds in escrow yet.
+
+**Order Wallet Derivation** (buy orders only):
+
+```javascript
+// Maker derives order wallet from own xpub + orderId
+const secret_M = await sea.secret(P.pub, M.pair)
+const root_M = HDNodeWallet.fromSeed(sha256(secret_M))
+const xpub_M = root_M.neuter().extendedKey
+
+// Order-specific index
+const index_order = parseInt(sha256(orderId).slice(0,8), 16) & 0x7fffffff
+
+// Commitment wallet (Maker controls private key)
+const orderWallet = root_M.deriveChild(index_order)
+
+// Maker deposits BEFORE posting order
+await M.wallet.sendTransaction({
+    to: orderWallet.address,
+    value: totalAmount  // payment + commission + platform fee
+})
+```
+
+**Order creation flow (buy orders)**:
+1. Maker computes `orderWallet.address` from `xpub_M + orderId`
+2. Maker deposits full amount to `orderWallet.address`
+3. Maker posts order to Gun with `orderWallet: orderWallet.address`
+4. Taker verifies on-chain balance before accepting: `chain.getBalance(orderWallet.address) >= requiredAmount`
+
+**After matching** (Taker accepts):
+- Maker transfers from `orderWallet` → Payment Lock (PL) + Commission Lock (CL)
+- This is an **atomic transition**: funds move directly from order wallet to escrow locks
+- Gas cost: 2 transactions (deposit to order wallet + transfer to locks)
+
+**Benefits**:
+- ✅ Taker can verify funds exist on-chain before accepting
+- ✅ Trustless proof (on-chain balance query)
+- ✅ Maker retains full control of funds in order wallet (can cancel order and withdraw anytime)
+- ✅ No Platform involvement until trade is matched
+
+**Cancellation**:
+- Maker withdraws from `orderWallet` back to main wallet using own private key
+- Order auto-expires when balance drops below required amount
+
+**Sell orders**: No order wallet needed (seller proves ownership by delivering item, not by depositing funds upfront)
+
+---
+
 ### Step 2 — Taker Discovers and Accepts Order
 
 1. T queries Gun order book:
@@ -344,12 +421,22 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
        '.': { '*': `${candle}:penitent-greaves:buy:` }
    })
    ```
-2. T sees M's order, clicks "Accept"
-3. **Trade matching** (creates `tradeId`):
+2. T sees M's order
+   - **For buy orders**: T verifies on-chain balance of `orderWallet.address` before accepting
+     ```javascript
+     const balance = await chain.getBalance(order.orderWallet)
+     if (balance < requiredAmount) {
+         UI.error("Maker has insufficient funds")
+         return
+     }
+     ```
+   - **For sell orders**: No verification needed (seller will prove ownership by delivery)
+3. T clicks "Accept"
+4. **Trade matching** (creates `tradeId`):
    ```javascript
    tradeId = sha256(orderId + M.pub + T.pub + timestamp)
    ```
-4. Trade status → `"matched"` (both parties known, waiting for deposit)
+5. Trade status → `"matched"` (both parties known, waiting for deposit)
 
 ### Step 3 — Payer Deposits to Escrow
 
@@ -375,20 +462,38 @@ const index_PL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
 // Derive Payment Lock from recipient's xpub + payer's index
 const PL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_PL)
 
-// Derive Affiliate Lock (if affiliate exists)
-const AL = referrer ? 
+// Derive Commission Lock (if affiliate exists)
+const CL = referrer ? 
     HDNodeWallet.fromExtendedKey(xpub_affiliate).deriveChild(index_PL) : 
     null
 
-// Payer deposits
-await payer.wallet.sendTransaction({ to: PL.address, value: paymentAmount })
-if (AL) {
-    await payer.wallet.sendTransaction({ to: AL.address, value: commissionAmount })
+// Payer deposits to escrow locks
+// For buy orders: Transfer from orderWallet → PL/CL (atomic transition)
+// For sell orders: Direct deposit from Taker's wallet → PL/CL
+
+if (orderType === 'buy') {
+    // Maker transfers from order wallet to escrow locks
+    const orderWallet = M.root.deriveChild(index_order)  // Maker has private key
+    
+    await orderWallet.sendTransaction({ to: PL.address, value: paymentAmount })
+    if (CL) {
+        await orderWallet.sendTransaction({ to: CL.address, value: commissionAmount })
+    }
+    await orderWallet.sendTransaction({ 
+        to: Platform.operationalWallet, 
+        value: platformFee 
+    })
+} else {
+    // Taker deposits directly to escrow locks
+    await T.wallet.sendTransaction({ to: PL.address, value: paymentAmount })
+    if (CL) {
+        await T.wallet.sendTransaction({ to: CL.address, value: commissionAmount })
+    }
+    await T.wallet.sendTransaction({ 
+        to: Platform.operationalWallet, 
+        value: platformFee 
+    })
 }
-await payer.wallet.sendTransaction({ 
-    to: Platform.operationalWallet, 
-    value: platformFee 
-})
 ```
 
 **Deposit timeout**: If payer doesn't deposit within 10 minutes → trade auto-cancels → order returns to "open"
@@ -437,9 +542,9 @@ await PL.sendTransaction({
 if (affiliate) {
     const secret_affiliate = await sea.secret(P.pub, affiliate.pair)
     const root_affiliate = HDNodeWallet.fromSeed(sha256(secret_affiliate))
-    const AL = root_affiliate.deriveChild(index_PL)
+    const CL = root_affiliate.deriveChild(index_PL)
     
-    await AL.sendTransaction({
+    await CL.sendTransaction({
         to: affiliate.wallet,
         value: commissionAmount
     })
@@ -494,8 +599,8 @@ const PL = root_recipient.deriveChild(index_PL)
 // Same for affiliate lock
 const secret_affiliate = await sea.secret(affiliate.pub, P.pair)
 const root_affiliate = fromSeed(sha256(secret_affiliate))
-const AL = root_affiliate.deriveChild(index_PL)
-// AL.privateKey → P can release to affiliate OR refund to payer
+const CL = root_affiliate.deriveChild(index_PL)
+// CL.privateKey → P can release to affiliate OR refund to payer
 ```
 
 **Refund triggers** (Platform monitors for these conditions):
@@ -517,7 +622,7 @@ const AL = root_affiliate.deriveChild(index_PL)
 
 **Resolution matrix:**
 
-| Scenario | PL (Payment) Action | AL (Commission) Action |
+| Scenario | PL (Payment) Action | CL (Commission) Action |
 |---|---|---|
 | Trade completed successfully | Buyer reveals index → Seller withdraws | Buyer reveals index → Affiliate withdraws |
 | Buyer disputes, seller proven wrong | Platform refunds to payer (transfers) | Platform refunds to payer (transfers) |
@@ -631,7 +736,7 @@ Platform has:
 
 | Property | Mechanism |
 |---|---|
-| P holds full escrow authority | P knows all pub keys → recomputes all DH secrets → derives all root xprv and child spending keys for both PL and AL |
+| P holds full escrow authority | P knows all pub keys → recomputes all DH secrets → derives all root xprv and child spending keys for both PL and CL |
 | Payer cannot withdraw (even for refund) | Payer has recipient's xpub only (watch-only). Cannot derive private key from xpub. **Refunds require Platform intervention.** |
 | Recipient cannot claim early | Recipient has xprv but doesn't know index until payer reveals it |
 | Affiliate cannot claim prematurely | A has xpub_AP but not `index_AL`; receives index only after successful trade completion |
@@ -641,7 +746,7 @@ Platform has:
 
 Each `tradeId` is unique → `index_PL` and `index_AL` unique → escrow addresses never collide across trades.
 
-Even if same affiliate refers multiple trades, each trade gets unique AL wallet (different `tradeId` → different `index_AL`).
+Even if same affiliate refers multiple trades, each trade gets unique CL wallet (different `tradeId` → different `index_AL`).
 
 ### 7.4 Order Book Spam Prevention
 
@@ -685,13 +790,13 @@ Even if same affiliate refers multiple trades, each trade gets unique AL wallet 
 
 ## 10. Implementation Checklist
 
-- [ ] `src/core/Escrow.js` — key derivation functions (PL + AL)
+- [ ] `src/core/Escrow.js` — key derivation functions (PL + CL)
 - [ ] `src/core/Order.js` — Gun order CRUD helpers
 - [ ] `src/core/Affiliate.js` — referral tracking + commission calculation
 - [ ] `src/UI/routes/order/` — order book UI + trade flow
 - [ ] Pen soul definition for orders
 - [ ] Gun .map() discovery queries
-- [ ] Auto-release 24h timer (both PL and AL)
+- [ ] Auto-release 24h timer (both PL and CL)
 - [ ] Affiliate index release mechanism (via Gun)
 - [ ] Dispute UI at `/dispute`
 - [ ] Test suite: dual escrow address derivation consistency
