@@ -1,6 +1,7 @@
 id: unusable-weapon-bda0e
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

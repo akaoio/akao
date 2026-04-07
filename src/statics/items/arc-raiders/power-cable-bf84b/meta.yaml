@@ -1,6 +1,7 @@
 id: power-cable-bf84b
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

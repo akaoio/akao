@@ -1,6 +1,7 @@
 id: rubber-pad-709f4
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

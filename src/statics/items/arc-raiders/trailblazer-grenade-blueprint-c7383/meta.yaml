@@ -1,6 +1,7 @@
 id: trailblazer-grenade-blueprint-c7383
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

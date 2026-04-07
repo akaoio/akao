@@ -1,6 +1,7 @@
 id: bicycle-pump-69e3e
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

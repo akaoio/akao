@@ -1,6 +1,7 @@
 id: adrenaline-shot-6ca8d
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

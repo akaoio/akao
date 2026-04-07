@@ -1,6 +1,7 @@
 id: aphelion-rifle-0fefb
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - legendary
   - weapon

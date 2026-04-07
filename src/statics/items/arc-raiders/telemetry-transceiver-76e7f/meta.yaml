@@ -1,6 +1,7 @@
 id: telemetry-transceiver-76e7f
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

@@ -1,6 +1,7 @@
 id: laboratory-reagents-d3ef8
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

@@ -1,6 +1,7 @@
 id: laser-trap-lure-bcb87
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

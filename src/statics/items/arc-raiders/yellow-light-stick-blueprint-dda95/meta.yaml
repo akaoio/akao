@@ -1,6 +1,7 @@
 id: yellow-light-stick-blueprint-dda95
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

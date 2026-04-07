@@ -1,6 +1,7 @@
 id: geiger-counter-bae53
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - epic
   - recyclable

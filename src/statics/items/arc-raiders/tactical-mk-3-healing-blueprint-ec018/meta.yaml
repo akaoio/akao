@@ -1,6 +1,7 @@
 id: tactical-mk-3-healing-blueprint-ec018
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

@@ -1,6 +1,7 @@
 id: lum-ed25b
 game: diablo-4
 type: Rune of Invocation
+catalog: game
 tags:
   - diablo-4
   - common

@@ -1,6 +1,7 @@
 id: free-loadout-augment-e6692
 game: arc-raiders
 type: Augment
+catalog: game
 tags:
   - common
   - augment

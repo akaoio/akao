@@ -1,6 +1,7 @@
 id: industrial-battery-f7235
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

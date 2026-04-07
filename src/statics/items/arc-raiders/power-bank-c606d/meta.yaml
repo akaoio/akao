@@ -1,6 +1,7 @@
 id: power-bank-c606d
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

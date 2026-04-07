@@ -1,6 +1,7 @@
 id: patchwork-warden-color-de1ac
 game: arc-raiders
 type: Misc
+catalog: game
 tags:
   - common
   - misc

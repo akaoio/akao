@@ -1,6 +1,7 @@
 id: rusted-bolts-38e93
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

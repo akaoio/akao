@@ -1,6 +1,7 @@
 id: cheer-emote-3a477
 game: arc-raiders
 type: Misc
+catalog: game
 tags:
   - misc
 rarity: Common

@@ -1,6 +1,7 @@
 id: door-blocker-9dbbd
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use

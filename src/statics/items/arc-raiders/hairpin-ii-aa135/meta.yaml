@@ -1,6 +1,7 @@
 id: hairpin-ii-aa135
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - common
   - weapon

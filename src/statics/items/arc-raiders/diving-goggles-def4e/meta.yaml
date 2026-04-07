@@ -1,6 +1,7 @@
 id: diving-goggles-def4e
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

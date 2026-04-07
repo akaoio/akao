@@ -1,6 +1,7 @@
 id: seneschal-stone-cache-7fd20
 game: diablo-4
 type: Quest Reward Cache
+catalog: game
 tags:
   - diablo-4
   - normal

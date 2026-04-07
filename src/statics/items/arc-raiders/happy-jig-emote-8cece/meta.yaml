@@ -1,6 +1,7 @@
 id: happy-jig-emote-8cece
 game: arc-raiders
 type: Misc
+catalog: game
 tags:
   - misc
 rarity: Common

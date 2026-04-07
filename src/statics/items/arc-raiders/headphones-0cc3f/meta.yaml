@@ -1,6 +1,7 @@
 id: headphones-0cc3f
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

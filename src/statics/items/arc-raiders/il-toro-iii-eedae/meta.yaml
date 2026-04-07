@@ -1,6 +1,7 @@
 id: il-toro-iii-eedae
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - uncommon
   - weapon

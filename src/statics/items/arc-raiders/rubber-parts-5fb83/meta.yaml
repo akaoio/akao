@@ -1,6 +1,7 @@
 id: rubber-parts-5fb83
 game: arc-raiders
 type: Basic Material
+catalog: game
 tags:
   - common
   - basic material

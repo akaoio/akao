@@ -1,6 +1,7 @@
 id: cooling-fan-30e3a
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

@@ -1,6 +1,7 @@
 id: lure-grenade-blueprint-ebe14
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

@@ -1,6 +1,7 @@
 id: tick-pod-81d4d
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

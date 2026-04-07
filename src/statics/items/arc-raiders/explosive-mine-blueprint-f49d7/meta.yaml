@@ -1,6 +1,7 @@
 id: explosive-mine-blueprint-f49d7
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

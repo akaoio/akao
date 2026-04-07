@@ -1,6 +1,7 @@
 id: archon-helm-83423
 game: diablo-4
 type: Helm
+catalog: game
 tags:
   - diablo-4
   - unique

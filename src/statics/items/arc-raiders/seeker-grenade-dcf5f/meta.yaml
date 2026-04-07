@@ -1,6 +1,7 @@
 id: seeker-grenade-dcf5f
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - uncommon
   - quick use

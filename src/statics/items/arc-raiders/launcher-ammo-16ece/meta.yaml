@@ -1,6 +1,7 @@
 id: launcher-ammo-16ece
 game: arc-raiders
 type: Ammunition
+catalog: game
 tags:
   - rare
   - ammunition

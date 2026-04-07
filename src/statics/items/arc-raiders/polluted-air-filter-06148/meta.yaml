@@ -1,6 +1,7 @@
 id: polluted-air-filter-06148
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

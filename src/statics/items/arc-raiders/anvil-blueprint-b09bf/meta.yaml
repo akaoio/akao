@@ -1,6 +1,7 @@
 id: anvil-blueprint-b09bf
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

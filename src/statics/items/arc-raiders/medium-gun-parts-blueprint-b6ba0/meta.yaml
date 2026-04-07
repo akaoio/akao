@@ -1,6 +1,7 @@
 id: medium-gun-parts-blueprint-b6ba0
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

@@ -1,6 +1,7 @@
 id: binoculars-8db59
 game: arc-raiders
 type: Gadget
+catalog: game
 tags:
   - common
   - gadget

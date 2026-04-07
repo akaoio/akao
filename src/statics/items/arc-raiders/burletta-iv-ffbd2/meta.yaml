@@ -1,6 +1,7 @@
 id: burletta-iv-ffbd2
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - uncommon
   - weapon

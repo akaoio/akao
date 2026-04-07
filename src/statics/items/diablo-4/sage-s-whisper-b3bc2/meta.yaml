@@ -1,6 +1,7 @@
 id: sage-s-whisper-b3bc2
 game: diablo-4
 type: Incense
+catalog: game
 tags:
   - diablo-4
   - common

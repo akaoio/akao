@@ -1,6 +1,7 @@
 id: damaged-hornet-driver-dab17
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - common
   - recyclable

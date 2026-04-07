@@ -1,6 +1,7 @@
 id: water-pump-7a6eb
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

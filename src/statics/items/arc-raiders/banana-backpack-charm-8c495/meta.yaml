@@ -1,6 +1,7 @@
 id: banana-backpack-charm-8c495
 game: arc-raiders
 type: Misc
+catalog: game
 tags:
   - misc
 rarity: Common

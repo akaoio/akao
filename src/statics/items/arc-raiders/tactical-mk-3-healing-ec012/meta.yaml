@@ -1,6 +1,7 @@
 id: tactical-mk-3-healing-ec012
 game: arc-raiders
 type: Augment
+catalog: game
 tags:
   - epic
   - augment

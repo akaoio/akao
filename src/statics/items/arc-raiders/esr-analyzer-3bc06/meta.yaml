@@ -1,6 +1,7 @@
 id: esr-analyzer-3bc06
 game: arc-raiders
 type: Quest Item
+catalog: game
 tags:
   - common
   - quest item

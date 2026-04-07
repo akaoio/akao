@@ -1,6 +1,7 @@
 id: stable-stock-ii-blueprint-0f8fd
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

@@ -63,7 +63,7 @@ export async function download(url, path = []) {
     const filePath = join([...dirPath, filename])
 
     // Ensure directory exists
-    if (!(await ensure(dir))) {
+    if (!(await ensure(dirPath))) {
         console.error("Failed to create directory:", dir)
         return
     }

@@ -1,6 +1,7 @@
 id: spotter-relay-d7d6e
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

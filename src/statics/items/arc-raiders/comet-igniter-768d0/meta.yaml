@@ -1,6 +1,7 @@
 id: comet-igniter-768d0
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

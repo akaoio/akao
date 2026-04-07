@@ -1,6 +1,7 @@
 id: osprey-ii-da936
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - rare
   - weapon

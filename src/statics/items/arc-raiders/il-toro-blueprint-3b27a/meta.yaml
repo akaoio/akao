@@ -1,6 +1,7 @@
 id: il-toro-blueprint-3b27a
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

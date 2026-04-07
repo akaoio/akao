@@ -1,6 +1,7 @@
 id: lightweight-stock-blueprint-ed6d6
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

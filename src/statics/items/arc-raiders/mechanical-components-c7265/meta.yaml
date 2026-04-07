@@ -1,6 +1,7 @@
 id: mechanical-components-c7265
 game: arc-raiders
 type: Refined Material
+catalog: game
 tags:
   - uncommon
   - refined material

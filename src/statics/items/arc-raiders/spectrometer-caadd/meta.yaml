@@ -1,6 +1,7 @@
 id: spectrometer-caadd
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

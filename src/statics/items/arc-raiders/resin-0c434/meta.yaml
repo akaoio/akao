@@ -1,6 +1,7 @@
 id: resin-0c434
 game: arc-raiders
 type: Nature
+catalog: game
 tags:
   - common
   - nature

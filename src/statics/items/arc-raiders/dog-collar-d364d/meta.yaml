@@ -1,6 +1,7 @@
 id: dog-collar-d364d
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

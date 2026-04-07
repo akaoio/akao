@@ -1,6 +1,7 @@
 id: medium-ammo-f5c96
 game: arc-raiders
 type: Ammunition
+catalog: game
 tags:
   - common
   - ammunition

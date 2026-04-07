@@ -1,6 +1,7 @@
 id: agave-juice-29b5e
 game: arc-raiders
 type: Consumable
+catalog: game
 tags:
   - common
   - consumable

@@ -189,7 +189,7 @@ async function processImages() {
 
     // Ensure src/images/cryptos/ exists
     const cryptoSrcDir = ["src", "images", "cryptos"]
-    await FS.ensure(FS.join(cryptoSrcDir))
+    await FS.ensure(cryptoSrcDir)
 
     let downloaded = 0
     let skipped = 0

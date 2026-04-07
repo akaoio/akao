@@ -1,6 +1,7 @@
 id: bombardier-cell-28d38
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - epic
   - recyclable

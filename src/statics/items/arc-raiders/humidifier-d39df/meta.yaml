@@ -1,6 +1,7 @@
 id: humidifier-d39df
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

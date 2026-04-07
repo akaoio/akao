@@ -1,6 +1,7 @@
 id: shotgun-silencer-blueprint-99166
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

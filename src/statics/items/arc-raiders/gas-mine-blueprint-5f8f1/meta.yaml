@@ -1,6 +1,7 @@
 id: gas-mine-blueprint-5f8f1
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

@@ -1,6 +1,7 @@
 id: ice-cream-scooper-6a386
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - uncommon
   - recyclable

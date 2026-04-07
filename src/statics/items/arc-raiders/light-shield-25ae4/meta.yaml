@@ -1,6 +1,7 @@
 id: light-shield-25ae4
 game: arc-raiders
 type: Shield
+catalog: game
 tags:
   - uncommon
   - shield

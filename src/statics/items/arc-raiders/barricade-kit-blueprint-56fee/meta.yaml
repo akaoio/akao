@@ -1,6 +1,7 @@
 id: barricade-kit-blueprint-56fee
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

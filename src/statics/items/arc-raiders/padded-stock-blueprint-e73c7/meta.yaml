@@ -1,6 +1,7 @@
 id: padded-stock-blueprint-e73c7
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

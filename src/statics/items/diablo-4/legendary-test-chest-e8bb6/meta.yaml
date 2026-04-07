@@ -1,6 +1,7 @@
 id: legendary-test-chest-e8bb6
 game: diablo-4
 type: Chest Armor
+catalog: game
 tags:
   - diablo-4
   - unique

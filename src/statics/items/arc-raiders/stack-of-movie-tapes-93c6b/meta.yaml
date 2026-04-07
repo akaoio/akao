@@ -1,6 +1,7 @@
 id: stack-of-movie-tapes-93c6b
 game: arc-raiders
 type: Quest Item
+catalog: game
 tags:
   - common
   - quest item

@@ -1,6 +1,7 @@
 id: dam-utility-key-6eca3
 game: arc-raiders
 type: Quest Item
+catalog: game
 tags:
   - uncommon
   - quest item

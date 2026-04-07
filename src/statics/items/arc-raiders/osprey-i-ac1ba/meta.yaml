@@ -1,6 +1,7 @@
 id: osprey-i-ac1ba
 game: arc-raiders
 type: Weapon
+catalog: game
 tags:
   - rare
   - weapon

@@ -1,6 +1,7 @@
 id: arc-coolant-9e2e0
 game: arc-raiders
 type: Recyclable
+catalog: game
 tags:
   - rare
   - recyclable

@@ -1,6 +1,7 @@
 id: tagging-grenade-881e4
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - rare
   - quick use

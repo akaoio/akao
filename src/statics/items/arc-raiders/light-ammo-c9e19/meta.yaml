@@ -1,6 +1,7 @@
 id: light-ammo-c9e19
 game: arc-raiders
 type: Ammunition
+catalog: game
 tags:
   - common
   - ammunition

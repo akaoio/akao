@@ -1,6 +1,7 @@
 id: bobcat-blueprint-97bda
 game: arc-raiders
 type: Blueprint
+catalog: game
 tags:
   - legendary
   - blueprint

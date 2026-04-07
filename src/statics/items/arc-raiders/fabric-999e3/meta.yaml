@@ -1,6 +1,7 @@
 id: fabric-999e3
 game: arc-raiders
 type: Basic Material
+catalog: game
 tags:
   - common
   - basic material

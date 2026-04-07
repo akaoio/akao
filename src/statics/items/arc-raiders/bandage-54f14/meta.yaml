@@ -1,6 +1,7 @@
 id: bandage-54f14
 game: arc-raiders
 type: Quick Use
+catalog: game
 tags:
   - common
   - quick use
