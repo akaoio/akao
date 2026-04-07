@@ -64,7 +64,10 @@ export class POOL extends HTMLElement {
             $t1.dataset.amount = beautifyNumber(formatNumber(t1.quantity || 0, 4))
         }
 
-        const { price0, price1, tvl, rate01, rate10 } = await logic.prices({ pool, fiat, forex: Lives.forex })
+        const [{ price0, price1, tvl, rate01, rate10 }, dex] = await Promise.all([
+            logic.prices({ pool, fiat, forex: Lives.forex }),
+            logic.dex(pool.dex),
+        ])
 
         if ($t0) $t0.dataset.fiat = price0 > 0 ? fmt(price0) : ""
         if ($t1) $t1.dataset.fiat = price1 > 0 ? fmt(price1) : ""
@@ -87,10 +90,8 @@ export class POOL extends HTMLElement {
 
         const $dex = this.shadowRoot.querySelector(".badge.dex")
         if ($dex) {
-            const dex = await logic.dex(pool.dex)
-            const dexsymbol = dex?.symbol
             const $dexsvg = $dex.querySelector("ui-svg")
-            if ($dexsvg) $dexsvg.dataset.src = dexsymbol ? `/images/cryptos/${dexsymbol}` : ""
+            if ($dexsvg) $dexsvg.dataset.src = dex?.symbol ? `/images/cryptos/${dex.symbol}` : ""
             const $version = $dex.querySelector(".version")
             if ($version) $version.textContent = pool.version || ""
         }

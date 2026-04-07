@@ -25,9 +25,11 @@ export class Logic {
         }
     }
 
+    static _dexs = null
+
     static async dex(id) {
-        const dexs = await DB.get(["statics", "dexs.json"])
-        return dexs?.[id] || null
+        if (!this._dexs) this._dexs = await DB.get(["statics", "dexs.json"])
+        return this._dexs?.[id] || null
     }
 
 }

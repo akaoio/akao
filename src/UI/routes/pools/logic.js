@@ -30,6 +30,22 @@ export class Logic {
         return rows
     }
 
+    static extractFilters(pools) {
+        const chains = new Set()
+        const dexes = new Set()
+        if (!pools || typeof pools !== "object") return { chains: [], dexes: [] }
+        for (const [chain, chainPools] of Object.entries(pools)) {
+            if (!chainPools || typeof chainPools !== "object") continue
+            chains.add(Number(chain))
+            for (const pool of Object.values(chainPools))
+                if (pool?.dex) dexes.add(pool.dex.toLowerCase())
+        }
+        return {
+            chains: [...chains].sort((a, b) => a - b),
+            dexes: [...dexes].sort(),
+        }
+    }
+
 }
 
 export default Logic
