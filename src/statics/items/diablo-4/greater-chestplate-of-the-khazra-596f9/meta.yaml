@@ -1,0 +1,25 @@
+id: greater-chestplate-of-the-khazra-596f9
+game: diablo-4
+type: Chest Armor
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - chest armor
+rarity: Special
+itemTypeName: Chest Armor
+classes: null
+slots:
+  - Torso
+value: 25
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

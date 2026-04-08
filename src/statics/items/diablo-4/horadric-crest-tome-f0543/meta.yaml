@@ -1,0 +1,24 @@
+id: horadric-crest-tome-f0543
+game: diablo-4
+type: Crafting Recipe
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - crafting recipe
+rarity: Legendary
+itemTypeName: Crafting Recipe
+classes: null
+slots: null
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

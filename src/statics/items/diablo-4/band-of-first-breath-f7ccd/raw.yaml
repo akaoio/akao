@@ -1,0 +1,10 @@
+id: 2388255
+icon: 1228627587
+name: Band of First Breath
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Torso
+popularity: 13

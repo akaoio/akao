@@ -1,0 +1,10 @@
+id: 1706658
+icon: 929013031
+name: Writhing Band of Trickery
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Ring
+popularity: 29

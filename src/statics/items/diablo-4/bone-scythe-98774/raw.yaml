@@ -1,0 +1,10 @@
+id: 1871402
+icon: 2021841682
+name: Bone Scythe
+itemTypeName: Scythe
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 12

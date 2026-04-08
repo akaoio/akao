@@ -1,0 +1,26 @@
+id: bucrani-s-tread-1bb1f
+game: diablo-4
+type: Boots
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Sorcerer
+slots:
+  - Feet
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

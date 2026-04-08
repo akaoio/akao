@@ -1,0 +1,10 @@
+id: 1449724
+icon: 3411135390
+name: Diadem Vizjerei
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Head
+popularity: 11

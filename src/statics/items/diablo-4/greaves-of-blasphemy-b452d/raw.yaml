@@ -1,0 +1,10 @@
+id: 2105593
+icon: 3387052815
+name: Greaves of Blasphemy
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 15

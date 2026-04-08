@@ -1,0 +1,10 @@
+id: 1267257
+icon: 4079385385
+name: Swift Death
+itemTypeName: Crossbow
+quality: 5
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+popularity: 14

@@ -1,0 +1,24 @@
+id: potent-crushing-elixir-e6f52
+game: diablo-4
+type: Elixir
+catalog: game
+tags:
+  - diablo-4
+  - normal
+  - elixir
+rarity: Normal
+itemTypeName: Elixir
+classes: null
+slots: null
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

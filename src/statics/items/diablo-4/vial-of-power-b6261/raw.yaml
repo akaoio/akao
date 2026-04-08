@@ -1,0 +1,10 @@
+id: 459859
+icon: 2314865143
+name: Vial of Power
+itemTypeName: Focus
+quality: 3
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 19

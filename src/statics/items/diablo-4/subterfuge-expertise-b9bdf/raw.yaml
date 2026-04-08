@@ -1,0 +1,9 @@
+id: 2007850
+icon: 3001443825
+name: Subterfuge Expertise
+itemTypeName: Temper Manual
+quality: 5
+playerClassNames:
+  - Rogue
+slotNames: []
+popularity: 11

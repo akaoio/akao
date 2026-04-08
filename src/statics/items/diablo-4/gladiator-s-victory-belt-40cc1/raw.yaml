@@ -1,0 +1,10 @@
+id: 1744629
+icon: 977826224
+name: Gladiator's Victory Belt
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Legs
+popularity: 12

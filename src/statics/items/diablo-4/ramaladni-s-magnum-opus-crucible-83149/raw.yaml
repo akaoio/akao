@@ -1,0 +1,11 @@
+id: 2602283
+icon: 3772429999
+name: Ramaladni's Magnum Opus (Crucible)
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 11

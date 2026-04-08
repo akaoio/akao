@@ -1,0 +1,14 @@
+id: 459998
+icon: 312928300
+name: Morningstar
+itemTypeName: Mace
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 12

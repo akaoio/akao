@@ -1,0 +1,24 @@
+id: killing-wind-c0bfa
+game: diablo-4
+type: Occult Gem
+catalog: game
+tags:
+  - diablo-4
+  - epic
+  - occult gem
+rarity: Epic
+itemTypeName: Occult Gem
+classes: null
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

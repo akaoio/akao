@@ -1,0 +1,10 @@
+id: 357812
+icon: 2537301564
+name: Mad Wolf's Glee
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Torso
+popularity: 45

@@ -1,0 +1,12 @@
+id: 2608362
+icon: 587952553
+name: Crucible Sword
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 55

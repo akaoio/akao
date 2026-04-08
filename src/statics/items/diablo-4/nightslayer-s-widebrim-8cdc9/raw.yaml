@@ -1,0 +1,10 @@
+id: 2148632
+icon: 2901484982
+name: Nightslayer's Widebrim
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Head
+popularity: 13

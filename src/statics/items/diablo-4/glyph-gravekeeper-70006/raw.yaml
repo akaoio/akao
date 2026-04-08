@@ -1,0 +1,9 @@
+id: 1032485
+icon: null
+name: "Glyph: Gravekeeper"
+itemTypeName: Paragon Glyph
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames: []
+popularity: 20

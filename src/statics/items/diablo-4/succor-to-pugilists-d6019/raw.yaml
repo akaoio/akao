@@ -1,0 +1,15 @@
+id: 2208738
+icon: 1014222489
+name: Succor to Pugilists
+itemTypeName: Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 14

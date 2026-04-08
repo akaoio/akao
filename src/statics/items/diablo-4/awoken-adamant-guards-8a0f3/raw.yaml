@@ -1,0 +1,10 @@
+id: 1638337
+icon: 3555587370
+name: Awoken Adamant Guards
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Legs
+popularity: 11

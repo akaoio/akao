@@ -1,0 +1,26 @@
+id: totem-2cb6d
+game: diablo-4
+type: Totem
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - totem
+rarity: Special
+itemTypeName: Totem
+classes:
+  - Druid
+slots:
+  - Off-Hand
+value: 25
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

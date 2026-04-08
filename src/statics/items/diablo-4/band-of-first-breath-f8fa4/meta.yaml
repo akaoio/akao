@@ -1,0 +1,26 @@
+id: band-of-first-breath-f8fa4
+game: diablo-4
+type: Gloves
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Spiritborn
+slots:
+  - Hands
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

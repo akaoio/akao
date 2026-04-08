@@ -1,0 +1,26 @@
+id: kama-bab3b
+game: diablo-4
+type: Scythe
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - scythe
+rarity: Rare
+itemTypeName: Scythe
+classes:
+  - Necromancer
+slots:
+  - Main Hand
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2479735
+icon: 3468537906
+name: Seal of the Second Trumpet
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Ring
+popularity: 66

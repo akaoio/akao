@@ -1,0 +1,11 @@
+id: 359165
+icon: 595234048
+name: Ahavarion, Spear of Lycander
+itemTypeName: Staff
+quality: 8
+playerClassNames:
+  - Druid
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 67

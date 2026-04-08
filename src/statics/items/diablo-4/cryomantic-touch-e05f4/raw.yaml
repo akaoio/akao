@@ -1,0 +1,10 @@
+id: 2076336
+icon: 851822331
+name: Cryomantic Touch
+itemTypeName: Gloves
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Hands
+popularity: 14

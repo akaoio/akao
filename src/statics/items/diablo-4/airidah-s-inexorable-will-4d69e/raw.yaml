@@ -1,0 +1,10 @@
+id: 2380828
+icon: 776327186
+name: Airidah's Inexorable Will
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Feet
+popularity: 12

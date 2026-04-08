@@ -1,0 +1,15 @@
+id: 498549
+icon: 2094985448
+name: Boost Dagger
+itemTypeName: Dagger
+quality: 6
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 15

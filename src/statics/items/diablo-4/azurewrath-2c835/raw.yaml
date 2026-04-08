@@ -1,0 +1,16 @@
+id: 359352
+icon: 2397813517
+name: Azurewrath
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 105

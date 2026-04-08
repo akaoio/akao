@@ -1,0 +1,10 @@
+id: 2284730
+icon: 1929567513
+name: Ravensknight Hood
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Head
+popularity: 14

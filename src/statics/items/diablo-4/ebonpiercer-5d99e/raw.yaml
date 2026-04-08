@@ -1,0 +1,10 @@
+id: 2417948
+icon: 3386402860
+name: Ebonpiercer
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Legs
+popularity: 11

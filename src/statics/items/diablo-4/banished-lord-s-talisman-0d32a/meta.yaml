@@ -1,0 +1,25 @@
+id: banished-lord-s-talisman-0d32a
+game: diablo-4
+type: Amulet
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - amulet
+rarity: Legendary
+itemTypeName: Amulet
+classes: null
+slots:
+  - Neck
+value: 109
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

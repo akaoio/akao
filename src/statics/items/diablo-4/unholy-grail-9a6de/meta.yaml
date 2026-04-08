@@ -1,0 +1,25 @@
+id: unholy-grail-9a6de
+game: diablo-4
+type: Trophy
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - trophy
+rarity: Special
+itemTypeName: Trophy
+classes: null
+slots:
+  - Trophy
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

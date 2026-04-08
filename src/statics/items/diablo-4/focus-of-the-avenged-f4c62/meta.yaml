@@ -1,0 +1,27 @@
+id: focus-of-the-avenged-f4c62
+game: diablo-4
+type: Focus
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - focus
+rarity: Unique
+itemTypeName: Focus
+classes:
+  - Necromancer
+  - Sorcerer
+slots:
+  - Off-Hand
+value: 18
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

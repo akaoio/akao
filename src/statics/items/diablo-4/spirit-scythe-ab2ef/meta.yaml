@@ -1,0 +1,26 @@
+id: spirit-scythe-ab2ef
+game: diablo-4
+type: Two-Handed Scythe
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - two-handed scythe
+rarity: Special
+itemTypeName: Two-Handed Scythe
+classes:
+  - Necromancer
+slots:
+  - Main Hand
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

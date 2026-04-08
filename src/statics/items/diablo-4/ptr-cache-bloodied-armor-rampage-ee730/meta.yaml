@@ -1,0 +1,24 @@
+id: ptr-cache-bloodied-armor-rampage-ee730
+game: diablo-4
+type: Cache
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - cache
+rarity: Unique
+itemTypeName: Cache
+classes: null
+slots: null
+value: 14
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

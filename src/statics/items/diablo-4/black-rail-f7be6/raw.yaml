@@ -1,0 +1,16 @@
+id: 1760906
+icon: 2397813520
+name: Black Rail
+itemTypeName: Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

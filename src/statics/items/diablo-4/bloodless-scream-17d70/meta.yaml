@@ -1,0 +1,26 @@
+id: bloodless-scream-17d70
+game: diablo-4
+type: Pants
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - pants
+rarity: Legendary
+itemTypeName: Pants
+classes:
+  - Necromancer
+slots:
+  - Legs
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

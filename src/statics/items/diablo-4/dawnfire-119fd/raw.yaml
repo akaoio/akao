@@ -1,0 +1,10 @@
+id: 2474458
+icon: 1835017370
+name: Dawnfire
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Hands
+popularity: 404

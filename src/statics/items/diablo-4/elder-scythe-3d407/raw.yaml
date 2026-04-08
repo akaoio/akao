@@ -1,0 +1,10 @@
+id: 1799169
+icon: 2780484845
+name: Elder Scythe
+itemTypeName: Scythe
+quality: 5
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 10

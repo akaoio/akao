@@ -1,0 +1,11 @@
+id: 1805023
+icon: 3014663104
+name: Emperor's End
+itemTypeName: Focus
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 11

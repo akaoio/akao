@@ -1,0 +1,10 @@
+id: 2134748
+icon: 3014663072
+name: Okun's Catalyst
+itemTypeName: Focus
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 128

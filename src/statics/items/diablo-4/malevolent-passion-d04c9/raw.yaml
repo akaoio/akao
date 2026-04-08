@@ -1,0 +1,10 @@
+id: 1216783
+icon: 342363015
+name: Malevolent Passion
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Legs
+popularity: 12

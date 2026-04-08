@@ -1,0 +1,16 @@
+id: 1844055
+icon: 3772429045
+name: Risen Archenemy Sabre
+itemTypeName: Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 17

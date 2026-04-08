@@ -1,0 +1,28 @@
+id: crucible-sword-b71bd
+game: diablo-4
+type: Two-Handed Sword
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - two-handed sword
+rarity: Special
+itemTypeName: Two-Handed Sword
+classes:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+value: 55
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

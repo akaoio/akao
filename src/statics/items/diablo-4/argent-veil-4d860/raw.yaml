@@ -1,0 +1,10 @@
+id: 2429563
+icon: 2650964165
+name: Argent Veil
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Ring
+popularity: 285

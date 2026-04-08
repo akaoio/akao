@@ -1,0 +1,26 @@
+id: stone-of-vehemen-cfd73
+game: diablo-4
+type: Totem
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - totem
+rarity: Legendary
+itemTypeName: Totem
+classes:
+  - Druid
+slots:
+  - Off-Hand
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2053186
+icon: 3968382723
+name: The Unmaker
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Head
+popularity: 22

@@ -1,0 +1,10 @@
+id: 1610441
+icon: 2403703915
+name: Dolmen Stone
+itemTypeName: Amulet
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Neck
+popularity: 40

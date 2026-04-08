@@ -1,0 +1,16 @@
+id: 1089033
+icon: 1639170350
+name: Meshif's Sword
+itemTypeName: Sword
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

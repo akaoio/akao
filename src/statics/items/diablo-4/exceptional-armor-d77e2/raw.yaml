@@ -1,0 +1,9 @@
+id: 545570
+icon: 3735468623
+name: Exceptional Armor
+itemTypeName: Chest Armor
+quality: 5
+playerClassNames: []
+slotNames:
+  - Torso
+popularity: 12

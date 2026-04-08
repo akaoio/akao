@@ -1,0 +1,10 @@
+id: 356745
+icon: 1644840210
+name: Ancients' Oath
+itemTypeName: Two-Handed Axe
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Main Hand
+popularity: 26

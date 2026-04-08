@@ -1,0 +1,26 @@
+id: 100-000-steps-5dabf
+game: diablo-4
+type: Boots
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes:
+  - Barbarian
+slots:
+  - Feet
+value: 79
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2425750
+icon: 406001947
+name: Galvanic Azurite
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 16

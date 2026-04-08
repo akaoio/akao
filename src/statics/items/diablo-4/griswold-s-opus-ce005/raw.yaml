@@ -1,0 +1,11 @@
+id: 2476977
+icon: 2397813549
+name: Griswold's Opus
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 552

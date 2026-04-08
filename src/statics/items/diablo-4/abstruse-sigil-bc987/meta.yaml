@@ -1,0 +1,24 @@
+id: abstruse-sigil-bc987
+game: diablo-4
+type: Crafting Material
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - crafting material
+rarity: Unique
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

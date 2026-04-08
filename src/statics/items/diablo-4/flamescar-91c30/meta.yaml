@@ -1,0 +1,26 @@
+id: flamescar-91c30
+game: diablo-4
+type: Wand
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - wand
+rarity: Legendary
+itemTypeName: Wand
+classes:
+  - Sorcerer
+slots:
+  - Main Hand
+value: 25
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

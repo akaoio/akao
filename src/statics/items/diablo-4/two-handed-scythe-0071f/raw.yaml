@@ -1,0 +1,10 @@
+id: 464297
+icon: 3132332480
+name: Two-Handed Scythe
+itemTypeName: Two-Handed Scythe
+quality: null
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 28

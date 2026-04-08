@@ -1,0 +1,11 @@
+id: 2155601
+icon: 443651763
+name: Goatskull Barricade
+itemTypeName: Shield
+quality: null
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 13

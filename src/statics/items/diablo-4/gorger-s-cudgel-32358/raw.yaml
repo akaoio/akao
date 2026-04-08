@@ -1,0 +1,13 @@
+id: 1834006
+icon: 2591328106
+name: Gorger's Cudgel
+itemTypeName: Two-Handed Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 11

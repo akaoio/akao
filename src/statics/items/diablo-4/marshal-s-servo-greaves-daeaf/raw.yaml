@@ -1,0 +1,10 @@
+id: 2198945
+icon: 2805564080
+name: Marshal's Servo-Greaves
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Legs
+popularity: 12

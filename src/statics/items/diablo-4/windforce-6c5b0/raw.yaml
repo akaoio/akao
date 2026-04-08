@@ -1,0 +1,10 @@
+id: 224074
+icon: 3931493633
+name: Windforce
+itemTypeName: Bow
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+popularity: 48

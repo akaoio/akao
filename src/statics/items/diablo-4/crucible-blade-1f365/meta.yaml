@@ -1,0 +1,32 @@
+id: crucible-blade-1f365
+game: diablo-4
+type: Sword
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - sword
+rarity: Special
+itemTypeName: Sword
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 616615
+icon: 3172850488
+name: Bow
+itemTypeName: Bow
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+popularity: 65

@@ -1,0 +1,10 @@
+id: 2417512
+icon: 2522434557
+name: Deathless Visage
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Hands
+popularity: 14

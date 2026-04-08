@@ -1,0 +1,10 @@
+id: 2403759
+icon: 1483093339
+name: Fractured Winterglass
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Hands
+popularity: 12

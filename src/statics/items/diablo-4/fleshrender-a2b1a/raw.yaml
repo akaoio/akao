@@ -1,0 +1,10 @@
+id: 2417742
+icon: 776327186
+name: Fleshrender
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Feet
+popularity: 12

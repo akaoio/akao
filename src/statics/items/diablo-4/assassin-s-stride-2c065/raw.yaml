@@ -1,0 +1,10 @@
+id: 2081162
+icon: 1583765741
+name: Assassin's Stride
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Feet
+popularity: 31

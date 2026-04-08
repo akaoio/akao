@@ -1,0 +1,28 @@
+id: jaguar-s-razor-7be83
+game: diablo-4
+type: Sword
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - sword
+rarity: Unique
+itemTypeName: Sword
+classes:
+  - Paladin
+  - Rogue
+slots:
+  - Main Hand
+  - Off-Hand
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

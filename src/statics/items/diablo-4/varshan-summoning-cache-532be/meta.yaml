@@ -1,0 +1,24 @@
+id: varshan-summoning-cache-532be
+game: diablo-4
+type: Bartering Cache
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - bartering cache
+rarity: Unique
+itemTypeName: Bartering Cache
+classes: null
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

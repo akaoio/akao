@@ -1,0 +1,10 @@
+id: 459936
+icon: 2569426499
+name: Adventurer's Boots
+itemTypeName: Boots
+quality: 3
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 12
