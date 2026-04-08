@@ -2,15 +2,13 @@ import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { Access } from "/core/Access.js"
 import States from "/core/States.js"
+import BaseRoute from "/UI/BaseRoute.js"
 import logic, { SOCIAL_PLATFORMS } from "./logic.js"
 
-export class PROFILE extends HTMLElement {
+export class PROFILE extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
+        super(template)
         this.states = new States({ name: "", bio: "", links: {}, following: [], editing: false, editingBio: false, editingLinks: false })
-        this.subscriptions = []
         this._followingSubs = []
         this._followingScope = null
         this._enterEditMode = this._enterEditMode.bind(this)
@@ -23,7 +21,7 @@ export class PROFILE extends HTMLElement {
         this._exitLinksEditMode = this._exitLinksEditMode.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         const $ = (id) => this.shadowRoot.querySelector(id)
 
         // Wire name edit controls
@@ -32,22 +30,14 @@ export class PROFILE extends HTMLElement {
         const $cancelBtn = $("#profile-name-cancel")
         const $input = $("#profile-name-input")
 
-        $editBtn.addEventListener("click", this._enterEditMode)
-        $saveBtn.addEventListener("click", () => this._exitEditMode(true))
-        $cancelBtn.addEventListener("click", () => this._exitEditMode(false))
-        $input.addEventListener("keydown", this._onKeydown)
-
-        this.subscriptions.push(
-            () => $editBtn.removeEventListener("click", this._enterEditMode),
-            () => $saveBtn.removeEventListener("click", () => this._exitEditMode(true)),
-            () => $cancelBtn.removeEventListener("click", () => this._exitEditMode(false)),
-            () => $input.removeEventListener("keydown", this._onKeydown)
-        )
+        this.listen($editBtn, "click", this._enterEditMode)
+        this.listen($saveBtn, "click", () => this._exitEditMode(true))
+        this.listen($cancelBtn, "click", () => this._exitEditMode(false))
+        this.listen($input, "keydown", this._onKeydown)
 
         // Wire follow form
         const $form = $("#profile-follow-form")
-        $form.addEventListener("submit", this._onFollowSubmit)
-        this.subscriptions.push(() => $form.removeEventListener("submit", this._onFollowSubmit))
+        this.listen($form, "submit", this._onFollowSubmit)
 
         // Wire bio edit controls
         const $bioEdit = $("#profile-bio-edit")
@@ -58,16 +48,10 @@ export class PROFILE extends HTMLElement {
         const updateBioCount = () => {
             $bioCount.textContent = 360 - $bioInput.value.length
         }
-        $bioEdit.addEventListener("click", this._enterBioEditMode)
-        $bioSave.addEventListener("click", () => this._exitBioEditMode(true))
-        $bioCancel.addEventListener("click", () => this._exitBioEditMode(false))
-        $bioInput.addEventListener("input", updateBioCount)
-        this.subscriptions.push(
-            () => $bioEdit.removeEventListener("click", this._enterBioEditMode),
-            () => $bioSave.removeEventListener("click", () => this._exitBioEditMode(true)),
-            () => $bioCancel.removeEventListener("click", () => this._exitBioEditMode(false)),
-            () => $bioInput.removeEventListener("input", updateBioCount)
-        )
+        this.listen($bioEdit, "click", this._enterBioEditMode)
+        this.listen($bioSave, "click", () => this._exitBioEditMode(true))
+        this.listen($bioCancel, "click", () => this._exitBioEditMode(false))
+        this.listen($bioInput, "input", updateBioCount)
 
         // Wire avatar picker
         const $avatarEdit = $("#profile-avatar-edit")
@@ -98,11 +82,9 @@ export class PROFILE extends HTMLElement {
             _originalAvatarId = null
         }
 
-        $avatarEdit.addEventListener("click", openPicker)
-        $avatarBackdrop.addEventListener("click", () => closePicker(true))
-        this.subscriptions.push(
-            () => $avatarEdit.removeEventListener("click", openPicker),
-            () => $avatarBackdrop.removeEventListener("click", () => closePicker(true)),
+        this.listen($avatarEdit, "click", openPicker)
+        this.listen($avatarBackdrop, "click", () => closePicker(true))
+        this.subscribe(
             $avatars.events.on("accept", () => closePicker(false)),
             $avatars.events.on("cancel", () => closePicker(true))
         )
@@ -111,17 +93,12 @@ export class PROFILE extends HTMLElement {
         const $linksEdit = $("#profile-links-edit")
         const $linksSave = $("#profile-links-save")
         const $linksCancel = $("#profile-links-cancel")
-        $linksEdit.addEventListener("click", this._enterLinksEditMode)
-        $linksSave.addEventListener("click", () => this._exitLinksEditMode(true))
-        $linksCancel.addEventListener("click", () => this._exitLinksEditMode(false))
-        this.subscriptions.push(
-            () => $linksEdit.removeEventListener("click", this._enterLinksEditMode),
-            () => $linksSave.removeEventListener("click", () => this._exitLinksEditMode(true)),
-            () => $linksCancel.removeEventListener("click", () => this._exitLinksEditMode(false))
-        )
+        this.listen($linksEdit, "click", this._enterLinksEditMode)
+        this.listen($linksSave, "click", () => this._exitLinksEditMode(true))
+        this.listen($linksCancel, "click", () => this._exitLinksEditMode(false))
 
         // Subscribe to auth changes
-        this.subscriptions.push(
+        this.subscribe(
             Access.on("authenticated", async ({ value }) => {
                 this._applyAuthState(value)
                 if (value) {
@@ -160,8 +137,7 @@ export class PROFILE extends HTMLElement {
         }
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onDisconnect() {
         this._followingSubs.forEach((off) => off())
         this._followingScope?.off?.()
     }

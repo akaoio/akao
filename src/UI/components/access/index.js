@@ -3,14 +3,14 @@ import { Context } from "/core/Context.js"
 import { Access } from "/core/Access.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class ACCESS extends HTMLElement {
+export class ACCESS extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.next = this.next.bind(this)
         this.checkpoint = this.checkpoint.bind(this)
         this.show = this.show.bind(this)
@@ -23,7 +23,7 @@ export class ACCESS extends HTMLElement {
         this.onmodalclose = this.onmodalclose.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         // Assign to Elements only after component is fully connected and modal is initialized
         Elements.Access = this
         this.modal = this.shadowRoot.querySelector("ui-modal")
@@ -31,25 +31,19 @@ export class ACCESS extends HTMLElement {
         this.form = this.shadowRoot.querySelector("#signup-form")
         this.auth = this.shadowRoot.querySelector("#auth")
         this.$back = this.shadowRoot.querySelector("#back")
-        this.$back.addEventListener("click", this.unauthenticated)
-        this.shadowRoot.querySelector("#signup").addEventListener("click", this.signupScreen)
-        this.shadowRoot.querySelector("#confirm").addEventListener("click", this.signup)
-        this.shadowRoot.querySelector("#signin").addEventListener("click", this.signinScreen)
-        this.$dialog?.addEventListener("close", this.onmodalclose)
-        this.subscriptions.push(
-            () => this.$back.removeEventListener("click", this.unauthenticated),
-            () => this.shadowRoot.querySelector("#signup").removeEventListener("click", this.signupScreen),
-            () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.signup),
-            () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signinScreen),
-            () => this.$dialog?.removeEventListener("close", this.onmodalclose),
+        this.listen(this.$back, "click", this.unauthenticated)
+        this.listen(this.shadowRoot.querySelector("#signup"), "click", this.signupScreen)
+        this.listen(this.shadowRoot.querySelector("#confirm"), "click", this.signup)
+        this.listen(this.shadowRoot.querySelector("#signin"), "click", this.signinScreen)
+        this.listen(this.$dialog, "close", this.onmodalclose)
+        this.subscribe(
             this.auth?.events?.on?.("done", this.ondone)
         )
-        this.form.querySelectorAll("input[type='text']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
+        this.form.querySelectorAll("input[type='text']").forEach((input) => this.subscribe(Context.on(["dictionary", input.name], [input, "placeholder"])))
     }
 
-    disconnectedCallback() {
+    onDisconnect() {
         if (Elements.Access === this) Elements.Access = null
-        this.subscriptions.forEach((off) => off())
     }
 
     onmodalclose() {

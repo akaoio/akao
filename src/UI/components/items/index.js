@@ -2,9 +2,10 @@ import template from "./template.js"
 import States from "/core/States.js"
 import ITEM from "/UI/components/item/index.js"
 import { render } from "/core/UI.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class ITEMS extends HTMLElement {
+export class ITEMS extends BaseElement {
     constructor() {
         super()
         this.states = new States()
@@ -13,8 +14,8 @@ export class ITEMS extends HTMLElement {
         render(template, this.shadowRoot)
     }
 
-    async connectedCallback() {
-        this.states.on("pages", this.render)
+    async onConnect() {
+        this.subscribe(this.states.on("pages", this.render))
         const data = await logic.meta()
         if (data) this.states.set(data)
     }

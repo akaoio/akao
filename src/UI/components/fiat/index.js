@@ -1,12 +1,12 @@
 import { Statics } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class FIAT extends HTMLElement {
+export class FIAT extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.subscriptions = []
         this.render = this.render.bind(this)
     }
 
@@ -18,13 +18,9 @@ export class FIAT extends HTMLElement {
         if (["data-locale", "data-amount", "data-base", "data-quote"].includes(name) && last !== value) this.render()
     }
 
-    connectedCallback() {
-        this.subscriptions.push(Context.on("locale", this.render), Context.on("fiat", this.render))
+    onConnect() {
+        this.subscribe(Context.on("locale", this.render), Context.on("fiat", this.render))
         this.render()
-    }
-
-    disconnected() {
-        this.subscriptions.forEach((off) => off())
     }
 
     async render() {

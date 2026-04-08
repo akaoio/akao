@@ -1,18 +1,15 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
 import { Context } from "/core/Context.js"
 import { events } from "/core/Events.js"
 import { Indexes, Lives, Chains } from "/core/Stores.js"
+import BaseRoute from "/UI/BaseRoute.js"
 import logic from "./logic.js"
 
 const PAGE_SIZE = 25
 
-export class POOLS extends HTMLElement {
+export class POOLS extends BaseRoute {
     constructor() {
-        super()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
-        this.subscriptions = []
+        super(template)
 
         this._elements = new Map()
         this._allRows = []
@@ -25,7 +22,7 @@ export class POOLS extends HTMLElement {
         this.loadMore = this.loadMore.bind(this)
     }
 
-    async connectedCallback() {
+    async onConnect() {
         const sr = this.shadowRoot
         this.$list = sr.querySelector("#list")
         this.$empty = sr.querySelector("#empty")
@@ -41,14 +38,14 @@ export class POOLS extends HTMLElement {
         this.$chainSelect = sr.querySelector("#chain-select")
         this.$dexPills = sr.querySelector("#dex-pills")
 
-        this.$loadMore.addEventListener("click", this.loadMore)
+        this.listen(this.$loadMore, "click", this.loadMore)
         this._initStickyObserver()
 
         await this.loadcache()
 
         // Subscribe before the final check — prevents missing an event that
         // fires between loadcache() completing and the listener being attached.
-        this.subscriptions.push(
+        this.subscribe(
             events.on("Lives.pools", this._onLivePools),
             Context.on("fiat", this._onFiat),
             Context.on("params", this._onParams)
@@ -57,8 +54,7 @@ export class POOLS extends HTMLElement {
         if (this._hasData) this._showData()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onDisconnect() {
         if (this._stickyObserver) this._stickyObserver.disconnect()
     }
 

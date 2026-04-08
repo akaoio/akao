@@ -1,11 +1,11 @@
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
+import BaseElement from "/UI/BaseElement.js"
 
-export class CONTEXT extends HTMLElement {
+export class CONTEXT extends BaseElement {
     constructor(props = {}) {
         super()
         this.states = new States({ key: props.key || null })
-        this.subscriptions = []
         this.subscription = null
         this.render = this.render.bind(this)
         this.on = this.on.bind(this)
@@ -23,14 +23,13 @@ export class CONTEXT extends HTMLElement {
         this.states.set({ key: value })
     }
 
-    connectedCallback() {
-        this.subscriptions.push(this.states.on("key", this.render))
+    onConnect() {
+        this.watch(this.states, "key", this.render)
         this.on()
         this.render()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onDisconnect() {
         this.off()
     }
 

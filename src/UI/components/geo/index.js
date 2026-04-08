@@ -1,10 +1,11 @@
 import { render } from "/core/UI.js"
 import States from "/core/States.js"
 import SELECT from "/UI/components/select/index.js"
+import BaseElement from "/UI/BaseElement.js"
 import template from "./template.js"
 import logic from "./logic.js"
 
-export class GEO extends HTMLElement {
+export class GEO extends BaseElement {
     constructor() {
         super()
         this.states = new States({ id: null, country: null, current: null })
@@ -14,7 +15,6 @@ export class GEO extends HTMLElement {
         this.render = this.render.bind(this)
         this.clear = this.clear.bind(this)
         this.reset = this.reset.bind(this)
-        this.subscriptions = []
     }
 
     static get observedAttributes() {
@@ -27,12 +27,12 @@ export class GEO extends HTMLElement {
         this.render()
     }
 
-    async connectedCallback() {
+    async onConnect() {
         const country = this.shadowRoot.querySelector("#country")
         country.states.set({ options: await logic.countries() })
         country.props.change = event => this.states.set({ id: Number(event.target.value), current: country })
         if (!this.states.get("id") && this.dataset.id) this.states.set({ id: Number(this.dataset.id) })
-        this.subscriptions.push(this.states.on("id", this.render))
+        this.watch(this.states, "id", this.render)
     }
 
     async create({ id, selected } = {}) {

@@ -1,8 +1,9 @@
 import { render } from "/core/UI.js"
 import Events from "/core/Events.js"
 import template from "./template.js"
+import BaseElement from "/UI/BaseElement.js"
 
-export class CAMERA extends HTMLElement {
+export class CAMERA extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -19,7 +20,6 @@ export class CAMERA extends HTMLElement {
         this.switch = this.switch.bind(this)
         this.capture = this.capture.bind(this)
         this.resume = this.resume.bind(this)
-        this.subscriptions = []
     }
 
     static get observedAttributes() {
@@ -36,27 +36,21 @@ export class CAMERA extends HTMLElement {
         if (name === "data-status") this.status.dataset.key = value
     }
 
-    connectedCallback() {
+    onConnect() {
         this.video = this.shadowRoot.querySelector("#video")
         this.$switch = this.shadowRoot.querySelector("#switch")
         this.$capture = this.shadowRoot.querySelector("#capture")
         this.$resume = this.shadowRoot.querySelector("#resume")
         this.status = this.shadowRoot.querySelector("ui-context#status")
-        this.$switch.addEventListener("click", this.switch)
-        this.$capture.addEventListener("click", this.capture)
-        this.$resume.addEventListener("click", this.resume)
-        this.subscriptions.push(
-            () => this.$switch.removeEventListener("click", this.switch),
-            () => this.$capture.removeEventListener("click", this.capture),
-            () => this.$resume.removeEventListener("click", this.resume),
-            this.stop
-        )
+        this.listen(this.$switch, "click", this.switch)
+        this.listen(this.$capture, "click", this.capture)
+        this.listen(this.$resume, "click", this.resume)
+        this.subscribe(this.stop.bind(this))
         if (this.dataset.autostart !== "false") this.start()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
-        this.subscriptions = []
+    onDisconnect() {
+        this.stop()
     }
 
     async list() {

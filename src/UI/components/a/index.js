@@ -6,6 +6,7 @@ export class A extends HTMLAnchorElement {
         super()
         this.click = this.click.bind(this)
         this.render = this.render.bind(this)
+        this.subscriptions = []
     }
 
     static get observedAttributes() {
@@ -19,12 +20,12 @@ export class A extends HTMLAnchorElement {
 
     connectedCallback() {
         this.addEventListener("click", this.click)
-        this.subscription = Context.on("locale", this.render)
+        this.subscriptions.push(Context.on("locale", this.render))
     }
 
     disconnectedCallback() {
         this.removeEventListener("click", this.click)
-        this.subscription.off()
+        this.subscriptions.forEach(off => off())
     }
 
     click(e) {

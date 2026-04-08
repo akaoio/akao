@@ -2,15 +2,15 @@ import { Elements } from "/core/Stores.js"
 import { Access } from "/core/Access.js"
 import { render } from "/core/UI.js"
 import template from "./template.js"
+import BaseElement from "/UI/BaseElement.js"
 import Logic from "/UI/components/user/logic.js"
 
-export class PROFILE extends HTMLElement {
+export class PROFILE extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         Elements.Profile = this
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.toggle = this.toggle.bind(this)
         this._renderIdentity = this._renderIdentity.bind(this)
     }
@@ -19,13 +19,12 @@ export class PROFILE extends HTMLElement {
         return this.shadowRoot.querySelector("ui-modal")
     }
 
-    connectedCallback() {
+    onConnect() {
         const $link = this.shadowRoot.querySelector("#profile-modal-link")
         const onLinkClick = () => this.modal.close()
-        $link.addEventListener("click", onLinkClick)
+        this.listen($link, "click", onLinkClick)
 
-        this.subscriptions.push(
-            () => $link.removeEventListener("click", onLinkClick),
+        this.subscribe(
             Access.on("authenticated", ({ value }) => {
                 if (!value) this.modal.close()
                 else this._renderIdentity()
@@ -33,10 +32,6 @@ export class PROFILE extends HTMLElement {
             Access.on("avatar", this._renderIdentity)
         )
         if (Access.get("authenticated")) this._renderIdentity()
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     toggle() {

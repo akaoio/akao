@@ -4,14 +4,14 @@ import { Lives, Chains } from "/core/Stores.js"
 import { events } from "/core/Events.js"
 import { formatNumber, beautifyNumber } from "/core/Utils.js"
 import template from "./template.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class POOL extends HTMLElement {
+export class POOL extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.update = this.update.bind(this)
     }
 
@@ -23,17 +23,13 @@ export class POOL extends HTMLElement {
         return this.dataset.address
     }
 
-    connectedCallback() {
-        this.subscriptions.push(
+    onConnect() {
+        this.subscribe(
             events.on("Lives.pools", this.update),
             events.on("Lives.forex", this.update),
             Context.on("fiat", this.update)
         )
         this.update()
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
     }
 
     async update() {

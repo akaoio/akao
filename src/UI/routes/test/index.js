@@ -1,5 +1,5 @@
 import template from "./template.js"
-import { render } from "/core/UI.js"
+import BaseRoute from "/UI/BaseRoute.js"
 
 const TEST_MODULES = [
     "/core/tests/Events.test.js",
@@ -21,21 +21,19 @@ const TEST_MODULES = [
     "/core/tests/OPFS.test.js",
 ]
 
-export class TEST extends HTMLElement {
+export class TEST extends BaseRoute {
     constructor() {
-        super()
+        super(template)
         this._results = []   // { suiteName, tests: [...], status }
         this._totals = { passed: 0, failed: 0, skipped: 0, total: 0 }
         this._running = false
         this._openSuites = new Set()
-        this.attachShadow({ mode: "open" })
-        render(template, this.shadowRoot)
     }
 
-    connectedCallback() {
+    onConnect() {
         const root = this.shadowRoot
-        root.getElementById("run-all").addEventListener("click", () => this._runAll())
-        root.getElementById("run-failed").addEventListener("click", () => this._runFailed())
+        this.listen(root.getElementById("run-all"), "click", () => this._runAll())
+        this.listen(root.getElementById("run-failed"), "click", () => this._runFailed())
         this._runAll()
     }
 

@@ -2,14 +2,14 @@ import { Elements } from "/core/Stores.js"
 import { render } from "/core/UI.js"
 import template from "./template.js"
 import States from "/core/States.js"
+import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
 
-export class AUTHORIZE extends HTMLElement {
+export class AUTHORIZE extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
         this.states = new States({ state: "listening" })
         this.pending = null
         this.render = this.render.bind(this)
@@ -21,7 +21,7 @@ export class AUTHORIZE extends HTMLElement {
         this.onclose = this.onclose.bind(this)
     }
 
-    connectedCallback() {
+    onConnect() {
         this.$authorize = this.shadowRoot.querySelector("#authorize")
         this.$modal = this.shadowRoot.querySelector("ui-modal")
         this.$wave = this.shadowRoot.querySelector("ui-wave")
@@ -30,24 +30,19 @@ export class AUTHORIZE extends HTMLElement {
         this.$deny = this.shadowRoot.querySelector("#deny")
         this.$stop = this.shadowRoot.querySelector("#stop")
         this.$dialog = this.$modal.shadowRoot?.querySelector("dialog")
-        this.$authorize.addEventListener("click", this.toggle)
-        this.$grant.addEventListener("click", this.grant)
-        this.$deny.addEventListener("click", this.deny)
-        this.$stop.addEventListener("click", this.stop)
-        this.$dialog?.addEventListener("close", this.onclose)
-        this.subscriptions.push(
-            () => this.$deny.removeEventListener("click", this.deny),
-            () => this.$grant.removeEventListener("click", this.grant),
-            () => this.$stop.removeEventListener("click", this.stop),
-            () => this.$dialog?.removeEventListener("close", this.onclose),
+        this.listen(this.$authorize, "click", this.toggle)
+        this.listen(this.$grant, "click", this.grant)
+        this.listen(this.$deny, "click", this.deny)
+        this.listen(this.$stop, "click", this.stop)
+        this.listen(this.$dialog, "close", this.onclose)
+        this.subscribe(
             this.$wave.events.on("message", this.wave),
             this.states.on("state", this.render)
         )
         this.render()
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onDisconnect() {
         this.$wave?.stop?.()
     }
 

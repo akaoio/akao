@@ -5,10 +5,11 @@ import { notify, randomKey } from "/core/Utils.js"
 import { Access } from "/core/Access.js"
 import { Elements } from "/core/Stores.js"
 import States from "/core/States.js"
+import BaseElement from "/UI/BaseElement.js"
 import "/UI/components/icon/index.js"
 import logic from "./logic.js"
 
-export class ADDRESSES extends HTMLElement {
+export class ADDRESSES extends BaseElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -23,50 +24,42 @@ export class ADDRESSES extends HTMLElement {
         this.confirm = this.confirm.bind(this)
         this.cancel = this.cancel.bind(this)
         this.render = this.render.bind(this)
-        this.subscriptions = []
     }
 
-    async connectedCallback() {
+    async onConnect() {
         this.countries = await logic.countries()
         this.modal = this.shadowRoot.querySelector("ui-modal#deletion")
         this.form = this.shadowRoot.querySelector("#address-form")
-        this.form.querySelectorAll("input[type='text'], input[type='email'], input[type='tel']").forEach((input) => this.subscriptions.push(Context.on(["dictionary", input.name], [input, "placeholder"])))
-        this.shadowRoot.querySelector("#cancel").addEventListener("click", this.cancel)
-        this.shadowRoot.querySelector("#add").addEventListener("click", this.add)
-        this.shadowRoot.querySelector("#save").addEventListener("click", this.save)
-        this.shadowRoot.querySelector("#close").addEventListener("click", this.close)
-        this.shadowRoot.querySelector("#reset").addEventListener("click", this.reset)
-        this.shadowRoot.querySelector("#confirm").addEventListener("click", this.confirm)
+        this.form.querySelectorAll("input[type='text'], input[type='email'], input[type='tel']").forEach((input) => this.subscribe(Context.on(["dictionary", input.name], [input, "placeholder"])))
+        this.listen(this.shadowRoot.querySelector("#cancel"), "click", this.cancel)
+        this.listen(this.shadowRoot.querySelector("#add"), "click", this.add)
+        this.listen(this.shadowRoot.querySelector("#save"), "click", this.save)
+        this.listen(this.shadowRoot.querySelector("#close"), "click", this.close)
+        this.listen(this.shadowRoot.querySelector("#reset"), "click", this.reset)
+        this.listen(this.shadowRoot.querySelector("#confirm"), "click", this.confirm)
         const $delete = () => {
             const id = this.states.get("current")
             if (!id) return
             this.delete(id)
         }
-        this.shadowRoot.querySelector("#delete").addEventListener("click", $delete)
-        this.subscriptions.push(
-            () => this.shadowRoot.querySelector("#cancel").removeEventListener("click", this.cancel),
-            () => this.shadowRoot.querySelector("#add").removeEventListener("click", this.add),
-            () => this.shadowRoot.querySelector("#save").removeEventListener("click", this.save),
-            () => this.shadowRoot.querySelector("#close").removeEventListener("click", this.close),
-            () => this.shadowRoot.querySelector("#reset").removeEventListener("click", this.reset),
-            () => this.shadowRoot.querySelector("#confirm").removeEventListener("click", this.confirm),
-            () => this.shadowRoot.querySelector("#delete").removeEventListener("click", $delete),
-            this.states.on("addresses", this.render)
+        this.listen(this.shadowRoot.querySelector("#delete"), "click", $delete)
+        this.subscribe(
+            this.states.on("addresses", this.render),
+            Access.on("authenticated", () => {
+                if (logic.pair()) {
+                    this.scope?.off?.()
+                    this.scope = logic.watch((key, address) => {
+                        const addresses = { ...this.states.get("addresses") }
+                        addresses[key] = address
+                        this.states.set({ addresses })
+                    })
+                    this.subscribe(() => this.scope?.off?.())
+                }
+            })
         )
-        this.subscriptions.push(Access.on("authenticated", () => {
-            if (logic.pair()) {
-                this.scope?.off?.()
-                this.scope = logic.watch((key, address) => {
-                    const addresses = { ...this.states.get("addresses") }
-                    addresses[key] = address
-                    this.states.set({ addresses })
-                })
-            }
-        }))
     }
 
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+    onDisconnect() {
         this?.scope?.off?.()
     }
 

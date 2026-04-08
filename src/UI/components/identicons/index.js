@@ -1,6 +1,7 @@
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import Events from "/core/Events.js"
+import BaseElement from "/UI/BaseElement.js"
 
 const _workCache = new Map()
 
@@ -22,12 +23,11 @@ export async function cachedWork(data, salt) {
     return result
 }
 
-export class IDENTICONS extends HTMLElement {
+export class IDENTICONS extends BaseElement {
     constructor() {
         super()
         this.events = new Events()
         this.$subs = []
-        this.subscriptions = []
         this.$id = 0
         this.$savedId = 0
         this.$total = 0
@@ -58,7 +58,7 @@ export class IDENTICONS extends HTMLElement {
         }
     }
 
-    connectedCallback() {
+    onConnect() {
         this.$container = this.shadowRoot.querySelector("#container")
         this.$loader = this.shadowRoot.querySelector("#loader")
 
@@ -68,23 +68,14 @@ export class IDENTICONS extends HTMLElement {
             const delta = (e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY) * 3
             this.$container.scrollBy({ left: delta, behavior: "auto" })
         }
-        this.$container.addEventListener("wheel", onWheel, { passive: false })
-        this.subscriptions.push(() => this.$container.removeEventListener("wheel", onWheel))
+        this.listen(this.$container, "wheel", onWheel, { passive: false })
 
         const onDecrease = () => this.events.emit("decrease")
         const onIncrease = () => this.events.emit("increase", { scrollToNew: true })
         const $dec = this.shadowRoot.querySelector("#status-decrease")
         const $inc = this.shadowRoot.querySelector("#status-increase")
-        $dec.addEventListener("click", onDecrease)
-        $inc.addEventListener("click", onIncrease)
-        this.subscriptions.push(
-            () => $dec.removeEventListener("click", onDecrease),
-            () => $inc.removeEventListener("click", onIncrease)
-        )
-    }
-
-    disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+        this.listen($dec, "click", onDecrease)
+        this.listen($inc, "click", onIncrease)
     }
 
     scrollTo(id, behavior = "instant") {
