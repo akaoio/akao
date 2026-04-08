@@ -1,0 +1,10 @@
+id: 2282339
+icon: 3270165126
+name: Bosom of Wanton Delights
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Torso
+popularity: 13

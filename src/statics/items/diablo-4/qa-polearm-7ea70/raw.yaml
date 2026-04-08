@@ -1,0 +1,11 @@
+id: 1958579
+icon: 2665147329
+name: QA Polearm
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+slotNames:
+  - Main Hand
+popularity: 10

@@ -1,0 +1,10 @@
+id: 1237187
+icon: 2283102586
+name: Remorse
+itemTypeName: Totem
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Off-Hand
+popularity: 11

@@ -1,0 +1,26 @@
+id: galvanic-azurite-2c6b9
+game: diablo-4
+type: Ring
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - ring
+rarity: Legendary
+itemTypeName: Ring
+classes:
+  - Sorcerer
+slots:
+  - Ring
+value: 226
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 1910903
+icon: 4180564399
+name: "[PH] Unique 99 Gloves"
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Hands
+popularity: 11

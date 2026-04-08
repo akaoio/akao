@@ -1,0 +1,10 @@
+id: 2417219
+icon: 62474037
+name: Black River
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Head
+popularity: 12

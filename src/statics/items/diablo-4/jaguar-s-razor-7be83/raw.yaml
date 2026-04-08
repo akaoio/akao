@@ -1,0 +1,12 @@
+id: 1759682
+icon: 2397813521
+name: Jaguar's Razor
+itemTypeName: Sword
+quality: 5
+playerClassNames:
+  - Paladin
+  - Rogue
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

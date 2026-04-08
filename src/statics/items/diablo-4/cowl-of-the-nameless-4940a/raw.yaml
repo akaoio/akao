@@ -1,0 +1,10 @@
+id: 494989
+icon: 2499146167
+name: Cowl of the Nameless
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Head
+popularity: 54

@@ -1,0 +1,10 @@
+id: 2252999
+icon: 1963320530
+name: Sunbringer Sabatons
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Feet
+popularity: 11

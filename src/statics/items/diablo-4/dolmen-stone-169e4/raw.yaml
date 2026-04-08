@@ -1,0 +1,10 @@
+id: 2451857
+icon: 776327186
+name: Dolmen Stone
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Feet
+popularity: 13

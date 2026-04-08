@@ -1,0 +1,10 @@
+id: 2298999
+icon: 2071488748
+name: Celestine Templar's Mantle
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Torso
+popularity: 14

@@ -1,0 +1,27 @@
+id: ramaladni-s-magnum-opus-crucible-83149
+game: diablo-4
+type: Sword
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - sword
+rarity: Legendary
+itemTypeName: Sword
+classes:
+  - Barbarian
+slots:
+  - Main Hand
+  - Off-Hand
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

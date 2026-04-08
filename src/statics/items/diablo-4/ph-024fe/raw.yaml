@@ -1,0 +1,10 @@
+id: 2179936
+icon: 2292628591
+name: "[PH]"
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Hands
+popularity: 11

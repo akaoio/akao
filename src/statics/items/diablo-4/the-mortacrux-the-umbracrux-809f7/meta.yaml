@@ -1,0 +1,28 @@
+id: the-mortacrux-the-umbracrux-809f7
+game: diablo-4
+type: Dagger
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - dagger
+rarity: Legendary
+itemTypeName: Dagger
+classes:
+  - Necromancer
+  - Rogue
+slots:
+  - Main Hand
+  - Off-Hand
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

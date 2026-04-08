@@ -1,0 +1,10 @@
+id: 1531072
+icon: 459296452
+name: Seer of the Old
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Legs
+popularity: 12

@@ -1,0 +1,10 @@
+id: 1433955
+icon: 3539575476
+name: Unsung Ascetic's Wraps
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Hands
+popularity: 37

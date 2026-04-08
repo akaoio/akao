@@ -1,0 +1,10 @@
+id: 2425734
+icon: 3386402860
+name: Gospel of the Devotee
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Legs
+popularity: 11

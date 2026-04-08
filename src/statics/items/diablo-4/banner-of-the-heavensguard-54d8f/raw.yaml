@@ -1,0 +1,10 @@
+id: 2288730
+icon: 2846322643
+name: Banner of the Heavensguard
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Legs
+popularity: 11

@@ -1,0 +1,24 @@
+id: collection-of-chaos-e8450
+game: diablo-4
+type: Grand Cache
+catalog: game
+tags:
+  - diablo-4
+  - normal
+  - grand cache
+rarity: Normal
+itemTypeName: Grand Cache
+classes: null
+slots: null
+value: 18
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

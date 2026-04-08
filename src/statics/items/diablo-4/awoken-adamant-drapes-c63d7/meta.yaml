@@ -1,0 +1,26 @@
+id: awoken-adamant-drapes-c63d7
+game: diablo-4
+type: Pants
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - pants
+rarity: Special
+itemTypeName: Pants
+classes:
+  - Sorcerer
+slots:
+  - Legs
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

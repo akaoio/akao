@@ -1,0 +1,25 @@
+id: scosglen-barding-6d849
+game: diablo-4
+type: Horse Armor
+catalog: game
+tags:
+  - diablo-4
+  - normal
+  - horse armor
+rarity: Normal
+itemTypeName: Horse Armor
+classes: null
+slots:
+  - Mount Armor
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

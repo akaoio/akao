@@ -1,0 +1,10 @@
+id: 2410351
+icon: 190118815
+name: Condemnation
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 11

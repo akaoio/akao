@@ -1,0 +1,11 @@
+id: 2573064
+icon: 3381494590
+name: Eggis
+itemTypeName: Shield
+quality: 6
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 140

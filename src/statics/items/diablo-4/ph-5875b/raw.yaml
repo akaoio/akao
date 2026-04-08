@@ -1,0 +1,10 @@
+id: 2179930
+icon: 2675162502
+name: "[PH]"
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Feet
+popularity: 14

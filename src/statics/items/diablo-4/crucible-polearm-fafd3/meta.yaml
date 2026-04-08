@@ -1,0 +1,28 @@
+id: crucible-polearm-fafd3
+game: diablo-4
+type: Polearm
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - polearm
+rarity: Special
+itemTypeName: Polearm
+classes:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slots:
+  - Main Hand
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

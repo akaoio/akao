@@ -1,0 +1,10 @@
+id: 2403681
+icon: 289378155
+name: Flamescar
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 16

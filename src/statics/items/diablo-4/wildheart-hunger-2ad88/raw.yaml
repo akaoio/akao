@@ -1,0 +1,10 @@
+id: 1902139
+icon: 2294078052
+name: Wildheart Hunger
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Feet
+popularity: 38

@@ -1,0 +1,10 @@
+id: 2282593
+icon: 996491063
+name: Red Sand Masque
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Head
+popularity: 11

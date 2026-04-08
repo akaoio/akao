@@ -1,0 +1,11 @@
+id: 1237382
+icon: 2256019932
+name: Sister Octavia's Prayer Book
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 14

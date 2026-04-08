@@ -1,0 +1,10 @@
+id: 1934420
+icon: 1932781287
+name: Björnfang's Tusks (Not used, we reuse for future!)
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Hands
+popularity: 12

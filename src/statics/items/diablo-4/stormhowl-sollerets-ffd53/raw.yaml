@@ -1,0 +1,10 @@
+id: 2101664
+icon: 2133374132
+name: Stormhowl Sollerets
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Legs
+popularity: 11

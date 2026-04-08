@@ -1,0 +1,11 @@
+id: 1821146
+icon: 650450041
+name: Focus of the Avenged
+itemTypeName: Focus
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 18

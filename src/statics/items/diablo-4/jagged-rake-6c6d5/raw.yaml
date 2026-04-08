@@ -1,0 +1,12 @@
+id: 2406703
+icon: 3269931148
+name: Jagged Rake
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 20

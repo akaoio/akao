@@ -1,0 +1,10 @@
+id: 2403763
+icon: 3318100115
+name: Fractured Winterglass
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Head
+popularity: 12

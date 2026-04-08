@@ -1,0 +1,13 @@
+id: 216473
+icon: 886197070
+name: Two-Handed Axe
+itemTypeName: Two-Handed Axe
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 27

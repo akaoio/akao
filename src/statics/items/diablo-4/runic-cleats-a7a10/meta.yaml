@@ -1,0 +1,25 @@
+id: runic-cleats-a7a10
+game: diablo-4
+type: Boots
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - boots
+rarity: Unique
+itemTypeName: Boots
+classes: null
+slots:
+  - Feet
+value: 91
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

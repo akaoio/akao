@@ -1,0 +1,12 @@
+id: 494027
+icon: 2252268889
+name: Kingslayer
+itemTypeName: Two-Handed Sword
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 11

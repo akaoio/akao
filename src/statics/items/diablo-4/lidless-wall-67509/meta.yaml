@@ -1,0 +1,26 @@
+id: lidless-wall-67509
+game: diablo-4
+type: Helm
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - helm
+rarity: Legendary
+itemTypeName: Helm
+classes:
+  - Necromancer
+slots:
+  - Head
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

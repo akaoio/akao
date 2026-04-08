@@ -1,0 +1,10 @@
+id: 2205772
+icon: 3719052725
+name: Black Flame Boots
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 13

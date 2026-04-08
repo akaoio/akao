@@ -1,0 +1,10 @@
+id: 1902155
+icon: 4180564399
+name: Cruor's Embrace
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Hands
+popularity: 69

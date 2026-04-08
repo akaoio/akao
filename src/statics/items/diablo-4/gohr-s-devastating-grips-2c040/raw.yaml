@@ -1,0 +1,10 @@
+id: 2409893
+icon: 1277290366
+name: Gohr's Devastating Grips
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Feet
+popularity: 13

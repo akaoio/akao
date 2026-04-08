@@ -1,0 +1,10 @@
+id: 1523192
+icon: 4191718517
+name: Enticing Grips
+itemTypeName: Gloves
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Hands
+popularity: 15

@@ -1,0 +1,11 @@
+id: 1181422
+icon: null
+name: Crusader Shield
+itemTypeName: Shield
+quality: null
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 11

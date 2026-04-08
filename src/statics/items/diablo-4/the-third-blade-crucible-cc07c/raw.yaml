@@ -1,0 +1,11 @@
+id: 2602299
+icon: 3772429999
+name: The Third Blade (Crucible)
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 16

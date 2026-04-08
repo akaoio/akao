@@ -1,0 +1,25 @@
+id: ring-of-starless-skies-a095d
+game: diablo-4
+type: Ring
+catalog: game
+tags:
+  - diablo-4
+  - mythic
+  - ring
+rarity: Mythic
+itemTypeName: Ring
+classes: null
+slots:
+  - Ring
+value: 570
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

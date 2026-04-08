@@ -1,0 +1,24 @@
+id: nightmare-sigil-aa9ca
+game: diablo-4
+type: Nightmare Sigil
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - nightmare sigil
+rarity: Special
+itemTypeName: Nightmare Sigil
+classes: null
+slots: null
+value: 18
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

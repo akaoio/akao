@@ -1,0 +1,10 @@
+id: 2390398
+icon: 289378155
+name: Blue Rose
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 18

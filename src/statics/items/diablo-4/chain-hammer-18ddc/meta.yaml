@@ -1,0 +1,30 @@
+id: chain-hammer-18ddc
+game: diablo-4
+type: Flail
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - flail
+rarity: Unique
+itemTypeName: Flail
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

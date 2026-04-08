@@ -1,0 +1,12 @@
+id: 1999316
+icon: 3269930983
+name: Balazan's Bite
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 12

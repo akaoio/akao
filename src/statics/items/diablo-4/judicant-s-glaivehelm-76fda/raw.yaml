@@ -1,0 +1,10 @@
+id: 2446553
+icon: 3095284816
+name: Judicant's Glaivehelm
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Head
+popularity: 74

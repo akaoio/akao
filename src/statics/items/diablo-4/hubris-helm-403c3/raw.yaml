@@ -1,0 +1,10 @@
+id: 1573097
+icon: 484738309
+name: Hubris Helm
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Head
+popularity: 11

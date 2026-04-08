@@ -1,0 +1,16 @@
+id: 1307058
+icon: 2397813488
+name: Royal Boneblade
+itemTypeName: Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 11

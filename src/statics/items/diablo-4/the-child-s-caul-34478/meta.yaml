@@ -1,0 +1,24 @@
+id: the-child-s-caul-34478
+game: diablo-4
+type: Quest Item
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - quest item
+rarity: Special
+itemTypeName: Quest Item
+classes: null
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

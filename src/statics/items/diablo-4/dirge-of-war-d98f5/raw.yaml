@@ -1,0 +1,12 @@
+id: 1707886
+icon: 587952421
+name: Dirge of War
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 11

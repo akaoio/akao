@@ -1,0 +1,11 @@
+id: 1834023
+icon: 3988898295
+name: Guard of the Immortal
+itemTypeName: Shield
+quality: null
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 32

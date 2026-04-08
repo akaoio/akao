@@ -1,0 +1,26 @@
+id: fields-of-crimson-747f0
+game: diablo-4
+type: Two-Handed Sword
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - two-handed sword
+rarity: Legendary
+itemTypeName: Two-Handed Sword
+classes:
+  - Barbarian
+slots:
+  - Main Hand
+value: 54
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

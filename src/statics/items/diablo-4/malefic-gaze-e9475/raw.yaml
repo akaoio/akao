@@ -1,0 +1,12 @@
+id: 1825016
+icon: 2952066850
+name: Malefic Gaze
+itemTypeName: Two-Handed Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 14

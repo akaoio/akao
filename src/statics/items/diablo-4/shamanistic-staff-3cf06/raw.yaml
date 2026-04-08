@@ -1,0 +1,10 @@
+id: 1306958
+icon: 445847395
+name: Shamanistic Staff
+itemTypeName: Staff
+quality: 5
+playerClassNames:
+  - Druid
+slotNames:
+  - Main Hand
+popularity: 16

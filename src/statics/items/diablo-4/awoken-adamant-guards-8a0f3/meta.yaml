@@ -1,0 +1,25 @@
+id: awoken-adamant-guards-8a0f3
+game: diablo-4
+type: Pants
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - pants
+rarity: Special
+itemTypeName: Pants
+classes:
+  - Druid
+slots:
+  - Legs
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

@@ -1,0 +1,27 @@
+id: qa-polearm-7ea70
+game: diablo-4
+type: Polearm
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - polearm
+rarity: Special
+itemTypeName: Polearm
+classes:
+  - Barbarian
+  - Druid
+slots:
+  - Main Hand
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2102552
+icon: 1308272364
+name: Executioner's Haidate
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Legs
+popularity: 14

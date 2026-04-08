@@ -1,0 +1,31 @@
+id: mace-of-blazing-furor-81dad
+game: diablo-4
+type: Mace
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - mace
+rarity: Rare
+itemTypeName: Mace
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 48
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

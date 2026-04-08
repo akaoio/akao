@@ -1,0 +1,13 @@
+id: 216097
+icon: 886197074
+name: King Maker
+itemTypeName: Two-Handed Axe
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 10

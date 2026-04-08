@@ -1,0 +1,10 @@
+id: 1966457
+icon: 2674984151
+name: Peacemonger's Signet
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Ring
+popularity: 19

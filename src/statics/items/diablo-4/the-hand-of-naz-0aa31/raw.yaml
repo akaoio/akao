@@ -1,0 +1,10 @@
+id: 2419181
+icon: 1445343165
+name: The Hand of Naz
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Feet
+popularity: 14

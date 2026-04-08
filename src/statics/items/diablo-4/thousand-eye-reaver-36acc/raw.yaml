@@ -1,0 +1,14 @@
+id: 2538899
+icon: 2160520768
+name: Thousand-Eye Reaver
+itemTypeName: Axe
+quality: 6
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 103
