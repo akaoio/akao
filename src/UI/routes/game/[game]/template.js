@@ -1,6 +1,7 @@
 import "/UI/layouts/main/index.js"
 import "/UI/components/context/index.js"
 import "/UI/components/item/index.js"
+import "/UI/components/loader/index.js"
 import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 
@@ -56,7 +57,10 @@ export const template = html`
             </div>
         </div>
 
-        <div class="catalog-grid" id="items"></div>
+        <div class="catalog-grid-wrap" id="items-wrap">
+            <div class="catalog-grid" id="items"></div>
+            <ui-loader aria-live="polite" aria-label="Loading items">Loading…</ui-loader>
+        </div>
 
         <div class="load-more-wrap">
             <button class="load-more-btn" id="load-more" hidden></button>

@@ -56,7 +56,7 @@ export class GAME_ITEM extends BaseElement {
 
         // Name / link
         const link = this.shadowRoot.querySelector("#item-link")
-        link.textContent = name || id || ""
+        this.shadowRoot.querySelector("#item-name").textContent = name || id || ""
         if (id) link.dataset.to = item.game ? `/item/${item.game}/${id}` : `/item/${id}`
 
         // Price

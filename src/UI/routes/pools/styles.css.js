@@ -10,10 +10,6 @@ export const styles = css`
         100% { box-shadow: 0 0 0 0 transparent; }
     }
 
-    @keyframes pools-spin {
-        to { transform: rotate(360deg); }
-    }
-
     @keyframes shimmer {
         0%   { background-position: -600px 0; }
         100% { background-position:  600px 0; }
@@ -117,27 +113,6 @@ export const styles = css`
             animation: live-pulse 2s ease-out infinite;
 
             &[hidden] { display: none; }
-        }
-
-        /* ── Initial loader ── */
-        #loader {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 40vh;
-
-            &[hidden] { display: none; }
-        }
-
-        .loader-spinner {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: var(--neon-g);
-            border-right-color: color-mix(in hsl, var(--neon-g) 35%, transparent);
-            box-shadow: 0 0 12px color-mix(in hsl, var(--neon-g) 20%, transparent);
-            animation: pools-spin 0.7s linear infinite;
         }
 
         /* ── Content (hidden until first data) ── */
@@ -445,12 +420,6 @@ export const styles = css`
         }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-        .loader-spinner {
-            animation: none;
-            opacity: 0.4;
-        }
-    }
 `
 
 export default styles

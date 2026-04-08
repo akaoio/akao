@@ -571,17 +571,35 @@ export const styles = css`
         }
 
         /* ── Item grid ── */
+        .catalog-grid-wrap {
+            position: relative;
+
+            &.is-loading-all {
+                min-height: 320px;
+
+                .catalog-grid {
+                    display: none;
+                }
+
+                ui-loader {
+                    display: flex;
+                }
+            }
+        }
+
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: var(--space-3);
             padding: var(--space-4) 0 var(--space-3);
-            transition: opacity 0.15s;
+        }
 
-            &.is-loading-all {
-                opacity: 0.4;
-                pointer-events: none;
-            }
+        ui-loader {
+            display: none;
+            position: absolute;
+            inset: 0;
+            --loader-color: var(--color-accent);
+            --loader-min-height: 0;
         }
 
         /* ── Responsive Breakpoints ── */

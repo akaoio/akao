@@ -1,5 +1,6 @@
 import logo from "./logo.js"
 import button from "./button.js"
+import loader from "./loader.js"
 import icon from "./icon.js"
 import identicon from "./identicon.js"
 import fiat from "./fiat.js"
@@ -20,6 +21,7 @@ import wave from "./wave.js"
 export default [
     logo,
     button,
+    loader,
     icon,
     identicon,
     fiat,
