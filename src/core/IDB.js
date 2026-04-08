@@ -4,6 +4,7 @@ import { put, $put } from "./IDB/put.js"
 import { del, $del } from "./IDB/del.js"
 import { execute } from "./IDB/execute.js"
 import { load, save, init } from "./IDB/disk.js"
+import { keys } from "./IDB/keys.js"
 
 class IDB {
     constructor({ name = "system" } = {}) {
@@ -39,6 +40,7 @@ class IDB {
     get = get
     put = put
     del = del
+    keys = keys
 
     // Internal methods
     $get = $get
