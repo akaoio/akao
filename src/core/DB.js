@@ -59,7 +59,7 @@ export class DB {
         if (memory && hash && memory === hash) {
             if (type === "hash") return hash
             const cached = await Indexes.Statics.get(path).once()
-            DB.$syncToSQL(path, cached)
+            DB._syncInsert(path, cached)
             return cached
         }
         if (hash) await Indexes.Hashes.get(path).put(hash)
@@ -262,13 +262,13 @@ export class DB {
                     return await db.batch(ops.map(op => ({ sql: toSQL(op), params: op.values })))
                 } catch {
                     // Slow fallback: insert individually to isolate the bad op
-                    for (const op of ops) {
+                    for (const op of ops)
                         try {
                             await db.run(toSQL(op), op.values)
                         } catch (err) {
                             console.warn("[DB._flush] skipped:", err.message, op.values?.[0])
                         }
-                    }
+                    
                 }
             })
             .catch(err => console.warn("[DB._flush]", err.message))
