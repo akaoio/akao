@@ -5,12 +5,24 @@ import { threads } from "/core/Threads.js"
 const queue = []
 let processing = false
 
+// Per-method timeout defaults (ms). open/batch need more time for WASM init.
+const TIMEOUTS = {
+    open: 30000,
+    batch: 30000,
+    exec: 10000,
+    run: 10000,
+    all: 10000,
+    get: 10000,
+}
+const DEFAULT_TIMEOUT = 10000
+
 function pump() {
     if (processing || queue.length === 0) return
     processing = true
 
     const { method, params, resolve, reject } = queue.shift()
     let timedOut = false
+    const timeout = TIMEOUTS[method] ?? DEFAULT_TIMEOUT
 
     // Watchdog: if the worker never responds (crash, hang), reject this item
     // and reject ALL remaining queued items since the worker may be wedged.
@@ -24,7 +36,7 @@ function pump() {
             const { resolve, reject } = queue.shift()
             reject(new Error(`SQL worker unresponsive, flushed queue`))
         }
-    }, 10000)
+    }, timeout)
 
     threads.queue({
         thread: "sql",
