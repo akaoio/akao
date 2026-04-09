@@ -1,12 +1,14 @@
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { events } from "/core/Events.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 
-export class NOTIFICATIONS extends BaseElement {
+export class NOTIFICATIONS extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.close = this.close.bind(this)
@@ -17,8 +19,8 @@ export class NOTIFICATIONS extends BaseElement {
         if (notification) this.shadowRoot.removeChild(notification)
     }
 
-    onConnect() {
-        this.subscribe(
+    onconnect() {
+        this.sub(
             events.on("notify", ({ detail }) => {
                 const key = logic.key()
                 const close = () => this.close(key)

@@ -3,6 +3,7 @@ import template from "./template.js"
 import logic, { NOISE_FLOOR, DECAY, DEFAULT_COLORS } from "./logic.js"
 
 export class VISUALIZER extends HTMLElement {
+    static module = import.meta.url
     constructor(props = {}) {
         super()
         this.props  = props

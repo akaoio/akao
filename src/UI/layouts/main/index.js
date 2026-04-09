@@ -1,7 +1,10 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
+import Component from "/core/UI/Component.js"
 
-export class MAIN extends HTMLElement {
+export class MAIN extends Component {
+    static module = import.meta.url
+    
     constructor(props = {}) {
         super()
         this.attachShadow({ mode: "open" })

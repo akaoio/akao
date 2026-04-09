@@ -31,3 +31,6 @@ export class FS {
 }
 
 export default FS
+
+// Re-export all functions as named exports for convenience
+export { root, join, ensure, remove, write, load, download, find, copy, dir, exist, isDirectory, hash, move }
