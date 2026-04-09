@@ -1,15 +1,15 @@
 import { html } from "/core/UI.js"
-import "/UI/components/crypto/index.js"
 import "/UI/components/svg/index.js"
+import "./crypto/index.js"
 import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
     <div class="col-pair">
         <div class="pair">
-            <ui-crypto id="token0"></ui-crypto>
+            <ui-pool-crypto id="token0"></ui-pool-crypto>
             <span class="pair-sep">/</span>
-            <ui-crypto id="token1"></ui-crypto>
+            <ui-pool-crypto id="token1"></ui-pool-crypto>
         </div>
     </div>
     <div class="col-tvl">

@@ -30,6 +30,6 @@ export class CRYPTO extends HTMLElement {
     }
 }
 
-customElements.define("ui-crypto", CRYPTO)
+customElements.define("ui-pool-crypto", CRYPTO)
 
 export default CRYPTO

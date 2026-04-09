@@ -11,16 +11,9 @@ export const styles = css`
         height: var(--icon-sm);
         flex-shrink: 0;
     }
-    .name {
-        font-weight: 500;
-    }
-    .amount {
-        opacity: 0.6;
-    }
-    .fiat {
-        opacity: 0.5;
-        font-size: var(--text-sm);
-    }
+    .name { font-weight: 500; }
+    .amount { opacity: 0.6; }
+    .fiat { opacity: 0.5; font-size: var(--text-sm); }
 `
 
 export default styles
