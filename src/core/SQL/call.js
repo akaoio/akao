@@ -10,10 +10,12 @@ function pump() {
     processing = true
 
     const { method, params, resolve, reject } = queue.shift()
+    let timedOut = false
 
     // Watchdog: if the worker never responds (crash, hang), unblock the queue.
     // This rejects only the stuck item — the rest continue normally.
     const watchdog = setTimeout(() => {
+        timedOut = true
         processing = false
         reject(new Error(`SQL worker unresponsive: ${method}`))
         pump()
@@ -24,6 +26,7 @@ function pump() {
         method,
         params,
         callback: (response, error) => {
+            if (timedOut) return  // ignore late response after timeout
             clearTimeout(watchdog)
             processing = false
             if (error) reject(new Error(error?.message || String(error)))

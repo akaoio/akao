@@ -28,17 +28,16 @@ export class DB {
     // Fallback chain for requestIdleCallback — yields to the browser scheduler,
     // then MessageChannel, then setTimeout as a last resort.
     static _yield() {
-        if (typeof scheduler !== "undefined" && scheduler.yield) {
-            return scheduler.yield()
-        }
-        if (typeof MessageChannel !== "undefined") {
-            return new Promise(resolve => {
+        if (typeof scheduler !== "undefined" && scheduler.yield) return scheduler.yield()
+
+        if (typeof MessageChannel !== "undefined")
+            return new Promise((resolve) => {
                 const ch = new MessageChannel()
                 ch.port1.onmessage = resolve
                 ch.port2.postMessage(null)
             })
-        }
-        return new Promise(r => setTimeout(r, 0))
+
+        return new Promise((r) => setTimeout(r, 0))
     }
 
     static async get(path = []) {
@@ -103,17 +102,31 @@ export class DB {
         const allKeys = await Indexes.Statics.keys()
         if (!allKeys.length) return
 
-        // Filter to only item keys — rebuild only handles items, transform returns null for others.
-        const gameKeys = allKeys.filter(k => Array.isArray(k) && k[1] === "items" && k.length === 3)
-        const shopKeys = allKeys.filter(k => Array.isArray(k) && k[1] === "items" && k.length === 2)
-        const itemKeys = [...gameKeys, ...shopKeys]
+        // Filter to only item locale keys (game: statics/items/gameId/itemId/locale → length 5,
+        // shop: statics/items/itemId/locale → length 4). Meta.json and pagination files have
+        // different lengths and will be filtered out naturally. We also validate using transform()
+        // to ensure we're only picking up actual item paths.
+        const itemKeys = allKeys.filter(k => {
+            if (!Array.isArray(k) || k.length < 4) return false
+            // Validate using transform - only actual item locale paths return non-null
+            const op = transform(k, {})
+            return op !== null
+        })
         if (!itemKeys.length) return
 
         // Count guard: fast path — skip rebuild if SQL already has enough items.
+        // Wrap in try-catch in case tables don't exist yet (fresh DB).
         const db = await DB.sql()
-        const [gameRow] = await db.all("SELECT COUNT(*) as n FROM game_items")
-        const [shopRow] = await db.all("SELECT COUNT(*) as n FROM shop_items")
-        const needsRebuild = gameRow?.n < gameKeys.length || shopRow?.n < shopKeys.length
+        let gameCount = 0, shopCount = 0
+        try {
+            const [gameRow] = await db.all("SELECT COUNT(*) as n FROM game_items")
+            const [shopRow] = await db.all("SELECT COUNT(*) as n FROM shop_items")
+            gameCount = gameRow?.n ?? 0
+            shopCount = shopRow?.n ?? 0
+        } catch {
+            // Tables don't exist yet — proceed with rebuild
+        }
+        const needsRebuild = gameCount < itemKeys.filter((k) => k.length === 5).length || shopCount < itemKeys.filter((k) => k.length === 4).length
 
         if (!needsRebuild) {
             DB._yield().then(() => DB.$syncCatalog())
@@ -132,9 +145,8 @@ export class DB {
                 const entries = await Promise.all(
                     chunk.map(async (path) => ({ path, data: await Indexes.Statics.$get(path) }))
                 )
-                for (const { path, data } of entries) {
-                    if (data) DB._syncInsert(path, data)
-                }
+                for (const { path, data } of entries) if (data) DB._syncInsert(path, data)
+                
             } catch (err) {
                 console.warn("[DB.$rebuildFromIDB] chunk error:", err.message)
             }
@@ -166,9 +178,15 @@ export class DB {
         const db = await DB.sql()
 
         // Count guard: skip if SQL already has items for all locales
-        const [gameRow] = await db.all("SELECT COUNT(*) as n FROM game_items")
-        const [shopRow] = await db.all("SELECT COUNT(*) as n FROM shop_items")
-        const sqlTotal = (gameRow?.n ?? 0) + (shopRow?.n ?? 0)
+        // Wrap in try-catch in case tables don't exist yet (fresh DB before first flush).
+        let sqlTotal = 0
+        try {
+            const [gameRow] = await db.all("SELECT COUNT(*) as n FROM game_items")
+            const [shopRow] = await db.all("SELECT COUNT(*) as n FROM shop_items")
+            sqlTotal = (gameRow?.n ?? 0) + (shopRow?.n ?? 0)
+        } catch {
+            // Tables don't exist yet — proceed with sync
+        }
         if (sqlTotal >= meta.children * locales.length) return
 
         // Walk each pagination page in idle time, fetch all items for all locales.
