@@ -165,14 +165,15 @@ export class DB {
     // populated, $syncToSQL fires automatically. Subsequent runs are cheap: hash match
     // → served from IDB, only 1 lightweight .hash request per item.
     static async $syncCatalog() {
-        // Load available locales from static catalog
-        const localeList = await FS.load(["statics", "locales.json"])
+        // Load available locales from static catalog via DB.get() for consistent
+        // hash validation and IDB caching behavior (same as rest of the app).
+        const localeList = await DB.get(["statics", "locales.json"])
         if (!Array.isArray(localeList)) return
         const locales = localeList.map(l => l.code).filter(Boolean)
         if (!locales.length) return
 
         // Load pagination metadata to know total items and pages
-        const meta = await FS.load(["statics", "items", "meta.json"])
+        const meta = await DB.get(["statics", "items", "meta.json"])
         if (!meta?.pages || !meta?.children) return
 
         const db = await DB.sql()

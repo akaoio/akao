@@ -12,15 +12,18 @@ function pump() {
     const { method, params, resolve, reject } = queue.shift()
     let timedOut = false
 
-    // Watchdog: if the worker never responds (crash, hang), unblock the queue.
-    // This rejects the stuck item and sets processing=false so the next $call()
-    // will trigger pump() with a fresh worker. We don't pump() immediately here
-    // to avoid flooding a potentially wedged worker with more work.
+    // Watchdog: if the worker never responds (crash, hang), reject this item
+    // and reject ALL remaining queued items since the worker may be wedged.
+    // This prevents hanging Promises — callers will get errors and can retry.
     const watchdog = setTimeout(() => {
         timedOut = true
         processing = false
         reject(new Error(`SQL worker unresponsive: ${method}`))
-        // Don't pump() — let the next $call() restart the worker fresh
+        // Reject remaining queued items so no one hangs forever
+        while (queue.length > 0) {
+            const { resolve, reject } = queue.shift()
+            reject(new Error(`SQL worker unresponsive, flushed queue`))
+        }
     }, 10000)
 
     threads.queue({
