@@ -2,12 +2,14 @@ import { Elements } from "/core/Stores.js"
 import { Access } from "/core/Access.js"
 import { render } from "/core/UI.js"
 import template from "./template.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import Logic from "/UI/components/user/logic.js"
 
-export class PROFILE extends BaseElement {
+export class PROFILE extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         Elements.Profile = this
         render(template, this.shadowRoot)
@@ -19,12 +21,12 @@ export class PROFILE extends BaseElement {
         return this.shadowRoot.querySelector("ui-modal")
     }
 
-    onConnect() {
+    onconnect() {
         const $link = this.shadowRoot.querySelector("#profile-modal-link")
         const onLinkClick = () => this.modal.close()
         this.listen($link, "click", onLinkClick)
 
-        this.subscribe(
+        this.sub(
             Access.on("authenticated", ({ value }) => {
                 if (!value) this.modal.close()
                 else this._renderIdentity()

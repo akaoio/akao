@@ -1,10 +1,12 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 
-export class ICON extends BaseElement {
+export class ICON extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
@@ -13,7 +15,7 @@ export class ICON extends BaseElement {
         return ["data-icon", "class"]
     }
 
-    onConnect() {
+    onconnect() {
         if (!this.dataset.icon) return
         this.render()
     }

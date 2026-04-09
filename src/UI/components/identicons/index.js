@@ -1,7 +1,7 @@
 import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import Events from "/core/Events.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 
 const _workCache = new Map()
 
@@ -23,9 +23,11 @@ export async function cachedWork(data, salt) {
     return result
 }
 
-export class IDENTICONS extends BaseElement {
+export class IDENTICONS extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.events = new Events()
         this.$subs = []
         this.$id = 0
@@ -58,7 +60,7 @@ export class IDENTICONS extends BaseElement {
         }
     }
 
-    onConnect() {
+    onconnect() {
         this.$container = this.shadowRoot.querySelector("#container")
         this.$loader = this.shadowRoot.querySelector("#loader")
 

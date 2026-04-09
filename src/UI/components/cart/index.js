@@ -1,23 +1,25 @@
 import template from "./template.js"
 import { Context } from "/core/Context.js"
 import { html, render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import Cart from "/core/Cart.js"
 import logic from "./logic.js"
 
-export class CART extends BaseElement {
+export class CART extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.render = this.render.bind(this)
     }
 
-    onConnect() {
+    onconnect() {
         const button = this.shadowRoot.querySelector("ui-icon")
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.listen(button, "click", this.modal.toggleModal.bind(this.modal))
-        this.subscribe(Cart.states.on("list", this.render), Context.on("locale", this.render))
+        this.sub(Cart.states.on("list", this.render), Context.on("locale", this.render))
         this.listen(this.modal, "click", (e) => {
             const icon = e.composedPath().find(el => el.tagName === "UI-ICON")
             if (!icon) return

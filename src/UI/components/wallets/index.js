@@ -8,8 +8,10 @@ import SELECT from "/UI/components/select/index.js"
 import logic from "./logic.js"
 
 export class WALLETS extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.states = new States({
             chain: Context.get("params")?.chain || null,
             currency: Context.get("params")?.currency || null,
@@ -17,7 +19,7 @@ export class WALLETS extends HTMLElement {
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
+        this.subs = []
         this.step = 5
         this.change = this.change.bind(this)
     }
@@ -46,7 +48,7 @@ export class WALLETS extends HTMLElement {
             if (s != null) this.$identicons.dataset.seed = s
         }
 
-        this.subscriptions.push(
+        this.subs.push(
             this.$identicons.events.on("select", ({ detail: { id } }) => { this.id = id }),
             this.$identicons.events.on("increase", () => { this.total += this.step }),
             this.$identicons.events.on("decrease", () => { if (this.total - this.step > this.id) this.total -= this.step }),
@@ -116,7 +118,7 @@ export class WALLETS extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+        this.subs.forEach((off) => off())
     }
 
     async change(event) {

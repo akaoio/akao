@@ -2,6 +2,7 @@ import { render } from "/core/UI.js"
 import template from "./template.js"
 
 export class CRYPTO extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
         this.attachShadow({ mode: "open" })

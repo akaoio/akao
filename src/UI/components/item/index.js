@@ -3,18 +3,20 @@ import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { render } from "/core/UI.js"
 import "/UI/components/game-item/index.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 
-export class ITEM extends BaseElement {
+export class ITEM extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.states = new States()
         this.attachShadow({ mode: "open" })
         this.render = this.render.bind(this)
     }
 
-    async onConnect() {
+    async onconnect() {
         if ("item" in this.dataset) {
             const item = JSON.parse(this.dataset.item || "{}")
             const catalog = item.catalog || (item.game ? "game" : null)
@@ -39,7 +41,7 @@ export class ITEM extends BaseElement {
         const key = this.dataset.key
         const { route: routePath } = logic.path(key)
         this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = routePath
-        this.subscribe(
+        this.sub(
             Context.on("locale", this.render),
             this.states.on("name", [name, "textContent"]),
             this.states.on("description", [description, "textContent"]),

@@ -6,8 +6,10 @@ import { Context } from "/core/Context.js"
 import logic from "./logic.js"
 
 export class WAVE extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.events = new Events(this)

@@ -1,13 +1,15 @@
 import { render } from "/core/UI.js"
 import States from "/core/States.js"
 import SELECT from "/UI/components/select/index.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import template from "./template.js"
 import logic from "./logic.js"
 
-export class GEO extends BaseElement {
+export class GEO extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.states = new States({ id: null, country: null, current: null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
@@ -27,7 +29,7 @@ export class GEO extends BaseElement {
         this.render()
     }
 
-    async onConnect() {
+    async onconnect() {
         const country = this.shadowRoot.querySelector("#country")
         country.states.set({ options: await logic.countries() })
         country.props.change = event => this.states.set({ id: Number(event.target.value), current: country })

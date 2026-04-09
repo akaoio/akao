@@ -1,11 +1,13 @@
 import template from "./template.js"
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 
-export class PICKER extends BaseElement {
+export class PICKER extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.states = new States({ options: [], selected: null })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
@@ -24,7 +26,7 @@ export class PICKER extends BaseElement {
         this.states.set({ [name.replace("data-", "")]: value })
     }
 
-    onConnect() {
+    onconnect() {
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.modal.dataset.header = this.dataset.header
         this.watch(this.states, "options", this.render, true)

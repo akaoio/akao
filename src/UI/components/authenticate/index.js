@@ -4,12 +4,14 @@ import Events from "/core/Events.js"
 import States from "/core/States.js"
 import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils/browser.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import Logic from "./logic.js"
 
-export class AUTHENTICATE extends BaseElement {
+export class AUTHENTICATE extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.events = new Events(this)
@@ -25,7 +27,7 @@ export class AUTHENTICATE extends BaseElement {
         this.wave = this.wave.bind(this)
     }
 
-    onConnect() {
+    onconnect() {
         this.$wave = this.shadowRoot.querySelector("ui-wave")
         this.$requestbtn = this.shadowRoot.querySelector("#request-btn")
         this.$stopbtn = this.shadowRoot.querySelector("#stop-btn")
@@ -34,7 +36,7 @@ export class AUTHENTICATE extends BaseElement {
         this.listen(this.$stopbtn, "click", this.onstopbtn)
         this.listen(this.shadowRoot.querySelector("#passkey"), "click", this.passkey)
         this.listen(this.shadowRoot.querySelector("#wave"), "click", this.wave)
-        this.subscribe(
+        this.sub(
             this.$wave.events.on("message", this.onwave),
             this.states.on("method", this.render)
         )
@@ -42,7 +44,7 @@ export class AUTHENTICATE extends BaseElement {
         this.initpair()
     }
 
-    onDisconnect() {
+    ondisconnect() {
         this.stop()
     }
 

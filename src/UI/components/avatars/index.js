@@ -2,12 +2,14 @@ import template from "./template.js"
 import { Access } from "/core/Access.js"
 import Events from "/core/Events.js"
 import { render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 
-export class AVATARS extends BaseElement {
+export class AVATARS extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.events = new Events()
@@ -31,7 +33,7 @@ export class AVATARS extends BaseElement {
         return logic.settotal(value)
     }
 
-    onConnect() {
+    onconnect() {
         this.$identicons = this.shadowRoot.querySelector("ui-identicons")
 
         const seed = async () => {
@@ -46,7 +48,7 @@ export class AVATARS extends BaseElement {
         this.listen($cancel, "click", onCancel)
         this.listen($accept, "click", onAccept)
 
-        this.subscribe(
+        this.sub(
             this.$identicons.events.on("select", ({ detail: { id } }) => {
                 this._previewId = id
                 this.$identicons.id = id
@@ -76,7 +78,7 @@ export class AVATARS extends BaseElement {
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+        this.subs.forEach((off) => off())
     }
 
     scrollToSelected() {

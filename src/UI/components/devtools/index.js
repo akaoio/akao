@@ -2,6 +2,7 @@ import { html, render } from "/core/UI.js"
 import styles from "./styles.css.js"
 
 export class DEVTOOLS extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
         this.attachShadow({ mode: "open" })

@@ -2,6 +2,7 @@ import styles from "./styles.css.js"
 import { html, render } from "/core/UI.js"
 
 export class SVG extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
