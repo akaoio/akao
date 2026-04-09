@@ -1,0 +1,14 @@
+# Swarm Protocol Config — EXAMPLE
+# Copy file này thành swarm.yaml và điền token của máy bạn
+# swarm.yaml nằm trong .gitignore — không commit token lên git
+
+self:
+  token: YOUR_BOT_TOKEN_HERE    # lấy từ @BotFather trên Telegram
+  name: your-machine-name       # vd: son-pc, huy-laptop, duc-pc
+
+groups:
+  - YOUR_GROUP_CHAT_ID          # ID của Telegram group (số âm, vd: -1001234567890)
+
+agents:                         # tất cả thành viên swarm — cập nhật khi thêm/bớt bot
+  - name: son-pc
+    username: sonakao_bot
