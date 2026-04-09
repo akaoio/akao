@@ -6,6 +6,7 @@ import { formatNumber, beautifyNumber } from "/core/Utils.js"
 import template from "./template.js"
 import BaseElement from "/UI/BaseElement.js"
 import logic from "./logic.js"
+import "./crypto/index.js"
 
 export class POOL extends BaseElement {
     constructor() {

@@ -138,7 +138,7 @@ Pattern render **giống hệt `ui-wallets`** (dùng `ui-svg`, không phải `<i
 // ui-wallets (reference — wallets/index.js line 152):
 html`<ui-svg class="icon" data-src="/images/cryptos/${currency.symbol}" /> ${currency.name}`
 
-// ui-crypto dùng cùng pattern:
+// ui-pool-crypto dùng cùng pattern:
 html`<ui-svg class="icon" data-src="/images/cryptos/${token.configs.symbol}" /> ${token.configs.name}`
 ```
 
@@ -327,7 +327,7 @@ src/UI/components/pool/
   styles.css.js
 
 src/UI/components/crypto/
-  index.js       ← ui-crypto component (logo + symbol + amount cho native coins và tokens)
+  index.js       ← ui-pool-crypto component (logo + symbol + amount cho native coins và tokens)
   template.js
   styles.css.js
 ```
@@ -881,14 +881,14 @@ Phải làm trước, nếu không pools sẽ crash hoặc không nhận live da
 ### Bước 1 — Utility + components nền
 
 4. Xác nhận `fiatValue` và `fiatRates` trong `src/core/Utils/contracts.js` đã sẵn sàng (Bước 0 phải hoàn thành trước để `fiatRates` đọc được `Statics.chains[chain].stables`)
-5. Tạo `src/UI/components/crypto/` — `ui-crypto`: `<ui-svg data-src="/images/cryptos/${token.configs.symbol}" />` + name + optional amount; `configs.symbol` là SVG filename trực tiếp
+5. Tạo `src/UI/components/crypto/` — `ui-pool-crypto`: `<ui-svg data-src="/images/cryptos/${token.configs.symbol}" />` + name + optional amount; `configs.symbol` là SVG filename trực tiếp
 6. Thêm i18n keys: `pools`, `swap`, `rate`, `liquidity`, `price`, `from`, `to`, `slippage`, `quote`, `nopoolFound`, `insufficientBalance`, `selectToken`, `searchToken`, `dex`, `gasFee`
 7. `npm run build:core`
 
 ### Bước 2 — Route `/pools`
 
 8. Tạo `src/UI/components/pool/` — `ui-pool`: hiển thị 1 pool row
-   - Pair tokens (2× `ui-crypto`)
+   - Pair tokens (2× `ui-pool-crypto`)
    - Rate: `pool.pairs[t0][t1]` hiển thị `"1 WBTC = 15.3 WETH"`
    - Fiat price: `await fiatValue({ chain: pool.chain, currency: pool.token0.configs, amount: 1, fiat })` — `pool.chain` là **numeric**
    - Liquidity fiat: `$X,XXX,XXX TVL`

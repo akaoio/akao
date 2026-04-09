@@ -103,13 +103,13 @@ Same as v1.0 (no changes):
 `sea.secret(theirPublicKey, myKeyPair)` over Curve25519 (GunDB SEA library).
 
 **Properties:**
-- **Symmetric:** `sea.secret(P.pub, M.pair) === sea.secret(M.pub, P.pair)`
+- **Symmetric:** `sea.secret(P.epub, M.pair) === sea.secret(M.epub, P.pair)`
 - **Deterministic:** Same inputs → same output
 - **Pair-scoped:** `secret_MP ≠ secret_TP`
 
 ```javascript
-const secret_MP = await sea.secret(P.pub, M.pair)  // M computes
-const secret_MP = await sea.secret(M.pub, P.pair)  // P computes (same result)
+const secret_MP = await sea.secret(P.epub, M.pair)  // M computes
+const secret_MP = await sea.secret(M.epub, P.pair)  // P computes (same result)
 ```
 
 ### 2.2 BIP-32 Hierarchical Deterministic Wallets
@@ -206,9 +206,9 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 Each party derives a single root HD key with Platform:
 
 ```javascript
-secret_MP  =  sea.secret(P.pub, M.pair)
-secret_TP  =  sea.secret(P.pub, T.pair)
-secret_AP  =  sea.secret(P.pub, A.pair)
+secret_MP  =  sea.secret(P.epub, M.pair)
+secret_TP  =  sea.secret(P.epub, T.pair)
+secret_AP  =  sea.secret(P.epub, A.pair)
 
 seed_MP    =  sha256(secret_MP)
 seed_TP    =  sha256(secret_TP)
@@ -238,16 +238,18 @@ For each trade, derive **two escrow wallets**:
 
 ```javascript
 // AFTER MATCHING (both parties known)
-tradeId = sha256(orderId + M.pub + T.pub + timestamp)
+// "TR:" domain separator + ":" field separators prevent hash space collision with orderId ("OR:")
+tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
 
 // Step 1: Recipient (Taker for buy order, Maker for sell order) publishes xpub
-secret_recipient = sea.secret(P.pub, recipient.pair)
+secret_recipient = sea.secret(P.epub, recipient.pair)
 root_recipient = fromSeed(sha256(secret_recipient))
 xpub_recipient = root_recipient.neuter().extendedKey  // Public
 
 // Step 2: Payer (Maker for buy order, Taker for sell order) computes index
-secret_payer = sea.secret(P.pub, payer.pair)
-seed_index = sha256(secret_payer + ":" + tradeId)
+// Domain separator ":TL:" isolates TL index from CL index — prevents cross-lock correlation
+secret_payer = sea.secret(P.epub, payer.pair)
+seed_index = sha256(secret_payer + ":TL:" + tradeId)
 index_TL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
 
 // Step 3: Payer derives escrow from RECIPIENT's xpub + PAYER's index
@@ -270,16 +272,17 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
 
 ```javascript
 // AFTER MATCHING (payer known)
-tradeId = sha256(orderId + M.pub + T.pub + timestamp)
+tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
 
 // Affiliate publishes xpub
-secret_AP = sea.secret(P.pub, A.pair)
+secret_AP = sea.secret(P.epub, A.pair)
 root_AP = fromSeed(sha256(secret_AP))
 xpub_AP = root_AP.neuter().extendedKey
 
 // Payer computes index from own secret
-secret_payer = sea.secret(P.pub, payer.pair)
-seed_index = sha256(secret_payer + ":" + tradeId)
+// Domain separator ":CL:" isolates CL index from TL index — prevents cross-lock correlation
+secret_payer = sea.secret(P.epub, payer.pair)
+seed_index = sha256(secret_payer + ":CL:" + tradeId)
 index_CL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
 
 // Payer derives from AFFILIATE's xpub + PAYER's index
@@ -347,15 +350,16 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 **Both order types follow same pattern** (symmetric design):
 
 1. M creates order on UI (buy or sell)
-2. M generates `orderId = sha256(M.pub ⊕ item ⊕ price ⊕ timestamp)`
+2. M generates `orderId = sha256("OR:" + M.pub + ":" + item + ":" + price + ":" + timestamp)`
 3. M retrieves referrer (if any) from localStorage: `Context.getReferrer()`
 4. M writes order to Gun with Pen-validated key:
    ```
-   <candle>:<item_slug>:<type>:<nonce>
+   <candle>:<item_slug>:<type>:<pub8>:<nonce>
    
-   Example buy:  5820000:penitent-greaves:buy:a3f7b2
-   Example sell: 5820000:penitent-greaves:sell:x8k2m1
+   Example buy:  5820000:penitent-greaves:buy:a1b2c3d4:x8k2m1
+   Example sell: 5820000:penitent-greaves:sell:a1b2c3d4:p9q3r7
    ```
+   `pub8` = `M.pub.slice(0, 8)` — Pen enforces writer's pub starts with this segment
 5. Order includes metadata: `{ orderId, type, item, price, currency, chain, referrer }`
 6. Order status: `"open"` (no funds locked yet, waiting for Taker)
 
@@ -371,12 +375,12 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 
 ```javascript
 // Maker derives order wallet from own xpub + orderId
-const secret_M = await sea.secret(P.pub, M.pair)
+const secret_M = await sea.secret(P.epub, M.pair)
 const root_M = HDNodeWallet.fromSeed(sha256(secret_M))
 const xpub_M = root_M.neuter().extendedKey
 
-// Order-specific index
-const index_order = parseInt(sha256(orderId).slice(0,8), 16) & 0x7fffffff
+// Order-specific index — "FP:" domain separator isolates FP address space from TL/CL on same root
+const index_order = parseInt(sha256("FP:" + orderId).slice(0,8), 16) & 0x7fffffff
 
 // Fund Proof (Maker controls private key)
 const orderWallet = root_M.deriveChild(index_order)
@@ -396,8 +400,8 @@ await M.wallet.sendTransaction({
 
 **After matching** (Taker accepts):
 - Maker transfers from `orderWallet` → Transaction Lock (TL) + Commission Lock (CL)
-- This is an **atomic transition**: funds move directly from order wallet to escrow locks
-- Gas cost: 2 transactions (deposit to order wallet + transfer to locks)
+- ⚠️ **Not atomic**: these are sequential EVM transactions (TL tx, CL tx, platform fee tx). If any fails mid-way, trade is in partial state. Implementation must check each receipt and handle partial completion.
+- Gas cost: up to 3 transactions (TL + CL + platform fee)
 
 **Benefits**:
 - ✅ Taker can verify funds exist on-chain before accepting
@@ -434,7 +438,9 @@ await M.wallet.sendTransaction({
 3. T clicks "Accept"
 4. **Trade matching** (creates `tradeId`):
    ```javascript
-   tradeId = sha256(orderId + M.pub + T.pub + timestamp)
+   // tradeId computed once at match time, stored in Gun trade record — never recomputed
+   // "TR:" domain separator prevents hash space collision with orderId ("OR:")
+   tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
    ```
 5. Trade status → `"matched"` (both parties known, waiting for deposit)
 
@@ -450,25 +456,26 @@ const recipient = (orderType === 'buy') ? Taker : Maker
 // Get recipient's xpub (published in their profile)
 const xpub_recipient = await gun.user(recipient.pub).get('xpub')
 
-// Get affiliate's xpub (if referrer exists)
-const referrer = payer.getReferrer()
+// Get affiliate's xpub from signed user namespace — MUST use gun.user(affiliate.pub)
+// Never fetch xpub from an arbitrary path — a tampered xpub would redirect funds to attacker's tree
+const referrer = payer.getReferrer()  // returns affiliate's pub key
 const xpub_affiliate = referrer ? await gun.user(referrer).get('xpub') : null
 
-// Compute payer's index
-const secret_payer = await sea.secret(P.pub, payer.pair)
-const seed_index = sha256(secret_payer + ":" + tradeId)
-const index_TL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
+// Compute payer's index — separate domain separators prevent TL/CL address correlation
+const secret_payer = await sea.secret(P.epub, payer.pair)
+const index_TL = parseInt(sha256(secret_payer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
+const index_CL = parseInt(sha256(secret_payer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
 
-// Derive Transaction Lock from recipient's xpub + payer's index
+// Derive Transaction Lock from recipient's xpub + payer's TL index
 const TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
 
 // Derive Commission Lock (if affiliate exists)
 const CL = referrer ? 
-    HDNodeWallet.fromExtendedKey(xpub_affiliate).deriveChild(index_TL) : 
+    HDNodeWallet.fromExtendedKey(xpub_affiliate).deriveChild(index_CL) : 
     null
 
 // Payer deposits to escrow locks
-// For buy orders: Transfer from orderWallet → TL/CL (atomic transition)
+// For buy orders: Transfer from orderWallet → TL/CL (sequential, NOT atomic — check each tx receipt)
 // For sell orders: Direct deposit from Taker's wallet → TL/CL
 
 if (orderType === 'buy') {
@@ -516,19 +523,21 @@ if (orderType === 'buy') {
 **Buyer reveals index to seller** (symmetric for both order types):
 
 ```javascript
-// Buyer computes index from own secret
-const secret_buyer = await sea.secret(P.pub, buyer.pair)
-const index_TL = index(sha256(secret_buyer + ":" + tradeId))
+// Buyer computes TL and CL indexes from own secret — domain separators match deposit step
+const secret_buyer = await sea.secret(P.epub, buyer.pair)
+const index_TL = parseInt(sha256(secret_buyer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
+const index_CL = parseInt(sha256(secret_buyer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
 
-// Buyer transmits via Gun
-gun.get(tradeRecordSoul).put({ 
+// Buyer writes to OWN Gun user namespace — Gun SEA enforces only buyer can write here
+// Seller subscribes to gun.user(buyer.pub).get("trades").get(tradeId)
+gun.user().get("trades").get(tradeId).put({
     unlock_index_TL: index_TL,
-    unlock_index_CL: index_TL,  // Same index for affiliate
-    status: 'completed'
+    unlock_index_CL: index_CL,
+    confirmed: true
 })
 
 // Seller receives index and unlocks using OWN root
-const secret_seller = await sea.secret(P.pub, seller.pair)
+const secret_seller = await sea.secret(P.epub, seller.pair)
 const root_seller = HDNodeWallet.fromSeed(sha256(secret_seller))
 const TL = root_seller.deriveChild(index_TL)  // Now has private key!
 
@@ -538,11 +547,11 @@ await TL.sendTransaction({
     value: paymentAmount
 })
 
-// Affiliate (if exists) self-releases commission
+// Affiliate (if exists) self-releases commission using CL index (not TL index)
 if (affiliate) {
-    const secret_affiliate = await sea.secret(P.pub, affiliate.pair)
+    const secret_affiliate = await sea.secret(P.epub, affiliate.pair)
     const root_affiliate = HDNodeWallet.fromSeed(sha256(secret_affiliate))
-    const CL = root_affiliate.deriveChild(index_TL)
+    const CL = root_affiliate.deriveChild(index_CL)
     
     await CL.sendTransaction({
         to: affiliate.wallet,
@@ -584,22 +593,23 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
 P can always recompute both escrow spending keys:
 
 ```javascript
-// P knows all parties' pub keys
-const secret_recipient = await sea.secret(recipient.pub, P.pair)
+// P knows all parties' epub keys (Curve25519) — never .pub (Ed25519)
+const secret_recipient = await sea.secret(recipient.epub, P.pair)
 const root_recipient = fromSeed(sha256(secret_recipient))
 
-// P can compute payer's index (knows both secrets)
-const secret_payer = await sea.secret(payer.pub, P.pair)
-const index_TL = index(sha256(secret_payer + ":" + tradeId))
+// P recomputes payer's TL and CL indexes using domain separators
+const secret_payer = await sea.secret(payer.epub, P.pair)
+const index_TL = parseInt(sha256(secret_payer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
+const index_CL = parseInt(sha256(secret_payer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
 
-// P derives escrow spending key
+// P derives both escrow spending keys
 const TL = root_recipient.deriveChild(index_TL)
 // TL.privateKey → P can release to seller OR refund to payer
 
 // Same for affiliate lock
-const secret_affiliate = await sea.secret(affiliate.pub, P.pair)
+const secret_affiliate = await sea.secret(affiliate.epub, P.pair)
 const root_affiliate = fromSeed(sha256(secret_affiliate))
-const CL = root_affiliate.deriveChild(index_TL)
+const CL = root_affiliate.deriveChild(index_CL)
 // CL.privateKey → P can release to affiliate OR refund to payer
 ```
 
@@ -645,46 +655,120 @@ Orders use **candle-based expiry** to prevent stale orders:
 ```javascript
 const orderSoul = SEA.pen({
     key: { and: [
-        // Candle window: current ± 100 candles (5-min candles = ~8 hours)
+        // seg 0: Candle window (5-min candles, ~8h back, ~10min fwd)
         SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 }),
-        
-        // Item slug validation
+
+        // seg 1: Item slug (1–128 chars)
         { seg: { sep: ":", idx: 1, of: { reg: 0 },
                  match: { length: [1, 128] } } },
-        
-        // Order type: buy or sell
+
+        // seg 2: Order type — "buy" or "sell"
         { seg: { sep: ":", idx: 2, of: { reg: 0 },
-                 match: { or: [{ eq: "buy" }, { eq: "sell" }] } } }
+                 match: { or: [{ eq: "buy" }, { eq: "sell" }] } } },
+
+        // seg 3: pub8 = M.pub.slice(0, 8) — exactly 8 hex chars
+        // PRE(R[5], seg3): R[5] (writer's actual pub) must start with this segment
+        // Prevents any other authenticated user from writing to a maker's key prefix
+        { seg: { sep: ":", idx: 3, of: { reg: 0 }, match: { length: [8, 8] } } },
+        { pre: [{ reg: 5 }, { seg: { sep: ":", idx: 3, of: { reg: 0 } } }] }
+
+        // seg 4: nonce — iterated by client for PoW
     ]},
-    val: { type: "string" },  // JSON order metadata (includes price)
-    sign: true,               // Require signature
-    pow: { field: 0, difficulty: 2 }  // Anti-spam PoW (field 0 = key, client iterates nonce at seg 3)
+    val: { type: "string" },  // JSON order metadata (orderId, price, currency, chain, etc.)
+    sign: true,
+    pow: { field: 0, difficulty: 2 }  // Anti-spam PoW — client iterates nonce at seg 4
 })
 ```
 
 ### 6.2 Key Format
 
 ```
-<candle>:<item_slug>:<type>:<nonce>
+<candle>:<item_slug>:<type>:<pub8>:<nonce>
 
-Example buy:  5820000:penitent-greaves:buy:a3f7b2
-Example sell: 5820000:penitent-greaves:sell:x8k2m1
+Example buy:  5820000:penitent-greaves:buy:a1b2c3d4:x8k2m1
+Example sell: 5820000:penitent-greaves:sell:a1b2c3d4:p9q3r7
 ```
 
-**Note**: Price is stored in order metadata (value), not in key. This allows:
-- Orders with same item/type to be grouped
+| Segment | Content | Validated by |
+|---|---|---|
+| seg 0 | `candle` = `Math.floor(Date.now() / 300000)` | `SEA.candle()` — window ±8h/10min |
+| seg 1 | `item_slug` (1–128 chars) | Pen `length` check |
+| seg 2 | `"buy"` or `"sell"` | Pen `or/eq` check |
+| seg 3 | `pub8` = `M.pub.slice(0, 8)` | Pen `PRE(R[5], seg3)` — writer identity |
+| seg 4 | `nonce` — client iterates until PoW passes | PoW `difficulty: 2` |
+
+**orderId** is stored in the value (not the key), enabling:
+- Range queries by candle/item/type without knowing orderId
 - Price changes without key recreation
-- Simpler LEX range queries by time (candle-first)
+- Simpler LEX range queries (candle-first)
 
 **Candle calculation:**
 ```javascript
 const candle = Math.floor(Date.now() / 300000)  // 5-minute candles
+
+// Full key construction:
+const pub8 = pair.pub.slice(0, 8)
+const nonce = await computePowNonce(`${candle}:${item}:${type}:${pub8}`, 2)
+const key = `${candle}:${item}:${type}:${pub8}:${nonce}`
 ```
 
 **Benefits:**
 - Old orders auto-expire (can't write keys outside window)
 - Discovery queries scoped to recent candles
 - No manual cleanup needed
+- Only Maker can write/overwrite their own order keys (Pen enforces via pub8)
+
+---
+
+### 6.3 Trade Record Soul
+
+Trade records contain sensitive data (`unlock_index_TL`, `unlock_index_CL`). No shared Pen soul is appropriate. Each party writes to their **own Gun user namespace**, keyed by `tradeId`.
+
+**Two write targets per trade:**
+
+```javascript
+gun.user(M.pub).get("trades").get(tradeId)   // Maker writes here — Gun rejects other writers
+gun.user(T.pub).get("trades").get(tradeId)   // Taker writes here — Gun rejects other writers
+```
+
+Gun SEA enforces write restriction via signature — **no Pen needed**.
+
+**Who writes what:**
+
+| Field | Writer | Namespace | When |
+|---|---|---|---|
+| `matched` (timestamp) | Taker | Taker's | Step 2 — at accept |
+| `deposited` (txHash) | Payer (M or T) | Own | Step 3 — after deposit confirmed |
+| `delivered` (true) | Seller (M or T) | Own | Step 4 — item delivered |
+| `unlock_index_TL` (number) | Buyer (M or T) | Own | Step 5 — at confirmation |
+| `unlock_index_CL` (number) | Buyer (M or T) | Own | Step 5 — at confirmation |
+| `confirmed` (true) | Buyer (M or T) | Own | Step 5 — receipt confirmed |
+| `disputed` (object) | Either party | Own | Step 6 — if dispute filed |
+
+**Key security property**: `unlock_index_TL` and `unlock_index_CL` live in the **buyer's own namespace**. Seller must actively read buyer's namespace to obtain the index. Buyer controls when seller can withdraw — no premature self-release is possible.
+
+**Read pattern — both parties subscribe to both namespaces:**
+
+```javascript
+gun.user(M.pub).get("trades").get(tradeId).on(makerData => merge(makerData))
+gun.user(T.pub).get("trades").get(tradeId).on(takerData => merge(takerData))
+```
+
+**`Trade.js` soul mapping:**
+
+```javascript
+trade.id()     →  tradeId                               // content hash — used in crypto derivation
+trade.soul()   →  { maker: M.pub, taker: T.pub }        // keys to compose Gun paths
+
+// Write to own namespace (caller authenticated as writer)
+gun.user().get("trades").get(tradeId).put(fields)
+
+// Read from both namespaces
+gun.user(M.pub).get("trades").get(tradeId)              // Maker's side
+gun.user(T.pub).get("trades").get(tradeId)              // Taker's side
+```
+
+**Platform access**: Platform can read both namespaces (they're public Gun user data). Platform writes to trade records via the trade participant's shared secret — Platform knows all parties' epub keys and can compute all secrets.
 
 ---
 
@@ -736,7 +820,7 @@ Platform has:
 
 | Property | Mechanism |
 |---|---|
-| P holds full escrow authority | P knows all pub keys → recomputes all DH secrets → derives all root xprv and child spending keys for both TL and CL |
+| P holds full escrow authority | P knows all **epub** keys (Curve25519) → recomputes all DH secrets via `sea.secret(party.epub, P.pair)` → derives all root xprv and child spending keys for both TL and CL |
 | Payer cannot withdraw (even for refund) | Payer has recipient's xpub only (watch-only). Cannot derive private key from xpub. **Refunds require Platform intervention.** |
 | Recipient cannot claim early | Recipient has xprv but doesn't know index until payer reveals it |
 | Affiliate cannot claim prematurely | A has xpub_AP but not `index_CL`; receives index only after successful trade completion |
@@ -768,13 +852,21 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 | `sea.secret` non-determinism | Critical | Test suite verification |
 | SEA not initialized | High | Guard all operations; wait for `Construct.GDB()` |
 | BIP-32 index overflow | Low | Masked to 31 bits via `& 0x7fffffff` |
-| xpub tampering in Gun | Medium | Traders verify escrow address on-chain before deposit |
-| Order ID collision | Very low | `sha256(orderId ⊕ M.pub ⊕ T.pub ⊕ timestamp)` |
+| xpub tampering in Gun | Medium | xpub stored in `gun.user(pub)` — only owner can write (SEA-signed). Platform must validate xpub matches expected derivation before allowing deposit phase. |
+| Crafted/wrong xpub by recipient | **High** | Recipient could write xpub for which they (and Platform) have no xprv → funds permanently locked in TL. **Platform MUST verify `xpub_MP` is derived from `sha256(sea.secret(P.epub, M.pair))`** before trade proceeds to deposit. |
+| Order ID collision | Very low | `sha256(orderId ":" M.pub ":" T.pub ":" timestamp)` |
+| Order overwrite attack | High | Pen `sign:true` allows any authenticated user to overwrite order keys at PoW cost ~256 attempts. Mitigate: embed maker pub prefix in key and validate `EQ(SEGR(0,':',4), R[5])` in Pen — or move orders to `gun.user()` namespace. |
+| FP race condition | High | Maker can drain FP wallet between Taker accepting and payer depositing to TL/CL. Design limitation of non-smart-contract escrow. Taker should re-verify FP balance at matching time, not just at discovery time. |
+| Partial FP→TL/CL transfer | High | Sequential EVM transactions mean TL could be funded but CL fails. Trade contract must check all receipts; implementation needs a recovery path (refund from partial TL if CL fails). |
+| Commission fate with no affiliate | Medium | When referrer is null, `commissionAmount` is unaccounted for in current protocol. Must define: goes to platform fee, added to payment, or simply not charged. |
+| Child key leakage in BIP-32 | Medium | Non-hardened derivation: `child_priv + xpub → parent_priv`. Spending keys (TL, CL) must be wiped from memory immediately after `sendTransaction()`. Never log or store them. |
 | P key compromise | Critical | Operational security (outside protocol scope) |
 | Payer cannot self-refund | **Design limitation** | **Platform MUST intervene for refunds.** Payer only has recipient's xpub (watch-only), cannot derive private key. This is by design — same mechanism that prevents payer from withdrawing prevents self-refund. |
 | Platform unavailable (refunds blocked) | Medium | Multi-sig Platform keys, backup arbitrators, or smart contract fallback (future) |
 | In-game item delivery fraud | Medium | Dispute resolution by P with proof requirements |
 | Candle drift (client time skew) | Low | Accept ±2 candles forward, ±100 backward |
+| Trade record soul | ✅ Resolved | Dual user-namespace model (Section 6.3). Each party writes to `gun.user(own.pub).get("trades").get(tradeId)`. Gun SEA enforces authorship. No Pen needed. |
+| Order soul overwrite | ✅ Resolved | `pub8 = M.pub.slice(0,8)` in seg 3; Pen validates `PRE(R[5], seg3)`. Only Maker's authenticated pair can write to their own key prefix (Section 6.1). |
 
 ---
 
@@ -790,7 +882,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 
 ## 10. Implementation Checklist
 
-- [ ] `src/core/Escrow.js` — key derivation functions (TL + CL)
+- [ ] `src/core/Lock.js` — escrow key derivation primitives (TL + CL, `index()`, `address()`, `unlock()`)
 - [ ] `src/core/Order.js` — Gun order CRUD helpers
 - [ ] `src/core/Affiliate.js` — referral tracking + commission calculation
 - [ ] `src/UI/routes/order/` — order book UI + trade flow
@@ -807,4 +899,5 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 ---
 
 *2026-04-04 — Revised for P2P trading model*  
-*2026-04-06 — Resolved: No pre-deposit for buy orders (pure P2P, symmetric design)*
+*2026-04-06 — Resolved: No pre-deposit for buy orders (pure P2P, symmetric design)*  
+*2026-04-08 — Security audit: epub/pub fix, TL/CL domain separators, tradeId separators, FP domain separator, atomic transition caveat, order overwrite risk, crafted xpub risk, child key leakage note, commission gap, trade record soul gap*
