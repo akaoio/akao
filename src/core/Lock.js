@@ -10,17 +10,17 @@ export class Lock {
         this.recipient = recipient
         this.entropy = entropy
         this.secret = this.secret.bind(this)
-        this.derive = this.derive.bind(this)
+        this.address = this.address.bind(this)
     }
     
-    get async secret() {
+    async secret() {
         const { sea } = globalThis
         if (!sea) throw new Error("Lock: SEA not initialized")
         const secret = await sea.secret(this.escrow.epub, this.payer.epriv)
         return secret
     }
     
-    get async address() {
+    async address() {
         const { HDNodeWallet } = await import("ethers")
         if (!HDNodeWallet) throw new Error("Lock: ethers.js not available")
         
