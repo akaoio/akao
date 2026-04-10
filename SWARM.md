@@ -8,18 +8,31 @@ Mỗi máy có một bot Telegram riêng. Identity của bạn là `self.name` t
 
 ## Cấu hình
 
-File `swarm.yaml` tại root của project:
+Swarm dùng 2 file config:
+
+### `swarm.shared.yaml` — COMMIT lên git (public)
+Chứa thông tin chung của cả swarm:
 
 ```yaml
-self:
-  token: <token>      # SECRET — không commit lên git
-  name: <machine-name>
 groups:
-  - <group_id>
+  - <group_id>        # Telegram group chat IDs
 agents:
   - name: <machine-name>
     username: <bot_username>
+  - name: <machine-name-2>
+    username: <bot_username_2>
 ```
+
+### `swarm.yaml` — Git-ignored (SECRET)
+Chứa thông tin riêng của máy:
+
+```yaml
+self:
+  token: <token>      # SECRET — chỉ máy này biết
+  name: <machine-name>
+```
+
+**Lợi ích**: Chỉ cần update `swarm.shared.yaml` một lần, tất cả máy `git pull` là biết danh sách bots và groups mới.
 
 ## Các lệnh
 
@@ -63,8 +76,34 @@ Tin nhắn thực tế gửi đi:
 - Task đang làm dở
 - Ngữ cảnh cần nhớ khi session mới mở
 
+## Setup máy mới
+
+```bash
+git pull                          # Lấy swarm.shared.yaml
+cp swarm.example.yaml swarm.yaml  # Tạo config riêng
+# Edit swarm.yaml: điền token + name từ @BotFather
+node swarm.js history             # Test connection
+```
+
+## Thêm bot mới vào swarm
+
+```bash
+# 1. Tạo bot trên Telegram (@BotFather → /newbot)
+# 2. Add bot vào Telegram group
+# 3. Edit swarm.shared.yaml:
+agents:
+  - name: new-bot
+    username: new_bot_username
+# 4. Commit
+git add swarm.shared.yaml
+git commit -m "Add new-bot to swarm"
+git push
+# 5. Tất cả máy khác git pull → tự động biết bot mới
+```
+
 ## Bảo mật
 
-- `swarm.yaml` PHẢI nằm trong `.gitignore`
+- `swarm.yaml` PHẢI nằm trong `.gitignore` — chỉ chứa token
+- `swarm.shared.yaml` an toàn để commit — không chứa secrets
 - Mỗi máy chỉ biết token của chính mình
 - Giao tiếp qua @mention — Telegram delivery đảm bảo mọi bot nhận tin

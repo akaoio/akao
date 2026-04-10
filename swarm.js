@@ -4,6 +4,7 @@ import { request } from "node:https"
 import { parse } from "yaml"
 
 const CONFIG_FILE = resolve("swarm.yaml")
+const SHARED_CONFIG_FILE = resolve("swarm.shared.yaml")
 const LOG_FILE = resolve("swarm/log.json")
 const NOTES_FILE = resolve("swarm/notes.md")
 const API = "https://api.telegram.org/bot"
@@ -13,7 +14,19 @@ function load() {
         console.error("swarm.yaml not found. Copy swarm.example.yaml and configure it.")
         process.exit(1)
     }
-    return parse(readFileSync(CONFIG_FILE, "utf8"))
+    const local = parse(readFileSync(CONFIG_FILE, "utf8"))
+    
+    // Merge with shared config if exists
+    if (existsSync(SHARED_CONFIG_FILE)) {
+        const shared = parse(readFileSync(SHARED_CONFIG_FILE, "utf8"))
+        return {
+            self: local.self,
+            groups: shared.groups || local.groups || [],
+            agents: shared.agents || local.agents || []
+        }
+    }
+    
+    return local
 }
 
 function loadlog() {
