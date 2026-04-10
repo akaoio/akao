@@ -5,6 +5,8 @@
 self:
   token: YOUR_BOT_TOKEN_HERE    # SECRET — lấy từ @BotFather trên Telegram
   name: your-machine-name       # vd: pc1-agent, pc2-agent, son-laptop
+  role: developer               # vd: PM, developer, tester, designer
+  description: Short description of responsibilities  # Mô tả vai trò và trách nhiệm
 
 # NOTE: groups và agents giờ được quản lý trong swarm.shared.yaml (file public)
 # Nếu không có swarm.shared.yaml, có thể khai báo trực tiếp ở đây:
