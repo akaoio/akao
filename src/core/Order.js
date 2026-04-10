@@ -8,16 +8,21 @@ import { match } from "./Order/match.js"
 import { fetch } from "./Order/fetch.js"
 
 export class Order {
-    // gun   — GDB instance
-    // pair  — maker's SEA pair
-    // item  — item slug (e.g. "diablo-4/penitent-greaves-d76bc")
-    // type  — "buy" | "sell"
-    // price — amount in currency units
+    // gun      — GDB instance
+    // pair     — maker's SEA pair
+    // item     — item slug (e.g. "diablo-4/penitent-greaves-d76bc"), must not contain ":"
+    // type     — "buy" | "sell"
+    // price    — amount in currency units (must be > 0)
     // currency — e.g. "USDT"
     // chain    — EVM chain id
     // referrer — affiliate pub key (optional)
-    constructor({ gun, pair, item, type, price, currency, chain, referrer = null } = {}) {
-        if (!gun || !pair || !item || !type || !price || !currency || !chain) return { error: "invalidInput" }
+    // xpub     — maker's root extended public key (required for buy orders — fund proof)
+    constructor({ gun, pair, item, type, price, currency, chain, referrer = null, xpub = null } = {}) {
+        if (!gun || !pair || !item || !type || !price || !currency || !chain) throw new Error("invalidInput")
+        if (typeof price !== "number" || price <= 0) throw new Error("invalidPrice")
+        if (type !== "buy" && type !== "sell") throw new Error("invalidType")
+        if (item.includes(":")) throw new Error("invalidItem")
+        if (type === "buy" && !xpub) throw new Error("xpubRequired")
         this.gun = gun
         this.pair = pair
         this.item = item
@@ -26,6 +31,7 @@ export class Order {
         this.currency = currency
         this.chain = chain
         this.referrer = referrer
+        this.xpub = xpub
     }
 
     id = id
