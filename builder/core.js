@@ -358,12 +358,15 @@ log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite
 
 // Copy gun library files to GDB folder
 log.info("Copying gun library to GDB...")
-const gunFiles = ["gun.js", "sea.js", ["lib", "radix.js"], ["lib", "radisk.js"], ["lib", "rindexed.js"], ["lib", "store.js"], ["lib", "pen.js"], ["lib", "pen.wasm"]]
+const gunFiles = ["gun.js", "sea.js", ["lib", "radix.js"], ["lib", "radisk.js"], ["lib", "rindexed.js"], ["lib", "store.js"], ["lib", "pen.wasm"]]
 for (const filePath of gunFiles) {
     const src = Array.isArray(filePath) ? ["node_modules", "@akaoio", "gun", ...filePath] : ["node_modules", "@akaoio", "gun", filePath]
     const dest = [...paths.build.core, "GDB", Array.isArray(filePath) ? filePath[filePath.length - 1] : filePath]
     await FS.copy(src, dest)
 }
+// pen.js uses require/__dirname (CJS) — copy as .cjs so Node loads it correctly
+// regardless of root package.json "type":"module"
+await FS.copy(["node_modules", "@akaoio", "gun", "lib", "pen.js"], [...paths.build.core, "GDB", "pen.cjs"])
 log.ok(`Copied gun files to GDB`)
 
 // Build routes list using regex pattern and post-process
@@ -412,10 +415,6 @@ if (isNetlify) {
 // 404.html — platform-agnostic SPA fallback for unknown routes
 await FS.write([...paths.build.root, "404.html"], indexContent)
 log.ok("Created 404.html fallback")
-
-// Force CJS for build/ so that pen.js (and other Gun modules) can use require/__dirname
-await FS.write([...paths.build.root, "package.json"], { type: "commonjs" })
-log.ok("Created build/package.json (type: commonjs)")
 
 // Note: geo data is built separately via npm run geo:build to build/geo/
 

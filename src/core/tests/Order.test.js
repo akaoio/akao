@@ -26,7 +26,7 @@ const _root = new URL("../../../", import.meta.url).pathname.replace(/\/$/, "")
 global.Gun  = _req(`${_root}/node_modules/@akaoio/gun/gun.js`)
 const _SEA  = _req(`${_root}/node_modules/@akaoio/gun/sea.js`)
 globalThis.sea = _SEA
-_req(`${_root}/build/core/GDB/pen.js`)
+_req(`${_root}/build/core/GDB/pen.cjs`)
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
