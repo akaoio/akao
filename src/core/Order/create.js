@@ -1,9 +1,12 @@
-// Write order to Gun with Pen-validated key
-// Buy orders must call proof() and deposit to FP wallet before create()
+import { soul } from "./soul.js"
+
+// Write order to Gun under the Pen-validated order-book soul.
+// Buy orders must call proof() and deposit to FP wallet before create().
 export async function create() {
     const orderId = await this.id()
     const k = await this.key()
-    const value = JSON.stringify({
+    const s = soul()
+    const payload = JSON.stringify({
         orderId,
         item: this.item,
         type: this.type,
@@ -13,7 +16,7 @@ export async function create() {
         referrer: this.referrer,
         status: "open"
     })
-    // TODO: determine orderSoul from item
-    await this.gun.get(this.item).get(k).put(value)
+    const value = await globalThis.sea.sign(payload, this.pair)
+    await this.gun.get(s).get(k).put(value)
     return { orderId, key: k }
 }

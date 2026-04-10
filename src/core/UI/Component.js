@@ -1,3 +1,5 @@
+import { render } from "/core/UI.js"
+
 /**
  * Component - Base class for all custom elements
  * Automatically tracked by HMR interceptor (no manual registration needed)
@@ -16,7 +18,6 @@ export class Component extends HTMLElement {
      */
     async render() {
         if (!this.template || !this.shadowRoot) return
-        const { render } = await import('/core/UI.js')
         render(this.template, this.shadowRoot)
         
         // Re-run onconnect after re-render to reinitialize component state

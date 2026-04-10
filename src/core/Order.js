@@ -1,5 +1,6 @@
 import { id } from "./Order/id.js"
 import { key } from "./Order/key.js"
+import { soul } from "./Order/soul.js"
 import { create } from "./Order/create.js"
 import { cancel } from "./Order/cancel.js"
 import { proof } from "./Order/proof.js"
@@ -29,6 +30,7 @@ export class Order {
 
     id = id
     key = key
+    soul = soul
     create = create
     cancel = cancel
     proof = proof
