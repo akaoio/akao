@@ -2,12 +2,14 @@ import { Elements } from "/core/Stores.js"
 import { render } from "/core/UI.js"
 import template from "./template.js"
 import States from "/core/States.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 
-export class AUTHORIZE extends BaseElement {
+export class AUTHORIZE extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.states = new States({ state: "listening" })
@@ -21,7 +23,7 @@ export class AUTHORIZE extends BaseElement {
         this.onclose = this.onclose.bind(this)
     }
 
-    onConnect() {
+    onconnect() {
         this.$authorize = this.shadowRoot.querySelector("#authorize")
         this.$modal = this.shadowRoot.querySelector("ui-modal")
         this.$wave = this.shadowRoot.querySelector("ui-wave")
@@ -35,14 +37,14 @@ export class AUTHORIZE extends BaseElement {
         this.listen(this.$deny, "click", this.deny)
         this.listen(this.$stop, "click", this.stop)
         this.listen(this.$dialog, "close", this.onclose)
-        this.subscribe(
+        this.sub(
             this.$wave.events.on("message", this.wave),
             this.states.on("state", this.render)
         )
         this.render()
     }
 
-    onDisconnect() {
+    ondisconnect() {
         this.$wave?.stop?.()
     }
 

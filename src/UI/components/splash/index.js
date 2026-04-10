@@ -5,6 +5,7 @@ import styles from "./styles.css.js"
 import { html, render } from "/core/UI.js"
 
 export class SPLASH extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -16,6 +17,7 @@ export class SPLASH extends HTMLElement {
                 <div class="progress"></div>
             </div>
         `
+        this.template = template // Store for HMR
         render(template, this.shadowRoot)
     }
 

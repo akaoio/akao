@@ -1,11 +1,13 @@
 import { render } from "/core/UI.js"
 import Events from "/core/Events.js"
 import template from "./template.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 
-export class CAMERA extends BaseElement {
+export class CAMERA extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.events = new Events(this)
@@ -36,7 +38,7 @@ export class CAMERA extends BaseElement {
         if (name === "data-status") this.status.dataset.key = value
     }
 
-    onConnect() {
+    onconnect() {
         this.video = this.shadowRoot.querySelector("#video")
         this.$switch = this.shadowRoot.querySelector("#switch")
         this.$capture = this.shadowRoot.querySelector("#capture")
@@ -45,11 +47,11 @@ export class CAMERA extends BaseElement {
         this.listen(this.$switch, "click", this.switch)
         this.listen(this.$capture, "click", this.capture)
         this.listen(this.$resume, "click", this.resume)
-        this.subscribe(this.stop.bind(this))
+        this.sub(this.stop.bind(this))
         if (this.dataset.autostart !== "false") this.start()
     }
 
-    onDisconnect() {
+    ondisconnect() {
         this.stop()
     }
 

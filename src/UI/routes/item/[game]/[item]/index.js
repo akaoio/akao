@@ -5,10 +5,11 @@ import { html, render } from "/core/UI.js"
 import { notify } from "/core/Utils.js"
 import { States } from "/core/States.js"
 import Cart from "/core/Cart.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 import logic from "./logic.js"
 
-export class GAME_ITEM_ROUTE extends BaseRoute {
+export class GAME_ITEM_ROUTE extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
         const params = Context.get("params") || globalThis.history.state?.params || {}
@@ -19,19 +20,19 @@ export class GAME_ITEM_ROUTE extends BaseRoute {
         this.add = this.add.bind(this)
     }
 
-    async onConnect() {
+    async onconnect() {
         const game = this.states.get("game")
         const id = this.states.get("id")
         const meta = await logic.meta(game, id)
         this.states.set({ meta })
-        this.subscribe(Context.on("locale", this.render))
+        this.sub(Context.on("locale", this.render))
         this.listen(this.shadowRoot.querySelector("#decrease"), "click", this.decrease)
         this.listen(this.shadowRoot.querySelector("#increase"), "click", this.increase)
         this.listen(this.shadowRoot.querySelector("#add"), "click", this.add)
         this.render()
     }
 
-    onDisconnect() {
+    ondisconnect() {
         Context.del("item")
     }
 

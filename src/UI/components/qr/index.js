@@ -8,6 +8,7 @@ import logic from "./logic.js"
 class $QR extends HTMLElement {
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         this.events = new Events(this)
         this.render = this.render.bind(this)

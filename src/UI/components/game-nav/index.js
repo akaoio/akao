@@ -3,14 +3,16 @@ import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
 import { events } from "/core/Events.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import "/UI/components/a/index.js"
 import "/UI/components/svg/index.js"
 import logic from "./logic.js"
 
-export class GAME_NAV extends BaseElement {
+export class GAME_NAV extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.states = new States({ open: false, games: [] })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
@@ -19,11 +21,11 @@ export class GAME_NAV extends BaseElement {
         this._render = this._render.bind(this)
     }
 
-    async onConnect() {
+    async onconnect() {
         this.listen(this.shadowRoot.querySelector(".game-nav__toggle"), "click", this._toggle)
         this.listen(this.shadowRoot.querySelector(".game-nav__close"), "click", this._close)
         this.listen(this.shadowRoot.querySelector(".game-nav__backdrop"), "click", this._close)
-        this.subscribe(
+        this.sub(
             Context.on("locale", this._render),
             Context.on("params", this._render),
             events.on("game-nav:open", this._toggle)

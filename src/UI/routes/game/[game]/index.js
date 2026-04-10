@@ -16,6 +16,7 @@ const SORT_OPTIONS = [
 ]
 
 export class GAME extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
         this.states = new States({
@@ -32,7 +33,7 @@ export class GAME extends HTMLElement {
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
+        this.subs = []
         this._loadingAll = false
         this.render = this.render.bind(this)
         this.applyFilters = this.applyFilters.bind(this)
@@ -41,7 +42,7 @@ export class GAME extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.subscriptions.push(Context.on("locale", this.render))
+        this.subs.push(Context.on("locale", this.render))
         await this.render()
 
         // ── Sticky sentinel — detect when .catalog-sticky has stuck ──
@@ -86,7 +87,7 @@ export class GAME extends HTMLElement {
                 { rootMargin: `-${stickyTopPx}px 0px 0px 0px`, threshold: 0 }
             )
             this._stickyObserver.observe(sentinel)
-            this.subscriptions.push(() => this._stickyObserver.disconnect())
+            this.subs.push(() => this._stickyObserver.disconnect())
 
             // Pill click → expand (animated).
             // Clear inline px width + add .is-expanded in one flush.
@@ -98,7 +99,7 @@ export class GAME extends HTMLElement {
 
             if (pill) {
                 pill.addEventListener("click", expandSticky)
-                this.subscriptions.push(() => pill.removeEventListener("click", expandSticky))
+                this.subs.push(() => pill.removeEventListener("click", expandSticky))
             }
 
             // Individual pill segment actions — each stops propagation so the
@@ -116,7 +117,7 @@ export class GAME extends HTMLElement {
                     this.applyFilters()
                 }
                 pillSortEl.addEventListener("click", onPillSort)
-                this.subscriptions.push(() => pillSortEl.removeEventListener("click", onPillSort))
+                this.subs.push(() => pillSortEl.removeEventListener("click", onPillSort))
             }
 
             const pillTypeEl = this.shadowRoot.querySelector("#pill-type")
@@ -131,7 +132,7 @@ export class GAME extends HTMLElement {
                     })
                 }
                 pillTypeEl.addEventListener("click", onPillType)
-                this.subscriptions.push(() => pillTypeEl.removeEventListener("click", onPillType))
+                this.subs.push(() => pillTypeEl.removeEventListener("click", onPillType))
             }
 
             const pillRarityDotEl = this.shadowRoot.querySelector("#pill-rarity-dot")
@@ -146,7 +147,7 @@ export class GAME extends HTMLElement {
                     })
                 }
                 pillRarityDotEl.addEventListener("click", onPillRarityDot)
-                this.subscriptions.push(() => pillRarityDotEl.removeEventListener("click", onPillRarityDot))
+                this.subs.push(() => pillRarityDotEl.removeEventListener("click", onPillRarityDot))
             }
 
             const pillSearchEl = this.shadowRoot.querySelector("#pill-search")
@@ -157,7 +158,7 @@ export class GAME extends HTMLElement {
                     requestAnimationFrame(() => this.shadowRoot.querySelector("#search")?.focus())
                 }
                 pillSearchEl.addEventListener("click", onPillSearch)
-                this.subscriptions.push(() => pillSearchEl.removeEventListener("click", onPillSearch))
+                this.subs.push(() => pillSearchEl.removeEventListener("click", onPillSearch))
             }
 
             // Collapse button → collapse (animated).
@@ -168,7 +169,7 @@ export class GAME extends HTMLElement {
                     animateCollapse()
                 }
                 collapseBtn.addEventListener("click", onCollapse)
-                this.subscriptions.push(() => collapseBtn.removeEventListener("click", onCollapse))
+                this.subs.push(() => collapseBtn.removeEventListener("click", onCollapse))
             }
 
             // Pointer outside → collapse (animated).
@@ -177,7 +178,7 @@ export class GAME extends HTMLElement {
                 if (!e.composedPath().includes(sticky)) animateCollapse()
             }
             document.addEventListener("pointerdown", this._onPointerDown)
-            this.subscriptions.push(() => document.removeEventListener("pointerdown", this._onPointerDown))
+            this.subs.push(() => document.removeEventListener("pointerdown", this._onPointerDown))
 
             // Store syncPillWidth so applyFilters can update the width when pill content changes.
             this._syncPillWidth = syncPillWidth
@@ -185,7 +186,7 @@ export class GAME extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+        this.subs.forEach((off) => off())
         ;["--game-primary", "--game-text-color", "--game-title-shadow"].forEach((v) => document.documentElement.style.removeProperty(v))
     }
 

@@ -1,15 +1,16 @@
 import template from "./template.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 import stories from "./stories/index.js"
 
-export class SHOWCASE extends BaseRoute {
+export class SHOWCASE extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
         this._stories = stories
         this._onHashChange = this._onHashChange.bind(this)
     }
 
-    onConnect() {
+    onconnect() {
         this._renderSidebar()
         this._renderCanvas()
         this.listen(globalThis, "hashchange", this._onHashChange)

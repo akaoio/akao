@@ -2,30 +2,31 @@ import template from "./template.js"
 import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils.js"
 import { Elements, Wallets } from "/core/Stores.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 import logic from "./logic.js"
 
-export class WITHDRAW extends BaseRoute {
+export class WITHDRAW extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
         this.submit = this.submit.bind(this)
         this.estimateGas = this.estimateGas.bind(this)
     }
 
-    onConnect() {
+    onconnect() {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.$form = this.shadowRoot.querySelector("#form")
         this.$gas = this.shadowRoot.querySelector("#gas")
         const $submit = this.shadowRoot.querySelector("#submit")
 
         this.$form.querySelectorAll("input[type='text'], input[type='number']").forEach((input) => {
-            this.subscribe(Context.on(["dictionary", input.name], [input, "placeholder"]))
+            this.sub(Context.on(["dictionary", input.name], [input, "placeholder"]))
             this.listen(input, "input", this.estimateGas)
         })
 
         this.listen($submit, "click", this.submit)
 
-        this.subscribe(
+        this.sub(
             this.$wallets.states.on("address", ({ value }) => {
                 this.$form.querySelectorAll("input").forEach((el) => (el.disabled = !value))
                 $submit.toggleAttribute("disabled", !value)
@@ -41,7 +42,7 @@ export class WITHDRAW extends BaseRoute {
         Elements.Access?.checkpoint()
     }
 
-    onDisconnect() {
+    ondisconnect() {
         clearTimeout(this.$gaspend)
     }
 

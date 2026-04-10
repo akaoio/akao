@@ -2,20 +2,22 @@ import template from "./template.js"
 import States from "/core/States.js"
 import ITEM from "/UI/components/item/index.js"
 import { render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 
-export class ITEMS extends BaseElement {
+export class ITEMS extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.states = new States()
         this.attachShadow({ mode: "open" })
         this.render = this.render.bind(this)
         render(template, this.shadowRoot)
     }
 
-    async onConnect() {
-        this.subscribe(this.states.on("pages", this.render))
+    async onconnect() {
+        this.sub(this.states.on("pages", this.render))
         const data = await logic.meta()
         if (data) this.states.set(data)
     }

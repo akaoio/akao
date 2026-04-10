@@ -1,8 +1,9 @@
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 
-export class CONTEXT extends BaseElement {
+export class CONTEXT extends Component {
+    static module = import.meta.url
     constructor(props = {}) {
         super()
         this.states = new States({ key: props.key || null })
@@ -23,13 +24,13 @@ export class CONTEXT extends BaseElement {
         this.states.set({ key: value })
     }
 
-    onConnect() {
+    onconnect() {
         this.watch(this.states, "key", this.render)
         this.on()
         this.render()
     }
 
-    onDisconnect() {
+    ondisconnect() {
         this.off()
     }
 
