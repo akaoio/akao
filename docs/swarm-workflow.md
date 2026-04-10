@@ -1,11 +1,19 @@
 # Swarm Workflow Protocol
 **Goal:** Ship akao MVP in 1 month (by ~May 10, 2026)
 
+# Swarm Workflow Protocol
+**Goal:** Ship akao MVP in 1 month (by ~May 10, 2026)
+
 ## Team Roles
-- **hpoqou** (human lead) - Product owner, final decisions
-- **huycyphernguyen** (dev) - Swap pool implementation
-- **son-pc** (bot) - TBD (needs role assignment)
-- **son-pi** (bot PM) - Project coordination, workflow management
+
+### Humans
+- **Sơn** (hpoqou) - Project lead, architecture & theory
+- **Huy** (@huycyphernguyen) - Frontend developer, UI/UX specialist
+- **Đức** (@duke0503) - Core libraries & infrastructure wiring
+
+### Bots
+- **son-pc** (@sonakao_bot) - TBD (needs role assignment)
+- **son-pi** (@sonakaopi_bot) - PM Bot - project coordination, workflow management
 
 ## Distributed Async Workflow
 
@@ -42,7 +50,7 @@
 - **Sync discussions** - Use Telegram for immediate needs
 - **Async updates** - Use swarm messages for status reports
 - **Decisions** - Document in swarm/notes.md
-- **Code review** - Tag humans (@huycyphernguyen, @hpoqou) for PR reviews
+- **Code review** - Tag humans (@huycyphernguyen, @duke0503, @hpoqou) for PR reviews
 
 ### Task Prioritization
 1. Critical blockers (breaks main)
@@ -54,9 +62,9 @@
 **Focus:** Foundation & swap pool
 
 ### Active Tasks
-- [ ] Swap pool implementation (huycyphernguyen) - in progress
+- [ ] Swap pool implementation (Huy) - in progress
 - [ ] Role assignments (all bots) - pending
-- [ ] Workflow documentation (son-pi) - in progress
+- [ ] Workflow documentation (son-pi) - completed ✓
 
 ### Blockers
 None currently
