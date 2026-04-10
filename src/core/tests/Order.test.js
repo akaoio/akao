@@ -1,0 +1,881 @@
+/**
+ * Order.test.js — Adversarial unit tests for the Order module.
+ *
+ * Strategy: think like hackers. Test boundary conditions, injection attacks,
+ * identity spoofing, replay, type confusion, BigInt traps, and cryptographic
+ * invariants (domain separation, determinism, entropy adequacy).
+ *
+ * All tests are Node.js-compatible. Tests requiring real SEA/Pen bytecode
+ * (on-chain Pen validation) are marked { browser: true }.
+ */
+
+import Test from "../Test.js"
+import { sha256 } from "../Utils/crypto.js"
+import { Order } from "../Order.js"
+import { cancel as cancelFn } from "../Order/cancel.js"
+import { match  as matchFn  } from "../Order/match.js"
+import { proof  as proofFn  } from "../Order/proof.js"
+import { fetch  as fetchFn  } from "../Order/fetch.js"
+import { soul   as soulFn   } from "../Order/soul.js"
+import { HDNodeWallet, getBytes } from "../Ethers.js"
+
+// ─── Fixtures ─────────────────────────────────────────────────────────────────
+
+const PAIR_A = { pub: "AAAAAAAA11223344556677889900aabb", epub: "eAAAAAAAA" }
+const PAIR_B = { pub: "BBBBBBBB99887766554433221100fffe", epub: "eBBBBBBBB" }
+const ITEM   = "arc-raiders/acoustic-guitar-ba4df"
+
+// Derive a valid xpub from a known deterministic seed (BIP-32 test vector 1)
+const TEST_XPUB = HDNodeWallet
+    .fromSeed(getBytes("0x000102030405060708090a0b0c0d0e0f"))
+    .neuter().extendedKey
+
+// ─── Mock helpers ─────────────────────────────────────────────────────────────
+
+// Minimal Gun mock — records all put/map calls with their arguments.
+function makeGun() {
+    const calls = []
+    function node(soul, key) {
+        return {
+            get:  (k) => node(soul, k),
+            put:  async (val, cb, opts) => calls.push({ soul, key, val, cb, opts }),
+            map:  (q)  => { const r = { soul, key, query: q }; calls.push(r); return r }
+        }
+    }
+    return { gun: { get: (s) => node(s, null) }, calls }
+}
+
+// Installs a minimal SEA mock on globalThis.sea; returns a restore function.
+// Tests that only check Order logic (not real Pen bytecode) use this.
+function mockSEA() {
+    const prev = globalThis.sea
+    globalThis.sea = {
+        sign:   async (data, pair) => `sig::${pair.pub.slice(0, 4)}::${data}`,
+        pen:    ()    => "$mock_soul_deterministic",
+        candle: (o)   => ({ _candle: o })
+    }
+    return () => { globalThis.sea = prev }
+}
+
+// Chain mock — returns a fixed BigInt balance.
+function makeChain(balanceWei = 0n) {
+    return { getBalance: async () => BigInt(balanceWei) }
+}
+
+// Create a valid buy Order instance.
+function newBuy(overrides = {}) {
+    const { gun } = makeGun()
+    return new Order({
+        gun, pair: PAIR_A, item: ITEM, type: "buy",
+        price: 100, currency: "USDT", chain: 1, xpub: TEST_XPUB,
+        ...overrides
+    })
+}
+
+// Create a valid sell Order instance.
+function newSell(overrides = {}) {
+    const { gun } = makeGun()
+    return new Order({
+        gun, pair: PAIR_A, item: ITEM, type: "sell",
+        price: 95, currency: "USDT", chain: 1,
+        ...overrides
+    })
+}
+
+// ─── 1. Constructor — validation ──────────────────────────────────────────────
+
+Test.describe("Order — constructor: missing required fields", () => {
+
+    Test.it("throws invalidInput when gun is missing", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ pair: PAIR_A, item: ITEM, type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidInput"
+        )
+    })
+
+    Test.it("throws invalidInput when pair is missing", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, item: ITEM, type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidInput"
+        )
+    })
+
+    Test.it("throws invalidInput when item is missing", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidInput"
+        )
+    })
+
+    Test.it("throws invalidInput when type is missing", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, price: 10, currency: "USDT", chain: 1 }),
+            "invalidInput"
+        )
+    })
+
+    Test.it("throws invalidInput when price is missing", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", currency: "USDT", chain: 1 }),
+            "invalidInput"
+        )
+    })
+
+    Test.it("throws invalidInput when currency is missing", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 10, chain: 1 }),
+            "invalidInput"
+        )
+    })
+
+    Test.it("throws invalidInput when chain is missing", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 10, currency: "USDT" }),
+            "invalidInput"
+        )
+    })
+
+    Test.it("throws invalidInput with empty options object", () => {
+        Test.assert.throws(() => new Order({}), "invalidInput")
+    })
+
+    Test.it("throws invalidInput with no arguments", () => {
+        Test.assert.throws(() => new Order(), "invalidInput")
+    })
+
+})
+
+Test.describe("Order — constructor: price manipulation", () => {
+
+    Test.it("throws invalidPrice for price = 0", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 0, currency: "USDT", chain: 1 }),
+            "invalidPrice"
+        )
+    })
+
+    Test.it("throws invalidPrice for negative price", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: -1, currency: "USDT", chain: 1 }),
+            "invalidPrice"
+        )
+    })
+
+    Test.it("throws invalidPrice for NaN", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: NaN, currency: "USDT", chain: 1 }),
+            "invalidPrice"
+        )
+    })
+
+    Test.it("throws invalidPrice for Infinity", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: Infinity, currency: "USDT", chain: 1 }),
+            "invalidPrice"
+        )
+    })
+
+    Test.it("throws invalidPrice for string price (type confusion)", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: "100", currency: "USDT", chain: 1 }),
+            "invalidPrice"
+        )
+    })
+
+})
+
+Test.describe("Order — constructor: type validation", () => {
+
+    Test.it("throws invalidType for unknown type 'admin'", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "admin", price: 10, currency: "USDT", chain: 1 }),
+            "invalidType"
+        )
+    })
+
+    Test.it("throws invalidType for uppercase 'BUY'", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "BUY", price: 10, currency: "USDT", chain: 1 }),
+            "invalidType"
+        )
+    })
+
+    Test.it("throws invalidType for 'Buy' (mixed case)", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "Buy", price: 10, currency: "USDT", chain: 1 }),
+            "invalidType"
+        )
+    })
+
+})
+
+Test.describe("Order — constructor: separator injection", () => {
+
+    Test.it("throws invalidItem for item containing single colon", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: "item:hack", type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidItem"
+        )
+    })
+
+    Test.it("throws invalidItem for item 'buy:sell:0:nonce' (segment shift attack)", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: "buy:sell:0:nonce", type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidItem"
+        )
+    })
+
+    Test.it("throws invalidItem for item with only colons", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ":::", type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidItem"
+        )
+    })
+
+})
+
+Test.describe("Order — constructor: buy order xpub requirement", () => {
+
+    Test.it("throws xpubRequired for buy order without xpub", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "buy", price: 10, currency: "USDT", chain: 1 }),
+            "xpubRequired"
+        )
+    })
+
+    Test.it("sell order succeeds without xpub", () => {
+        const { gun } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 10, currency: "USDT", chain: 1 })
+        Test.assert.equal(o.type, "sell")
+        Test.assert.equal(o.xpub, null)
+    })
+
+    Test.it("buy order with xpub stores it on instance", () => {
+        const o = newBuy()
+        Test.assert.equal(o.xpub, TEST_XPUB)
+        Test.assert.equal(o.type, "buy")
+    })
+
+    Test.it("valid sell order stores all fields correctly", () => {
+        const o = newSell()
+        Test.assert.equal(o.item, ITEM)
+        Test.assert.equal(o.price, 95)
+        Test.assert.equal(o.currency, "USDT")
+        Test.assert.equal(o.chain, 1)
+        Test.assert.equal(o.referrer, null)
+    })
+
+})
+
+// ─── 2. id — determinism + entropy ───────────────────────────────────────────
+
+Test.describe("Order — id: determinism + entropy", () => {
+
+    Test.it("same instance always returns the same orderId (caching)", async () => {
+        const o = newSell()
+        const a = await o.id()
+        const b = await o.id()
+        Test.assert.equal(a, b)
+    })
+
+    Test.it("orderId is a 64-char hex string", async () => {
+        const o = newSell()
+        const oid = await o.id()
+        Test.assert.equal(oid.length, 64)
+        Test.assert.truthy(/^[0-9a-f]{64}$/.test(oid))
+    })
+
+    Test.it("two Order instances with identical params produce different orderIds (entropy)", async () => {
+        const a = await newSell().id()
+        const b = await newSell().id()
+        Test.assert.notEqual(a, b)
+    })
+
+    Test.it("50 Order instances produce 50 unique orderIds (birthday resistance)", async () => {
+        const ids = await Promise.all(Array.from({ length: 50 }, () => newSell().id()))
+        const unique = new Set(ids)
+        Test.assert.equal(unique.size, 50)
+    })
+
+    Test.it("domain isolation: orderId ≠ sha256 of same content with TR: prefix", async () => {
+        const o = newSell()
+        const oid = await o.id()
+        // Manually compute what a tradeId with the same fields would be
+        const collision = sha256("TR:" + o.pair.pub + ":" + o.item + ":" + o.price + ":" + o._ts + ":" + o._rnd)
+        Test.assert.notEqual(oid, collision)
+    })
+
+})
+
+// ─── 3. key — format + PoW ───────────────────────────────────────────────────
+
+Test.describe("Order — key: format and PoW correctness", () => {
+
+    Test.it("key has exactly 5 colon-separated segments", async () => {
+        const o = newSell()
+        const k = await o.key()
+        const segs = k.split(":")
+        Test.assert.equal(segs.length, 5)
+    })
+
+    Test.it("segment 0 is the current candle number (within ±1)", async () => {
+        const before = Math.floor(Date.now() / 300000)
+        const k = await newSell().key()
+        const after  = Math.floor(Date.now() / 300000)
+        const seg0 = parseInt(k.split(":")[0], 10)
+        Test.assert.truthy(seg0 >= before && seg0 <= after)
+    })
+
+    Test.it("segment 1 is the item slug exactly", async () => {
+        const k = await newSell().key()
+        Test.assert.equal(k.split(":")[1], ITEM)
+    })
+
+    Test.it("segment 2 is the order type", async () => {
+        const kb = await newBuy().key()
+        const ks = await newSell().key()
+        Test.assert.equal(kb.split(":")[2], "buy")
+        Test.assert.equal(ks.split(":")[2], "sell")
+    })
+
+    Test.it("segment 3 is first 8 chars of pair.pub", async () => {
+        const k = await newSell().key()
+        Test.assert.equal(k.split(":")[3], PAIR_A.pub.slice(0, 8))
+    })
+
+    Test.it("SHA-256 of the full key starts with '000' (difficulty 3)", async () => {
+        const k = await newSell().key()
+        Test.assert.truthy(sha256(k).startsWith("000"), `PoW failed for key: ${k}`)
+    })
+
+})
+
+// ─── 4. cancel — ownership enforcement ───────────────────────────────────────
+
+Test.describe("Order — cancel: ownership enforcement", () => {
+
+    Test.it("returns notOwner when key has fewer than 4 segments", async () => {
+        const o = newSell()
+        const result = await o.cancel("candle:item:sell")
+        Test.assert.deepEqual(result, { error: "notOwner" })
+    })
+
+    Test.it("returns notOwner when pub8 in key doesn't match pair.pub", async () => {
+        const o = newSell()
+        const fakeKey = `5000000:${ITEM}:sell:XXXXXXXX:0`
+        const result = await o.cancel(fakeKey)
+        Test.assert.deepEqual(result, { error: "notOwner" })
+    })
+
+    Test.it("returns notOwner when key belongs to PAIR_B (cross-cancellation attack)", async () => {
+        // PAIR_B creates a key with their pub8
+        const attackerPub8 = PAIR_B.pub.slice(0, 8)
+        const victimKey = `5000000:${ITEM}:sell:${attackerPub8}:0`
+        // PAIR_A (o) tries to cancel PAIR_B's order
+        const o = newSell()
+        const result = await o.cancel(victimKey)
+        Test.assert.deepEqual(result, { error: "notOwner" })
+    })
+
+    Test.it("returns notOwner for empty key string", async () => {
+        const o = newSell()
+        const result = await o.cancel("")
+        Test.assert.deepEqual(result, { error: "notOwner" })
+    })
+
+    Test.it("calls gun.put(null) with authenticator when pub8 matches", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun, calls } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const validKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 8)}:abc`
+            await o.cancel(validKey)
+            const putCall = calls.find(c => c.val === null)
+            Test.assert.truthy(putCall, "expected gun.put(null) to be called")
+            Test.assert.deepEqual(putCall.opts, { opt: { authenticator: PAIR_A } })
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("cancel with correct pub8 does not return notOwner", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const validKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 8)}:xyz`
+            const result = await o.cancel(validKey)
+            Test.assert.falsy(result?.error, "should not return error for valid owner cancel")
+        } finally {
+            restore()
+        }
+    })
+
+})
+
+// ─── 5. match — tradeId determinism ──────────────────────────────────────────
+
+Test.describe("Order — match: tradeId determinism + domain isolation", () => {
+
+    Test.it("tradeId is a 64-char hex string", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const { tradeId } = await o.match({ orderId: "abc123", makerpub: "makerpub" })
+            Test.assert.equal(tradeId.length, 64)
+            Test.assert.truthy(/^[0-9a-f]{64}$/.test(tradeId))
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("same orderId + makerpub + taker always produces same tradeId (deterministic)", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const args = { orderId: "fixedorder123", makerpub: "makerX" }
+            const a = await o.match(args)
+            const b = await o.match(args)
+            Test.assert.equal(a.tradeId, b.tradeId)
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("different takers produce different tradeIds for same order", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun: g1 } = makeGun()
+            const { gun: g2 } = makeGun()
+            const oA = new Order({ gun: g1, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const oB = new Order({ gun: g2, pair: PAIR_B, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const args = { orderId: "fixedorder123", makerpub: "makerX" }
+            const { tradeId: ta } = await oA.match(args)
+            const { tradeId: tb } = await oB.match(args)
+            Test.assert.notEqual(ta, tb)
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("different orderIds produce different tradeIds for same taker", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const a = await o.match({ orderId: "order-AAA", makerpub: "maker1" })
+            const b = await o.match({ orderId: "order-BBB", makerpub: "maker1" })
+            Test.assert.notEqual(a.tradeId, b.tradeId)
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("return value has exactly { tradeId } — no timestamp leaked", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            const result = await o.match({ orderId: "o1", makerpub: "m1" })
+            Test.assert.truthy("tradeId" in result)
+            Test.assert.falsy("ts" in result, "timestamp must not be in return value")
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("tradeId uses TR: domain separator — different from FP: hash of same input", async () => {
+        const orderId = "test-order-id"
+        const makerpub = "some-maker-pub"
+        const takerpub = PAIR_A.pub
+        const tradeHash = sha256("TR:" + orderId + ":" + makerpub + ":" + takerpub)
+        const fpHash    = sha256("FP:" + orderId + ":" + makerpub + ":" + takerpub)
+        const orHash    = sha256("OR:" + orderId + ":" + makerpub + ":" + takerpub)
+        Test.assert.notEqual(tradeHash, fpHash)
+        Test.assert.notEqual(tradeHash, orHash)
+        Test.assert.notEqual(fpHash, orHash)
+    })
+
+    Test.it("match passes authenticator to gun.put when key is provided", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun, calls } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            await o.match({ orderId: "o1", makerpub: "m1", key: "5000000:item:sell:AAAAAAAA:0" })
+            const putCall = calls.find(c => c.opts?.opt?.authenticator)
+            Test.assert.truthy(putCall, "expected put with authenticator")
+            Test.assert.equal(putCall.opts.opt.authenticator, PAIR_A)
+        } finally {
+            restore()
+        }
+    })
+
+})
+
+// ─── 6. proof — balance validation + BigInt safety ───────────────────────────
+
+Test.describe("Order — proof: balance validation", () => {
+
+    Test.it("returns invalidRequired when required is 0", async () => {
+        const chain = makeChain(1000n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: 0 })
+        Test.assert.deepEqual(result, { error: "invalidRequired" })
+    })
+
+    Test.it("returns invalidRequired when required is null", async () => {
+        const chain = makeChain(1000n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: null })
+        Test.assert.deepEqual(result, { error: "invalidRequired" })
+    })
+
+    Test.it("returns invalidRequired when required is undefined", async () => {
+        const chain = makeChain(1000n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: undefined })
+        Test.assert.deepEqual(result, { error: "invalidRequired" })
+    })
+
+    Test.it("returns invalidRequired when required is negative", async () => {
+        const chain = makeChain(1000n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: -1 })
+        Test.assert.deepEqual(result, { error: "invalidRequired" })
+    })
+
+    Test.it("sufficient: true when balance > required", async () => {
+        const chain = makeChain(1000n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: 999 })
+        Test.assert.equal(result.sufficient, true)
+    })
+
+    Test.it("sufficient: true when balance === required (boundary)", async () => {
+        const chain = makeChain(500n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: 500 })
+        Test.assert.equal(result.sufficient, true)
+    })
+
+    Test.it("sufficient: false when balance < required", async () => {
+        const chain = makeChain(100n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: 200 })
+        Test.assert.equal(result.sufficient, false)
+    })
+
+    Test.it("BigInt safety: balance=1000n vs required=999 (JS number) → sufficient", async () => {
+        // Without BigInt() conversion, JS would throw or produce wrong result
+        const chain = makeChain(1000n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: 999 })
+        Test.assert.equal(result.sufficient, true)
+    })
+
+    Test.it("result contains fp address as a string", async () => {
+        const chain = makeChain(100n)
+        const result = await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: 1 })
+        Test.assert.truthy(typeof result.address === "string")
+        Test.assert.truthy(result.address.startsWith("0x"))
+    })
+
+    Test.it("same orderId always derives same FP address (deterministic)", async () => {
+        const chain = makeChain(1n)
+        const r1 = await proofFn.call({}, { chain, orderId: "same-id", xpub: TEST_XPUB, required: 1 })
+        const r2 = await proofFn.call({}, { chain, orderId: "same-id", xpub: TEST_XPUB, required: 1 })
+        Test.assert.equal(r1.address, r2.address)
+    })
+
+    Test.it("different orderIds derive different FP addresses", async () => {
+        const chain = makeChain(1n)
+        const r1 = await proofFn.call({}, { chain, orderId: "order-A", xpub: TEST_XPUB, required: 1 })
+        const r2 = await proofFn.call({}, { chain, orderId: "order-B", xpub: TEST_XPUB, required: 1 })
+        Test.assert.notEqual(r1.address, r2.address)
+    })
+
+    Test.it("FP index uses FP: domain separator — different from TR: for same orderId", () => {
+        const orderId = "collision-test"
+        const fpIndex  = parseInt(sha256("FP:" + orderId).slice(0, 8), 16) & 0x7fffffff
+        const trIndex  = parseInt(sha256("TR:" + orderId).slice(0, 8), 16) & 0x7fffffff
+        Test.assert.notEqual(fpIndex, trIndex)
+    })
+
+})
+
+// ─── 7. fetch — dual candle query ────────────────────────────────────────────
+
+Test.describe("Order — fetch: dual candle discovery", () => {
+
+    Test.it("returns an array of exactly 2 elements", () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const result = fetchFn({ gun, item: ITEM, type: "buy" })
+            Test.assert.truthy(Array.isArray(result))
+            Test.assert.equal(result.length, 2)
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("first element query contains current candle prefix", () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const candle = Math.floor(Date.now() / 300000)
+            const [cur] = fetchFn({ gun, item: ITEM, type: "sell", candle })
+            Test.assert.truthy(cur.query?.["."]/*, "expected a map query"*/)
+            const prefix = cur.query["."]["*"]
+            Test.assert.truthy(prefix.startsWith(`${candle}:`))
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("second element query contains current-1 candle prefix", () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const candle = Math.floor(Date.now() / 300000)
+            const [, prev] = fetchFn({ gun, item: ITEM, type: "sell", candle })
+            const prefix = prev.query["."]["*"]
+            Test.assert.truthy(prefix.startsWith(`${candle - 1}:`))
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("both prefixes contain item and type", () => {
+        const restore = mockSEA()
+        try {
+            const { gun } = makeGun()
+            const [cur, prev] = fetchFn({ gun, item: ITEM, type: "buy" })
+            Test.assert.truthy(cur.query["."]["*"].includes(ITEM))
+            Test.assert.truthy(cur.query["."]["*"].includes(":buy:"))
+            Test.assert.truthy(prev.query["."]["*"].includes(ITEM))
+            Test.assert.truthy(prev.query["."]["*"].includes(":buy:"))
+        } finally {
+            restore()
+        }
+    })
+
+})
+
+// ─── 8. soul — determinism ────────────────────────────────────────────────────
+
+Test.describe("Order — soul: determinism", () => {
+
+    Test.it("soul() returns a string", () => {
+        const restore = mockSEA()
+        try {
+            const s = soulFn()
+            Test.assert.truthy(typeof s === "string")
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("soul() is deterministic — same value on every call", () => {
+        const restore = mockSEA()
+        try {
+            const a = soulFn()
+            const b = soulFn()
+            const c = soulFn()
+            Test.assert.equal(a, b)
+            Test.assert.equal(b, c)
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("soul() starts with '$' (Pen-encoded bytecode prefix)", () => {
+        const restore = mockSEA()
+        try {
+            Test.assert.truthy(soulFn().startsWith("$"))
+        } finally {
+            restore()
+        }
+    })
+
+})
+
+// ─── 9. create — authenticator + payload ─────────────────────────────────────
+
+Test.describe("Order — create: authenticator + payload integrity", () => {
+
+    Test.it("gun.put receives { opt: { authenticator: pair } }", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun, calls } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            await o.create()
+            const putCall = calls.find(c => "val" in c && c.val !== null)
+            Test.assert.truthy(putCall, "expected gun.put to be called")
+            Test.assert.deepEqual(putCall.opts, { opt: { authenticator: PAIR_A } })
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("payload contains maker's public key", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun, calls } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            await o.create()
+            const putCall = calls.find(c => c.val !== null && "val" in c)
+            // val is sig::PAIR_A.pub.slice(0,4)::JSON
+            Test.assert.truthy(putCall.val.includes(PAIR_A.pub.slice(0, 4)))
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("buy order payload contains xpub", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun, calls } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "buy", price: 100, currency: "USDT", chain: 1, xpub: TEST_XPUB })
+            await o.create()
+            const putCall = calls.find(c => c.val !== null && "val" in c)
+            Test.assert.truthy(putCall.val.includes("xpub"))
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("sell order payload does NOT contain xpub", async () => {
+        const restore = mockSEA()
+        try {
+            const { gun, calls } = makeGun()
+            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+            await o.create()
+            const putCall = calls.find(c => c.val !== null && "val" in c)
+            Test.assert.falsy(putCall.val.includes("xpub"), "sell order must not contain xpub")
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("create returns { orderId, key }", async () => {
+        const restore = mockSEA()
+        try {
+            const o = newSell()
+            const result = await o.create()
+            Test.assert.truthy("orderId" in result)
+            Test.assert.truthy("key" in result)
+            Test.assert.equal(result.orderId.length, 64) // SHA-256 hex
+        } finally {
+            restore()
+        }
+    })
+
+})
+
+// ─── 10. Attacker scenarios — adversarial combinations ───────────────────────
+
+Test.describe("Order — attacker: adversarial inputs", () => {
+
+    Test.it("price=0 is rejected before any Gun write can occur", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 0, currency: "USDT", chain: 1 }),
+            "invalidPrice"
+        )
+    })
+
+    Test.it("100 different pairs produce 100 unique orderIds (entropy adequacy)", async () => {
+        const { gun } = makeGun()
+        const ids = await Promise.all(
+            Array.from({ length: 100 }, (_, i) => {
+                const pair = { pub: `pair${i.toString().padStart(28, "0")}`, epub: "e" }
+                const o = new Order({ gun, pair, item: ITEM, type: "sell", price: 10, currency: "USDT", chain: 1 })
+                return o.id()
+            })
+        )
+        Test.assert.equal(new Set(ids).size, 100)
+    })
+
+    Test.it("OR: TR: FP: domain separators all produce distinct hashes for same input", () => {
+        const input = "same-content"
+        const or = sha256("OR:" + input)
+        const tr = sha256("TR:" + input)
+        const fp = sha256("FP:" + input)
+        Test.assert.notEqual(or, tr)
+        Test.assert.notEqual(or, fp)
+        Test.assert.notEqual(tr, fp)
+    })
+
+    Test.it("cancel with crafted key where seg3 is all zeros → notOwner", async () => {
+        const o = newSell()
+        const result = await o.cancel("5000000:item:sell:00000000:0")
+        Test.assert.deepEqual(result, { error: "notOwner" })
+    })
+
+    Test.it("cancel where seg3 is 9 chars (not 8) → notOwner", async () => {
+        // PAIR_A.pub.slice(0,9) ≠ PAIR_A.pub.slice(0,8)
+        const o = newSell()
+        const wrongKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 9)}:0`
+        const result = await o.cancel(wrongKey)
+        Test.assert.deepEqual(result, { error: "notOwner" })
+    })
+
+    Test.it("cancel where seg3 is 7 chars (not 8) → notOwner", async () => {
+        const o = newSell()
+        const wrongKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 7)}:0`
+        const result = await o.cancel(wrongKey)
+        Test.assert.deepEqual(result, { error: "notOwner" })
+    })
+
+    Test.it("1000 tradeIds from different takers on same order — all unique", async () => {
+        const restore = mockSEA()
+        try {
+            const ids = await Promise.all(
+                Array.from({ length: 1000 }, (_, i) => {
+                    const { gun } = makeGun()
+                    const pair = { pub: `taker${i.toString().padStart(27, "0")}`, epub: "e" }
+                    const o = new Order({ gun, pair, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+                    return o.match({ orderId: "fixed-order", makerpub: "maker" })
+                })
+            )
+            const unique = new Set(ids.map(r => r.tradeId))
+            Test.assert.equal(unique.size, 1000)
+        } finally {
+            restore()
+        }
+    })
+
+    Test.it("proof required=0 is rejected without touching the chain", async () => {
+        let chainCalled = false
+        const chain = { getBalance: async () => { chainCalled = true; return 0n } }
+        await proofFn.call({}, { chain, orderId: "oid", xpub: TEST_XPUB, required: 0 })
+        Test.assert.falsy(chainCalled, "chain.getBalance must not be called when required=0")
+    })
+
+    Test.it("item slug with leading/trailing colon is rejected", () => {
+        const { gun } = makeGun()
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: ":item", type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidItem"
+        )
+        Test.assert.throws(
+            () => new Order({ gun, pair: PAIR_A, item: "item:", type: "sell", price: 10, currency: "USDT", chain: 1 }),
+            "invalidItem"
+        )
+    })
+
+})

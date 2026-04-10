@@ -7,7 +7,7 @@ export async function key() {
     const candle = Math.floor(Date.now() / 300000)
     const pub8 = this.pair.pub.slice(0, 8)
     const base = `${candle}:${this.item}:${this.type}:${pub8}`
-    const nonce = await pownonce(base, 2)
+    const nonce = await pownonce(base, 3)
     return `${base}:${nonce}`
 }
 

@@ -18,8 +18,8 @@ export class Order {
     // referrer — affiliate pub key (optional)
     // xpub     — maker's root extended public key (required for buy orders — fund proof)
     constructor({ gun, pair, item, type, price, currency, chain, referrer = null, xpub = null } = {}) {
-        if (!gun || !pair || !item || !type || !price || !currency || !chain) throw new Error("invalidInput")
-        if (typeof price !== "number" || price <= 0) throw new Error("invalidPrice")
+        if (!gun || !pair || !item || !type || price === undefined || price === null || !currency || !chain) throw new Error("invalidInput")
+        if (typeof price !== "number" || !isFinite(price) || price <= 0) throw new Error("invalidPrice")
         if (type !== "buy" && type !== "sell") throw new Error("invalidType")
         if (item.includes(":")) throw new Error("invalidItem")
         if (type === "buy" && !xpub) throw new Error("xpubRequired")
