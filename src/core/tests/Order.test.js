@@ -5,11 +5,11 @@
  * identity spoofing, replay, type confusion, BigInt traps, and cryptographic
  * invariants (domain separation, determinism, entropy adequacy).
  *
- * All tests are Node.js-compatible. Tests requiring real SEA/Pen bytecode
- * (on-chain Pen validation) are marked { browser: true }.
+ * Uses real Gun (in-memory) + real SEA (sign/pen/candle) — no mocked crypto.
  */
 
 import Test from "../Test.js"
+import { createRequire } from "module"
 import { sha256 } from "../Utils/crypto.js"
 import { Order } from "../Order.js"
 import { cancel as cancelFn } from "../Order/cancel.js"
@@ -19,20 +19,28 @@ import { fetch  as fetchFn  } from "../Order/fetch.js"
 import { soul   as soulFn   } from "../Order/soul.js"
 import { HDNodeWallet, getBytes } from "../Ethers.js"
 
+// ─── Real Gun + SEA bootstrap ─────────────────────────────────────────────────
+
+const _req  = createRequire(import.meta.url)
+const _root = new URL("../../../", import.meta.url).pathname.replace(/\/$/, "")
+global.Gun  = _req(`${_root}/node_modules/@akaoio/gun/gun.js`)
+const _SEA  = _req(`${_root}/node_modules/@akaoio/gun/sea.js`)
+globalThis.sea = _SEA
+_req(`${_root}/build/core/GDB/pen.js`)
+
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const PAIR_A = { pub: "AAAAAAAA11223344556677889900aabb", epub: "eAAAAAAAA" }
-const PAIR_B = { pub: "BBBBBBBB99887766554433221100fffe", epub: "eBBBBBBBB" }
-const ITEM   = "arc-raiders/acoustic-guitar-ba4df"
+const [PAIR_A, PAIR_B] = await Promise.all([_SEA.pair(), _SEA.pair()])
+const ITEM = "arc-raiders/acoustic-guitar-ba4df"
 
 // Derive a valid xpub from a known deterministic seed (BIP-32 test vector 1)
 const TEST_XPUB = HDNodeWallet
     .fromSeed(getBytes("0x000102030405060708090a0b0c0d0e0f"))
     .neuter().extendedKey
 
-// ─── Mock helpers ─────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// Minimal Gun mock — records all put/map calls with their arguments.
+// Minimal Gun mock — records all put/map calls for call-site assertions.
 function makeGun() {
     const calls = []
     function node(soul, key) {
@@ -43,18 +51,6 @@ function makeGun() {
         }
     }
     return { gun: { get: (s) => node(s, null) }, calls }
-}
-
-// Installs a minimal SEA mock on globalThis.sea; returns a restore function.
-// Tests that only check Order logic (not real Pen bytecode) use this.
-function mockSEA() {
-    const prev = globalThis.sea
-    globalThis.sea = {
-        sign:   async (data, pair) => `sig::${pair.pub.slice(0, 4)}::${data}`,
-        pen:    ()    => "$mock_soul_deterministic",
-        candle: (o)   => ({ _candle: o })
-    }
-    return () => { globalThis.sea = prev }
 }
 
 // Chain mock — returns a fixed BigInt balance.
@@ -403,31 +399,21 @@ Test.describe("Order — cancel: ownership enforcement", () => {
     })
 
     Test.it("calls gun.put(null) with authenticator when pub8 matches", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun, calls } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const validKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 8)}:abc`
-            await o.cancel(validKey)
-            const putCall = calls.find(c => c.val === null)
-            Test.assert.truthy(putCall, "expected gun.put(null) to be called")
-            Test.assert.deepEqual(putCall.opts, { opt: { authenticator: PAIR_A } })
-        } finally {
-            restore()
-        }
+        const { gun, calls } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const validKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 8)}:abc`
+        await o.cancel(validKey)
+        const putCall = calls.find(c => c.val === null)
+        Test.assert.truthy(putCall, "expected gun.put(null) to be called")
+        Test.assert.deepEqual(putCall.opts, { opt: { authenticator: PAIR_A } })
     })
 
     Test.it("cancel with correct pub8 does not return notOwner", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const validKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 8)}:xyz`
-            const result = await o.cancel(validKey)
-            Test.assert.falsy(result?.error, "should not return error for valid owner cancel")
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const validKey = `5000000:${ITEM}:sell:${PAIR_A.pub.slice(0, 8)}:xyz`
+        const result = await o.cancel(validKey)
+        Test.assert.falsy(result?.error, "should not return error for valid owner cancel")
     })
 
 })
@@ -437,72 +423,47 @@ Test.describe("Order — cancel: ownership enforcement", () => {
 Test.describe("Order — match: tradeId determinism + domain isolation", () => {
 
     Test.it("tradeId is a 64-char hex string", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const { tradeId } = await o.match({ orderId: "abc123", makerpub: "makerpub" })
-            Test.assert.equal(tradeId.length, 64)
-            Test.assert.truthy(/^[0-9a-f]{64}$/.test(tradeId))
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const { tradeId } = await o.match({ orderId: "abc123", makerpub: "makerpub" })
+        Test.assert.equal(tradeId.length, 64)
+        Test.assert.truthy(/^[0-9a-f]{64}$/.test(tradeId))
     })
 
     Test.it("same orderId + makerpub + taker always produces same tradeId (deterministic)", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const args = { orderId: "fixedorder123", makerpub: "makerX" }
-            const a = await o.match(args)
-            const b = await o.match(args)
-            Test.assert.equal(a.tradeId, b.tradeId)
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const args = { orderId: "fixedorder123", makerpub: "makerX" }
+        const a = await o.match(args)
+        const b = await o.match(args)
+        Test.assert.equal(a.tradeId, b.tradeId)
     })
 
     Test.it("different takers produce different tradeIds for same order", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun: g1 } = makeGun()
-            const { gun: g2 } = makeGun()
-            const oA = new Order({ gun: g1, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const oB = new Order({ gun: g2, pair: PAIR_B, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const args = { orderId: "fixedorder123", makerpub: "makerX" }
-            const { tradeId: ta } = await oA.match(args)
-            const { tradeId: tb } = await oB.match(args)
-            Test.assert.notEqual(ta, tb)
-        } finally {
-            restore()
-        }
+        const { gun: g1 } = makeGun()
+        const { gun: g2 } = makeGun()
+        const oA = new Order({ gun: g1, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const oB = new Order({ gun: g2, pair: PAIR_B, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const args = { orderId: "fixedorder123", makerpub: "makerX" }
+        const { tradeId: ta } = await oA.match(args)
+        const { tradeId: tb } = await oB.match(args)
+        Test.assert.notEqual(ta, tb)
     })
 
     Test.it("different orderIds produce different tradeIds for same taker", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const a = await o.match({ orderId: "order-AAA", makerpub: "maker1" })
-            const b = await o.match({ orderId: "order-BBB", makerpub: "maker1" })
-            Test.assert.notEqual(a.tradeId, b.tradeId)
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const a = await o.match({ orderId: "order-AAA", makerpub: "maker1" })
+        const b = await o.match({ orderId: "order-BBB", makerpub: "maker1" })
+        Test.assert.notEqual(a.tradeId, b.tradeId)
     })
 
     Test.it("return value has exactly { tradeId } — no timestamp leaked", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            const result = await o.match({ orderId: "o1", makerpub: "m1" })
-            Test.assert.truthy("tradeId" in result)
-            Test.assert.falsy("ts" in result, "timestamp must not be in return value")
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        const result = await o.match({ orderId: "o1", makerpub: "m1" })
+        Test.assert.truthy("tradeId" in result)
+        Test.assert.falsy("ts" in result, "timestamp must not be in return value")
     })
 
     Test.it("tradeId uses TR: domain separator — different from FP: hash of same input", async () => {
@@ -518,17 +479,12 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
     })
 
     Test.it("match passes authenticator to gun.put when key is provided", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun, calls } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            await o.match({ orderId: "o1", makerpub: "m1", key: "5000000:item:sell:AAAAAAAA:0" })
-            const putCall = calls.find(c => c.opts?.opt?.authenticator)
-            Test.assert.truthy(putCall, "expected put with authenticator")
-            Test.assert.equal(putCall.opts.opt.authenticator, PAIR_A)
-        } finally {
-            restore()
-        }
+        const { gun, calls } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        await o.match({ orderId: "o1", makerpub: "m1", key: "5000000:item:sell:AAAAAAAA:0" })
+        const putCall = calls.find(c => c.opts?.opt?.authenticator)
+        Test.assert.truthy(putCall, "expected put with authenticator")
+        Test.assert.equal(putCall.opts.opt.authenticator, PAIR_A)
     })
 
 })
@@ -621,56 +577,36 @@ Test.describe("Order — proof: balance validation", () => {
 Test.describe("Order — fetch: dual candle discovery", () => {
 
     Test.it("returns an array of exactly 2 elements", () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const result = fetchFn({ gun, item: ITEM, type: "buy" })
-            Test.assert.truthy(Array.isArray(result))
-            Test.assert.equal(result.length, 2)
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const result = fetchFn({ gun, item: ITEM, type: "buy" })
+        Test.assert.truthy(Array.isArray(result))
+        Test.assert.equal(result.length, 2)
     })
 
     Test.it("first element query contains current candle prefix", () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const candle = Math.floor(Date.now() / 300000)
-            const [cur] = fetchFn({ gun, item: ITEM, type: "sell", candle })
-            Test.assert.truthy(cur.query?.["."]/*, "expected a map query"*/)
-            const prefix = cur.query["."]["*"]
-            Test.assert.truthy(prefix.startsWith(`${candle}:`))
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const candle = Math.floor(Date.now() / 300000)
+        const [cur] = fetchFn({ gun, item: ITEM, type: "sell", candle })
+        Test.assert.truthy(cur.query?.["."]/*, "expected a map query"*/)
+        const prefix = cur.query["."]["*"]
+        Test.assert.truthy(prefix.startsWith(`${candle}:`))
     })
 
     Test.it("second element query contains current-1 candle prefix", () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const candle = Math.floor(Date.now() / 300000)
-            const [, prev] = fetchFn({ gun, item: ITEM, type: "sell", candle })
-            const prefix = prev.query["."]["*"]
-            Test.assert.truthy(prefix.startsWith(`${candle - 1}:`))
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const candle = Math.floor(Date.now() / 300000)
+        const [, prev] = fetchFn({ gun, item: ITEM, type: "sell", candle })
+        const prefix = prev.query["."]["*"]
+        Test.assert.truthy(prefix.startsWith(`${candle - 1}:`))
     })
 
     Test.it("both prefixes contain item and type", () => {
-        const restore = mockSEA()
-        try {
-            const { gun } = makeGun()
-            const [cur, prev] = fetchFn({ gun, item: ITEM, type: "buy" })
-            Test.assert.truthy(cur.query["."]["*"].includes(ITEM))
-            Test.assert.truthy(cur.query["."]["*"].includes(":buy:"))
-            Test.assert.truthy(prev.query["."]["*"].includes(ITEM))
-            Test.assert.truthy(prev.query["."]["*"].includes(":buy:"))
-        } finally {
-            restore()
-        }
+        const { gun } = makeGun()
+        const [cur, prev] = fetchFn({ gun, item: ITEM, type: "buy" })
+        Test.assert.truthy(cur.query["."]["*"].includes(ITEM))
+        Test.assert.truthy(cur.query["."]["*"].includes(":buy:"))
+        Test.assert.truthy(prev.query["."]["*"].includes(ITEM))
+        Test.assert.truthy(prev.query["."]["*"].includes(":buy:"))
     })
 
 })
@@ -680,35 +616,20 @@ Test.describe("Order — fetch: dual candle discovery", () => {
 Test.describe("Order — soul: determinism", () => {
 
     Test.it("soul() returns a string", () => {
-        const restore = mockSEA()
-        try {
-            const s = soulFn()
-            Test.assert.truthy(typeof s === "string")
-        } finally {
-            restore()
-        }
+        const s = soulFn()
+        Test.assert.truthy(typeof s === "string")
     })
 
     Test.it("soul() is deterministic — same value on every call", () => {
-        const restore = mockSEA()
-        try {
-            const a = soulFn()
-            const b = soulFn()
-            const c = soulFn()
-            Test.assert.equal(a, b)
-            Test.assert.equal(b, c)
-        } finally {
-            restore()
-        }
+        const a = soulFn()
+        const b = soulFn()
+        const c = soulFn()
+        Test.assert.equal(a, b)
+        Test.assert.equal(b, c)
     })
 
     Test.it("soul() starts with '$' (Pen-encoded bytecode prefix)", () => {
-        const restore = mockSEA()
-        try {
-            Test.assert.truthy(soulFn().startsWith("$"))
-        } finally {
-            restore()
-        }
+        Test.assert.truthy(soulFn().startsWith("$"))
     })
 
 })
@@ -718,70 +639,44 @@ Test.describe("Order — soul: determinism", () => {
 Test.describe("Order — create: authenticator + payload integrity", () => {
 
     Test.it("gun.put receives { opt: { authenticator: pair } }", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun, calls } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            await o.create()
-            const putCall = calls.find(c => "val" in c && c.val !== null)
-            Test.assert.truthy(putCall, "expected gun.put to be called")
-            Test.assert.deepEqual(putCall.opts, { opt: { authenticator: PAIR_A } })
-        } finally {
-            restore()
-        }
+        const { gun, calls } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        await o.create()
+        const putCall = calls.find(c => "val" in c && c.val !== null)
+        Test.assert.truthy(putCall, "expected gun.put to be called")
+        Test.assert.deepEqual(putCall.opts, { opt: { authenticator: PAIR_A } })
     })
 
     Test.it("payload contains maker's public key", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun, calls } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            await o.create()
-            const putCall = calls.find(c => c.val !== null && "val" in c)
-            // val is sig::PAIR_A.pub.slice(0,4)::JSON
-            Test.assert.truthy(putCall.val.includes(PAIR_A.pub.slice(0, 4)))
-        } finally {
-            restore()
-        }
+        const { gun, calls } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        await o.create()
+        const putCall = calls.find(c => c.val !== null && "val" in c)
+        Test.assert.truthy(putCall.val.includes(PAIR_A.pub.slice(0, 12)))
     })
 
     Test.it("buy order payload contains xpub", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun, calls } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "buy", price: 100, currency: "USDT", chain: 1, xpub: TEST_XPUB })
-            await o.create()
-            const putCall = calls.find(c => c.val !== null && "val" in c)
-            Test.assert.truthy(putCall.val.includes("xpub"))
-        } finally {
-            restore()
-        }
+        const { gun, calls } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "buy", price: 100, currency: "USDT", chain: 1, xpub: TEST_XPUB })
+        await o.create()
+        const putCall = calls.find(c => c.val !== null && "val" in c)
+        Test.assert.truthy(putCall.val.includes("xpub"))
     })
 
     Test.it("sell order payload does NOT contain xpub", async () => {
-        const restore = mockSEA()
-        try {
-            const { gun, calls } = makeGun()
-            const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-            await o.create()
-            const putCall = calls.find(c => c.val !== null && "val" in c)
-            Test.assert.falsy(putCall.val.includes("xpub"), "sell order must not contain xpub")
-        } finally {
-            restore()
-        }
+        const { gun, calls } = makeGun()
+        const o = new Order({ gun, pair: PAIR_A, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+        await o.create()
+        const putCall = calls.find(c => c.val !== null && "val" in c)
+        Test.assert.falsy(putCall.val.includes("xpub"), "sell order must not contain xpub")
     })
 
     Test.it("create returns { orderId, key }", async () => {
-        const restore = mockSEA()
-        try {
-            const o = newSell()
-            const result = await o.create()
-            Test.assert.truthy("orderId" in result)
-            Test.assert.truthy("key" in result)
-            Test.assert.equal(result.orderId.length, 64) // SHA-256 hex
-        } finally {
-            restore()
-        }
+        const o = newSell()
+        const result = await o.create()
+        Test.assert.truthy("orderId" in result)
+        Test.assert.truthy("key" in result)
+        Test.assert.equal(result.orderId.length, 64) // SHA-256 hex
     })
 
 })
@@ -842,21 +737,16 @@ Test.describe("Order — attacker: adversarial inputs", () => {
     })
 
     Test.it("1000 tradeIds from different takers on same order — all unique", async () => {
-        const restore = mockSEA()
-        try {
-            const ids = await Promise.all(
-                Array.from({ length: 1000 }, (_, i) => {
-                    const { gun } = makeGun()
-                    const pair = { pub: `taker${i.toString().padStart(27, "0")}`, epub: "e" }
-                    const o = new Order({ gun, pair, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
-                    return o.match({ orderId: "fixed-order", makerpub: "maker" })
-                })
-            )
-            const unique = new Set(ids.map(r => r.tradeId))
-            Test.assert.equal(unique.size, 1000)
-        } finally {
-            restore()
-        }
+        const ids = await Promise.all(
+            Array.from({ length: 1000 }, (_, i) => {
+                const { gun } = makeGun()
+                const pair = { pub: `taker${i.toString().padStart(27, "0")}`, epub: "e" }
+                const o = new Order({ gun, pair, item: ITEM, type: "sell", price: 95, currency: "USDT", chain: 1 })
+                return o.match({ orderId: "fixed-order", makerpub: "maker" })
+            })
+        )
+        const unique = new Set(ids.map(r => r.tradeId))
+        Test.assert.equal(unique.size, 1000)
     })
 
     Test.it("proof required=0 is rejected without touching the chain", async () => {

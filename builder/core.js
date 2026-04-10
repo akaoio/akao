@@ -413,6 +413,10 @@ if (isNetlify) {
 await FS.write([...paths.build.root, "404.html"], indexContent)
 log.ok("Created 404.html fallback")
 
+// Force CJS for build/ so that pen.js (and other Gun modules) can use require/__dirname
+await FS.write([...paths.build.root, "package.json"], { type: "commonjs" })
+log.ok("Created build/package.json (type: commonjs)")
+
 // Note: geo data is built separately via npm run geo:build to build/geo/
 
 // Note: geo metadata (countries, features) is built by geo:build to build/geo/
