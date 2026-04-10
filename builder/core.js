@@ -358,15 +358,19 @@ log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite
 
 // Copy gun library files to GDB folder
 log.info("Copying gun library to GDB...")
-const gunFiles = ["gun.js", "sea.js", ["lib", "radix.js"], ["lib", "radisk.js"], ["lib", "rindexed.js"], ["lib", "store.js"], ["lib", "pen.wasm"]]
+const gunFiles = ["gun.js", "sea.js", ["lib", "radix.js"], ["lib", "radisk.js"], ["lib", "rindexed.js"], ["lib", "store.js"], ["lib", "pen.js"], ["lib", "pen.wasm"]]
 for (const filePath of gunFiles) {
     const src = Array.isArray(filePath) ? ["node_modules", "@akaoio", "gun", ...filePath] : ["node_modules", "@akaoio", "gun", filePath]
     const dest = [...paths.build.core, "GDB", Array.isArray(filePath) ? filePath[filePath.length - 1] : filePath]
     await FS.copy(src, dest)
 }
-// pen.js uses require/__dirname (CJS) — copy as .cjs so Node loads it correctly
-// regardless of root package.json "type":"module"
-await FS.copy(["node_modules", "@akaoio", "gun", "lib", "pen.js"], [...paths.build.core, "GDB", "pen.cjs"])
+// pen.js uses __dirname — patch for ESM compatibility in Node v22+ (require(esm) bridge)
+const penDest = [...paths.build.core, "GDB", "pen.js"]
+const penContent = await FS.load(penDest)
+const penShim = `const __dirname = new URL('.', import.meta.url).pathname.slice(0,-1);\n`
+if (!penContent.startsWith(penShim)) {
+    await FS.write(penDest, penShim + penContent)
+}
 log.ok(`Copied gun files to GDB`)
 
 // Build routes list using regex pattern and post-process
