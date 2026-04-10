@@ -19,19 +19,19 @@ const filter = args[0] || null
 // Modules that import browser-only APIs (Access, WebAuthn) are omitted here
 // since they fail to load in Node even before any test runs.
 const testFiles = [
-    "./src/core/tests/Events.test.js",
-    "./src/core/tests/States.test.js",
-    "./src/core/tests/Utils.test.js",
-    "./src/core/tests/Router.test.js",
-    "./src/core/tests/Forex.test.js",
-    "./src/core/tests/IDB.test.js",
-    "./src/core/tests/DB.test.js",
-    "./src/core/tests/Cart.test.js",
-    "./src/core/tests/UI.test.js",
-    "./src/core/tests/Context.test.js",
-    "./src/core/tests/RTC.test.js",
-    "./src/core/tests/Torrent.test.js",
-    "./src/core/tests/Order.test.js",
+    "./build/core/tests/Events.test.js",
+    "./build/core/tests/States.test.js",
+    "./build/core/tests/Utils.test.js",
+    "./build/core/tests/Router.test.js",
+    "./build/core/tests/Forex.test.js",
+    "./build/core/tests/IDB.test.js",
+    "./build/core/tests/DB.test.js",
+    "./build/core/tests/Cart.test.js",
+    "./build/core/tests/UI.test.js",
+    "./build/core/tests/Context.test.js",
+    "./build/core/tests/RTC.test.js",
+    "./build/core/tests/Torrent.test.js",
+    "./build/core/tests/Order.test.js",
     // Access.test.js + WebAuthn.test.js — browser-only, use the /test route in browser
 ]
 
@@ -50,7 +50,7 @@ for (const file of testFiles)
     }
 
 // Now run all registered suites
-const { default: Test } = await import("./src/core/Test.js")
+const { default: Test } = await import("./build/core/Test.js")
 const results = await Test.run(filter)
 
 // Explicit exit so Node doesn't hang on open async handles (IndexedDB init, etc.)
