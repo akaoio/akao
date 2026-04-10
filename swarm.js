@@ -1,11 +1,11 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs"
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs"
 import { resolve, join } from "node:path"
 import { request } from "node:https"
 import { parse } from "yaml"
 
 const CONFIG_FILE = resolve("swarm.yaml")
 const SHARED_CONFIG_FILE = resolve("swarm.shared.yaml")
-const LOG_FILE = resolve("swarm/log.json")
+const LOG_DIR = resolve("swarm")
 const NOTES_FILE = resolve("swarm/notes.md")
 const API = "https://api.telegram.org/bot"
 
@@ -30,13 +30,26 @@ function load() {
 }
 
 function loadlog() {
-    if (!existsSync(LOG_FILE)) return { offset: 0, messages: [] }
-    try { return JSON.parse(readFileSync(LOG_FILE, "utf8")) } catch { return { offset: 0, messages: [] } }
+    if (!existsSync(LOG_DIR)) return { offset: 0, messages: [] }
+    const files = readdirSync(LOG_DIR).filter(f => /^\d+\.json$/.test(f))
+    let offset = 0
+    const byid = new Map()
+    for (const file of files) {
+        try {
+            const data = JSON.parse(readFileSync(join(LOG_DIR, file), "utf8"))
+            if ((data.offset || 0) > offset) offset = data.offset
+            for (const m of (data.messages || [])) {
+                if (!byid.has(m.message_id)) byid.set(m.message_id, m)
+            }
+        } catch { /* skip bad files */ }
+    }
+    return { offset, messages: [...byid.values()].sort((a, b) => a.date - b.date) }
 }
 
-function savelog(data) {
-    if (!existsSync("swarm")) mkdirSync("swarm", { recursive: true })
-    writeFileSync(LOG_FILE, JSON.stringify(data, null, 2))
+function savelog(newmsgs, offset) {
+    if (!existsSync(LOG_DIR)) mkdirSync(LOG_DIR, { recursive: true })
+    if (!newmsgs.length && !offset) return
+    writeFileSync(join(LOG_DIR, `${Date.now()}.json`), JSON.stringify({ offset, messages: newmsgs }, null, 2))
 }
 
 function get(token, method, params = {}) {
@@ -93,6 +106,7 @@ async function history() {
     const groupset = new Set(groups.map(String))
     const seen = new Set(log.messages.map(m => m.message_id))
     let maxoffset = log.offset
+    const newmsgs = []
 
     for (const update of result.result) {
         maxoffset = Math.max(maxoffset, update.update_id + 1)
@@ -101,12 +115,15 @@ async function history() {
         if (!groupset.has(String(msg.chat.id))) continue
         if (seen.has(msg.message_id)) continue
         seen.add(msg.message_id)
-        log.messages.push({ message_id: msg.message_id, date: msg.date, from: msg.from, text: msg.text, chat_id: msg.chat.id })
+        const mediatype = msg.photo ? "[photo]" : msg.video ? "[video]" : msg.document ? "[document]" : msg.sticker ? "[sticker]" : msg.voice ? "[voice]" : null
+        const msgtext = msg.text || (mediatype ? (msg.caption ? `${mediatype} ${msg.caption}` : mediatype) : "")
+        const entry = { message_id: msg.message_id, date: msg.date, from: msg.from, text: msgtext, chat_id: msg.chat.id }
+        newmsgs.push(entry)
+        log.messages.push(entry)
     }
 
-    log.offset = maxoffset
     log.messages.sort((a, b) => a.date - b.date)
-    savelog(log)
+    savelog(newmsgs, maxoffset)
 
     const last20 = log.messages.slice(-20)
     if (!last20.length) { console.log("No messages."); return }
@@ -125,13 +142,15 @@ async function send(message) {
 
     const log = loadlog()
     const seen = new Set(log.messages.map(m => m.message_id))
+    const newmsgs = []
 
     for (const gid of groups) {
         const res = await post(self.token, "sendMessage", { chat_id: gid, text })
         if (res.ok) {
             const msg = res.result
             if (!seen.has(msg.message_id)) {
-                log.messages.push({ message_id: msg.message_id, date: msg.date, from: { username: self.name }, text: msg.text, chat_id: msg.chat.id })
+                const entry = { message_id: msg.message_id, date: msg.date, from: { username: self.name }, text: msg.text, chat_id: msg.chat.id }
+                newmsgs.push(entry)
                 seen.add(msg.message_id)
             }
             console.log("Sent to", gid)
@@ -140,8 +159,7 @@ async function send(message) {
         }
     }
 
-    log.messages.sort((a, b) => a.date - b.date)
-    savelog(log)
+    savelog(newmsgs, log.offset)
 }
 
 function notes(text) {
