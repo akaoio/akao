@@ -364,13 +364,6 @@ for (const filePath of gunFiles) {
     const dest = [...paths.build.core, "GDB", Array.isArray(filePath) ? filePath[filePath.length - 1] : filePath]
     await FS.copy(src, dest)
 }
-// pen.js uses __dirname — patch for ESM compatibility in Node v22+ (require(esm) bridge)
-const penDest = [...paths.build.core, "GDB", "pen.js"]
-const penContent = await FS.load(penDest)
-const penShim = `const __dirname = new URL('.', import.meta.url).pathname.slice(0,-1);\n`
-if (!penContent.startsWith(penShim)) {
-    await FS.write(penDest, penShim + penContent)
-}
 log.ok(`Copied gun files to GDB`)
 
 // Build routes list using regex pattern and post-process
