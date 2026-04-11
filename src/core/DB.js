@@ -40,7 +40,7 @@ export class DB {
         return new Promise((r) => setTimeout(r, 0))
     }
 
-    static async _loadHash(path = []) {
+    static async _hash(path = []) {
         if (!(BROWSER && typeof fetch === "function")) {
             const hash = await FS.load(path, { quiet: true })
             return typeof hash === "string"
@@ -74,25 +74,25 @@ export class DB {
         }
 
         const memory = await Indexes.Hashes.get(path).once()
-        const hashPath = path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash"))
-        const hashResult = await DB._loadHash(hashPath)
-        const hash = hashResult.hash
-        if (memory && hashResult.ok && memory === hash) {
+        const hashpth = path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash"))
+        const hashres = await DB._hash(hashpth)
+        const hash = hashres.hash
+        if (memory && hashres.ok && memory === hash) {
             if (type === "hash") return hash
             const cached = await Indexes.Statics.get(path).once()
             DB._syncInsert(path, cached)
             return cached
         }
-        if (hashResult.ok) await Indexes.Hashes.get(path).put(hash)
+        if (hashres.ok) await Indexes.Hashes.get(path).put(hash)
         if (type === "hash") return hash
         const data = await FS.load(path)
         if (typeof data !== "undefined") {
             await Indexes.Statics.get(path).put(data)
             DB.$syncToSQL(path, data)
-        } else if (memory && hashResult.status === 404) {
+        } else if (memory && hashres.status === 404) {
             await Indexes.Hashes.del(path)
             await Indexes.Statics.del(path)
-            DB.$syncDelete(path)
+            DB.$syncdel(path)
         }
         return data
     }
@@ -261,7 +261,7 @@ export class DB {
         }
     }
 
-    static $syncDelete(path) {
+    static $syncdel(path) {
         const op = transform(path, null)
         if (!op?.delete) return
         DB._pending.push({ schema: op.schema, sql: op.delete, values: op.values })

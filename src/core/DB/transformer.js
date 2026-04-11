@@ -16,10 +16,10 @@
 import { SCHEMA_GAME_ITEMS } from "./schemas/game-items.js"
 import { SCHEMA_SHOP_ITEMS } from "./schemas/shop-items.js"
 
-const GAME_ITEMS_DELETE_SQL = "DELETE FROM game_items WHERE id=? AND game_id=? AND locale=?"
-const SHOP_ITEMS_DELETE_SQL = "DELETE FROM shop_items WHERE id=? AND locale=?"
+const delgame = "DELETE FROM game_items WHERE id=? AND game_id=? AND locale=?"
+const delshop = "DELETE FROM shop_items WHERE id=? AND locale=?"
 
-export function getLocaleFromFilename(filename) {
+export function parseloc(filename) {
     if (typeof filename !== "string" || !filename.endsWith(".json")) return null
     if (filename === "meta.json") return null
     const locale = filename.slice(0, -".json".length)
@@ -37,12 +37,12 @@ export function transform(path, data) {
     // Game item: ["statics","items","gameId","itemId","vi.json"]
     if (domain === "items" && rest.length === 3) {
         const [gameId, itemId, filename] = rest
-        const locale = getLocaleFromFilename(filename)
+        const locale = parseloc(filename)
         if (!locale) return null
         if (data === null)
             return {
                 schema: SCHEMA_GAME_ITEMS,
-                delete: GAME_ITEMS_DELETE_SQL,
+                delete: delgame,
                 values: [itemId, gameId, locale],
             }
         if (!data || typeof data !== "object" || Array.isArray(data)) return null
@@ -65,7 +65,7 @@ export function transform(path, data) {
             schema: SCHEMA_GAME_ITEMS,
             upsert: `INSERT OR REPLACE INTO game_items ${cols} ${vals}`,
             insert: `INSERT OR IGNORE  INTO game_items ${cols} ${vals}`,
-            delete: GAME_ITEMS_DELETE_SQL,
+            delete: delgame,
             values,
         }
     }
@@ -73,12 +73,12 @@ export function transform(path, data) {
     // Shop item: ["statics","items","itemId","vi.json"]
     if (domain === "items" && rest.length === 2) {
         const [itemId, filename] = rest
-        const locale = getLocaleFromFilename(filename)
+        const locale = parseloc(filename)
         if (!locale) return null
         if (data === null)
             return {
                 schema: SCHEMA_SHOP_ITEMS,
-                delete: SHOP_ITEMS_DELETE_SQL,
+                delete: delshop,
                 values: [itemId, locale],
             }
         if (!data || typeof data !== "object" || Array.isArray(data)) return null
@@ -99,7 +99,7 @@ export function transform(path, data) {
             schema: SCHEMA_SHOP_ITEMS,
             upsert: `INSERT OR REPLACE INTO shop_items ${cols} ${vals}`,
             insert: `INSERT OR IGNORE  INTO shop_items ${cols} ${vals}`,
-            delete: SHOP_ITEMS_DELETE_SQL,
+            delete: delshop,
             values,
         }
     }

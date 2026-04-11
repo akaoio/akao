@@ -1,6 +1,6 @@
 import Test from "../Test.js"
 import { DB } from "../DB.js"
-import { transform, getLocaleFromFilename } from "../DB/transformer.js"
+import { transform, parseloc } from "../DB/transformer.js"
 
 Test.describe("DB — path()", () => {
 
@@ -176,14 +176,14 @@ Test.describe("DB — transformer key filtering", () => {
 Test.describe("DB transformer — locale filename parsing", () => {
 
     Test.it("accepts locale JSON filenames", () => {
-        Test.assert.equal(getLocaleFromFilename("vi.json"), "vi")
-        Test.assert.equal(getLocaleFromFilename("zh-TW.json"), "zh-TW")
+        Test.assert.equal(parseloc("vi.json"), "vi")
+        Test.assert.equal(parseloc("zh-TW.json"), "zh-TW")
     })
 
     Test.it("rejects non-locale JSON filenames", () => {
-        Test.assert.equal(getLocaleFromFilename("meta.json"), null)
-        Test.assert.equal(getLocaleFromFilename("raw.json"), null)
-        Test.assert.equal(getLocaleFromFilename("1.json"), null)
+        Test.assert.equal(parseloc("meta.json"), null)
+        Test.assert.equal(parseloc("raw.json"), null)
+        Test.assert.equal(parseloc("1.json"), null)
     })
 
 })
