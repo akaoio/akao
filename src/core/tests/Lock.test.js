@@ -1,0 +1,78 @@
+import Test from "../Test.js"
+import { createRequire } from "module"
+import { sha256 } from "../Utils/crypto.js"
+import { Lock } from "../Lock.js"
+import { HDNodeWallet, getBytes } from "../Ethers.js"
+
+const _req = createRequire(import.meta.url)
+const _root = new URL("../../../", import.meta.url).pathname.replace(/\/$/, "")
+global.Gun = _req(`${_root}/node_modules/@akaoio/gun/gun.js`)
+const _SEA = _req(`${_root}/node_modules/@akaoio/gun/sea.js`)
+globalThis.sea = _SEA
+
+const [PAYER_PAIR, ESCROW_PAIR] = await Promise.all([
+    _SEA.pair(), _SEA.pair()
+])
+
+const RECIPIENT_ROOT = HDNodeWallet.fromSeed(getBytes("0x" + sha256("lock-recipient-root")))
+const RECIPIENT_XPUB = RECIPIENT_ROOT.neuter().extendedKey
+
+function makeLock(type = "TL") {
+    return new Lock({
+        payer: PAYER_PAIR,
+        escrow: ESCROW_PAIR,
+        recipient: { xpub: RECIPIENT_XPUB },
+        trade: "trade-lock-1",
+        type
+    })
+}
+
+Test.describe("Lock — escrow derivation primitives", () => {
+
+    Test.it("secret() matches SEA shared secret with escrow epub", async () => {
+        const lock = makeLock()
+        const expected = await _SEA.secret(ESCROW_PAIR.epub, PAYER_PAIR)
+        Test.assert.equal(await lock.secret(), expected)
+    })
+
+    Test.it("index() is deterministic for the same trade + type", async () => {
+        const a = makeLock("TL")
+        const b = makeLock("TL")
+        Test.assert.equal(await a.index(), await b.index())
+    })
+
+    Test.it("TL and CL derive different indexes for the same trade", async () => {
+        const tl = makeLock("TL")
+        const cl = makeLock("CL")
+        Test.assert.notEqual(await tl.index(), await cl.index())
+    })
+
+    Test.it("address() and unlock() resolve the same child wallet", async () => {
+        const lock = makeLock("TL")
+        const address = await lock.address()
+        const unlocked = await lock.unlock(RECIPIENT_ROOT.extendedKey)
+        Test.assert.equal(unlocked.address, address)
+    })
+
+    Test.it("address() rejects when recipient xpub is missing", async () => {
+        const lock = new Lock({
+            payer: PAYER_PAIR,
+            escrow: ESCROW_PAIR,
+            recipient: {},
+            trade: "trade-lock-2",
+            type: "TL"
+        })
+        await Test.assert.rejects(lock.address(), "xpubRequired")
+    })
+
+    Test.it("unlock() rejects when xprv is missing", async () => {
+        const lock = makeLock("TL")
+        await Test.assert.rejects(lock.unlock(), "xprvRequired")
+    })
+
+    Test.it("index() rejects unknown lock types", async () => {
+        const lock = makeLock("XX")
+        await Test.assert.rejects(lock.index(), "invalidLockType")
+    })
+
+})

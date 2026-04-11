@@ -1,9 +1,26 @@
-// Write initial trade record to both Gun user namespaces
-// Each party writes to their own namespace — Gun SEA enforces authorship
-export async function create({ tradeId }) {
-    const record = { tradeId, status: "matched", ts: Date.now() }
-    // TODO: gun.user().get("trades").get(tradeId).put(record)
-    // Both maker and taker write their own side
-    await this.gun.user(this.maker.pub).get("trades").get(tradeId).put(record)
-    await this.gun.user(this.taker.pub).get("trades").get(tradeId).put(record)
+import { putTradeRecord, resolveTradeId } from "./helpers.js"
+
+// Write initial trade records to all available authenticated participant namespaces.
+// Each side can later extend only its own record.
+export async function create({ tradeId, matchedAt = Date.now() } = {}) {
+    const resolvedTradeId = await resolveTradeId(this, tradeId)
+    const record = { tradeId: resolvedTradeId, status: "matched", matchedAt }
+    const writers = [
+        this.maker?.pair ? { pub: this.maker.pub, pair: this.maker.pair, role: "maker" } : null,
+        this.taker?.pair ? { pub: this.taker.pub, pair: this.taker.pair, role: "taker" } : null
+    ].filter(Boolean)
+
+    if (!writers.length) throw new Error("writerPairRequired")
+
+    await Promise.all(
+        writers.map(({ pub, pair }) => putTradeRecord({
+            gun: this.gun,
+            pub,
+            tradeId: resolvedTradeId,
+            fields: record,
+            pair
+        }))
+    )
+
+    return { ...record, writers: writers.map(({ role }) => role) }
 }

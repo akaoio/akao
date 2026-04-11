@@ -32,6 +32,8 @@ const testFiles = [
     "./build/core/tests/RTC.test.js",
     "./build/core/tests/Torrent.test.js",
     "./build/core/tests/Order.test.js",
+    "./build/core/tests/Lock.test.js",
+    "./build/core/tests/Trade.test.js",
     // Access.test.js + WebAuthn.test.js — browser-only, use the /test route in browser
 ]
 
