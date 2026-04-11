@@ -68,6 +68,11 @@ export class DB {
         if (typeof data !== "undefined") {
             await Indexes.Statics.get(path).put(data)
             DB.$syncToSQL(path, data)
+        } else if (memory) {
+            // File no longer exists but was cached — clean up dead data
+            await Indexes.Hashes.del(path)
+            await Indexes.Statics.del(path)
+            DB.$syncDelete(path)
         }
         return data
     }
@@ -230,6 +235,17 @@ export class DB {
         const op = transform(path, data)
         if (!op) return
         DB._pending.push(op)
+        if (!DB._scheduled) {
+            DB._scheduled = true
+            queueMicrotask(() => DB._flush())
+        }
+    }
+
+    // Delete a path from SQL — fire-and-forget, non-blocking
+    static $syncDelete(path) {
+        const op = transform(path, null)
+        if (!op?.delete) return
+        DB._pending.push({ schema: op.schema, sql: op.delete, values: op.values })
         if (!DB._scheduled) {
             DB._scheduled = true
             queueMicrotask(() => DB._flush())

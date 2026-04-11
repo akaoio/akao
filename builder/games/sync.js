@@ -53,7 +53,16 @@ function slugify(value) {
 function buildCanonicalItemId(raw, localeData) {
     const preferredName = localeData?.name || raw?.name || raw?.id || "item"
     const namedSlug = slugify(preferredName) || "item"
-    const rawBlock = stableStringify(raw)
+    // Stable fields only - exclude popularity (dynamic metric from Wowhead)
+    const stableRaw = {
+        id: raw.id,
+        name: raw.name,
+        quality: raw.quality,
+        itemTypeName: raw.itemTypeName,
+        playerClassNames: raw.playerClassNames || [],
+        slotNames: raw.slotNames || [],
+    }
+    const rawBlock = stableStringify(stableRaw)
     const hash = sha256(rawBlock)
     const suffix = hash.slice(-5)
     return `${namedSlug}-${suffix}`
