@@ -47,6 +47,10 @@ function createShopItemDeleteTransform(itemId, locale) {
 }
 
 export function transform(path, data) {
+    // Keep using createGameItemDeleteTransform(...) and
+    // createShopItemDeleteTransform(...) for delete cases inside this
+    // function instead of returning inline DELETE SQL objects, so the
+    // SQL statements remain defined in exactly one place.
     if (!Array.isArray(path) || path.length === 0) return null
     if (path.at(-1)?.endsWith(".hash")) return null
     if (path[0] !== "statics") return null
