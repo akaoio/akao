@@ -49,7 +49,7 @@ for (const file of testFiles)
     }
 
 // Now run all registered suites
-const { default: Test } = await import("./src/core/Test.js")
+const { default: Test } = await import("./build/core/Test.js")
 const results = await Test.run(filter)
 
 // Explicit exit so Node doesn't hang on open async handles (IndexedDB init, etc.)
