@@ -16,6 +16,17 @@
 import { SCHEMA_GAME_ITEMS } from "./schemas/game-items.js"
 import { SCHEMA_SHOP_ITEMS } from "./schemas/shop-items.js"
 
+// Returns locale code if filename is a real locale JSON (e.g. "vi.json", "en-US.json")
+// Returns null for meta.json, index files, or invalid patterns
+function getLocaleFromFilename(filename) {
+    if (typeof filename !== "string" || !filename.endsWith(".json")) return null
+    if (filename === "meta.json") return null
+    // Match locale patterns like "vi", "en-US", "zh-TW"
+    const locale = filename.slice(0, -".json".length)
+    if (!/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/.test(locale)) return null
+    return locale
+}
+
 export function transform(path, data) {
     if (!Array.isArray(path) || path.length === 0) return null
     if (path.at(-1)?.endsWith(".hash")) return null
@@ -26,7 +37,8 @@ export function transform(path, data) {
     // Game item: ["statics","items","gameId","itemId","vi.json"]
     if (domain === "items" && rest.length === 3) {
         const [gameId, itemId, filename] = rest
-        const locale = filename.replace(".json", "")
+        const locale = getLocaleFromFilename(filename)
+        if (!locale) return null
 
         // Delete operation — data is null but we still need itemId, gameId, locale
         if (data === null) {
@@ -66,7 +78,8 @@ export function transform(path, data) {
     // Shop item: ["statics","items","itemId","vi.json"]
     if (domain === "items" && rest.length === 2) {
         const [itemId, filename] = rest
-        const locale = filename.replace(".json", "")
+        const locale = getLocaleFromFilename(filename)
+        if (!locale) return null
 
         // Delete operation — data is null but we still need itemId, locale
         if (data === null) {

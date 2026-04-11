@@ -69,21 +69,14 @@ export class DB {
             await Indexes.Statics.get(path).put(data)
             DB.$syncToSQL(path, data)
         } else if (memory) {
-            // File no longer exists but was cached — clean up dead data
-            await Indexes.Hashes.del(path)
-            await Indexes.Statics.del(path)
-            DB.$syncDelete(path)
-        }
-        // Fallback: if FS.load() failed but we have cached data, serve from IDB
-        // This handles transient network errors where OPFS has the file but fetch fails
-        if (memory) {
-            const cached = await Indexes.Statics.get(path).once()
-            if (typeof cached !== "undefined") {
-                DB._syncInsert(path, cached)
-                return cached
+            // hash === undefined means hash file also 404 → true deletion
+            // hash !== undefined means network error → keep cache
+            if (hash === undefined) {
+                await Indexes.Hashes.del(path)
+                await Indexes.Statics.del(path)
+                DB.$syncDelete(path)
             }
         }
-        return data
     }
 
     // Lazy singleton — stores the Promise itself, not the resolved instance.
