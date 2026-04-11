@@ -53,7 +53,11 @@ function slugify(value) {
 function buildCanonicalItemId(raw, localeData) {
     const preferredName = localeData?.name || raw?.name || raw?.id || "item"
     const namedSlug = slugify(preferredName) || "item"
-    const rawBlock = stableStringify(raw)
+    const stableRaw = {
+        ...raw,
+        popularity: undefined,
+    }
+    const rawBlock = stableStringify(stableRaw)
     const hash = sha256(rawBlock)
     const suffix = hash.slice(-5)
     return `${namedSlug}-${suffix}`
