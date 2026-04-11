@@ -1,176 +1,156 @@
 # Tư Duy Phát Triển Hướng Kiểm Thử (Test-Driven Development Mindset)
 
-Một phương pháp nền tảng để xây dựng hệ thống đáng tin cậy
+*Một phương pháp nền tảng để xây dựng hệ thống đáng tin cậy*
 
 ---
 
-## 1. Giới thiệu
+## 1. Vấn đề với cách làm thông thường
 
-Tài liệu này mô tả một tư duy kỹ thuật nền tảng xoay quanh việc phát triển dựa trên kiểm thử trước (test-driven development), trong đó tính đúng đắn (correctness) được xem là yếu tố cốt lõi, không phải là kết quả phụ của quá trình lập trình.
+Hầu hết lập trình viên viết code trước, test sau — nếu có. Kết quả là:
 
-Thay vì coi kiểm thử là bước xác nhận sau khi hoàn thành code, phương pháp này đặt:
+- Test được viết để **chứng minh code đúng**, không phải để **định nghĩa code phải làm gì**
+- Test bị bias bởi implementation đã có — chỉ test những gì đã biết
+- Bug thật sự chỉ lộ ra khi production gặp edge case mà không ai nghĩ tới
 
-> «Kiểm thử là đặc tả (specification), và code là quá trình hiện thực hóa đặc tả đó»
-
----
-
-## 2. Nguyên lý cốt lõi: Kiểm thử định nghĩa thực tại
-
-Nguyên lý trung tâm:
-
-> «Một hệ thống chỉ đúng khi các kiểm thử của nó định nghĩa đúng»
-
-Điều này dẫn đến:
-
-- Kiểm thử không phải là phần phụ → mà là nguồn chân lý
-- Code không định nghĩa hành vi → kiểm thử định nghĩa hành vi
-- Implementation chỉ là quá trình thoả mãn các ràng buộc đã được đặt ra
+Đây là vòng lặp sai: *code → test → fix → test lại → ...*
 
 ---
 
-## 3. Phát triển hướng kiểm thử (TDD)
+## 2. Nguyên lý nền tảng
 
-### 3.1 Định nghĩa
+> **Kiểm thử là đặc tả. Code là quá trình hiện thực hóa đặc tả đó.**
 
-Test-Driven Development là quy trình:
+Và hệ quả trực tiếp:
 
-1. Viết unit test trước
-2. Đảm bảo test fail ngay từ lần chạy đầu tiên
-3. Viết code từng bước để pass toàn bộ test
+> **Một hệ thống chỉ đúng khi các kiểm thử của nó định nghĩa đúng.**
 
-Phương pháp này không chỉ là kỹ thuật mà còn là một lập trường tư duy:
+Điều này đảo ngược hoàn toàn tư duy thông thường:
 
-- Test là ràng buộc hình thức (formal constraints)
-
----
-
-## 4. Tư duy "Fail First"
-
-### 4.1 Thất bại có chủ đích
-
-Một nguyên tắc quan trọng:
-
-- Mọi test khi được viết ra phải fail ở lần chạy đầu tiên
-- Failure không phải lỗi → mà là tín hiệu xác nhận test có ý nghĩa
-
-### 4.2 Tại sao failure quan trọng?
-
-Một test pass ngay từ đầu thường là:
-
-- Sai logic
-- Quá đơn giản
-- Hoặc không kiểm tra gì thực sự
-
-Failure đảm bảo:
-
-- Test đang thực sự kiểm tra một hành vi
-- Hệ thống chưa thoả mãn yêu cầu
+- Code **không** định nghĩa hành vi — **test định nghĩa hành vi**
+- Test không phải phần phụ — test là **nguồn chân lý**
+- Implementation chỉ là quá trình thoả mãn ràng buộc đã được đặt ra trước
 
 ---
 
-## 5. Kiểm thử như ràng buộc toán học
+## 3. Vòng Red → Green → Refactor
 
-Một bộ test tốt phải hoạt động như một hệ ràng buộc:
+Chu trình cốt lõi của TDD:
 
-- **Xác định (deterministic)**
-- **Không mơ hồ**
-- **Tách biệt (isolated)**
-- **Có thể tái lập (reproducible)**
+```
+🔴 RED     Viết test → chạy → phải fail
+              ↓
+🟢 GREEN   Viết code tối thiểu để pass test
+              ↓
+🔵 REFACTOR Dọn code, không thêm logic
+              ↓
+           Lặp lại từ đầu
+```
 
-Test định nghĩa:
-
-- Không gian đầu vào (input space)
-- Kết quả kỳ vọng (expected output)
-- Các bất biến (invariants)
-
-> Theo nghĩa này, test đóng vai trò như một lớp kiểm chứng hình thức nhẹ (lightweight formal verification)
-
----
-
-## 6. Implementation là quá trình thoả mãn ràng buộc
-
-Khi đã có test đủ mạnh, việc viết code trở thành:
-
-> «Giải bài toán thoả mãn toàn bộ các ràng buộc đã được định nghĩa»
-
-Hệ quả:
-
-- Chỉ viết code để pass test
-- Không thêm logic không cần thiết
-- Tránh over-engineering
+Mỗi vòng lặp thường chỉ mất vài phút. Hệ thống lớn lên từng bước nhỏ, luôn trong trạng thái xác minh được.
 
 ---
 
-## 7. Vòng phản hồi (Feedback Loop)
+## 4. Tại sao test phải fail trước?
 
-Chu trình phát triển:
+Đây là điều nhiều người bỏ qua. Một test **pass ngay từ đầu** thường có nghĩa là:
 
-1. **Định nghĩa ràng buộc** (viết test)
-2. **Quan sát failure**
-3. **Viết logic tối thiểu**
-4. **Pass test**
-5. **Refactor an toàn**
+- Logic assertion sai (test không kiểm tra gì thực sự)
+- Test đang test implementation thay vì hành vi
+- Hoặc feature đã được implement rồi mà không ai biết
 
-Vòng lặp này đảm bảo:
-
-- Phản hồi nhanh
-- Phát hiện lỗi sớm
-- Tiến hoá hệ thống có kiểm soát
+**Failure là tín hiệu, không phải lỗi.** Nó xác nhận:
+1. Test đang đo lường đúng thứ cần đo
+2. Hệ thống chưa thoả mãn yêu cầu — và đó là trạng thái kỳ vọng *trước khi viết code*
 
 ---
 
-## 8. Thuộc tính của một test suite tốt
+## 5. Test như ràng buộc toán học
 
-### 8.1 Độ bao phủ (Completeness)
+Một test suite tốt hoạt động như một **hệ phương trình**:
 
-Bao phủ các hành vi quan trọng và edge case
+- Mỗi test là một ràng buộc
+- Implementation là nghiệm của hệ
+- Nếu tất cả test pass → nghiệm hợp lệ
 
-### 8.2 Độ chính xác (Precision)
+Test tốt định nghĩa:
 
-Mỗi test chỉ kiểm tra một hành vi
+| Chiều | Ý nghĩa |
+|---|---|
+| **Input space** | Đầu vào hợp lệ, không hợp lệ, edge case |
+| **Expected output** | Kết quả chính xác và bất biến |
+| **Invariants** | Những điều luôn đúng bất kể input |
+| **Error contracts** | Lỗi nào được ném ra khi nào |
 
-### 8.3 Tính độc lập (Independence)
-
-Không phụ thuộc trạng thái chung
-
-### 8.4 Tính xác định (Determinism)
-
-Cùng input → luôn ra cùng output
-
-### 8.5 Kháng false-positive
-
-Test phải fail khi có lỗi thật
+> Test tốt là **lightweight formal verification** — không cần theorem prover, chỉ cần kỷ luật.
 
 ---
 
-## 9. Anti-pattern cần tránh
+## 6. Mocks vs Real — Nguyên tắc "Tất cả phải thật"
 
-- Viết code trước test
-- Test luôn pass
-- Assertion mơ hồ
-- Coupling test với implementation
-- Bỏ qua test fail
+Một lỗi phổ biến: mock quá nhiều để test "nhanh hơn". Hệ quả:
 
----
+- Test pass nhưng production fail — vì mock không phản ánh hành vi thật
+- Bug nằm ở ranh giới giữa các layer — đúng là nơi mock che khuất
 
-## 10. Lợi ích chiến lược
+**Nguyên tắc:** Chỉ mock khi **không thể** dùng thật.
 
-Áp dụng tư duy này mang lại:
+Ưu tiên theo thứ tự:
+1. **Real implementation** — luôn là lựa chọn đầu tiên
+2. **In-memory variant** — ví dụ: database in-memory, Gun `{localStorage:false}`
+3. **Fake** — implementation đơn giản nhưng đúng hành vi (không phải stub)
+4. **Mock** — chỉ khi các lựa chọn trên không khả thi (external API, hardware)
 
-- Độ tin cậy hệ thống cao hơn
-- Giảm thời gian debug
-- Test đóng vai trò như documentation sống
-- Refactor an toàn hơn
-- Alignment giữa ý định và hành vi
+Ví dụ từ dự án này: `Order.test.js` dùng Gun thật (in-memory), SEA thật, Ganache EVM thật — không có mock nào. Kết quả: bug thật được tìm thấy (Gun put callback không fire trong memory-only mode), được fix ở upstream.
 
 ---
 
-## 11. Kết luận
+## 7. Thuộc tính của test suite tốt
 
-Test-Driven Development không chỉ là kỹ thuật — mà là một kỷ luật tư duy.
+| Thuộc tính | Mô tả |
+|---|---|
+| **Completeness** | Bao phủ hành vi quan trọng và edge case |
+| **Precision** | Mỗi test chỉ kiểm tra **một** hành vi |
+| **Independence** | Không phụ thuộc trạng thái chung giữa các test |
+| **Determinism** | Cùng input → luôn ra cùng output |
+| **Sensitivity** | Phải fail khi có lỗi thật, không false-positive |
+| **Readability** | Đọc test là hiểu được spec của hệ thống |
 
-Bằng cách:
+---
 
-- Xem test là nguồn chân lý
-- Bắt đầu từ failure
-- Và xây dựng hệ thống để chứng minh tính đúng đắn
+## 8. Anti-pattern cần tránh
+
+| Anti-pattern | Hệ quả |
+|---|---|
+| Viết code trước test | Test bị bias, chỉ xác nhận những gì đã làm |
+| Test luôn pass | Không có giá trị kiểm chứng, lừa dối cả nhóm |
+| Assertion mơ hồ (`assert(result)`) | Không phát hiện được regression |
+| Mock quá nhiều | Test xanh, production đỏ |
+| Coupling test với implementation | Test vỡ khi refactor dù logic đúng |
+| Bỏ qua test fail | Tích luỹ nợ kỹ thuật ngầm, mất tin tưởng vào suite |
+| Test không có tên rõ ràng | Không ai biết test đang kiểm tra gì khi nó fail |
+
+---
+
+## 9. Lợi ích chiến lược
+
+- **Độ tin cậy cao hơn** — hành vi được chứng minh, không chỉ được giả định
+- **Debug nhanh hơn** — lỗi bị cô lập ngay từ khi phát sinh, không phải truy vết sau
+- **Documentation sống** — đọc test là đọc spec, luôn cập nhật
+- **Refactor tự tin** — test suite là lưới an toàn, không sợ phá vỡ
+- **Thiết kế tốt hơn** — code khó test thường là code được thiết kế kém; TDD ép bạn thiết kế tốt hơn
+- **Onboarding nhanh hơn** — người mới đọc test để hiểu hệ thống làm gì
+
+---
+
+## 10. Kết luận
+
+Test-Driven Development không phải kỹ thuật viết test — mà là **cách tư duy về phần mềm**:
+
+- Bắt đầu từ câu hỏi *"Hệ thống phải làm gì?"* → viết test
+- Không phải *"Tôi vừa làm gì?"* → viết test để xác nhận
+
+Khi áp dụng nhất quán, TDD chuyển đội nhóm từ:
+
+> *"Có vẻ đúng"* → **"Đã được chứng minh"**
+
+Đó là sự khác biệt giữa phần mềm được xây dựng bởi niềm tin và phần mềm được xây dựng bởi bằng chứng.
