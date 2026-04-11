@@ -16,7 +16,7 @@
  */
 import { FS } from "./FS.js"
 import { Indexes } from "./Stores.js"
-import { DEV } from "./Utils/environment.js"
+import { BROWSER, DEV } from "./Utils/environment.js"
 import { transform } from "./DB/transformer.js"
 
 export class DB {
@@ -43,7 +43,16 @@ export class DB {
     // Load `.hash` files without OPFS fallback so callers can distinguish
     // an explicit 404 (true deletion) from transient/network failures.
     static async _loadHash(path = []) {
-        if (typeof fetch !== "function") return { ok: false, status: null, hash: await FS.load(path) }
+        if (!(BROWSER && typeof fetch === "function")) {
+            try {
+                const hash = await FS.load(path)
+                return typeof hash === "string"
+                    ? { ok: true, status: 200, hash }
+                    : { ok: false, status: null, hash: undefined }
+            } catch {
+                return { ok: false, status: null, hash: undefined }
+            }
+        }
         try {
             const url = Array.isArray(path) ? "/" + path.filter(Boolean).join("/") : String(path ?? "") // pass full URL through unchanged
             const response = await fetch(url)
