@@ -55,7 +55,8 @@ export class DB {
         }
 
         const memory = await Indexes.Hashes.get(path).once()
-        const hash = await FS.load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
+        const hashPath = path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash"))
+        const hash = await FS.load(hashPath, { quiet: true })
         if (memory && hash && memory === hash) {
             if (type === "hash") return hash
             const cached = await Indexes.Statics.get(path).once()

@@ -4,9 +4,9 @@
  * Integrates with SEA (Simple End-to-End Cryptography) for encryption and Gun database.
  */
 
-import WebAuthn from "/core/WebAuthn.js"
-import States from "/core/States.js"
-import { DEV } from "/core/Utils/environment.js"
+import WebAuthn from "./WebAuthn.js"
+import States from "./States.js"
+import { DEV } from "./Utils/environment.js"
 
 const DEV_SESSION_KEY = "__dev_auth__"
 

@@ -14,6 +14,11 @@ if (globalThis?.location?.origin) {
 
 if (globalThis?.process?.platform === "win32") WIN = true
 
-const DEV = BROWSER && (globalThis?.location?.hostname === "localhost" || globalThis?.location?.hostname === "127.0.0.1")
+const DEV = BROWSER && (
+    globalThis?._dev === true
+    || globalThis?._dev?.enabled === true
+    || globalThis?.location?.hostname === "localhost"
+    || globalThis?.location?.hostname === "127.0.0.1"
+)
 
 export { NODE, BROWSER, WIN, DEV }

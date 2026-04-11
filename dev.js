@@ -12,7 +12,7 @@ import selfsigned from "selfsigned"
 const SRC_ROOT = "src"
 const BUILD_ROOT = "build"
 
-const HOST = process.env.HOST || "0.0.0.0"
+const HOST = process.env.HOST || "::"
 const PORT = 8080
 const CLI_ARGS = process.argv.slice(2)
 const HAS_HTTPS_FLAG = CLI_ARGS.includes("--https")
@@ -129,11 +129,9 @@ async function injectDevClient(htmlContent) {
     const bootstrap = `<script data-dev-client="${DEV_CLIENT_MARKER}">
 // HMR Bootstrap - Runs synchronously before ANY ES modules load
 (function() {
-    // Only run in dev mode (localhost/127.0.0.1)
-    const isDev = globalThis?.location?.hostname === "localhost" || 
-                  globalThis?.location?.hostname === "127.0.0.1";
-    
-    if (!isDev || !window.customElements) return;
+    globalThis._dev = (globalThis._dev && typeof globalThis._dev === "object") ? globalThis._dev : {};
+    globalThis._dev.enabled = true;
+    if (!window.customElements) return;
     
     // Initialize minimal HMR state (no __ prefix)
     window.hmr = {
@@ -267,6 +265,10 @@ function getAllLanIPs() {
     return Array.from(ips)
 }
 
+function formatHost(host) {
+    return host.includes(":") ? `[${host}]` : host
+}
+
 async function loadHttpsCredentials() {
     if (SSL_KEY && SSL_CERT) {
         return {
@@ -354,7 +356,7 @@ async function resolveBuildFile(urlPathname) {
 async function startStaticServer() {
     const server = http.createServer(async (req, res) => {
         try {
-            const base = `http://${HOST}:${PORT}`
+            const base = `http://${formatHost(HOST)}:${PORT}`
             const requestUrl = new URL(req.url || "/", base)
 
             if (requestUrl.pathname === "/__dev_reload") {
@@ -390,7 +392,10 @@ async function startStaticServer() {
             const mimeType = getMimeType(filePath)
             const coiHeaders = {
                 "Cross-Origin-Opener-Policy": "same-origin",
-                "Cross-Origin-Embedder-Policy": "credentialless"
+                "Cross-Origin-Embedder-Policy": "credentialless",
+                "Cache-Control": "no-store, no-cache, must-revalidate",
+                Pragma: "no-cache",
+                Expires: "0"
             }
             if (mimeType.startsWith("text/html")) {
                 const content = await fs.readFile(filePath, "utf8")

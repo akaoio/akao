@@ -20,15 +20,11 @@ import { fetch  as fetchFn  } from "../Order/fetch.js"
 import { soul   as soulFn   } from "../Order/soul.js"
 import { ethers, HDNodeWallet, getBytes } from "../Ethers.js"
 
-// ─── Bootstrap: real Gun + SEA + Pen + EVM ───────────────────────────────────
+// ─── Bootstrap: real headless runtime + EVM ───────────────────────────────────
 
 const _req  = createRequire(import.meta.url)
-const _root = new URL("../../../", import.meta.url).pathname.replace(/\/$/, "")
-global.Gun  = _req(`${_root}/node_modules/@akaoio/gun/gun.js`)
-const _SEA  = _req(`${_root}/node_modules/@akaoio/gun/sea.js`)
-globalThis.sea = _SEA
-_req(`${_root}/build/core/GDB/pen.js`)
 const Ganache = _req("ganache")
+const _SEA = globalThis.sea
 
 // ─── Deterministic test environment ──────────────────────────────────────────
 
@@ -95,7 +91,7 @@ console.log("═".repeat(W) + "\n")
 
 /** Create a real in-memory Gun node (no persistence, no peers). */
 function makeGun() {
-    return new Gun({ localStorage: false, radisk: false, peers: [] })
+    return new globalThis.Gun({ localStorage: false, radisk: false, peers: [] })
 }
 
 /** Read a Gun node once, with timeout. Resolves undefined on timeout. */

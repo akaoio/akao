@@ -1,4 +1,4 @@
-import States from "/core/States.js"
+import States from "./States.js"
 
 export const Progress = new States()
 

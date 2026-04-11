@@ -10,6 +10,8 @@ Development-mode hot module replacement system for Web Components with automatic
 - File system monitoring via Chokidar
 - Incremental build pipeline
 - Server-Sent Events broadcast endpoint
+- Early inline bootstrap injection before any ES modules run
+- Dev-mode injection for alias hosts served by the dev server, not just `localhost`
 
 **HMR Runtime** (`src/core/HMR.js`)
 - Module registry with dependency tracking
@@ -21,6 +23,7 @@ Development-mode hot module replacement system for Web Components with automatic
 - EventSource SSE connection with auto-reconnect
 - Update message routing to runtime
 - Automatic injection via dev server
+- Shared `_dev` state object for connection/runtime diagnostics
 
 ### Update Pipeline
 
@@ -90,7 +93,7 @@ Global state (`Context`, `Access`, `Cart`) remains in memory as module-level sin
 
 ### Automatic Initialization
 
-HMR activates automatically in development mode (`npm start`). Console output confirms activation:
+HMR activates automatically on pages served by the dev server (`npm start`). That includes `localhost` and any alias host that the dev server injects into dev mode.
 
 ```
 🔥 HMR: Runtime initialized
@@ -114,16 +117,19 @@ Console logs indicate update status:
 ### Runtime State Inspection
 
 ```javascript
-// SSE connection state
-window.__devSseState
-// { connectedAt, lastMessageAt, messageCount, readyState, hmrEnabled }
+// Dev/HMR connection state
+window._dev
+// { enabled, connectedAt, lastMessageAt, messageCount, readyState, hmrEnabled, ... }
+
+// Runtime instance
+window.hmr
 
 // Module registry
-window.__hmr.modules
+window.hmr.modules
 // Map<URL, { exports, timestamp, dependents, dependencies }>
 
 // Element registry
-window.__hmr.elements
+window.hmr.elements
 // Map<tagName, { class, module }>
 ```
 
@@ -161,7 +167,6 @@ export class COMPONENT extends HTMLElement {
   disconnectedCallback() {
     this.ws?.close()
   }
-}
 }
 ```
 
@@ -206,3 +211,9 @@ src/core/HMR.js           Runtime engine
 src/core/HMR/client.js    SSE client (auto-injected)
 dev.js                    Dev server with broadcast logic
 ```
+
+## Notes on Current Behavior
+
+- Dev mode is no longer inferred from `localhost` alone. The dev server injects `_dev.enabled = true` into served HTML, and the runtime respects that on alias hosts too.
+- `_dev` is a shared state object, not a boolean flag. HMR client/runtime both write into this object.
+- `window.hmr` is the canonical runtime/debug surface. Older examples using `window.__hmr` or `window.__devSseState` are stale.

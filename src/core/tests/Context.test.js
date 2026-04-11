@@ -1,5 +1,5 @@
 /**
- * Context module tests — browser only (requires localStorage & document).
+ * Context module tests — headless-compatible (storage-backed, document optional).
  *
  * Context is a singleton States instance, so tests must save/restore state
  * to avoid cross-test pollution. We test the helpers (getTheme, setTheme,
@@ -24,6 +24,7 @@ Test.describe("Context — setTheme / getTheme", () => {
     })
 
     Test.it("setTheme updates document.documentElement dataset", () => {
+        if (!globalThis.document) return
         const prev = saveLS("theme")
         setTheme("light")
         Test.assert.equal(document.documentElement.dataset.theme, "light")
@@ -54,7 +55,7 @@ Test.describe("Context — setTheme / getTheme", () => {
         restoreLS("theme", prev)
     })
 
-}, { browser: true })
+})
 
 Test.describe("Context — setFiat / getFiat", () => {
 
@@ -82,4 +83,4 @@ Test.describe("Context — setFiat / getFiat", () => {
         if (fiat) Test.assert.truthy(typeof fiat.code === "string")
     })
 
-}, { browser: true })
+})

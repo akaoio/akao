@@ -104,7 +104,54 @@ Ví dụ từ dự án này: `Order.test.js` dùng Gun thật (in-memory), SEA t
 
 ---
 
-## 7. Thuộc tính của test suite tốt
+## 7. Kiểm thử phải boot **hệ thống thật**, không chỉ module thật
+
+Một bước tiếp theo quan trọng hơn cả "real dependencies" là:
+
+> **Test phải khởi động cùng kiến trúc mà production dùng.**
+
+Trong dự án này, browser boot qua `/core/Launcher.js`. Vì vậy Node.js cũng phải boot qua chính `Launcher.js`, chỉ khác ở profile headless. Nếu browser đi một đường còn test đi đường khác, thì suite vẫn có thể xanh trong khi runtime thật lại đỏ.
+
+Và còn một nguyên tắc thực dụng nữa:
+
+> **`build/` là chân lý runtime.**
+
+Nghĩa là:
+
+- Test không được dựng một "thế giới song song" từ `src/` sang thư mục tạm để tự an ủi nhau
+- Phần build phải tạo ra artifact thật trong `build/`
+- Suite phải kiểm tra artifact đó và boot từ entrypoint thật trong `build/`
+
+Nếu runtime production/dev đều đi ra từ `build/`, còn test đi ra từ một temp pipeline khác, thì đó chưa phải TDD đúng cho dự án này.
+
+Nguyên tắc thực hành:
+
+1. **Ưu tiên test qua `Launcher.js`** khi kiểm tra hành vi xuyên nhiều layer
+2. **Node headless không phải bản giả** — nó là cùng kiến trúc, chỉ bỏ DOM/UI và worker không universal
+3. **Không dựng fixture hay temp pipeline song song để mô phỏng app boot** nếu runtime thật đã có boot sequence sẵn
+4. **Chỉ test module đơn lẻ** khi câu hỏi thật sự là về invariants cục bộ của module đó
+
+Điều này tăng tốc phát triển vì:
+
+- Có thể chạy test thực tế ngay trong Node trước khi mở browser
+- Có thể dùng Playwright để boot app thật trong browser và xác nhận runtime browser đi qua cùng `Launcher.js`
+- Phát hiện bug ở thứ tự khởi tạo, wiring, static loading, state hydration
+- Giảm khoảng cách giữa "test environment" và "runtime environment"
+
+Nói ngắn gọn:
+
+> **TDD đúng không chỉ là "viết test trước". TDD đúng là định nghĩa hành vi trên đúng runtime.**
+
+Thực hành tối thiểu cho dự án này:
+
+1. **Node headless** kiểm tra runtime isomorphic phía Node qua `Launcher.js`
+2. **Build artifact verification** kiểm tra trực tiếp output thật trong `build/`
+3. **Playwright browser** kiểm tra runtime browser qua `/test` và chính `Launcher.js`
+4. Chỉ khi tất cả đều xanh mới có thể nói là kiến trúc đang chạy thật ở cả hai phía
+
+---
+
+## 8. Thuộc tính của test suite tốt
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -114,10 +161,11 @@ Ví dụ từ dự án này: `Order.test.js` dùng Gun thật (in-memory), SEA t
 | **Determinism** | Cùng input → luôn ra cùng output |
 | **Sensitivity** | Phải fail khi có lỗi thật, không false-positive |
 | **Readability** | Đọc test là hiểu được spec của hệ thống |
+| **Runtime parity** | Test boot cùng entrypoint/kiến trúc với runtime thật |
 
 ---
 
-## 8. Anti-pattern cần tránh
+## 9. Anti-pattern cần tránh
 
 | Anti-pattern | Hệ quả |
 |---|---|
@@ -125,13 +173,16 @@ Ví dụ từ dự án này: `Order.test.js` dùng Gun thật (in-memory), SEA t
 | Test luôn pass | Không có giá trị kiểm chứng, lừa dối cả nhóm |
 | Assertion mơ hồ (`assert(result)`) | Không phát hiện được regression |
 | Mock quá nhiều | Test xanh, production đỏ |
+| Boot app bằng test harness riêng | Không kiểm tra đúng thứ tự khởi tạo thật |
+| Dựng temp build riêng cho test | Lệch khỏi artifact/runtime thật trong `build/` |
+| Node test không đi qua `Launcher.js` | Mất tính isomorphic, lệch khỏi runtime thật |
 | Coupling test với implementation | Test vỡ khi refactor dù logic đúng |
 | Bỏ qua test fail | Tích luỹ nợ kỹ thuật ngầm, mất tin tưởng vào suite |
 | Test không có tên rõ ràng | Không ai biết test đang kiểm tra gì khi nó fail |
 
 ---
 
-## 9. Lợi ích chiến lược
+## 10. Lợi ích chiến lược
 
 - **Độ tin cậy cao hơn** — hành vi được chứng minh, không chỉ được giả định
 - **Debug nhanh hơn** — lỗi bị cô lập ngay từ khi phát sinh, không phải truy vết sau
@@ -139,10 +190,11 @@ Ví dụ từ dự án này: `Order.test.js` dùng Gun thật (in-memory), SEA t
 - **Refactor tự tin** — test suite là lưới an toàn, không sợ phá vỡ
 - **Thiết kế tốt hơn** — code khó test thường là code được thiết kế kém; TDD ép bạn thiết kế tốt hơn
 - **Onboarding nhanh hơn** — người mới đọc test để hiểu hệ thống làm gì
+- **Tăng velocity thật** — có thể kiểm tra runtime thực tế trong Node headless trước khi mở browser
 
 ---
 
-## 10. Kết luận
+## 11. Kết luận
 
 Test-Driven Development không phải kỹ thuật viết test — mà là **cách tư duy về phần mềm**:
 
@@ -152,5 +204,9 @@ Test-Driven Development không phải kỹ thuật viết test — mà là **cá
 Khi áp dụng nhất quán, TDD chuyển đội nhóm từ:
 
 > *"Có vẻ đúng"* → **"Đã được chứng minh"**
+
+Với kiến trúc isomorphic, bằng chứng đó còn mạnh hơn:
+
+> *"Pass trong harness riêng"* → **"Pass trên cùng entrypoint mà hệ thống thật dùng"**
 
 Đó là sự khác biệt giữa phần mềm được xây dựng bởi niềm tin và phần mềm được xây dựng bởi bằng chứng.
