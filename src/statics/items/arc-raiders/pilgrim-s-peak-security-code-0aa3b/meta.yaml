@@ -1,0 +1,31 @@
+id: pilgrim-s-peak-security-code-0aa3b
+game: arc-raiders
+type: Key
+catalog: game
+tags:
+  - common
+  - key
+rarity: Common
+subtype: null
+value: 0
+stat_block:
+  weight: 0.25
+loadout_slots: []
+workbench: null
+flavor_text: Can only be used during Locked Gate
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

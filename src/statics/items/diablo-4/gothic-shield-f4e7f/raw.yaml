@@ -1,0 +1,11 @@
+id: 52085
+icon: 3230255129
+name: Gothic Shield
+itemTypeName: Shield
+quality: 3
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 13

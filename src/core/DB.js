@@ -65,10 +65,14 @@ export class DB {
         // Dev mode: skip hash validation, always load fresh — but still index IDB + SQL
         if (DEV) {
             if (type === "hash") return FS.load(path)
-            const data = await FS.load(path)
+            const data = await FS.load(path, { fresh: true, quiet: true })
             if (typeof data !== "undefined") {
                 await Indexes.Statics.get(path).put(data)
                 DB.$syncToSQL(path, data)
+            } else {
+                await Indexes.Statics.del(path)
+                await Indexes.Hashes.del(path)
+                DB.$syncdel(path)
             }
             return data
         }

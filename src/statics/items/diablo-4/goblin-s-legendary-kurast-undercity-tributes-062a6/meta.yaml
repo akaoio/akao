@@ -1,0 +1,24 @@
+id: goblin-s-legendary-kurast-undercity-tributes-062a6
+game: diablo-4
+type: Goblin Cache
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - goblin cache
+rarity: Unique
+itemTypeName: Goblin Cache
+classes: null
+slots: null
+value: 23
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

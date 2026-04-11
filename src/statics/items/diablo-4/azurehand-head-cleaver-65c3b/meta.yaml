@@ -1,0 +1,30 @@
+id: azurehand-head-cleaver-65c3b
+game: diablo-4
+type: Axe
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - axe
+rarity: Special
+itemTypeName: Axe
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

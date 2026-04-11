@@ -1,0 +1,24 @@
+id: hatred-s-embrace-s-haste-2a0b3
+game: diablo-4
+type: Boss Power
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - boss power
+rarity: Special
+itemTypeName: Boss Power
+classes: null
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

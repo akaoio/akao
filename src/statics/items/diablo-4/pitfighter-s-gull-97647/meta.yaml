@@ -1,0 +1,26 @@
+id: pitfighter-s-gull-97647
+game: diablo-4
+type: Ring
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - ring
+rarity: Legendary
+itemTypeName: Ring
+classes:
+  - Rogue
+slots:
+  - Ring
+value: 34
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

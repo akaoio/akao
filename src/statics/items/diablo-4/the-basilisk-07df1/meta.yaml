@@ -1,0 +1,26 @@
+id: the-basilisk-07df1
+game: diablo-4
+type: Staff
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - staff
+rarity: Legendary
+itemTypeName: Staff
+classes:
+  - Druid
+slots:
+  - Main Hand
+value: 46
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

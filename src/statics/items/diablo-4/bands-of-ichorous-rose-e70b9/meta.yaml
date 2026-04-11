@@ -1,0 +1,26 @@
+id: bands-of-ichorous-rose-e70b9
+game: diablo-4
+type: Gloves
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Rogue
+slots:
+  - Hands
+value: 210
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -1,0 +1,10 @@
+id: 2479144
+icon: 4091840161
+name: Mantle of the Grey
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Torso
+popularity: 257

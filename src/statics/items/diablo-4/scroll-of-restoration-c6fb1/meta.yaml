@@ -1,0 +1,24 @@
+id: scroll-of-restoration-c6fb1
+game: diablo-4
+type: Consumable
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - consumable
+rarity: Rare
+itemTypeName: Consumable
+classes: null
+slots: null
+value: 64
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

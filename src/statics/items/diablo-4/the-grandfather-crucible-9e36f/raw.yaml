@@ -1,0 +1,12 @@
+id: 2602311
+icon: 587952553
+name: The Grandfather (Crucible)
+itemTypeName: Two-Handed Sword
+quality: 8
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 13

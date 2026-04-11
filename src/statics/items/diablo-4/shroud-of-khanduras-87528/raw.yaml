@@ -1,0 +1,10 @@
+id: 1934437
+icon: 3916253585
+name: Shroud of Khanduras
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 20

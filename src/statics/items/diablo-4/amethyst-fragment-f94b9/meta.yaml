@@ -1,0 +1,24 @@
+id: amethyst-fragment-f94b9
+game: diablo-4
+type: Crafting Material
+catalog: game
+tags:
+  - diablo-4
+  - normal
+  - crafting material
+rarity: Normal
+itemTypeName: Crafting Material
+classes: null
+slots: null
+value: 36
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

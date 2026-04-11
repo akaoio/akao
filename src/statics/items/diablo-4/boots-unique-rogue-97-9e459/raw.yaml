@@ -1,0 +1,10 @@
+id: 1749652
+icon: 1992899505
+name: Boots Unique Rogue 97
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Feet
+popularity: 12

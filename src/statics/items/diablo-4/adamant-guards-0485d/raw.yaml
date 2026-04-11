@@ -1,0 +1,10 @@
+id: 1638305
+icon: 1091834632
+name: Adamant Guards
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Legs
+popularity: 10

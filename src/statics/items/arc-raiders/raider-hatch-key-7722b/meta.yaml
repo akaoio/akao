@@ -1,0 +1,34 @@
+id: raider-hatch-key-7722b
+game: arc-raiders
+type: Key
+catalog: game
+tags:
+  - rare
+  - key
+rarity: Rare
+subtype: null
+value: 2000
+stat_block:
+  weight: 0.01
+  stackSize: 1
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

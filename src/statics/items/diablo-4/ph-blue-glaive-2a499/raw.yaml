@@ -1,0 +1,10 @@
+id: 1821169
+icon: 2578341227
+name: "[PH] Blue Glaive"
+itemTypeName: Glaive
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 11

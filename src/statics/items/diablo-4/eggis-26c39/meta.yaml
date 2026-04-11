@@ -1,0 +1,27 @@
+id: eggis-26c39
+game: diablo-4
+type: Shield
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - shield
+rarity: Legendary
+itemTypeName: Shield
+classes:
+  - Necromancer
+  - Paladin
+slots:
+  - Off-Hand
+value: 140
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

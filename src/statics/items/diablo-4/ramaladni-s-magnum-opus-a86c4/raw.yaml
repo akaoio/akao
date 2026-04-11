@@ -1,0 +1,11 @@
+id: 1304456
+icon: 2397813492
+name: Ramaladni's Magnum Opus
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 125

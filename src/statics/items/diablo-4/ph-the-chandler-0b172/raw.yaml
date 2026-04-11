@@ -1,0 +1,10 @@
+id: 2122769
+icon: 1763195273
+name: "[PH] The Chandler"
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Hands
+popularity: 13

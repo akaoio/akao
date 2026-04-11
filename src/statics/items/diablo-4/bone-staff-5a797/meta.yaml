@@ -1,0 +1,26 @@
+id: bone-staff-5a797
+game: diablo-4
+type: Staff
+catalog: game
+tags:
+  - diablo-4
+  - common
+  - staff
+rarity: Common
+itemTypeName: Staff
+classes:
+  - Druid
+slots:
+  - Main Hand
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

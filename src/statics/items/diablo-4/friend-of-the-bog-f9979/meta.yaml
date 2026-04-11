@@ -1,0 +1,24 @@
+id: friend-of-the-bog-f9979
+game: diablo-4
+type: Occult Gem
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - occult gem
+rarity: Unique
+itemTypeName: Occult Gem
+classes: null
+slots: null
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

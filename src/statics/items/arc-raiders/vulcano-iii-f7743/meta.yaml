@@ -1,0 +1,40 @@
+id: vulcano-iii-f7743
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - epic
+  - weapon
+rarity: Epic
+subtype: Shotgun
+value: 17000
+stat_block:
+  range: 22
+  damage: 49.5
+  weight: 8
+  agility: 66.3
+  stealth: 15
+  fireRate: 26.3
+  stability: 64.6
+  magazineSize: 6
+  increasedFireRate: 20
+  reducedReloadTime: 26
+loadout_slots: []
+workbench: Weapon Bench
+flavor_text: Somewhat effective against ARC armor plating
+ammo_type: shotgun
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

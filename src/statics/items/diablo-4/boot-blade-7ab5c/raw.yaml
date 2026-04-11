@@ -1,0 +1,16 @@
+id: 446357
+icon: 1698015556
+name: Boot Blade
+itemTypeName: Sword
+quality: 1
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

@@ -1,0 +1,32 @@
+id: flashy-duck-56229
+game: arc-raiders
+type: Trinket
+catalog: game
+tags:
+  - rare
+  - trinket
+rarity: Rare
+subtype: null
+value: 3000
+stat_block:
+  weight: 0.3
+  stackSize: 15
+loadout_slots: []
+workbench: null
+flavor_text: Can be thrown to create noise.
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

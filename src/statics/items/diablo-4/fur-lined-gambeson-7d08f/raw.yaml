@@ -1,0 +1,10 @@
+id: 1576510
+icon: 125025368
+name: Fur-Lined Gambeson
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 10

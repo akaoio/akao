@@ -1,0 +1,38 @@
+id: tactical-mk-3-healing-c4d0b
+game: arc-raiders
+type: Augment
+catalog: game
+tags:
+  - epic
+  - augment
+rarity: Epic
+subtype: null
+value: 5000
+stat_block:
+  weight: 4
+  healingSlots: 3
+  backpackSlots: 16
+  quickUseSlots: 4
+  weightLimitKg: 55
+  safePocketSlots: 3
+  shieldCompatibility: Light, Medium
+loadout_slots: []
+workbench: Gear Bench III
+flavor_text: When revived from being downed, releases a healing cloud that
+  restores 20 health over 10 seconds. Has a 30-second cooldown.
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

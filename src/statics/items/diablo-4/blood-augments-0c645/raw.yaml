@@ -1,0 +1,9 @@
+id: 1928161
+icon: 3001443825
+name: Blood Augments
+itemTypeName: Temper Manual
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames: []
+popularity: 12

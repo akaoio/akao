@@ -1,0 +1,24 @@
+id: elixir-of-resourcefulness-ii-2df0b
+game: diablo-4
+type: Elixir
+catalog: game
+tags:
+  - diablo-4
+  - common
+  - elixir
+rarity: Common
+itemTypeName: Elixir
+classes: null
+slots: null
+value: 29
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

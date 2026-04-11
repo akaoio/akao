@@ -1,0 +1,26 @@
+id: knight-s-crucible-cuirass-0f67f
+game: diablo-4
+type: Chest Armor
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - chest armor
+rarity: Special
+itemTypeName: Chest Armor
+classes:
+  - Barbarian
+slots:
+  - Torso
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

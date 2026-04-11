@@ -1,0 +1,10 @@
+id: 2363629
+icon: 3468537847
+name: Galvanic Azurite
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Ring
+popularity: 180

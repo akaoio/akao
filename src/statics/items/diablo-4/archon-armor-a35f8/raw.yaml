@@ -1,0 +1,9 @@
+id: 444427
+icon: 2166976325
+name: Archon Armor
+itemTypeName: Chest Armor
+quality: 5
+playerClassNames: []
+slotNames:
+  - Torso
+popularity: 10

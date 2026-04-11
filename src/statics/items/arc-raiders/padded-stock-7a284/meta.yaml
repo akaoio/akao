@@ -1,0 +1,39 @@
+id: padded-stock-7a284
+game: arc-raiders
+type: Modification
+catalog: game
+tags:
+  - epic
+  - modification
+rarity: Epic
+subtype: null
+value: 5000
+stat_block:
+  weight: 0.5
+  stackSize: 1
+  compatibleWeapons: Arpeggio, Bettina, Rattler, Kettle, Ferro
+  increasedEquipTime: 20
+  increasedUnequipTime: 20
+  reducedVerticalRecoil: 15
+  reducedPerShotDispersion: 20
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Gunsmith III
+flavor_text: 15% Reduced Horizontal Recoil - 30% Reduced ADS Speed
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

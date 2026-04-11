@@ -30,8 +30,125 @@ function normalizeRawItem(item) {
     }
 }
 
+function dedupeItems(items = []) {
+    const byId = new Map()
+
+    for (const item of items) {
+        if (item?.id == null) continue
+        const prev = byId.get(item.id)
+        if (!prev) {
+            byId.set(item.id, item)
+            continue
+        }
+
+        byId.set(item.id, {
+            ...prev,
+            ...item,
+            popularity: Math.max(prev.popularity || 0, item.popularity || 0),
+        })
+    }
+
+    return [...byId.values()]
+}
+
 function isProtectionPage(html = "") {
     return /AwsWafIntegration|verify that you're not a robot|JavaScript is disabled/i.test(html)
+}
+
+function parseItemsPage(html = "", pageNum = 0) {
+    if (isProtectionPage(html)) return { items: [], blocked: true }
+
+    const match = html.match(/<script[^>]+id="data\.page\.listPage\.listviews"[^>]*>([\s\S]*?)<\/script>/i)
+    let json = match?.[1]?.trim() || null
+
+    if (!json) {
+        const lines = html.split("\n")
+        for (const line of lines) {
+            if (line.includes('"id":"items"') && line.includes('"template":"d4-item"') && line.includes('"data":')) {
+                json = line.trim()
+                break
+            }
+        }
+    }
+
+    if (!json) {
+        console.log(`[D4] No items script found on page ${pageNum}`)
+        return { items: [], blocked: false }
+    }
+
+    const arrayStart = json.indexOf("[{")
+    if (arrayStart !== -1) json = json.slice(arrayStart)
+
+    let parsed = null
+    let lastError = null
+
+    try {
+        parsed = JSON.parse(json)
+    } catch {
+        for (let i = json.length - 1; i > 0; i -= 1) {
+            try {
+                parsed = JSON.parse(json.slice(0, i))
+                break
+            } catch (err) {
+                lastError = err
+            }
+        }
+    }
+
+    if (!parsed) {
+        console.log(`[D4] Could not parse JSON from page ${pageNum}: ${lastError?.message}`)
+        return { items: [], blocked: false }
+    }
+
+    let items = []
+    if (Array.isArray(parsed) && parsed[0]?.data) items = parsed[0].data || []
+    else if (Array.isArray(parsed)) items = parsed
+    else if (parsed.data) items = parsed.data
+
+    console.log(`[D4] Page ${pageNum}: found ${items.length} items`)
+    return { items, blocked: false }
+}
+
+async function getBrowserState(state) {
+    if (state.page) return state.page
+
+    const { chromium } = await import("playwright")
+    state.browser = await chromium.launch({ headless: true })
+    state.context = await state.browser.newContext({
+        userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+        locale: "en-US",
+    })
+    state.page = await state.context.newPage()
+    return state.page
+}
+
+async function fetchPageItemsBrowser(url, pageNum, state) {
+    const page = await getBrowserState(state)
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 })
+
+    try {
+        await page.waitForFunction(() => {
+            if (document.getElementById("data.page.listPage.listviews")) return true
+            return Array.isArray(globalThis.g_listviews) && globalThis.g_listviews.some((view) => view?.id === "items")
+        }, { timeout: 45000 })
+    } catch {}
+
+    const html = await page.content()
+    const parsed = parseItemsPage(html, pageNum)
+    if (parsed.items.length > 0 || parsed.blocked) return parsed
+
+    const items = await page.evaluate(() => {
+        const views = Array.isArray(globalThis.g_listviews) ? globalThis.g_listviews : []
+        const match = views.find((view) => view?.id === "items")
+        return Array.isArray(match?.data) ? match.data : []
+    })
+
+    if (items.length > 0) {
+        console.log(`[D4] Page ${pageNum}: found ${items.length} items via browser state`)
+        return { items, blocked: false }
+    }
+
+    return parsed
 }
 
 function runGit(args) {
@@ -71,7 +188,7 @@ async function loadItemsFromSourceStatics(gameId) {
         }
     }
 
-    return items
+    return dedupeItems(items)
 }
 
 async function loadItemsFromGitSource(gameId) {
@@ -99,7 +216,7 @@ async function loadItemsFromGitSource(gameId) {
         }
     }
 
-    return items
+    return dedupeItems(items)
 }
 
 async function recoverItemsFromFallbacks(output, gameId) {
@@ -113,7 +230,7 @@ async function recoverItemsFromFallbacks(output, gameId) {
     for (const source of sources) {
         const items = await source.load()
         if (items.length > 0) {
-            return { items, source: source.label }
+            return { items: dedupeItems(items), source: source.label }
         }
     }
 
@@ -163,7 +280,7 @@ async function loadExistingItems(output) {
         const raw = await fs.readFile(filePath, "utf8")
         const parsed = JSON.parse(raw)
         if (!Array.isArray(parsed)) return []
-        return parsed.filter((item) => item?.id != null)
+        return dedupeItems(parsed)
     } catch {
         return []
     }
@@ -189,6 +306,7 @@ export async function crawlDiablo4Items(options = {}) {
     let previousPageIds = null
     let blockedByProtection = false
     let recoverySource = null
+    const browserState = { browser: null, context: null, page: null }
 
     try {
         const pagesDir = `${output}/pages`
@@ -200,7 +318,7 @@ export async function crawlDiablo4Items(options = {}) {
             console.log(`[D4] Fetching page ${pageNum}...`)
             const pageUrl = `https://www.wowhead.com/diablo-4/items${pageNum > 0 ? `?page=${pageNum}` : ""}`
 
-            const pageResult = await fetchPageItems(pageUrl, pageNum)
+            const pageResult = await fetchPageItems(pageUrl, pageNum, browserState)
             const pageItems = pageResult.items
 
             if (pageResult.blocked) {
@@ -370,6 +488,10 @@ export async function crawlDiablo4Items(options = {}) {
     } catch (error) {
         console.log(`[D4] Error: ${error.message}`)
         throw error
+    } finally {
+        await browserState.page?.close?.().catch(() => {})
+        await browserState.context?.close?.().catch(() => {})
+        await browserState.browser?.close?.().catch(() => {})
     }
 }
 
@@ -377,82 +499,28 @@ export async function crawlDiablo4Items(options = {}) {
  * Fetch items from a single Wowhead D4 items page
  * Extracts JSON from embedded script tag
  */
-async function fetchPageItems(url, pageNum) {
+async function fetchPageItems(url, pageNum, browserState = null) {
     try {
         const response = await fetch(url)
-        if (!response.ok) {
+        if (!response.ok && response.status !== 202) {
             console.log(`[D4] HTTP ${response.status} for page ${pageNum}`)
             return { items: [], blocked: false }
         }
 
         const html = await response.text()
-
-        if (isProtectionPage(html)) {
-            return { items: [], blocked: true }
+        const parsed = parseItemsPage(html, pageNum)
+        if (parsed.items.length > 0) return parsed
+        if (browserState && (parsed.blocked || response.status === 202 || pageNum === 0)) {
+            console.log(`[D4] Page ${pageNum}: retrying via browser`)
+            return fetchPageItemsBrowser(url, pageNum, browserState)
         }
-
-        const lines = html.split("\n")
-        let jsonLine = null
-
-        for (const line of lines) {
-            if (line.includes('"id":"items"') && line.includes('"template":"d4-item"') && line.includes('"data":')) {
-                jsonLine = line.trim()
-                break
-            }
-        }
-
-        if (!jsonLine) {
-            console.log(`[D4] No items script found on page ${pageNum}`)
-            return { items: [], blocked: false }
-        }
-
-        try {
-            const arrayStart = jsonLine.indexOf("[{")
-            if (arrayStart === -1) {
-                console.log(`[D4] Could not find array start on page ${pageNum}`)
-                return { items: [], blocked: false }
-            }
-
-            const jsonStr = jsonLine.substring(arrayStart)
-            let parsed = null
-            let lastError = null
-
-            try {
-                parsed = JSON.parse(jsonStr)
-            } catch {
-                for (let i = jsonStr.length - 1; i > 0; i--) {
-                    try {
-                        const attempt = jsonStr.substring(0, i)
-                        parsed = JSON.parse(attempt)
-                        break
-                    } catch (ee) {
-                        lastError = ee
-                    }
-                }
-            }
-
-            if (!parsed) {
-                console.log(`[D4] Could not parse JSON from page ${pageNum}: ${lastError?.message}`)
-                return { items: [], blocked: false }
-            }
-
-            let items = []
-            if (Array.isArray(parsed) && parsed[0]?.data) {
-                items = parsed[0].data || []
-            } else if (Array.isArray(parsed)) {
-                items = parsed
-            } else if (parsed.data) {
-                items = parsed.data
-            }
-
-            console.log(`[D4] Page ${pageNum}: found ${items.length} items`)
-            return { items, blocked: false }
-        } catch (e) {
-            console.log(`[D4] JSON parse error on page ${pageNum}: ${e.message}`)
-            return { items: [], blocked: false }
-        }
+        return parsed
     } catch (error) {
         console.log(`[D4] Failed to fetch page ${pageNum}: ${error.message}`)
+        if (browserState) {
+            console.log(`[D4] Page ${pageNum}: retrying via browser after fetch error`)
+            return fetchPageItemsBrowser(url, pageNum, browserState)
+        }
         return { items: [], blocked: false }
     }
 }

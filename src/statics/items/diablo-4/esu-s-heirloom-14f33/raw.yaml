@@ -1,0 +1,10 @@
+id: 1306302
+icon: 4161198287
+name: Esu's Heirloom
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 49

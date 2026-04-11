@@ -1,0 +1,10 @@
+id: 2075078
+icon: 2512458195
+name: Flesh Dancer's Mask
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Head
+popularity: 10

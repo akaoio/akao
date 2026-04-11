@@ -1,0 +1,10 @@
+id: 2122764
+icon: 2321379296
+name: "[PH] The Chandler"
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Feet
+popularity: 10

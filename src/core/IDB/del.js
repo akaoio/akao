@@ -37,6 +37,8 @@ export async function $del(path) {
 }
 
 // Public method
-export async function del() {
-    return this.idb.$del(this.path)
+export async function del(path = this.path) {
+    if (!Array.isArray(path)) return
+    if (typeof this.$del === "function") return this.$del(path)
+    return this.idb.$del(path)
 }

@@ -1,0 +1,10 @@
+id: 2288484
+icon: 3053622710
+name: Chestpiece of Umbral Will
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Torso
+popularity: 10

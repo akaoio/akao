@@ -1,0 +1,10 @@
+id: 2179938
+icon: 2274066085
+name: "[PH]"
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Head
+popularity: 11

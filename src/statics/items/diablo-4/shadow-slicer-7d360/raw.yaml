@@ -1,0 +1,16 @@
+id: 1833979
+icon: 2397813519
+name: Shadow Slicer
+itemTypeName: Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 15

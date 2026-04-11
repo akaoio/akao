@@ -1,0 +1,25 @@
+id: glyph-guzzler-1242b
+game: diablo-4
+type: Paragon Glyph
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - paragon glyph
+rarity: Rare
+itemTypeName: Paragon Glyph
+classes:
+  - Druid
+  - Spiritborn
+slots: null
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

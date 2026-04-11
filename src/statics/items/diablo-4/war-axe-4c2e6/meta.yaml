@@ -1,0 +1,29 @@
+id: war-axe-4c2e6
+game: diablo-4
+type: Axe
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - axe
+rarity: Rare
+itemTypeName: Axe
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

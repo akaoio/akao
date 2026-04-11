@@ -11,6 +11,7 @@ import { parse as parseCSV } from "../CSV.js"
  */
 export async function load(path, options = {}) {
     const quiet = options.quiet === true
+    const fresh = options.fresh === true
 
     if (typeof path === "string") path = [path]
 
@@ -32,8 +33,10 @@ export async function load(path, options = {}) {
             // File: HTTP first, OPFS fallback
             const _isBinary = isBinary(_path)
             let httpText = null
+            let httpStatus = null
             try {
                 const response = await fetch(_path)
+                httpStatus = response.status
                 if (response.ok) {
                     if (_isBinary) {
                         const buf = await response.arrayBuffer()
@@ -42,18 +45,30 @@ export async function load(path, options = {}) {
                     }
                     httpText = await response.text()
                     driver.writeBytes(path, new TextEncoder().encode(httpText)).catch((e) => console.warn("OPFS cache write failed:", e))  // background cache
-                }
+                } else if (fresh && response.status === 404)
+                    await driver.remove(path)
+                
             } catch {}
 
-            if (_isBinary) {
+            if (fresh) {
+                if (_isBinary) {
+                    if (!quiet && httpStatus === 404) console.error("Path not found in HTTP:", _path)
+                    return
+                }
+                if (httpText !== null) text = httpText
+                else {
+                    if (!quiet && httpStatus === 404) console.error("Path not found in HTTP:", _path)
+                    return
+                }
+            } else if (_isBinary) {
                 const buf = await driver.readBytes(path)
                 if (buf) return buf
                 if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
                 return
             }
 
-            if (httpText !== null) text = httpText
-            else {
+            if (!fresh && httpText !== null) text = httpText
+            else if (!fresh) {
                 const buf = await driver.readBytes(path)
                 if (buf) text = new TextDecoder().decode(buf)
                 else {

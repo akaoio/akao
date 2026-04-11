@@ -1,0 +1,11 @@
+id: 1226865
+icon: 3936565562
+name: Grigso's Necronomicon
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 12

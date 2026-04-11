@@ -1,0 +1,9 @@
+id: 1862232
+icon: 3001443825
+name: Berserking Finesse
+itemTypeName: Temper Manual
+quality: 5
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 18

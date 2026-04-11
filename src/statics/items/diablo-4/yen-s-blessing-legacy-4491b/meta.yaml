@@ -1,0 +1,24 @@
+id: yen-s-blessing-legacy-4491b
+game: diablo-4
+type: Boots
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - boots
+rarity: Legendary
+itemTypeName: Boots
+classes: null
+slots:
+  - Feet
+value: 76
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

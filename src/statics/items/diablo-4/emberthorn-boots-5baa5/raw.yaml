@@ -1,0 +1,10 @@
+id: 2387856
+icon: 1030244080
+name: Emberthorn Boots
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Feet
+popularity: 10

@@ -1,0 +1,10 @@
+id: 1982241
+icon: 2578341234
+name: Nesekem, the Herald
+itemTypeName: Glaive
+quality: 8
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 106

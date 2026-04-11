@@ -1,0 +1,11 @@
+id: 1944530
+icon: 2397813522
+name: The Third Blade
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 24

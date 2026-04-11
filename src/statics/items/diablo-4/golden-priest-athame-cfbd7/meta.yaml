@@ -1,0 +1,30 @@
+id: golden-priest-athame-cfbd7
+game: diablo-4
+type: Dagger
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - dagger
+rarity: Special
+itemTypeName: Dagger
+classes:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+slots:
+  - Main Hand
+  - Off-Hand
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

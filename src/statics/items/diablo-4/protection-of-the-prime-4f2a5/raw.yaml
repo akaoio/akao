@@ -1,0 +1,10 @@
+id: 2020163
+icon: 541970418
+name: Protection of the Prime
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Legs
+popularity: 14

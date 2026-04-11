@@ -1,0 +1,36 @@
+id: snap-blast-grenade-f4a8c
+game: arc-raiders
+type: Quick Use
+catalog: game
+tags:
+  - uncommon
+  - quick use
+rarity: Uncommon
+subtype: null
+value: 800
+stat_block:
+  damage: 70
+  radius: 7.5
+  weight: 0.2
+  stackSize: 3
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Explosives Bench
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

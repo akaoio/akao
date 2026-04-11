@@ -1,0 +1,24 @@
+id: chapter-1-reward-cache-66771
+game: diablo-4
+type: Journey Cache
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - journey cache
+rarity: Legendary
+itemTypeName: Journey Cache
+classes: null
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

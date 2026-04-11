@@ -1,0 +1,41 @@
+id: anvil-i-c9343
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - uncommon
+  - weapon
+rarity: Uncommon
+subtype: Hand Cannon
+value: 5000
+stat_block:
+  ammo: heavy
+  range: 50.2
+  damage: 40
+  weight: 5
+  agility: 69.1
+  stealth: 10
+  fireRate: 16.3
+  stability: 75.2
+  firingMode: Single
+  magazineSize: 6
+loadout_slots:
+  - weapon
+workbench: Weapon Bench 2
+flavor_text: Very effective against ARC armor plating.
+ammo_type: Heavy
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

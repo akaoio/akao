@@ -1,0 +1,10 @@
+id: 470539
+icon: 1708031346
+name: Eyes in the Dark
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Legs
+popularity: 52

@@ -1,0 +1,31 @@
+id: launcher-ammo-74812
+game: arc-raiders
+type: Ammunition
+catalog: game
+tags:
+  - rare
+  - ammunition
+rarity: Rare
+subtype: null
+value: 250
+stat_block:
+  weight: 1
+loadout_slots: []
+workbench: Workbench
+flavor_text: Compatible with Hullcracker
+ammo_type: launcher
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp
