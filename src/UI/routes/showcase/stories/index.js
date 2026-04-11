@@ -9,7 +9,6 @@ import modal from "./modal.js"
 import select from "./select.js"
 import picker from "./picker.js"
 import a from "./a.js"
-import context from "./context.js"
 import locales from "./locales.js"
 import typography from "./typography.js"
 import themes from "./themes.js"
@@ -18,24 +17,4 @@ import items from "./items.js"
 import cameraQR from "./camera-qr.js"
 import wave from "./wave.js"
 
-export default [
-    logo,
-    button,
-    loader,
-    icon,
-    identicon,
-    fiat,
-    svg,
-    modal,
-    select,
-    picker,
-    a,
-    context,
-    locales,
-    typography,
-    themes,
-    notifications,
-    items,
-    cameraQR,
-    wave
-]
+export default [logo, button, loader, icon, identicon, fiat, svg, modal, select, picker, a, locales, typography, themes, notifications, items, cameraQR, wave]

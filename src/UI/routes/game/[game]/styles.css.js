@@ -285,8 +285,8 @@ export const styles = css`
             }
 
             &:focus {
-                border-color: var(--neon-c);
-                box-shadow: var(--glow-c);
+                border-color: var(--select-accent, var(--neon-c));
+                box-shadow: 0 0 12px color-mix(in hsl, var(--select-accent, var(--neon-c)) 30%, transparent);
             }
         }
 

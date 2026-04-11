@@ -5,20 +5,39 @@ export const styles = css`
     /* ── Keyframes at top level (never nest @keyframes inside a selector) ── */
 
     @keyframes live-pulse {
-        0%   { box-shadow: 0 0 0 0 color-mix(in hsl, var(--neon-g) 70%, transparent); }
-        70%  { box-shadow: 0 0 0 8px transparent; }
-        100% { box-shadow: 0 0 0 0 transparent; }
+        0% {
+            box-shadow: 0 0 0 0 color-mix(in hsl, var(--neon-g) 70%, transparent);
+        }
+        70% {
+            box-shadow: 0 0 0 8px transparent;
+        }
+        100% {
+            box-shadow: 0 0 0 0 transparent;
+        }
     }
 
     @keyframes shimmer {
-        0%   { background-position: -600px 0; }
-        100% { background-position:  600px 0; }
+        0% {
+            background-position: -600px 0;
+        }
+        100% {
+            background-position: 600px 0;
+        }
     }
 
     @keyframes pool-count-tick {
-        0%   { transform: scale(1); }
-        40%  { transform: scale(1.15); text-shadow: 0 0 10px var(--neon-c), 0 0 28px var(--neon-c); }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(1);
+        }
+        40% {
+            transform: scale(1.15);
+            text-shadow:
+                0 0 10px var(--neon-c),
+                0 0 28px var(--neon-c);
+        }
+        100% {
+            transform: scale(1);
+        }
     }
 
     @keyframes pool-enter {
@@ -81,7 +100,9 @@ export const styles = css`
             font-style: italic;
             letter-spacing: 0.06em;
 
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
         }
 
         .pool-count {
@@ -91,7 +112,9 @@ export const styles = css`
             opacity: 1;
             transform-origin: center;
 
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
 
             &.ticking {
                 animation: pool-count-tick 0.35s ease-out both;
@@ -99,7 +122,9 @@ export const styles = css`
         }
 
         .pool-count__label {
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
         }
 
         /* ── Pulsing live dot ── */
@@ -112,14 +137,18 @@ export const styles = css`
             box-shadow: var(--glow-g);
             animation: live-pulse 2s ease-out infinite;
 
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
         }
 
         /* ── Content (hidden until first data) ── */
         .pools-content {
             display: contents;
 
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
         }
 
         /* ── Sticky sentinel ── */
@@ -139,7 +168,6 @@ export const styles = css`
             background: color-mix(in hsl, var(--background) 92%, transparent);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-bottom: var(--border-accent);
             box-shadow:
                 0 1px 0 color-mix(in hsl, var(--neon-c) 20%, transparent),
                 0 4px 24px color-mix(in hsl, var(--neon-c) 10%, transparent);
@@ -307,18 +335,15 @@ export const styles = css`
             display: flex;
             flex-direction: column;
 
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
         }
 
         .skeleton-row {
             height: 72px;
             border-bottom: var(--border);
-            background: linear-gradient(
-                90deg,
-                color-mix(in hsl, var(--color) 4%, transparent) 25%,
-                color-mix(in hsl, var(--color) 9%, transparent) 50%,
-                color-mix(in hsl, var(--color) 4%, transparent) 75%
-            );
+            background: linear-gradient(90deg, color-mix(in hsl, var(--color) 4%, transparent) 25%, color-mix(in hsl, var(--color) 9%, transparent) 50%, color-mix(in hsl, var(--color) 4%, transparent) 75%);
             background-size: 600px 100%;
             animation: shimmer 1.6s ease-in-out infinite;
         }
@@ -343,7 +368,9 @@ export const styles = css`
             padding: var(--space-8) var(--space);
             text-align: center;
 
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
         }
 
         .empty-state__icon {
@@ -381,7 +408,9 @@ export const styles = css`
                 box-shadow var(--speed),
                 background var(--speed);
 
-            &[hidden] { display: none; }
+            &[hidden] {
+                display: none;
+            }
 
             &:hover {
                 background: color-mix(in hsl, var(--neon-c) 8%, transparent);
@@ -401,7 +430,9 @@ export const styles = css`
         @media (max-width: ${bp.md}px) {
             --col-rate: 0px;
 
-            .th-rate { display: none; }
+            .th-rate {
+                display: none;
+            }
 
             .filter-group + .filter-group {
                 border-left: none;
@@ -412,14 +443,15 @@ export const styles = css`
 
         /* ── Responsive: sm (≤767px) ── */
         @media (max-width: ${bp.sm}px) {
-            .table-header { display: none; }
+            .table-header {
+                display: none;
+            }
 
             .page-header__title {
                 font-size: clamp(1.25rem, 6vw, 1.75rem);
             }
         }
     }
-
 `
 
 export default styles
