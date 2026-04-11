@@ -75,8 +75,10 @@ export class DB {
                 await Indexes.Hashes.del(path)
                 await Indexes.Statics.del(path)
                 DB.$syncDelete(path)
+                return undefined
             }
         }
+        return data
     }
 
     // Lazy singleton — stores the Promise itself, not the resolved instance.
