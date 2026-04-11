@@ -49,13 +49,17 @@ npm install
 npm start
 ```
 
-The dev server will open at `http://localhost:8080` with hot reload enabled.
+The default dev surface is `http://localhost:8080`. If a hostname is mapped to the same site in `src/statics/domains.yaml` and resolves to this machine (for example `peer0.akao.io`), the same dev server can also be reached through that host. `npm start` restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8765` before starting a fresh stack.
 
 ### Development Workflow
 
 ```bash
-# Start dev server (auto runs build:core first)
+# Restart dev stack, start Gun relay, build crypto + core --dev, then serve app
 npm start
+
+# Start Node headless runtime through build/core/Launcher.js
+npm start -- --headless
+npm run start:headless
 
 # Full build (crypto + core + geo)
 npm run build
@@ -74,9 +78,13 @@ npm run scan:crypto:pools
 npm run fix:geo
 
 # Testing
-npm test
-npm run test:core
-npm run test:geo
+npm test              # same as test:core
+npm run test:core     # build-first core suite + isomorphic runtime checks
+npm run test:build    # verify generated build/ artifacts only
+npm run test:browser  # build/core + Node headless browser-route runner
+npm run test:playwright
+npm run test:isomorphic
+npm run test:geo      # separate geo integrity suite
 
 # Code quality
 npm run format   # Prettier
@@ -518,34 +526,31 @@ Used by `<ui-geo>` for cascading country → region → city selection.
 
 The project ships a micro test runner (`src/core/Test.js`) with zero external dependencies that works in both Node.js and the browser.
 
+The important rule is architectural, not just procedural: tests revolve around the generated `build/` runtime. The suite first verifies real build artifacts, then boots the real runtime through `Launcher.js` in Node headless mode and in the browser route `/test`.
+
 ### Running Tests
 
 ```bash
-npm test              # full test suite (Node.js, coloured console output)
-npm run test:core     # core module unit tests only
-npm run test:geo      # geo data integrity tests
+npm test              # same as test:core
+npm run test:core     # build verification + browser runtime + Playwright assertions
+npm run test:build    # verify generated build/ artifacts only
+npm run test:browser  # build/core + Node headless browser-route runner
+npm run test:playwright
+npm run test:isomorphic
+npm run test:geo      # build/geo integrity tests
 ```
 
-For a live interactive view, open `/{locale}/test` in the dev server (e.g. `http://localhost:8080/en/test`). The browser UI shows pass/fail per suite in real time, lets you re-run individual suites or only failed tests, and displays inline error messages.
+For a live interactive view, open `/{locale}/test` in the dev server (for example `http://localhost:8080/en/test` or an alias host such as `http://peer0.akao.io:8080/en/test`). The browser UI shows pass/fail per suite in real time, lets you re-run individual suites or only failed tests, and displays inline error messages.
 
-### Test Coverage (14 files, 38 suites, 180 tests)
+### Coverage Areas
 
-| File | Modules covered | Tests |
-|---|---|---|
-| `Events.test.js` | Events | 8 |
-| `States.test.js` | States | 19 |
-| `Utils.test.js` | all Utils helpers | 51 |
-| `Router.test.js` | Router | 21 |
-| `Forex.test.js` | Forex | 9 |
-| `IDB.test.js` | IDB | 8 |
-| `DB.test.js` | DB | 11 |
-| `Cart.test.js` | Cart | 14 |
-| `UI.test.js` | html(), render() | 13 |
-| `Context.test.js` | Context helpers | 8 |
-| `Access.test.js` | Access | 8 |
-| `WebAuthn.test.js` | WebAuthn passkey lifecycle | 4 |
-| `RTC.test.js` | RTC (on/off, snapshot, send guard) | 3 |
-| `Torrent.test.js` | Torrent (list, get, destroy) | 3 |
+The active suite spans:
+
+- build artifact verification in `build/`
+- Node headless boot through `build/core/Launcher.js`
+- browser runtime boot through `/{locale}/test`
+- core modules such as Events, States, Utils, Router, DB, Context, Access, RTC, Torrent, Order, Lock, and Trade
+- interactive or browser-only cases surfaced in the live `/test` route when they are not suitable for automated headless runs
 
 Tests marked `{ browser: true }` are skipped in Node.js. Tests marked `{ interactive: true }` (e.g. WebAuthn hardware) are always skipped in automated runs and triggered manually in the browser UI.
 

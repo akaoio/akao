@@ -6,11 +6,8 @@ import { Lock } from "../Lock.js"
 import { ethers, HDNodeWallet, getBytes } from "../Ethers.js"
 
 const _req = createRequire(import.meta.url)
-const _root = new URL("../../../", import.meta.url).pathname.replace(/\/$/, "")
-global.Gun = _req(`${_root}/node_modules/@akaoio/gun/gun.js`)
-const _SEA = _req(`${_root}/node_modules/@akaoio/gun/sea.js`)
-globalThis.sea = _SEA
 const Ganache = _req("ganache")
+const _SEA = globalThis.sea
 
 const [MAKER_PAIR, TAKER_PAIR, AFFILIATE_PAIR, ESCROW_PAIR] = await Promise.all([
     _SEA.pair(), _SEA.pair(), _SEA.pair(), _SEA.pair()
@@ -32,7 +29,7 @@ const [MAKER_ROOT, TAKER_ROOT, AFFILIATE_ROOT] = await Promise.all([
 ])
 
 function makeGun() {
-    return new Gun({ localStorage: false, radisk: false, peers: [] })
+    return new globalThis.Gun({ localStorage: false, radisk: false, peers: [] })
 }
 
 async function once(node, timeoutMs = 1000) {

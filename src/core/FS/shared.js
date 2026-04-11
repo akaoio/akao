@@ -30,7 +30,8 @@ function _nodePath(path) {
     const joined = path.filter(Boolean).join(sep)
     // Guard: if already absolute (abs path or drive letter), return as-is
     if (joined.startsWith("/") || /^[A-Za-z]:/.test(joined)) return joined
-    return process.cwd() + sep + joined
+    const base = globalThis._root || process.cwd()
+    return base + sep + joined
 }
 
 // Unified I/O driver — env resolved ONCE at module load, never branches at call time.

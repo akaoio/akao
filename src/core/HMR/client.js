@@ -5,8 +5,7 @@
 
 (function() {
     // Check if DEV mode (already done in bootstrap, but double-check)
-    const isDev = globalThis?.location?.hostname === "localhost" || 
-                  globalThis?.location?.hostname === "127.0.0.1"
+    const isDev = globalThis?._dev === true || globalThis?._dev?.enabled === true
     
     if (!isDev || typeof window === "undefined" || !window.EventSource) {
         console.log("🔥 HMR: Client disabled (production mode)")
@@ -17,13 +16,13 @@
     const RECONNECT_INTERVAL = 1000
     
     // State tracking
-    window._dev = window._dev || {
-        connectedAt: null,
-        lastMessageAt: null,
-        messageCount: 0,
-        readyState: null,
-        hmrEnabled: false
-    }
+    window._dev = (window._dev && typeof window._dev === "object") ? window._dev : {}
+    window._dev.enabled = true
+    window._dev.connectedAt ??= null
+    window._dev.lastMessageAt ??= null
+    window._dev.messageCount ??= 0
+    window._dev.readyState ??= null
+    window._dev.hmrEnabled ??= false
     
     let source = null
     let reconnectTimer = null

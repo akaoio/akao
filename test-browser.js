@@ -14,28 +14,16 @@
 const args = process.argv.slice(2)
 const filter = args[0] || null
 
+const { ready } = await import("./build/core/Launcher.js")
+await ready
+const { TESTS } = await import("./build/core/tests/manifest.js")
+
 // All test files — import order determines display order.
-// Browser-only and interactive tests are gracefully skipped in Node.
-// Modules that import browser-only APIs (Access, WebAuthn) are omitted here
-// since they fail to load in Node even before any test runs.
-const testFiles = [
-    "./build/core/tests/Events.test.js",
-    "./build/core/tests/States.test.js",
-    "./build/core/tests/Utils.test.js",
-    "./build/core/tests/Router.test.js",
-    "./build/core/tests/Forex.test.js",
-    "./build/core/tests/IDB.test.js",
-    "./build/core/tests/DB.test.js",
-    "./build/core/tests/Cart.test.js",
-    "./build/core/tests/UI.test.js",
-    "./build/core/tests/Context.test.js",
-    "./build/core/tests/RTC.test.js",
-    "./build/core/tests/Torrent.test.js",
-    "./build/core/tests/Order.test.js",
-    "./build/core/tests/Lock.test.js",
-    "./build/core/tests/Trade.test.js",
-    // Access.test.js + WebAuthn.test.js — browser-only, use the /test route in browser
-]
+// The Node runner boots the real headless runtime through Launcher.js first.
+// Source of truth for which suites belong to which environment lives in tests/manifest.js.
+const testFiles = TESTS
+    .filter((test) => test.node !== false)
+    .map((test) => `./build/core/tests/${test.file}`)
 
 console.log("\n\x1b[1m\x1b[36m══════════════════════════════════════════════════\x1b[0m")
 console.log("\x1b[1m  Browser Test Suite — Node.js runner\x1b[0m")

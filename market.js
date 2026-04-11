@@ -20,6 +20,22 @@ if (!marketPub) {
 }
 
 const PORT = process.env.GUN_PORT || 8765
+const RELAY_URL = `http://127.0.0.1:${PORT}/gun`
+
+async function alive(url) {
+    try {
+        const response = await fetch(url)
+        return response.ok
+    } catch {
+        return false
+    }
+}
+
+if (await alive(RELAY_URL)) {
+    console.log(`Gun relay already running at ${RELAY_URL}`)
+    process.exit(0)
+}
+
 const server = http.createServer(Gun.serve("./build"))
 server.listen(PORT, () => console.log(`Gun relay: http://localhost:${PORT}/gun`))
 

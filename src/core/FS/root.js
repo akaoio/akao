@@ -9,5 +9,6 @@ export function root() {
     // On browser, return the root URL
     // Use globalThis
     if (BROWSER) return globalThis.location.origin
+    if (globalThis._root) return globalThis._root
     return process.cwd() // Default to cwd for Node.js and testing environments
 }

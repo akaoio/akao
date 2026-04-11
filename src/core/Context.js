@@ -11,7 +11,6 @@ export const Context = new States({
 globalThis.Context = Context
 
 export function getTheme() {
-    if (!BROWSER) return
     const memory = globalThis.localStorage ? globalThis.localStorage.getItem("theme") : null
     const system = globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light"
     const theme = memory || system || Statics.themes?.[0]?.code
@@ -48,11 +47,11 @@ export function setFiat(code) {
 
 export function getReferrer() {
     const memory = globalThis.localStorage ? globalThis.localStorage.getItem("referrer") : null
+    if (memory) return memory
     if (!globalThis.location) return
     const code = new URLSearchParams(globalThis.location.search).get("r")
     const { gun } = globalThis
     return new Promise((resolve) => {
-        if (memory) return resolve(memory)
         if (!code) return resolve()
         const scope = gun.get("#link").get(code)
         scope.on((referrer) => {

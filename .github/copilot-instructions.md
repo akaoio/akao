@@ -278,7 +278,7 @@ import { Indexes, Statics, Lives, Chains, Dexs, Wallets, Elements } from "/core/
 - [dev.js](dev.js) → Dev server with hot reload
 
 ## Testing
-Run tests: `npm test` or `npm run test:core` / `npm run test:geo`. Tests cover core modules and geo data integrity.
+Run tests against the real `build/` runtime: `npm test` (same as `npm run test:core`) for the default build-first core suite, `npm run test:build` for build artifact validation only, `npm run test:browser` for the browser route runner, `npm run test:playwright` for Playwright assertions, `npm run test:isomorphic` for the combined browser-runtime flow, and `npm run test:geo` for geo data integrity.
 
 ## Performance Philosophy
 - **No Virtual DOM**: Direct DOM manipulation, no diffing overhead

@@ -1,25 +1,10 @@
 import template from "./template.js"
 import Route from "/core/UI/Route.js"
+import { TESTS } from "/core/tests/manifest.js"
 
-const TEST_MODULES = [
-    "/core/tests/Events.test.js",
-    "/core/tests/States.test.js",
-    "/core/tests/Utils.test.js",
-    "/core/tests/Router.test.js",
-    "/core/tests/Forex.test.js",
-    "/core/tests/IDB.test.js",
-    "/core/tests/DB.test.js",
-    "/core/tests/Cart.test.js",
-    "/core/tests/UI.test.js",
-    "/core/tests/Context.test.js",
-    "/core/tests/RTC.test.js",
-    "/core/tests/Torrent.test.js",
-    "/core/tests/Access.test.js",
-    "/core/tests/WebAuthn.test.js",
-    "/core/tests/Hash.test.js",
-    "/core/tests/SQL.test.js",
-    "/core/tests/OPFS.test.js",
-]
+const TEST_MODULES = TESTS
+    .filter((test) => test.browser !== false)
+    .map((test) => `/core/tests/${test.file}`)
 
 export class TEST extends Route {
     static module = import.meta.url
@@ -41,6 +26,7 @@ export class TEST extends Route {
     async _runAll(filter) {
         if (this._running) return
         this._running = true
+        this.dataset.running = "true"
         this._results = []
         this._totals = { passed: 0, failed: 0, skipped: 0, total: 0 }
         this._openSuites.clear()
@@ -62,6 +48,7 @@ export class TEST extends Route {
         })
 
         this._running = false
+        this.dataset.running = "false"
     }
 
     async _runFailed() {
@@ -84,7 +71,7 @@ export class TEST extends Route {
         for (const t of suiteResult.tests) {
             if (t.status === "pass") this._totals.passed++
             else if (t.status === "fail") this._totals.failed++
-            else if (t.status === "skip") this._totals.skipped++
+            else if (t.status === "skip" || t.status === "pending") this._totals.skipped++
             this._totals.total++
         }
 
@@ -96,6 +83,10 @@ export class TEST extends Route {
 
         const root = this.shadowRoot
         const { passed, failed, skipped, total } = this._totals
+        this.dataset.passed = String(passed)
+        this.dataset.failed = String(failed)
+        this.dataset.skipped = String(skipped)
+        this.dataset.total = String(total)
 
         // Counts
         const summary = root.getElementById("summary")

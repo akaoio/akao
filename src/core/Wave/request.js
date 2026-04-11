@@ -1,4 +1,4 @@
-import { threads } from "/core/Threads.js"
+import { threads } from "../Threads.js"
 
 export function request({ method, params, transfer, timeout = 12000 } = {}) {
     return new Promise((resolve, reject) => {

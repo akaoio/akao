@@ -1,14 +1,9 @@
 import Test from "../Test.js"
-import { createRequire } from "module"
 import { sha256 } from "../Utils/crypto.js"
 import { Lock } from "../Lock.js"
 import { HDNodeWallet, getBytes } from "../Ethers.js"
 
-const _req = createRequire(import.meta.url)
-const _root = new URL("../../../", import.meta.url).pathname.replace(/\/$/, "")
-global.Gun = _req(`${_root}/node_modules/@akaoio/gun/gun.js`)
-const _SEA = _req(`${_root}/node_modules/@akaoio/gun/sea.js`)
-globalThis.sea = _SEA
+const _SEA = globalThis.sea
 
 const [PAYER_PAIR, ESCROW_PAIR] = await Promise.all([
     _SEA.pair(), _SEA.pair()

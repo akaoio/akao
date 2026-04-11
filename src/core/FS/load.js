@@ -9,7 +9,9 @@ import { parse as parseCSV } from "../CSV.js"
  * @param {string|string[]|object} path
  * @returns {Promise<*>} Parsed content, raw text, Uint8Array for binary, or object map for dirs
  */
-export async function load(path) {
+export async function load(path, options = {}) {
+    const quiet = options.quiet === true
+
     if (typeof path === "string") path = [path]
 
     if (Array.isArray(path)) {
@@ -21,7 +23,7 @@ export async function load(path) {
             if (await driver.isDir(path)) {
                 const files = {}
                 for (const name of await driver.list(path)) {
-                    const child = await load([...path, name])
+                    const child = await load([...path, name], options)
                     if (child !== undefined) files[name.replace(/\.\w{2,4}$/, "")] = child
                 }
                 return files
@@ -46,7 +48,7 @@ export async function load(path) {
             if (_isBinary) {
                 const buf = await driver.readBytes(path)
                 if (buf) return buf
-                console.error("Path not found in HTTP or OPFS:", _path)
+                if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
                 return
             }
 
@@ -54,16 +56,22 @@ export async function load(path) {
             else {
                 const buf = await driver.readBytes(path)
                 if (buf) text = new TextDecoder().decode(buf)
-                else { console.error("Path not found in HTTP or OPFS:", _path); return }
+                else {
+                    if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
+                    return
+                }
             }
         } else {
             // Node.js: direct read
-            if (!await driver.exists(path)) { console.error("Path doesn't exist", _path); return }
+            if (!await driver.exists(path)) {
+                if (!quiet) console.error("Path doesn't exist", _path)
+                return
+            }
 
             if (await driver.isDir(path)) {
                 const files = {}
                 for (const { name } of await driver.entries(path)) {
-                    const child = await load([...path, name])
+                    const child = await load([...path, name], options)
                     if (child) files[name.replace(/\.\w{2,4}$/, "")] = child
                 }
                 return files
@@ -71,7 +79,10 @@ export async function load(path) {
 
             if (isBinary(_path)) return await driver.readBytes(path)
             const bytes = await driver.readBytes(path)
-            if (!bytes) { console.error("Error reading from", _path); return }
+            if (!bytes) {
+                if (!quiet) console.error("Error reading from", _path)
+                return
+            }
             text = new TextDecoder().decode(bytes)
         }
 
@@ -96,7 +107,7 @@ export async function load(path) {
         const content = {}
         await Promise.all(
             Object.entries(path).map(async ([key, value]) => {
-                content[key] = await load(value)
+                content[key] = await load(value, options)
             })
         )
         return content
