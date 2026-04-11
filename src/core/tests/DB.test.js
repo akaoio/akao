@@ -1,6 +1,6 @@
 import Test from "../Test.js"
 import { DB } from "../DB.js"
-import { transform } from "../DB/transformer.js"
+import { transform, getLocaleFromFilename } from "../DB/transformer.js"
 
 Test.describe("DB — path()", () => {
 
@@ -125,6 +125,11 @@ Test.describe("DB — transformer key filtering", () => {
         Test.assert.equal(transform(path, data), null, "meta.json should return null")
     })
 
+    Test.it("returns null for invalid locale filenames", () => {
+        const path = ["statics", "items", "diablo-4", "sword", "raw.json"]
+        Test.assert.equal(transform(path, { name: "Sword" }), null, "non-locale JSON should return null")
+    })
+
     Test.it("returns null for empty path", () => {
         Test.assert.equal(transform([], {}), null, "empty path should return null")
         Test.assert.equal(transform(null, {}), null, "null path should return null")
@@ -148,6 +153,37 @@ Test.describe("DB — transformer key filtering", () => {
         // statics/items/1.json (page index) → length 3
         const result3 = transform(["statics", "items", "1.json"], ["item1"])
         Test.assert.equal(result3, null, "page index should return null")
+    })
+
+    Test.it("creates delete transform for game item locale paths", () => {
+        const path = ["statics", "items", "diablo-4", "sword-abc123", "vi.json"]
+        const result = transform(path, null)
+        Test.assert.truthy(result, "delete transform should exist")
+        Test.assert.equal(result.delete.includes("DELETE FROM game_items"), true, "should delete from game_items")
+        Test.assert.deepEqual(result.values, ["sword-abc123", "diablo-4", "vi"])
+    })
+
+    Test.it("creates delete transform for shop item locale paths", () => {
+        const path = ["statics", "items", "service-xyz", "en.json"]
+        const result = transform(path, null)
+        Test.assert.truthy(result, "delete transform should exist")
+        Test.assert.equal(result.delete.includes("DELETE FROM shop_items"), true, "should delete from shop_items")
+        Test.assert.deepEqual(result.values, ["service-xyz", "en"])
+    })
+
+})
+
+Test.describe("DB transformer — locale filename parsing", () => {
+
+    Test.it("accepts locale JSON filenames", () => {
+        Test.assert.equal(getLocaleFromFilename("vi.json"), "vi")
+        Test.assert.equal(getLocaleFromFilename("zh-TW.json"), "zh-TW")
+    })
+
+    Test.it("rejects non-locale JSON filenames", () => {
+        Test.assert.equal(getLocaleFromFilename("meta.json"), null)
+        Test.assert.equal(getLocaleFromFilename("raw.json"), null)
+        Test.assert.equal(getLocaleFromFilename("1.json"), null)
     })
 
 })
