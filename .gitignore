@@ -33,9 +33,11 @@ node_modules/
 /radata/
 /.playwright-mcp/
 
+swarm.yaml
+swarm/
+
 CLAUDE.md
 .claude
-
 
 # BMAD
 _bmad-output/

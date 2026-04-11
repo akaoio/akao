@@ -7,6 +7,7 @@ import { render } from "/core/UI.js"
 import logic from "./logic.js"
 
 export class TAG extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
         this.states = new States({
@@ -15,17 +16,17 @@ export class TAG extends HTMLElement {
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
-        this.subscriptions = []
+        this.subs = []
         this.render = this.render.bind(this)
     }
 
     async connectedCallback() {
-        this.subscriptions.push(Context.on("locale", this.render))
+        this.subs.push(Context.on("locale", this.render))
         await this.render()
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach((off) => off())
+        this.subs.forEach((off) => off())
     }
 
     async render() {

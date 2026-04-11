@@ -287,3 +287,33 @@ Run tests: `npm test` or `npm run test:core` / `npm run test:geo`. Tests cover c
 - **Primitive embedding**: Simple values embedded in HTML string (avoids marker overhead)
 - **Static imports**: ES modules, tree-shakeable, HTTP/2 friendly
 - **Web Workers**: Background threads for data sync without blocking UI
+
+## Swarm Protocol
+
+Đây là dự án làm việc nhóm giữa người và AI agents. Mọi agent PHẢI tuân thủ giao thức sau.
+
+### Bắt đầu mỗi session
+```bash
+node swarm.js history       # đọc ngữ cảnh từ swarm
+```
+Sau đó đọc `swarm/notes.md` để nắm lại tư duy từ session trước.
+
+### Khi làm việc
+```bash
+node swarm.js send "start | task: <mô tả> | branch: <branch>"
+node swarm.js send "done | task: <mô tả> | branch: <branch>"
+node swarm.js send "blocked | <vấn đề> | cần: <yêu cầu>"
+node swarm.js notes "<insight quan trọng cần nhớ>"
+node swarm.js chats            # lấy group chat IDs (dùng khi setup lần đầu)
+```
+
+`send` tự prepend identity từ `swarm.yaml` và @mention tất cả bots còn lại — agent không cần làm thêm gì.
+
+### Cấu hình
+Swarm dùng 2 files:
+- `swarm.shared.yaml` — commit lên git, chứa groups và danh sách agents (PUBLIC)
+- `swarm.yaml` — git-ignored, chứa token + machine name (SECRET)
+
+Nếu chưa có `swarm.yaml`, copy từ `swarm.example.yaml` và điền token. Config shared tự động merge vào khi load.
+
+Xem [SWARM.md](../SWARM.md) để biết thêm chi tiết.

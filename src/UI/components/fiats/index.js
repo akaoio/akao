@@ -5,8 +5,10 @@ import { render } from "/core/UI.js"
 import logic from "./logic.js"
 
 export class FIATS extends HTMLElement {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }

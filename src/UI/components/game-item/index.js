@@ -1,15 +1,17 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 
-export class GAME_ITEM extends BaseElement {
+export class GAME_ITEM extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
 
-    onConnect() {
+    onconnect() {
         this._populate()
     }
 

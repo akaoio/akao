@@ -2,12 +2,13 @@ import template from "./template.js"
 import { Context } from "/core/Context.js"
 import { events } from "/core/Events.js"
 import { Indexes, Lives, Chains } from "/core/Stores.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 import logic from "./logic.js"
 
 const PAGE_SIZE = 25
 
-export class POOLS extends BaseRoute {
+export class POOLS extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
 
@@ -22,7 +23,7 @@ export class POOLS extends BaseRoute {
         this.loadMore = this.loadMore.bind(this)
     }
 
-    async onConnect() {
+    async onconnect() {
         const sr = this.shadowRoot
         this.$list = sr.querySelector("#list")
         this.$empty = sr.querySelector("#empty")
@@ -45,7 +46,7 @@ export class POOLS extends BaseRoute {
 
         // Subscribe before the final check — prevents missing an event that
         // fires between loadcache() completing and the listener being attached.
-        this.subscribe(
+        this.sub(
             events.on("Lives.pools", this._onLivePools),
             Context.on("fiat", this._onFiat),
             Context.on("params", this._onParams)
@@ -54,7 +55,7 @@ export class POOLS extends BaseRoute {
         if (this._hasData) this._showData()
     }
 
-    onDisconnect() {
+    ondisconnect() {
         if (this._stickyObserver) this._stickyObserver.disconnect()
     }
 

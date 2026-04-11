@@ -2,12 +2,14 @@ import { Elements } from "/core/Stores.js"
 import { Access } from "/core/Access.js"
 import template from "./template.js"
 import { render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 
-export class USER extends BaseElement {
+export class USER extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.toggle = this.toggle.bind(this)
@@ -18,9 +20,9 @@ export class USER extends BaseElement {
         return this.shadowRoot.querySelector("ui-identicon")
     }
 
-    onConnect() {
+    onconnect() {
         this.listen(this.shadowRoot.querySelector(".user"), "click", this.toggle)
-        this.subscribe(
+        this.sub(
             Access.on("authenticated", ({ value }) => {
                 if (!value) this.identicon.removeAttribute("data-seed")
             }),

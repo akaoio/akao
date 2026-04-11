@@ -1,9 +1,10 @@
 import { Statics } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 
-export class FIAT extends BaseElement {
+export class FIAT extends Component {
+    static module = import.meta.url
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -18,8 +19,8 @@ export class FIAT extends BaseElement {
         if (["data-locale", "data-amount", "data-base", "data-quote"].includes(name) && last !== value) this.render()
     }
 
-    onConnect() {
-        this.subscribe(Context.on("locale", this.render), Context.on("fiat", this.render))
+    onconnect() {
+        this.sub(Context.on("locale", this.render), Context.on("fiat", this.render))
         this.render()
     }
 

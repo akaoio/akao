@@ -2,10 +2,11 @@ import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import { Access } from "/core/Access.js"
 import States from "/core/States.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 import logic, { SOCIAL_PLATFORMS } from "./logic.js"
 
-export class PROFILE extends BaseRoute {
+export class PROFILE extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
         this.states = new States({ name: "", bio: "", links: {}, following: [], editing: false, editingBio: false, editingLinks: false })
@@ -21,7 +22,7 @@ export class PROFILE extends BaseRoute {
         this._exitLinksEditMode = this._exitLinksEditMode.bind(this)
     }
 
-    onConnect() {
+    onconnect() {
         const $ = (id) => this.shadowRoot.querySelector(id)
 
         // Wire name edit controls
@@ -84,7 +85,7 @@ export class PROFILE extends BaseRoute {
 
         this.listen($avatarEdit, "click", openPicker)
         this.listen($avatarBackdrop, "click", () => closePicker(true))
-        this.subscribe(
+        this.sub(
             $avatars.events.on("accept", () => closePicker(false)),
             $avatars.events.on("cancel", () => closePicker(true))
         )
@@ -98,7 +99,7 @@ export class PROFILE extends BaseRoute {
         this.listen($linksCancel, "click", () => this._exitLinksEditMode(false))
 
         // Subscribe to auth changes
-        this.subscribe(
+        this.sub(
             Access.on("authenticated", async ({ value }) => {
                 this._applyAuthState(value)
                 if (value) {
@@ -137,7 +138,7 @@ export class PROFILE extends BaseRoute {
         }
     }
 
-    onDisconnect() {
+    ondisconnect() {
         this._followingSubs.forEach((off) => off())
         this._followingScope?.off?.()
     }

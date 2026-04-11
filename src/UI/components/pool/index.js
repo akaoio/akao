@@ -4,13 +4,15 @@ import { Lives, Chains } from "/core/Stores.js"
 import { events } from "/core/Events.js"
 import { formatNumber, beautifyNumber } from "/core/Utils.js"
 import template from "./template.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import logic from "./logic.js"
 import "./crypto/index.js"
 
-export class POOL extends BaseElement {
+export class POOL extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.update = this.update.bind(this)
@@ -24,8 +26,8 @@ export class POOL extends BaseElement {
         return this.dataset.address
     }
 
-    onConnect() {
-        this.subscribe(
+    onconnect() {
+        this.sub(
             events.on("Lives.pools", this.update),
             events.on("Lives.forex", this.update),
             Context.on("fiat", this.update)

@@ -1,0 +1,17 @@
+# Swarm Protocol Config — EXAMPLE
+# Copy file này thành swarm.yaml và điền thông tin của máy bạn
+# swarm.yaml nằm trong .gitignore — KHÔNG commit token lên git
+
+self:
+  token: YOUR_BOT_TOKEN_HERE    # SECRET — lấy từ @BotFather trên Telegram
+  name: your-machine-name       # vd: pc1-agent, pc2-agent, son-laptop
+  role: developer               # vd: PM, developer, tester, designer
+  description: Short description of responsibilities  # Mô tả vai trò và trách nhiệm
+
+# NOTE: groups và agents giờ được quản lý trong swarm.shared.yaml (file public)
+# Nếu không có swarm.shared.yaml, có thể khai báo trực tiếp ở đây:
+# groups:
+#   - YOUR_GROUP_CHAT_ID
+# agents:
+#   - name: pc1-agent
+#     username: agent_pc1_bot

@@ -5,13 +5,15 @@ import { notify, randomKey } from "/core/Utils.js"
 import { Access } from "/core/Access.js"
 import { Elements } from "/core/Stores.js"
 import States from "/core/States.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import "/UI/components/icon/index.js"
 import logic from "./logic.js"
 
-export class ADDRESSES extends BaseElement {
+export class ADDRESSES extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
         this.states = new States({ addresses: {}, current: null })
@@ -26,11 +28,11 @@ export class ADDRESSES extends BaseElement {
         this.render = this.render.bind(this)
     }
 
-    async onConnect() {
+    async onconnect() {
         this.countries = await logic.countries()
         this.modal = this.shadowRoot.querySelector("ui-modal#deletion")
         this.form = this.shadowRoot.querySelector("#address-form")
-        this.form.querySelectorAll("input[type='text'], input[type='email'], input[type='tel']").forEach((input) => this.subscribe(Context.on(["dictionary", input.name], [input, "placeholder"])))
+        this.form.querySelectorAll("input[type='text'], input[type='email'], input[type='tel']").forEach((input) => this.sub(Context.on(["dictionary", input.name], [input, "placeholder"])))
         this.listen(this.shadowRoot.querySelector("#cancel"), "click", this.cancel)
         this.listen(this.shadowRoot.querySelector("#add"), "click", this.add)
         this.listen(this.shadowRoot.querySelector("#save"), "click", this.save)
@@ -43,7 +45,7 @@ export class ADDRESSES extends BaseElement {
             this.delete(id)
         }
         this.listen(this.shadowRoot.querySelector("#delete"), "click", $delete)
-        this.subscribe(
+        this.sub(
             this.states.on("addresses", this.render),
             Access.on("authenticated", () => {
                 if (logic.pair()) {
@@ -53,13 +55,13 @@ export class ADDRESSES extends BaseElement {
                         addresses[key] = address
                         this.states.set({ addresses })
                     })
-                    this.subscribe(() => this.scope?.off?.())
+                    this.sub(() => this.scope?.off?.())
                 }
             })
         )
     }
 
-    onDisconnect() {
+    ondisconnect() {
         this?.scope?.off?.()
     }
 
@@ -176,12 +178,12 @@ export class ADDRESSES extends BaseElement {
                         <ui-icon data-icon="pen" data-size="md" class="edit" ${({element}) => {
                             const edit = () => this.edit(id)
                             element.addEventListener("click", edit)
-                            this.subscriptions.push(() => element.removeEventListener("click", edit))
+                            this.subs.push(() => element.removeEventListener("click", edit))
                         }} />
                         <ui-icon data-icon="trash3" data-size="md" class="delete" ${({element}) => {
                             const $delete = () => this.delete(id)
                             element.addEventListener("click", $delete)
-                            this.subscriptions.push(() => element.removeEventListener("click", $delete))
+                            this.subs.push(() => element.removeEventListener("click", $delete))
                         }} />
                     </nav>
                 </div>`

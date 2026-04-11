@@ -2,11 +2,12 @@ import { Context } from "/core/Context.js"
 import logic from "./logic.js"
 
 export class A extends HTMLAnchorElement {
+    static module = import.meta.url
     constructor() {
         super()
         this.click = this.click.bind(this)
         this.render = this.render.bind(this)
-        this.subscriptions = []
+        this.subs = []
     }
 
     static get observedAttributes() {
@@ -20,12 +21,12 @@ export class A extends HTMLAnchorElement {
 
     connectedCallback() {
         this.addEventListener("click", this.click)
-        this.subscriptions.push(Context.on("locale", this.render))
+        this.subs.push(Context.on("locale", this.render))
     }
 
     disconnectedCallback() {
         this.removeEventListener("click", this.click)
-        this.subscriptions.forEach((off) => off())
+        this.subs.forEach((off) => off())
     }
 
     click(e) {

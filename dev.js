@@ -125,17 +125,79 @@ function runBuild(script) {
 async function injectDevClient(htmlContent) {
     if (htmlContent.includes(DEV_CLIENT_MARKER)) return htmlContent
 
-    // Read HMR client code from file
+    // Inline HMR bootstrap (runs BEFORE any ES modules load)
+    const bootstrap = `<script data-dev-client="${DEV_CLIENT_MARKER}">
+// HMR Bootstrap - Runs synchronously before ANY ES modules load
+(function() {
+    // Only run in dev mode (localhost/127.0.0.1)
+    const isDev = globalThis?.location?.hostname === "localhost" || 
+                  globalThis?.location?.hostname === "127.0.0.1";
+    
+    if (!isDev || !window.customElements) return;
+    
+    // Initialize minimal HMR state (no __ prefix)
+    window.hmr = {
+        elements: new Map(),
+        origdefine: customElements.define.bind(customElements),
+        
+        // Register component class with module URL
+        reg(url, cls) {
+            if (cls && typeof cls === 'function') cls._module = url;
+        }
+    };
+    
+    // Install customElements.define interceptor
+    customElements.define = function(tag, cls, opts) {
+        // Auto-detect module URL from call stack
+        let moduleUrl = cls._module || cls.module || null;
+        
+        // If not explicitly set, try to extract from call stack
+        if (!moduleUrl) {
+            const stack = new Error().stack;
+            if (stack) {
+                const lines = stack.split('\\n');
+                for (let i = 1; i < Math.min(lines.length, 5); i++) {
+                    const line = lines[i];
+                    const match = line.match(/(https?:\\/\\/[^:\\s)]+\\.js)/);
+                    if (match) {
+                        moduleUrl = match[1].split('?')[0];
+                        break;
+                    }
+                }
+            }
+        }
+        
+        window.hmr.elements.set(tag, {
+            class: cls,
+            module: moduleUrl
+        });
+        return window.hmr.origdefine(tag, cls, opts);
+    };
+    
+    console.log('🔌 HMR: Interceptor installed');
+})();
+</script>`
+
+    // Read HMR client code from file (SSE + full runtime loader)
     let hmrClientCode = ""
     const hmrClientPath = path.join("build", "core", "HMR", "client.js")
     if (await exists(hmrClientPath)) {
         hmrClientCode = await fs.readFile(hmrClientPath, "utf8")
     }
 
-    const injected = `<script type="module" data-dev-client="${DEV_CLIENT_MARKER}">\n${hmrClientCode}\n</script>`
+    const clientLoader = `<script type="module">
+${hmrClientCode}
+</script>`
 
-    if (/<\/body>/i.test(htmlContent)) return htmlContent.replace(/<\/body>/i, `${injected}</body>`)
+    // Inject bootstrap FIRST (in head), then client loader
+    const injected = bootstrap + clientLoader
+
+    if (/<script type="module" src="\/core\/Launcher\.js"/i.test(htmlContent)) {
+        // Inject right before Launcher.js
+        return htmlContent.replace(/<script type="module" src="\/core\/Launcher\.js"/i, `${injected}\n    <script type="module" src="/core/Launcher.js"`)
+    }
     if (/<\/head>/i.test(htmlContent)) return htmlContent.replace(/<\/head>/i, `${injected}</head>`)
+    if (/<\/body>/i.test(htmlContent)) return htmlContent.replace(/<\/body>/i, `${injected}</body>`)
     return `${htmlContent}\n${injected}`
 }
 
@@ -149,8 +211,8 @@ function broadcastReload() {
     }
 }
 
-function broadcastHMR(updates) {
-    const message = JSON.stringify(updates)
+function broadcastHMR(update) {
+    const message = JSON.stringify(update)
     for (const client of sseClients) {
         try {
             client.write(`data: ${message}\n\n`)

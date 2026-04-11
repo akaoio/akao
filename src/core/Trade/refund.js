@@ -1,5 +1,6 @@
 import { Lock } from "../Lock.js"
 import { sha256 } from "../Utils/crypto.js"
+import { HDNodeWallet, getBytes } from "../Ethers.js"
 
 // Platform refunds payer — requires Platform pair (escrow authority)
 // Platform recomputes all spending keys via DH shared secrets
@@ -17,6 +18,5 @@ export async function refund({ tradeId, payer, recipient, affiliate, platpair, t
 }
 
 async function rootFromSecret(s) {
-    const { HDNodeWallet, getBytes } = await import("ethers")
     return HDNodeWallet.fromSeed(getBytes("0x" + s.padStart(64, "0")))
 }

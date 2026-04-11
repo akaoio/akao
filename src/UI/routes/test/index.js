@@ -1,5 +1,5 @@
 import template from "./template.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 
 const TEST_MODULES = [
     "/core/tests/Events.test.js",
@@ -21,7 +21,8 @@ const TEST_MODULES = [
     "/core/tests/OPFS.test.js",
 ]
 
-export class TEST extends BaseRoute {
+export class TEST extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
         this._results = []   // { suiteName, tests: [...], status }
@@ -30,7 +31,7 @@ export class TEST extends BaseRoute {
         this._openSuites = new Set()
     }
 
-    onConnect() {
+    onconnect() {
         const root = this.shadowRoot
         this.listen(root.getElementById("run-all"), "click", () => this._runAll())
         this.listen(root.getElementById("run-failed"), "click", () => this._runFailed())

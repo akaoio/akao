@@ -1,15 +1,17 @@
 import template from "./template.js"
 import { render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 
-export class NAVIGATOR extends BaseElement {
+export class NAVIGATOR extends Component {
+    static module = import.meta.url
     constructor() {
         super()
+        this.template = template // Store for HMR
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
     }
 
-    onConnect() {
+    onconnect() {
         const state = this.shadowRoot.querySelector("#state")
         const label = this.shadowRoot.querySelector("label")
         const icon = this.shadowRoot.querySelector("ui-icon")

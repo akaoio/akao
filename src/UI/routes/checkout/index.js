@@ -1,7 +1,8 @@
 import template from "./template.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 
-export class CHECKOUT extends BaseRoute {
+export class CHECKOUT extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
     }

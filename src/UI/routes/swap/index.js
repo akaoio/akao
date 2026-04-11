@@ -4,11 +4,12 @@ import { Context } from "/core/Context.js"
 import { events } from "/core/Events.js"
 import { Elements, Lives, Chains, Dexs, Wallets } from "/core/Stores.js"
 import { notify, formatNumber } from "/core/Utils.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 import SELECT from "/UI/components/select/index.js"
 import logic from "./logic.js"
 
-export class SWAP extends BaseRoute {
+export class SWAP extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
         this.quote = this.quote.bind(this)
@@ -16,7 +17,7 @@ export class SWAP extends BaseRoute {
         this.flip = this.flip.bind(this)
     }
 
-    onConnect() {
+    onconnect() {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.$amountIn = this.shadowRoot.querySelector("#amount-in")
         this.$quoteOut = this.shadowRoot.querySelector("#quote-out")
@@ -71,26 +72,20 @@ export class SWAP extends BaseRoute {
                 btn.classList.add("active")
             })
         })
-        // Highlight default preset
         const defaultPreset = this.shadowRoot.querySelector(`.slippage-preset[data-value="0.5"]`)
         if (defaultPreset) defaultPreset.classList.add("active")
 
-        // Wallet auth gating
-        this.subscribe(
-            this.$wallets.states.on(
-                "address",
-                ({ value }) => {
-                    const active = !!value
-                    this.$amountIn.disabled = !active
-                    this.$submit.toggleAttribute("disabled", !active)
-                    if (!active) {
-                        this.$quoteOut.textContent = "0"
-                        this.$gas.textContent = ""
-                        this.$error.textContent = ""
-                    } else this.options()
-                },
-                true
-            ),
+        this.sub(
+            this.$wallets.states.on("address", ({ value }) => {
+                const active = !!value
+                this.$amountIn.disabled = !active
+                this.$submit.toggleAttribute("disabled", !active)
+                if (!active) {
+                    this.$quoteOut.textContent = ""
+                    this.$gas.textContent = ""
+                    this.$error.textContent = ""
+                } else this.options()
+            }, true),
             this.$wallets.states.on("chain", () => this.options()),
             events.on("Lives.pools", () => this.options())
         )

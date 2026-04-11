@@ -1,9 +1,11 @@
 import States from "/core/States.js"
 import { html, render } from "/core/UI.js"
-import BaseElement from "/UI/BaseElement.js"
+import Component from "/core/UI/Component.js"
 import { template } from "./template.js"
 
-export class SELECT extends BaseElement {
+export class SELECT extends Component {
+    static module = import.meta.url
+    
     constructor(props = {}) {
         super()
         this.props = props || {}
@@ -34,7 +36,7 @@ export class SELECT extends BaseElement {
         }
     }
 
-    onConnect() {
+    onconnect() {
         this.select = this.select || this.shadowRoot.querySelector("select")
         this.select.setAttribute("name", this.props.name || this.dataset.name)
         this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")

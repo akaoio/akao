@@ -1,0 +1,12 @@
+# Swarm Shared Config
+# File này commit lên git — chứa thông tin CÔNG KHAI của swarm
+# Mọi bot đều dùng chung danh sách này
+
+groups:
+  - -5114949405  # akao.io roots
+
+agents:
+  - name: son-pc
+    username: sonakao_bot
+  - name: son-pi
+    username: sonakaopi_bot

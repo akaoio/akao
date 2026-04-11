@@ -1,16 +1,23 @@
 /**
- * HMR Dev Client
- * Injected into HTML during development to receive hot update events from dev server
+ * HMR Dev Client (SSE Connection + Runtime Loader)
+ * Bootstrap is done inline in dev.js to run before ES modules
  */
 
 (function() {
-    if (typeof window === "undefined" || !window.EventSource) return
+    // Check if DEV mode (already done in bootstrap, but double-check)
+    const isDev = globalThis?.location?.hostname === "localhost" || 
+                  globalThis?.location?.hostname === "127.0.0.1"
+    
+    if (!isDev || typeof window === "undefined" || !window.EventSource) {
+        console.log("🔥 HMR: Client disabled (production mode)")
+        return
+    }
     
     const DEV_EVENTS_PATH = "/__dev_events"
     const RECONNECT_INTERVAL = 1000
     
     // State tracking
-    window.__devSseState = window.__devSseState || {
+    window._dev = window._dev || {
         connectedAt: null,
         lastMessageAt: null,
         messageCount: 0,
@@ -27,16 +34,16 @@
         source = new EventSource(DEV_EVENTS_PATH)
         
         source.onopen = function() {
-            window.__devSseState.connectedAt = Date.now()
-            window.__devSseState.readyState = source.readyState
+            window._dev.connectedAt = Date.now()
+            window._dev.readyState = source.readyState
             console.log("🔌 HMR: Connected to dev server")
             clearTimeout(reconnectTimer)
         }
         
         source.onmessage = async function(e) {
-            window.__devSseState.messageCount += 1
-            window.__devSseState.lastMessageAt = Date.now()
-            window.__devSseState.readyState = source.readyState
+            window._dev.messageCount += 1
+            window._dev.lastMessageAt = Date.now()
+            window._dev.readyState = source.readyState
             
             if (!e || !e.data) return
             
@@ -54,9 +61,9 @@
             try {
                 const update = JSON.parse(e.data)
                 
-                if (update.type === "hmr" && window.__hmr) {
-                    window.__devSseState.hmrEnabled = true
-                    await window.__hmr.handleUpdate(update)
+                if (update.type === "hmr" && window.hmr?.handle) {
+                    window._dev.hmrEnabled = true
+                    await window.hmr.handle(update)
                 } else if (update.type === "full-reload") {
                     console.log("🔄 HMR: Full reload required")
                     window.location.reload()
@@ -67,7 +74,7 @@
         }
         
         source.onerror = function() {
-            window.__devSseState.readyState = source.readyState
+            window._dev.readyState = source.readyState
             
             if (source.readyState === EventSource.CLOSED) {
                 console.warn("⚠️ HMR: Connection closed, reconnecting...")
@@ -76,16 +83,17 @@
         }
     }
     
-    // Initialize HMR runtime
+    // Load full HMR runtime asynchronously
     async function initHMR() {
         try {
             const hmrModule = await import("/core/HMR.js")
-            window.__hmr = hmrModule.default
-            window.__devSseState.hmrEnabled = true
+            // Full runtime extends the lightweight bootstrap
+            window.hmr = hmrModule.default
+            window._dev.hmrEnabled = true
             console.log("🔥 HMR: Runtime initialized")
         } catch (error) {
             console.error("❌ HMR: Failed to initialize runtime:", error)
-            window.__devSseState.hmrEnabled = false
+            window._dev.hmrEnabled = false
         }
     }
     

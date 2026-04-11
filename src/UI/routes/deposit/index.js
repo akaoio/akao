@@ -1,13 +1,14 @@
 import template from "./template.js"
-import BaseRoute from "/UI/BaseRoute.js"
+import Route from "/core/UI/Route.js"
 import { Elements } from "/core/Stores.js"
 
-export class DEPOSIT extends BaseRoute {
+export class DEPOSIT extends Route {
+    static module = import.meta.url
     constructor() {
         super(template)
     }
 
-    async onConnect() {
+    async onconnect() {
         this.$wallets = this.shadowRoot.querySelector("ui-wallets")
         this.watch(this.$wallets.states, "address", async ({ value }) => {
             const $qr = this.shadowRoot.querySelector("ui-qr")
