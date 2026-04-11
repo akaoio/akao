@@ -16,17 +16,23 @@ const filter = args[0] || null
 
 // All test files — import order determines display order.
 // Browser-only and interactive tests are gracefully skipped in Node.
-// Modules that import browser-only APIs (Access, WebAuthn) are omitted here
-// since they fail to load in Node even before any test runs.
+// Only suites that cannot be imported in Node at all are omitted here
+// (for example Access/WebAuthn browser-only modules).
 const testFiles = [
     "./src/core/tests/Events.test.js",
     "./src/core/tests/States.test.js",
     "./src/core/tests/Utils.test.js",
     "./src/core/tests/Router.test.js",
     "./src/core/tests/Forex.test.js",
+    "./src/core/tests/Hash.test.js",
     "./src/core/tests/IDB.test.js",
+    "./src/core/tests/OPFS.test.js",
+    "./src/core/tests/SQL.test.js",
+    "./src/core/tests/Lock.test.js",
     "./src/core/tests/DB.test.js",
     "./src/core/tests/Cart.test.js",
+    "./src/core/tests/Order.test.js",
+    "./src/core/tests/Trade.test.js",
     "./src/core/tests/UI.test.js",
     "./src/core/tests/Context.test.js",
     "./src/core/tests/RTC.test.js",
@@ -48,8 +54,9 @@ for (const file of testFiles)
         process.exitCode = 1
     }
 
-// Now run all registered suites
-const { default: Test } = await import("./build/core/Test.js")
+// Now run all registered suites using the same Test module instance
+// that the src/core test files imported for registration.
+const { default: Test } = await import("./src/core/Test.js")
 const results = await Test.run(filter)
 
 // Explicit exit so Node doesn't hang on open async handles (IndexedDB init, etc.)
