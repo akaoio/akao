@@ -21,9 +21,9 @@ import { transform } from "./DB/transformer.js"
 
 export class DB {
     static _db = null
-    static _schemas = new Set()  // tracks which table schemas have been initialized this session
-    static _pending = []         // pending $syncToSQL ops, flushed as one batch per microtask
-    static _scheduled = false    // whether a flush microtask is already scheduled
+    static _schemas = new Set() // tracks which table schemas have been initialized this session
+    static _pending = [] // pending $syncToSQL ops, flushed as one batch per microtask
+    static _scheduled = false // whether a flush microtask is already scheduled
 
     // Fallback chain for requestIdleCallback — yields to the browser scheduler,
     // then MessageChannel, then setTimeout as a last resort.
@@ -38,6 +38,21 @@ export class DB {
             })
 
         return new Promise((r) => setTimeout(r, 0))
+    }
+
+    // Load `.hash` files without OPFS fallback so callers can distinguish
+    // an explicit 404 (true deletion) from transient/network failures.
+    static async _loadHash(path = []) {
+        if (typeof fetch !== "function") return { ok: false, status: null, hash: await FS.load(path) }
+        try {
+            const url = Array.isArray(path) ? "/" + path.filter(Boolean).join("/") : String(path ?? "") // pass full URL through unchanged
+            const response = await fetch(url)
+            if (response.ok) return { ok: true, status: response.status, hash: await response.text() }
+            if (response.status === 404) return { ok: false, status: 404, hash: undefined }
+            return { ok: false, status: response.status, hash: undefined }
+        } catch {
+            return { ok: false, status: null, hash: undefined }
+        }
     }
 
     static async get(path = []) {
@@ -55,27 +70,27 @@ export class DB {
         }
 
         const memory = await Indexes.Hashes.get(path).once()
-        const hash = await FS.load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
-        if (memory && hash && memory === hash) {
+        const hashResult = await DB._loadHash(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
+        const hash = hashResult.hash
+        if (memory && hashResult.ok && memory === hash) {
             if (type === "hash") return hash
             const cached = await Indexes.Statics.get(path).once()
             DB._syncInsert(path, cached)
             return cached
         }
-        if (hash) await Indexes.Hashes.get(path).put(hash)
+        if (hashResult.ok) await Indexes.Hashes.get(path).put(hash)
         if (type === "hash") return hash
         const data = await FS.load(path)
         if (typeof data !== "undefined") {
             await Indexes.Statics.get(path).put(data)
             DB.$syncToSQL(path, data)
         } else if (memory) {
-            // hash === undefined means hash file also 404 → true deletion
-            // hash !== undefined means network error → keep cache
-            if (hash === undefined) {
+            // Only an explicit 404 on the `.hash` file proves true deletion.
+            // Any other non-success result (network/CORS/etc.) keeps cached data.
+            if (hashResult.status === 404) {
                 await Indexes.Hashes.del(path)
                 await Indexes.Statics.del(path)
                 DB.$syncDelete(path)
-                return undefined
             }
         }
         return data
@@ -115,7 +130,7 @@ export class DB {
         // shop: statics/items/itemId/locale → length 4). Meta.json and pagination files have
         // different lengths and will be filtered out naturally. We also validate using transform()
         // to ensure we're only picking up actual item paths.
-        const itemKeys = allKeys.filter(k => {
+        const itemKeys = allKeys.filter((k) => {
             if (!Array.isArray(k) || k.length < 4) return false
             // Validate using transform - only actual item locale paths return non-null
             const op = transform(k, {})
@@ -126,7 +141,8 @@ export class DB {
         // Count guard: fast path — skip rebuild if SQL already has enough items.
         // Wrap in try-catch in case tables don't exist yet (fresh DB).
         const db = await DB.sql()
-        let gameCount = 0, shopCount = 0
+        let gameCount = 0,
+            shopCount = 0
         try {
             const [gameRow] = await db.all("SELECT COUNT(*) as n FROM game_items")
             const [shopRow] = await db.all("SELECT COUNT(*) as n FROM shop_items")
@@ -151,18 +167,13 @@ export class DB {
             const chunk = itemKeys.slice(i, i + CHUNK)
             i += chunk.length
             try {
-                const entries = await Promise.all(
-                    chunk.map(async (path) => ({ path, data: await Indexes.Statics.$get(path) }))
-                )
+                const entries = await Promise.all(chunk.map(async (path) => ({ path, data: await Indexes.Statics.$get(path) })))
                 for (const { path, data } of entries) if (data) DB._syncInsert(path, data)
-                
             } catch (err) {
                 console.warn("[DB.$rebuildFromIDB] chunk error:", err.message)
             }
-            if (i < itemKeys.length)
-                DB._yield().then(processChunk)
-            else
-                DB._yield().then(() => DB.$syncCatalog())
+            if (i < itemKeys.length) DB._yield().then(processChunk)
+            else DB._yield().then(() => DB.$syncCatalog())
         }
 
         DB._yield().then(processChunk)
@@ -178,7 +189,7 @@ export class DB {
         // hash validation and IDB caching behavior (same as rest of the app).
         const localeList = await DB.get(["statics", "locales.json"])
         if (!Array.isArray(localeList)) return
-        const locales = localeList.map(l => l.code).filter(Boolean)
+        const locales = localeList.map((l) => l.code).filter(Boolean)
         if (!locales.length) return
 
         // Load pagination metadata to know total items and pages
@@ -210,9 +221,7 @@ export class DB {
                 const parts = key.split("/")
                 for (const locale of locales) {
                     await DB._yield()
-                    const path = parts.length === 2
-                        ? ["statics", "items", parts[0], parts[1], `${locale}.json`]
-                        : ["statics", "items", parts[0], `${locale}.json`]
+                    const path = parts.length === 2 ? ["statics", "items", parts[0], parts[1], `${locale}.json`] : ["statics", "items", parts[0], `${locale}.json`]
                     await DB.get(path)
                 }
             }
@@ -232,7 +241,7 @@ export class DB {
     }
 
     static query(sql, params = []) {
-        return DB.sql().then(db => db.all(sql, params))
+        return DB.sql().then((db) => db.all(sql, params))
     }
 
     static $syncToSQL(path, data) {
@@ -266,10 +275,9 @@ export class DB {
         if (!ops.length) return
 
         DB.sql()
-            .then(async db => {
+            .then(async (db) => {
                 // Ensure all required schemas exist before inserting
-                const newSchemas = [...new Set(ops.map(op => op.schema))]
-                    .filter(s => !DB._schemas.has(s))
+                const newSchemas = [...new Set(ops.map((op) => op.schema))].filter((s) => !DB._schemas.has(s))
                 for (const schema of newSchemas) {
                     await db.exec(schema)
                     DB._schemas.add(schema)
@@ -278,9 +286,9 @@ export class DB {
                 // Fast path: all ops in one transaction (1 fsync)
                 // op.sql is set by _syncInsert (INSERT OR IGNORE),
                 // op.upsert is set by $syncToSQL (INSERT OR REPLACE).
-                const toSQL = op => op.sql ?? op.upsert
+                const toSQL = (op) => op.sql ?? op.upsert
                 try {
-                    return await db.batch(ops.map(op => ({ sql: toSQL(op), params: op.values })))
+                    return await db.batch(ops.map((op) => ({ sql: toSQL(op), params: op.values })))
                 } catch {
                     // Slow fallback: insert individually to isolate the bad op
                     for (const op of ops)
@@ -289,10 +297,9 @@ export class DB {
                         } catch (err) {
                             console.warn("[DB._flush] skipped:", err.message, op.values?.[0])
                         }
-                    
                 }
             })
-            .catch(err => console.warn("[DB._flush]", err.message))
+            .catch((err) => console.warn("[DB._flush]", err.message))
     }
 
     static path(id) {
