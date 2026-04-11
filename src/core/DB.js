@@ -74,6 +74,15 @@ export class DB {
             await Indexes.Statics.del(path)
             DB.$syncDelete(path)
         }
+        // Fallback: if FS.load() failed but we have cached data, serve from IDB
+        // This handles transient network errors where OPFS has the file but fetch fails
+        if (memory) {
+            const cached = await Indexes.Statics.get(path).once()
+            if (typeof cached !== "undefined") {
+                DB._syncInsert(path, cached)
+                return cached
+            }
+        }
         return data
     }
 
