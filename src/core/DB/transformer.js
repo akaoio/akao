@@ -16,15 +16,34 @@
 import { SCHEMA_GAME_ITEMS } from "./schemas/game-items.js"
 import { SCHEMA_SHOP_ITEMS } from "./schemas/shop-items.js"
 
+export const GAME_ITEMS_DELETE_SQL = `DELETE FROM game_items WHERE id=? AND game_id=? AND locale=?`
+export const SHOP_ITEMS_DELETE_SQL = `DELETE FROM shop_items WHERE id=? AND locale=?`
+
 // Returns locale code if filename is a real locale JSON (e.g. "vi.json", "en-US.json")
 // Returns null for meta.json, index files, or invalid patterns
-function getLocaleFromFilename(filename) {
+export function getLocaleFromFilename(filename) {
     if (typeof filename !== "string" || !filename.endsWith(".json")) return null
     if (filename === "meta.json") return null
     // Match locale patterns like "vi", "en-US", "zh-TW"
     const locale = filename.slice(0, -".json".length)
     if (!/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/.test(locale)) return null
     return locale
+}
+
+function createGameItemDeleteTransform(itemId, gameId, locale) {
+    return {
+        schema: SCHEMA_GAME_ITEMS,
+        delete: GAME_ITEMS_DELETE_SQL,
+        values: [itemId, gameId, locale],
+    }
+}
+
+function createShopItemDeleteTransform(itemId, locale) {
+    return {
+        schema: SCHEMA_SHOP_ITEMS,
+        delete: SHOP_ITEMS_DELETE_SQL,
+        values: [itemId, locale],
+    }
 }
 
 export function transform(path, data) {
@@ -42,11 +61,7 @@ export function transform(path, data) {
 
         // Delete operation — data is null but we still need itemId, gameId, locale
         if (data === null) {
-            return {
-                schema: SCHEMA_GAME_ITEMS,
-                delete: `DELETE FROM game_items WHERE id=? AND game_id=? AND locale=?`,
-                values: [itemId, gameId, locale],
-            }
+            return createGameItemDeleteTransform(itemId, gameId, locale)
         }
 
         if (!data || typeof data !== "object" || Array.isArray(data)) return null
@@ -83,11 +98,7 @@ export function transform(path, data) {
 
         // Delete operation — data is null but we still need itemId, locale
         if (data === null) {
-            return {
-                schema: SCHEMA_SHOP_ITEMS,
-                delete: `DELETE FROM shop_items WHERE id=? AND locale=?`,
-                values: [itemId, locale],
-            }
+            return createShopItemDeleteTransform(itemId, locale)
         }
 
         if (!data || typeof data !== "object" || Array.isArray(data)) return null
