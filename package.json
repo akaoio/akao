@@ -60,6 +60,7 @@
     "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "ethers": "^6.16.0",
+    "ganache": "^7.9.2",
     "ggwave": "^0.4.0",
     "prettier": "^3.7.2",
     "qr-scanner": "^1.4.2",
