@@ -6,5 +6,5 @@ import { soul } from "./soul.js"
 export async function cancel(key) {
     const segs = key.split(":")
     if (!segs[3] || segs[3] !== this.pair.pub.slice(0, 8)) return { error: "notOwner" }
-    await this.gun.get(soul()).get(key).put(null, null, { opt: { authenticator: this.pair } })
+    await new Promise(r => this.gun.get(soul()).get(key).put(null, r, { opt: { authenticator: this.pair } }))
 }

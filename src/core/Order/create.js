@@ -20,6 +20,6 @@ export async function create() {
     }
     if (this.type === "buy" && this.xpub) data.xpub = this.xpub
     const value = await globalThis.sea.sign(JSON.stringify(data), this.pair)
-    await this.gun.get(s).get(k).put(value, null, { opt: { authenticator: this.pair } })
+    await new Promise(r => this.gun.get(s).get(k).put(value, r, { opt: { authenticator: this.pair } }))
     return { orderId, key: k }
 }
