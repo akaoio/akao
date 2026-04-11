@@ -1,6 +1,6 @@
-# Shop 🛍️
+# akao 🛍️
 
-A modern **serverless eCommerce engine** built with pure Web Components. Framework-free, fully static, and ready for the decentralized web.
+**akao** is a modern **serverless eCommerce engine** built with pure Web Components. Framework-free, fully static, and ready for the decentralized web.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Web Components](https://img.shields.io/badge/Web-Components-29ABE2.svg)](https://www.webcomponents.org/)
@@ -39,8 +39,8 @@ When prompted, click **Install All**. If the prompt does not appear, open Extens
 
 ```bash
 # Clone the repository
-git clone https://github.com/akaoio/shop.git
-cd shop
+git clone https://github.com/akaoio/akao.git
+cd akao
 
 # Install dev dependencies
 npm install
@@ -95,7 +95,7 @@ npm run lint:fix
 ## 📁 Project Structure
 
 ```
-shop/
+ akao/
 ├── src/                      # Source files (never edit build/)
 │   ├── core/                 # Core systems
 │   │   ├── UI/              # Template engine (html, render, css)
@@ -256,7 +256,7 @@ Full SQL capabilities in the browser via `@sqlite.org/sqlite-wasm` running insid
 ```javascript
 import SQL from "/core/SQL.js"
 
-const db = new SQL({ name: "shop" })
+const db = new SQL({ name: "akao" })
 await db.ready   // wait for worker to open the DB
 
 await db.exec(`CREATE TABLE IF NOT EXISTS orders (

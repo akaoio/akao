@@ -109,6 +109,26 @@ async function copyOrConvert({ event, normalizedPath }) {
     return outputPath
 }
 
+async function walkFiles(dirPath, basePath = dirPath, files = []) {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true })
+    for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry.name)
+        if (entry.isDirectory()) await walkFiles(fullPath, basePath, files)
+        else files.push(normalizePath(path.relative(process.cwd(), fullPath)))
+    }
+    return files
+}
+
+async function syncInitialItems() {
+    const itemsRoot = path.join(SRC_ROOT, "statics", "items")
+    if (!await exists(itemsRoot)) return
+
+    const files = await walkFiles(itemsRoot)
+    for (const normalizedPath of files) await copyOrConvert({ event: "add", normalizedPath })
+
+    console.log(`📦 Synced ${files.length} item source files into build/statics/items`)
+}
+
 function runBuild(script) {
     return new Promise((resolve, reject) => {
         const build = spawn("npm", ["run", script], { stdio: "inherit", shell: true })
@@ -552,6 +572,7 @@ watcher.on("unlink", (filePath) => enqueueChange("unlink", filePath))
 
 // Start live-server with file watcher
 console.log("🚀 Starting development server with incremental auto-rebuild...")
+await syncInitialItems()
 
 const { protocol, httpsSource } = await startStaticServer()
 

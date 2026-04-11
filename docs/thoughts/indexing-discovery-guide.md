@@ -148,7 +148,7 @@ SQL.all()  ─────postMessage────→ sqlite3.exec() ────
 import SQL from "/core/SQL.js"
 
 // Initialize (lazy-loads worker + WASM)
-const db = new SQL({ name: "shop" })
+const db = new SQL({ name: "app" })
 await db.ready
 
 // Create tables
@@ -492,7 +492,7 @@ let db = null
 
 thread.init = async function() {
     const sqlite3 = await sqlite3InitModule()
-    db = new sqlite3.oo1.OpfsDb("/shop.db")
+    db = new sqlite3.oo1.OpfsDb("/app.db")
     
     // Enable WAL mode for better concurrency
     db.exec("PRAGMA journal_mode=WAL")
@@ -988,7 +988,7 @@ const db2 = new SQL({ name: 'db2' })
 // Uses 2 workers!
 
 // ✅ Good: Reuse single worker
-const db = new SQL({ name: 'shop' })
+const db = new SQL({ name: 'app' })
 // All queries use same worker
 ```
 

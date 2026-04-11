@@ -944,4 +944,4 @@ Key takeaways:
 
 *Document version: 1.0*  
 *Last updated: January 23, 2026*  
-*Author: akaoio/shop project*
+*Author: akaoio/akao project*
