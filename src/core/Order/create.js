@@ -1,24 +1,16 @@
 import { soul } from "./soul.js"
+import { parts } from "./parts.js"
+import { payload } from "./schema.js"
 
-// Write order to Gun under the Pen-validated order-book soul.
-// Buy orders must call proof() and deposit to FP wallet before create().
-// xpub is included in buy order payloads so Takers can verify FP wallet on-chain.
+// Write order to Gun under the Pen-validated market-window soul.
+// The raw order value is a normalized signed intent with maker/base/quote objects.
 export async function create() {
     const orderId = await this.id()
     const k = await this.key()
-    const s = soul()
-    const data = {
-        orderId,
-        pub: this.pair.pub,
-        item: this.item,
-        type: this.type,
-        price: this.price,
-        currency: this.currency,
-        chain: this.chain,
-        referrer: this.referrer,
-        status: "open"
-    }
-    if (this.type === "buy" && this.xpub) data.xpub = this.xpub
+    const meta = parts(k)
+    if (!meta) throw new Error("invalidKey")
+    const s = soul.call(this, { candle: meta.candle })
+    const data = payload(this, { orderId, status: "open" })
     const value = await globalThis.sea.sign(JSON.stringify(data), this.pair)
     await new Promise(r => this.gun.get(s).get(k).put(value, r, { opt: { authenticator: this.pair } }))
     return { orderId, key: k }

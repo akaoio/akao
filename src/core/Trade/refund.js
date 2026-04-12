@@ -16,25 +16,25 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
     const payerEntity = roles.payer
     const recipientEntity = roles.recipient
     const affiliateEntity = roles.affiliate
+    if (!platformPair) throw new Error("platpairRequired")
     const recipientXpub = await resolvePublishedXpub({
         gun: this.gun,
         party: recipientEntity,
         platpair: platformPair
     })
 
-    if (!platformPair) throw new Error("platpairRequired")
-
     const recipientRoot = await rootFromSecret(await globalThis.sea.secret(recipientEntity.epub, platformPair))
     const tl = new Lock({
         payer: payerEntity.pair,
         escrow: this.escrow,
         recipient: { xpub: recipientXpub },
-        trade: resolvedTradeId,
+        tradeId: resolvedTradeId,
         type: "TL"
     })
     const unlockTL = await tl.unlock(recipientRoot.extendedKey)
 
     let unlockCL = null
+    let unlockIndexCL = null
     if (affiliateEntity?.pub && affiliateEntity?.epub) {
         const affiliateXpub = await resolvePublishedXpub({
             gun: this.gun,
@@ -46,28 +46,22 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
             payer: payerEntity.pair,
             escrow: this.escrow,
             recipient: { xpub: affiliateXpub },
-            trade: resolvedTradeId,
+            tradeId: resolvedTradeId,
             type: "CL"
         })
         unlockCL = await cl.unlock(affiliateRoot.extendedKey)
+        unlockIndexCL = await cl.index()
     }
 
-    // TODO(debt): this marks the trade as "refunded" after deriving platform-spendable keys
-    // and refund metadata, but does not yet transfer funds on-chain.
-    // The persisted status currently means "refund path resolved by platform", not "refund settled".
+    // This resolves the deterministic refund paths and metadata,
+    // but does not execute settlement on-chain yet.
     const fields = {
-        refunded: true,
-        refundedAt: Date.now(),
-        status: "refunded",
+        refundReady: true,
+        refundReadyAt: Date.now(),
+        status: "refund_ready",
         refundTo: to || payerEntity.address || payerEntity.wallet?.address || null,
         unlock_index_TL: await tl.index(),
-        unlock_index_CL: unlockCL ? await new Lock({
-            payer: payerEntity.pair,
-            escrow: this.escrow,
-            recipient: { xpub: await resolvePublishedXpub({ gun: this.gun, party: affiliateEntity, platpair: platformPair }) },
-            trade: resolvedTradeId,
-            type: "CL"
-        }).index() : null
+        unlock_index_CL: unlockIndexCL
     }
 
     if (this.escrow?.pub)

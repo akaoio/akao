@@ -1,12 +1,12 @@
 import { sha256 } from "../Utils/crypto.js"
 
-// Pen key format: <candle>:<item_slug>:<type>:<pub8>:<nonce>
-// pub8 = pair.pub.slice(0,8) — embedded for LEX-query discovery only (not enforced by Pen)
+// Pen key format: <timestamp>:<pub>:<nonce>
+// timestamp is Date.now() in milliseconds; candle is derived from it in the soul.
+// pub is the full writer public key; nonce is iterated until PoW passes.
 // nonce is iterated until SHA-256(full key) starts with difficulty zeros
 export async function key() {
-    const candle = Math.floor(Date.now() / 300000)
-    const pub8 = this.pair.pub.slice(0, 8)
-    const base = `${candle}:${this.item}:${this.type}:${pub8}`
+    const stamp = Date.now()
+    const base = `${stamp}:${this.pair.pub}`
     const nonce = await pownonce(base, 3)
     return `${base}:${nonce}`
 }

@@ -10,12 +10,12 @@ import { read } from "./Trade/read.js"
 
 export class Trade {
     // gun    — GDB instance
-    // order  — Order instance (contains orderId, type, item, price, etc.)
+    // order  — Order instance / raw order intent (contains side, maker, base, quote, etc.)
     // maker  — { pub, epub, pair? } maker's identity
     // taker  — { pub, epub, pair? } taker's identity
     // escrow — { epub } platform's epub (for DH shared secret)
     constructor({ gun, order, maker, taker, escrow } = {}) {
-        if (!gun || !order || !maker || !taker || !escrow) return { error: "invalidInput" }
+        if (!gun || !order || !maker || !taker || !escrow) throw new Error("invalidInput")
         this.gun = gun
         this.order = order
         this.maker = maker

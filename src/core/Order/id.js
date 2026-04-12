@@ -1,8 +1,9 @@
 import { sha256 } from "../Utils/crypto.js"
+import { canonical } from "./schema.js"
 
 // orderId is computed once per Order instance (cached _ts + _rnd prevent drift and collisions).
 // Random 8 bytes (_rnd) guard against timestamp collisions when same maker creates
-// two orders for the same item+price within the same millisecond.
+// two identical intents within the same millisecond.
 // "OR:" domain separator isolates order hash space from trade ("TR:") and FP ("FP:")
 export async function id() {
     this._ts = this._ts || Date.now()
@@ -10,5 +11,5 @@ export async function id() {
         crypto.getRandomValues(new Uint8Array(8)),
         b => b.toString(16).padStart(2, "0")
     ).join("")
-    return sha256("OR:" + this.pair.pub + ":" + this.item + ":" + this.price + ":" + this._ts + ":" + this._rnd)
+    return sha256("OR:" + canonical(this) + ":" + this._ts + ":" + this._rnd)
 }

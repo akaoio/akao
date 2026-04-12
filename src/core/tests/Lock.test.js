@@ -17,12 +17,20 @@ function makeLock(type = "TL") {
         payer: PAYER_PAIR,
         escrow: ESCROW_PAIR,
         recipient: { xpub: RECIPIENT_XPUB },
-        trade: "trade-lock-1",
+        tradeId: "trade-lock-1",
         type
     })
 }
 
 Test.describe("Lock — escrow derivation primitives", () => {
+
+    Test.it("constructor throws invalidInput when tradeId is missing", () => {
+        Test.assert.throws(() => new Lock({
+            payer: PAYER_PAIR,
+            escrow: ESCROW_PAIR,
+            recipient: { xpub: RECIPIENT_XPUB }
+        }), "invalidInput")
+    })
 
     Test.it("secret() matches SEA shared secret with escrow epub", async () => {
         const lock = makeLock()
@@ -54,7 +62,7 @@ Test.describe("Lock — escrow derivation primitives", () => {
             payer: PAYER_PAIR,
             escrow: ESCROW_PAIR,
             recipient: {},
-            trade: "trade-lock-2",
+            tradeId: "trade-lock-2",
             type: "TL"
         })
         await Test.assert.rejects(lock.address(), "xpubRequired")

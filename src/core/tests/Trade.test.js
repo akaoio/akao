@@ -65,10 +65,10 @@ async function publishProfiles(gun) {
     ])
 }
 
-function makeTrade({ gun, orderType = "buy", tradeOrderId = "order-1", withAffiliate = true } = {}) {
+function makeTrade({ gun, orderSide = "buy", tradeOrderId = "order-1", withAffiliate = true } = {}) {
     const order = {
-        type: orderType,
-        referrer: withAffiliate ? AFFILIATE_PAIR.pub : null,
+        side: orderSide,
+        affiliate: withAffiliate ? { pub: AFFILIATE_PAIR.pub } : null,
         async id() {
             return tradeOrderId
         }
@@ -90,6 +90,10 @@ function makeTrade({ gun, orderType = "buy", tradeOrderId = "order-1", withAffil
 
 Test.describe("Trade — protocol state helpers", () => {
 
+    Test.it("constructor throws invalidInput when required entities are missing", () => {
+        Test.assert.throws(() => new Trade({}), "invalidInput")
+    })
+
     Test.it("id() matches Order.match() tradeId formula and is cached", async () => {
         const gun = makeGun()
         await publishProfiles(gun)
@@ -103,7 +107,7 @@ Test.describe("Trade — protocol state helpers", () => {
         Test.assert.equal(a, expected)
     })
 
-    Test.it("create() writes matched state to both maker and taker namespaces", async () => {
+    Test.it("create() writes matched state to taker namespace only", async () => {
         const gun = makeGun()
         await publishProfiles(gun)
         const { trade } = makeTrade({ gun, tradeOrderId: "order-create" })
@@ -112,9 +116,10 @@ Test.describe("Trade — protocol state helpers", () => {
         const makerSide = await tradeRecord(gun, MAKER_PAIR.pub, created.tradeId)
         const takerSide = await tradeRecord(gun, TAKER_PAIR.pub, created.tradeId)
 
-        Test.assert.deepEqual(created.writers, ["maker", "taker"])
-        Test.assert.equal(makerSide.status, "matched")
+        Test.assert.equal(created.writer, "taker")
+        Test.assert.equal(makerSide, undefined)
         Test.assert.equal(takerSide.status, "matched")
+        Test.assert.equal(takerSide.matched, true)
     })
 
     Test.it("deposit() fetches published xpubs, funds TL/CL, and records payer state", async () => {
@@ -188,14 +193,14 @@ Test.describe("Trade — protocol state helpers", () => {
             payer: MAKER_PAIR,
             escrow: ESCROW_PAIR,
             recipient: { xpub: TAKER_ROOT.neuter().extendedKey },
-            trade: tradeId,
+            tradeId,
             type: "TL"
         })
         const buyerLockCL = new Lock({
             payer: MAKER_PAIR,
             escrow: ESCROW_PAIR,
             recipient: { xpub: AFFILIATE_ROOT.neuter().extendedKey },
-            trade: tradeId,
+            tradeId,
             type: "CL"
         })
 
@@ -219,21 +224,21 @@ Test.describe("Trade — protocol state helpers", () => {
             payer: MAKER_PAIR,
             escrow: ESCROW_PAIR,
             recipient: { xpub: TAKER_ROOT.neuter().extendedKey },
-            trade: tradeId,
+            tradeId,
             type: "TL"
         })
         const cl = new Lock({
             payer: MAKER_PAIR,
             escrow: ESCROW_PAIR,
             recipient: { xpub: AFFILIATE_ROOT.neuter().extendedKey },
-            trade: tradeId,
+            tradeId,
             type: "CL"
         })
 
-        Test.assert.equal(released.status, "released")
+        Test.assert.equal(released.status, "release_ready")
         Test.assert.equal(released.tl.address, await tl.address())
         Test.assert.equal(released.cl.address, await cl.address())
-        Test.assert.equal(escrowSide.status, "released")
+        Test.assert.equal(escrowSide.status, "release_ready")
     })
 
     Test.it("refund() derives the same lock addresses and records refund metadata", async () => {
@@ -249,14 +254,14 @@ Test.describe("Trade — protocol state helpers", () => {
             payer: MAKER_PAIR,
             escrow: ESCROW_PAIR,
             recipient: { xpub: TAKER_ROOT.neuter().extendedKey },
-            trade: tradeId,
+            tradeId,
             type: "TL"
         })
 
-        Test.assert.equal(refunded.status, "refunded")
+        Test.assert.equal(refunded.status, "refund_ready")
         Test.assert.equal(refunded.tl.address, await tl.address())
         Test.assert.equal(refunded.refundTo, "0xrefund-destination")
-        Test.assert.equal(escrowSide.status, "refunded")
+        Test.assert.equal(escrowSide.status, "refund_ready")
     })
 
     Test.it("read() merges maker, taker, and escrow namespaces into one state view", async () => {
@@ -271,10 +276,10 @@ Test.describe("Trade — protocol state helpers", () => {
 
         const state = await trade.read({ tradeId: created.tradeId })
 
-        Test.assert.equal(state.status, "released")
+        Test.assert.equal(state.status, "release_ready")
         Test.assert.equal(state.delivered, true)
         Test.assert.equal(state.confirmed, true)
-        Test.assert.equal(state.released, true)
+        Test.assert.equal(state.releaseReady, true)
     })
 
 })

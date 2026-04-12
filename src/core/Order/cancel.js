@@ -1,10 +1,11 @@
 import { soul } from "./soul.js"
+import { parts } from "./parts.js"
 
 // Remove order from Gun — maker withdraws listing.
 // For buy orders: maker should also withdraw FP wallet funds back to main wallet.
-// Ownership is verified by checking pub8 in key segment 3 matches this.pair.pub.
+// Ownership is verified by checking full pub in key segment 1 matches this.pair.pub.
 export async function cancel(key) {
-    const segs = key.split(":")
-    if (!segs[3] || segs[3] !== this.pair.pub.slice(0, 8)) return { error: "notOwner" }
-    await new Promise(r => this.gun.get(soul()).get(key).put(null, r, { opt: { authenticator: this.pair } }))
+    const meta = parts(key)
+    if (!meta || meta.pub !== this.pair.pub) return { error: "notOwner" }
+    await new Promise(r => this.gun.get(soul.call(this, { candle: meta.candle })).get(key).put(null, r, { opt: { authenticator: this.pair } }))
 }

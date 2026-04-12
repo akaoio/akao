@@ -5,6 +5,6 @@ import { sha256 } from "../Utils/crypto.js"
 export async function index() {
     if (this.type !== "TL" && this.type !== "CL") throw new Error("invalidLockType")
     const s = await this.secret()
-    const seed = sha256(s + ":" + this.type + ":" + this.trade)
+    const seed = sha256(s + ":" + this.type + ":" + this.tradeId)
     return parseInt(seed.slice(0, 8), 16) & 0x7fffffff
 }

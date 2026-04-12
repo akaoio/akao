@@ -4,12 +4,12 @@ import { HDNodeWallet, getBytes } from "../Ethers.js"
 export function resolveRoles(trade, overrides = {}) {
     const maker = overrides.maker || trade.maker
     const taker = overrides.taker || trade.taker
-    const type = trade.order?.type
+    const side = trade.order?.side
 
-    if (!maker || !taker || !type) throw new Error("invalidTradeRoles")
+    if (!maker || !taker || !side) throw new Error("invalidTradeRoles")
 
-    const buyer = type === "buy" ? maker : taker
-    const seller = type === "buy" ? taker : maker
+    const buyer = side === "buy" ? maker : taker
+    const seller = side === "buy" ? taker : maker
 
     return {
         maker,

@@ -214,43 +214,39 @@ LET local[0] = floor(Date.now() / 300000)      ← current candle
 
 ### Key Format với Candle
 
-```
-<candle>_<entity>_<type>_<nonce>
+```text
+soul params: { baseId, side, candle }
+key:         <timestamp>:<pub>:<nonce>
 ```
 
 **Ví dụ P2P Order**:
-```
-5777152_organic-green-tea_buy_a3f7b2
-│       │                  │   │
-│       │                  │   └─ Random nonce (uniqueness)
-│       │                  └───── Order type
-│       └──────────────────────── Item slug  
-└──────────────────────────────── Candle number (MUST BE FIRST)
+```text
+{ baseId: organic-green-tea, side: buy, candle: 5777152 }  →  1744440123456:maker_full_pub:a3f7b2
+│                                                          │             │              └─ Random nonce (uniqueness + PoW)
+│                                                          │             └──────────────── Full writer pub
+│                                                          └────────────────────────────── Timestamp ms
+└──────────────────────────────────────────────────────────────────────── Compile-time market window params
 ```
 
-**Why candle first?**
-- ✅ LEX query efficiency (Gun `.get({ '>': '5777150_', '<': '5777252_~' })`)
-- ✅ Time-based pruning (old candles auto-filtered)
-- ✅ Discovery optimization (query by time range)
+**Why timestamp first?**
+- ✅ Pen có thể derive `candle = floor(timestamp / size)` từ seg 0
+- ✅ key vẫn giữ thứ tự thời gian tự nhiên trong một candle soul
+- ✅ nonce đứng cuối để phục vụ PoW mà không phá semantic của timestamp/pub
 
 ### Discovery Query
 
 ```javascript
-// Subscribe to orders trong window hiện tại
+// Subscribe to buy orders của đúng base item trong current + previous candle souls
 const current = Math.floor(Date.now() / 300000)
+const curSoul = Order.soul({ baseId: "organic-green-tea", side: "buy", candle: current })
+const prvSoul = Order.soul({ baseId: "organic-green-tea", side: "buy", candle: current - 1 })
 
-gun.get(orderSoul).get({
-  '>': `${current}:organic-green-tea:buy:`,
-  '<': `${current}:organic-green-tea:buy:~`
-}).on((order, key) => {
+gun.get(curSoul).map().on((order, key) => {
   console.log("Order trong candle hiện tại:", order)
 })
 
-// Subscribe to future orders (realtime)
-gun.get(orderSoul).get({
-  '>': `${current}:`
-}).on((order, key) => {
-  console.log("New order:", order)
+gun.get(prvSoul).map().on((order, key) => {
+  console.log("Order ở candle trước:", order)
 })
 ```
 

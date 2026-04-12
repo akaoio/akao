@@ -460,18 +460,30 @@ gun.get(soul).get(`${candle}_${orderId}`).put(data, null, { authenticator: myPai
 ### Pattern 4: Key segments validation + candle + signed + PoW (P2P orders)
 
 ```javascript
-// Soul cho orders của item "organic-green-tea"
-// Key format: <candle>:<itemSlug>:<type>:<nonce>
+// Soul cho order window của item "organic-green-tea", side "buy", candle 5777152
+// Key format: <timestamp>:<pub>:<nonce>
 const soul = SEA.pen({
   key: { and: [
-    SEA.candle({ seg: 0, sep: ':', size: 300000, back: 100, fwd: 2 }),
-    { seg: { sep: ':', idx: 1, of: { reg: 0 }, match: { length: [1, 128] } } },
-    { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { or: [{ eq: 'buy' }, { eq: 'sell' }] } } },
-    { seg: { sep: ':', idx: 3, of: { reg: 0 }, match: { length: [1, 20] } } },
+    {
+      let: {
+        bind: 0,
+        def: { divu: [{ tonum: { seg: { sep: ':', idx: 0, of: { reg: 0 } } } }, 300000] },
+        body: { and: [
+          { gte: [{ reg: 128 }, 5777152] },
+          { lte: [{ reg: 128 }, 5777152] }
+        ]}
+      }
+    },
+    { eq: [
+      { seg: { sep: ':', idx: 1, of: { reg: 0 } } },
+      { reg: 5 }
+    ]},
+    { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } },
   ]},
   val: { type: 'string' },
   sign: true,
-  pow: { field: 0, difficulty: 2 }
+  pow: { field: 0, difficulty: 3 },
+  params: { baseId: 'organic-green-tea', side: 'buy', candle: 5777152 }
 })
 ```
 
@@ -496,20 +508,29 @@ const soul = SEA.pen({
 import SEA from "/core/SEA.js"
 
 // SEA.pen() là synchronous — không cần await, không cần async
-function createOrderSoul(itemSlug) {
+function createOrderSoul(baseId, side, candle) {
   return SEA.pen({
     key: { and: [
-      // 1. Candle window: ±8 giờ past, ±10 phút future
-      SEA.candle({ seg: 0, sep: ':', size: 300000, back: 100, fwd: 2 }),
-      // 2. Segment 1 phải là item slug này
-      { seg: { sep: ':', idx: 1, of: { reg: 0 }, match: { eq: itemSlug } } },
-      // 3. Segment 2 phải là "buy" hoặc "sell"
-      { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { or: [{ eq: 'buy' }, { eq: 'sell' }] } } },
+      {
+        let: {
+          bind: 0,
+          def: { divu: [{ tonum: { seg: { sep: ':', idx: 0, of: { reg: 0 } } } }, 300000] },
+          body: { and: [
+            { gte: [{ reg: 128 }, candle] },
+            { lte: [{ reg: 128 }, candle] }
+          ]}
+        }
+      },
+      { eq: [
+        { seg: { sep: ':', idx: 1, of: { reg: 0 } } },
+        { reg: 5 }
+      ]},
+      { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } },
     ]},
     sign: true,
-    pow: { field: 0, difficulty: 2 }
+    pow: { field: 0, difficulty: 3 },
+    params: { baseId, side, candle }
   })
-  // Returns: "$abc123..." — string (soul ID)
 }
 ```
 
@@ -521,20 +542,23 @@ import gun from "/core/Gun.js"
 import { createOrderSoul } from "/core/OrderPen.js"
 import { Access } from "/core/Access.js"
 
-async function createorder({ item, type, quantity, price }) {
-  const soul = createOrderSoul(item)         // synchronous
+async function createorder({ baseId, side, baseQuantity, quoteQuantity }) {
   const candle = Math.floor(Date.now() / 300000)
+  const soul = createOrderSoul(baseId, side, candle)
   const nonce = String.random(6)             // gun/src/shim.js
 
-  // Key format: <candle>:<item>:<type>:<nonce>
-  const key = `${candle}:${item}:${type}:${nonce}`
+  // Key format trong soul window: <timestamp>:<pub>:<nonce>
+  const key = `${Date.now()}:${Access.states.pub}:${nonce}`
 
   gun.get(soul).get(key).put({
-    type,
-    quantity,
-    price,
-    trader: Access.states.pub,
-    item,
+    maker: {
+      pub: Access.states.pub,
+      epub: Access.states.epub,
+      xpub: Access.states.xpub
+    },
+    side,
+    base: { type: 'item', id: baseId, quantity: baseQuantity },
+    quote: { type: 'crypto', quantity: quoteQuantity, contract: 'USDT', chain: 1 },
     created: Date.now(),
     status: 'open'
   }, ack => {
@@ -547,38 +571,39 @@ async function createorder({ item, type, quantity, price }) {
 ### subscribeorders
 
 ```javascript
-async function subscribeorders(itemSlug, callback) {
-  const soul = createOrderSoul(itemSlug)    // synchronous
+async function subscribeorders(baseId, callback) {
   const candle = Math.floor(Date.now() / 300000)
 
-  // LEX range query: orders của candle hiện tại cho item này
-  gun.get(soul).get({
-    '>': `${candle}:${itemSlug}:`,
-    '<': `${candle}:${itemSlug}:~`
-  }).on((order, orderId) => {
-    if (!order || !order.type) return
-    callback({ ...order, id: orderId })
-  })
+  // Scan current + previous candle souls
+  for (const c of [candle - 1, candle]) {
+    gun.get(createOrderSoul(baseId, "buy", c)).map().on((order, orderId) => {
+      if (!order || !order.side) return
+      callback({ ...order, id: orderId })
+    })
+  }
 }
 ```
 
 ### Key Format
 
 ```
-<candle>:<item>:<type>:<nonce>
+soul params: { baseId, side, candle }
+key:         <timestamp>:<pub>:<nonce>
 
-Ví dụ: 5777152:organic-green-tea:buy:a3f7b2
+Ví dụ:
+- params: { baseId: "organic-green-tea", side: "buy", candle: 5777152 }
+- key:    1744440123456:maker_full_pub:a3f7b2
 
-└─ seg 0: 5777152              — candle number, validated bởi SEA.candle()
-   seg 1: organic-green-tea    — item slug, phải match soul's eq constraint
-   seg 2: buy                  — type, phải là "buy" hoặc "sell"
-   seg 3: a3f7b2               — nonce random 6 chars, iterated cho PoW
+└─ params: baseId + side + candle        — compile-time soul identity
+   seg 0: 1744440123456                  — timestamp ms, floor(/300000) must equal candle
+   seg 1: maker_full_pub                 — full writer pub, matched against R[5]
+   seg 2: a3f7b2                         — nonce random, iterated cho PoW
 ```
 
-**Vì sao candle phải ở đầu**:
-- Pen validation dùng `seg: 0` để extract candle number
-- LEX range queries hiệu quả: `{ '>': '5777150:', '<': '5777252:~' }`
-- Tự expire sau `back` candles, không cần cleanup
+**Vì sao timestamp ở đầu**:
+- Pen validation lấy `seg: 0` rồi derive `candle = floor(timestamp / 300000)`
+- soul đã cố định đúng market window bằng `params`
+- key vẫn giữ thứ tự thời gian tự nhiên trong cùng candle
 
 ---
 

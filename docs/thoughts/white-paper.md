@@ -26,7 +26,7 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 - ✅ **Symmetric roles**: Anyone can create buy OR sell orders
 - ✅ **Trader-centric**: Maker/Taker like Uniswap, dYdX, Binance
 - ✅ **Bi-directional**: Orders are just intentions (buy intention = sell intention from other side)
-- ✅ **Order book**: Decentralized discovery via Gun + Pen validation
+- ✅ **Order book**: Decentralized discovery via Gun + Pen validation, partitioned by item soul and order-side soul
 - ✅ **Affiliate economy**: Built-in referral commissions
 - ✅ **Non-custodial (happy path)**: Platform arbitrates disputes/refunds, not involved in normal trades
 
@@ -134,18 +134,28 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 
 ## 3. Order Types and Lifecycle
 
-### 3.1 Order Types
+### 3.1 Order Sides
 
 **Buy Order:**
 ```javascript
 {
-    type: "buy",
-    trader: "maker_pub_key",
-    item: "diablo-4/penitent-greaves-d76bc",
-    quantity: 1,
-    price: 100,        // willing to pay
-    currency: "USDT",
-    chain: 1,          // Ethereum
+    side: "buy",
+    maker: {
+        pub: "maker_pub_key",
+        epub: "maker_epub_key",
+        xpub: "maker_root_xpub"
+    },
+    base: {
+        type: "item",
+        id: "diablo-4/penitent-greaves-d76bc",
+        quantity: 1
+    },
+    quote: {
+        type: "crypto",
+        quantity: 100,
+        contract: "USDT",
+        chain: 1
+    },
     status: "open"
 }
 ```
@@ -153,13 +163,23 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 **Sell Order:**
 ```javascript
 {
-    type: "sell",
-    trader: "maker_pub_key",
-    item: "diablo-4/penitent-greaves-d76bc",
-    quantity: 1,
-    price: 95,         // willing to accept
-    currency: "USDT",
-    chain: 1,
+    side: "sell",
+    maker: {
+        pub: "maker_pub_key",
+        epub: "maker_epub_key",
+        xpub: "maker_root_xpub"
+    },
+    base: {
+        type: "item",
+        id: "diablo-4/penitent-greaves-d76bc",
+        quantity: 1
+    },
+    quote: {
+        type: "crypto",
+        quantity: 95,
+        contract: "USDT",
+        chain: 1
+    },
     status: "open"
 }
 ```
@@ -167,8 +187,8 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 ### 3.2 Trade Execution Flow
 
 ```
-1. Maker creates order → writes to Gun with Pen-validated key (no deposit)
-2. Taker discovers order → Gun .map() query
+1. Maker creates order → writes to the Pen soul compiled for the exact `(baseId, side, candle)` market window (no deposit)
+2. Taker discovers order → compiles the current and previous `(baseId, side, candle)` souls, then scans both
 3. Taker accepts order → trade status: "open" → "matched" (both parties known)
 4. Payer deposits to escrow (Maker for buy, Taker for sell):
    - Computes TL/CL from recipient's xpub + payer's index
@@ -182,7 +202,8 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 ### 3.3 Key Derivation Strategy
 
 **Changes from v1.0:**
-- **No per-item roots** (items don't need separate xpub trees)
+- **No per-item escrow roots** (items don't need separate xpub trees for settlement)
+- **Per-item, per-type, per-candle Pen souls** for discovery (`item + side + time window` define the soul identity)
 - **One root per trader-platform pair**
 - **Two escrow wallets per trade:**
   - **Payment escrow (TL)** — holds trade payment (M/P or T/P root)
@@ -239,7 +260,7 @@ For each trade, derive **two escrow wallets**:
 ```javascript
 // AFTER MATCHING (both parties known)
 // "TR:" domain separator + ":" field separators prevent hash space collision with orderId ("OR:")
-tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
+tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
 
 // Step 1: Recipient (Taker for buy order, Maker for sell order) publishes xpub
 secret_recipient = sea.secret(P.epub, recipient.pair)
@@ -272,7 +293,7 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
 
 ```javascript
 // AFTER MATCHING (payer known)
-tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
+tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
 
 // Affiliate publishes xpub
 secret_AP = sea.secret(P.epub, A.pair)
@@ -350,17 +371,18 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 **Both order types follow same pattern** (symmetric design):
 
 1. M creates order on UI (buy or sell)
-2. M generates `orderId = sha256("OR:" + M.pub + ":" + item + ":" + price + ":" + timestamp)`
-3. M retrieves referrer (if any) from localStorage: `Context.getReferrer()`
-4. M writes order to Gun with Pen-validated key:
+2. M generates `orderId = sha256("OR:" + canonicalOrderIntent + ":" + timestamp + ":" + randomness)`
+3. M retrieves affiliate (if any) from localStorage: `Context.getReferrer()`
+4. M compiles the Pen soul for the exact `(baseId, side, candle)` window, then writes under a Pen-validated key:
    ```
-   <candle>:<item_slug>:<type>:<pub8>:<nonce>
-   
-   Example buy:  5820000:penitent-greaves:buy:a1b2c3d4:x8k2m1
-   Example sell: 5820000:penitent-greaves:sell:a1b2c3d4:p9q3r7
+   soul params: { baseId: <base_item_id>, side: <side>, candle: <candle> }
+   key:         <timestamp_ms>:<pub>:<nonce>
+
+   Example soul params: { baseId: "penitent-greaves", side: "buy", candle: 5820000 }
+   Example key:         1744440123456:maker_full_pub:x8k2m1
    ```
-   `pub8` = `M.pub.slice(0, 8)` — Pen enforces writer's pub starts with this segment
-5. Order includes metadata: `{ orderId, type, item, price, currency, chain, referrer }`
+   `pub` is the maker's full public key, not a truncated shard
+5. Order includes metadata: `{ orderId, maker, side, base, quote, affiliate }`
 6. Order status: `"open"` (no funds locked yet, waiting for Taker)
 
 **No pre-deposit** for either order type → pure P2P (Platform not involved)
@@ -419,30 +441,34 @@ await M.wallet.sendTransaction({
 
 ### Step 2 — Taker Discovers and Accepts Order
 
-1. T queries Gun order book:
-   ```javascript
-   gun.get(orderSoul).map({
-       '.': { '*': `${candle}:penitent-greaves:buy:` }
-   })
-   ```
-2. T sees M's order
-   - **For buy orders**: T verifies on-chain balance of `orderWallet.address` before accepting
-     ```javascript
-     const balance = await chain.getBalance(order.orderWallet)
+1. T compiles the exact market-window souls in Gun:
+    ```javascript
+    const current = Order.soul({ baseId: "penitent-greaves", side: "buy", candle })
+    const previous = Order.soul({ baseId: "penitent-greaves", side: "buy", candle: candle - 1 })
+    ```
+2. T scans both souls:
+    ```javascript
+    gun.get(current).map()
+    gun.get(previous).map()
+    ```
+3. T sees M's order
+    - **For buy orders**: T verifies on-chain balance of `orderWallet.address` before accepting
+      ```javascript
+      const balance = await chain.getBalance(order.orderWallet)
      if (balance < requiredAmount) {
          UI.error("Maker has insufficient funds")
          return
      }
      ```
    - **For sell orders**: No verification needed (seller will prove ownership by delivery)
-3. T clicks "Accept"
-4. **Trade matching** (creates `tradeId`):
+4. T clicks "Accept"
+5. **Trade matching** (creates `tradeId`):
    ```javascript
    // tradeId computed once at match time, stored in Gun trade record — never recomputed
    // "TR:" domain separator prevents hash space collision with orderId ("OR:")
-   tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
+   tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
    ```
-5. Trade status → `"matched"` (both parties known, waiting for deposit)
+6. Trade status → `"matched"` (both parties known, waiting for deposit)
 
 ### Step 3 — Payer Deposits to Escrow
 
@@ -650,73 +676,81 @@ const CL = root_affiliate.deriveChild(index_CL)
 
 ### 6.1 Temporal Validation
 
-Orders use **candle-based expiry** to prevent stale orders:
+Orders use **parameterized Pen souls** and **timestamp keys**:
 
 ```javascript
 const orderSoul = SEA.pen({
     key: { and: [
-        // seg 0: Candle window (5-min candles, ~8h back, ~10min fwd)
-        SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 }),
-
-        // seg 1: Item slug (1–128 chars)
-        { seg: { sep: ":", idx: 1, of: { reg: 0 },
-                 match: { length: [1, 128] } } },
-
-        // seg 2: Order type — "buy" or "sell"
-        { seg: { sep: ":", idx: 2, of: { reg: 0 },
-                 match: { or: [{ eq: "buy" }, { eq: "sell" }] } } },
-
-        // seg 3: pub8 = M.pub.slice(0, 8) — exactly 8 hex chars
-        // PRE(R[5], seg3): R[5] (writer's actual pub) must start with this segment
-        // Prevents any other authenticated user from writing to a maker's key prefix
-        { seg: { sep: ":", idx: 3, of: { reg: 0 }, match: { length: [8, 8] } } },
-        { pre: [{ reg: 5 }, { seg: { sep: ":", idx: 3, of: { reg: 0 } } }] }
-
-        // seg 4: nonce — iterated by client for PoW
+        // seg 0: timestamp_ms whose derived candle must equal the soul candle
+        {
+            let: {
+                bind: 0,
+                def: { divu: [{ tonum: { seg: { sep: ":", idx: 0, of: { reg: 0 } } } }, 300000] },
+                body: { and: [
+                    { gte: [{ reg: 128 }, candle] },
+                    { lte: [{ reg: 128 }, candle] }
+                ]}
+            }
+        },
+        // seg 1: full writer pub must equal R[5]
+        { eq: [
+            { seg: { sep: ":", idx: 1, of: { reg: 0 } } },
+            { reg: 5 }
+        ]},
+        // seg 2: nonce — iterated by client for PoW
+        { seg: { sep: ":", idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } }
     ]},
-    val: { type: "string" },  // JSON order metadata (orderId, price, currency, chain, etc.)
+    val: { type: "string" },  // JSON order metadata (orderId, maker, side, base, quote, affiliate, etc.)
     sign: true,
-    pow: { field: 0, difficulty: 2 }  // Anti-spam PoW — client iterates nonce at seg 4
+    pow: { field: 0, difficulty: 3 },  // Anti-spam PoW — client iterates nonce at seg 2
+    params: { baseId, side, candle }
 })
 ```
 
+**Important partitioning rule**:
+- **Soul identity carries market window**: `params = { baseId, side, candle }`
+- **Key carries order instance identity**: `<timestamp>:<pub>:<nonce>`
+- **Read path starts from the right soul**, not from a global order bucket
+
 ### 6.2 Key Format
 
-```
-<candle>:<item_slug>:<type>:<pub8>:<nonce>
+```text
+soul params: { baseId: <base_item_id>, side: <side>, candle: <candle> }
+key:         <timestamp_ms>:<pub>:<nonce>
 
-Example buy:  5820000:penitent-greaves:buy:a1b2c3d4:x8k2m1
-Example sell: 5820000:penitent-greaves:sell:a1b2c3d4:p9q3r7
+Example params: { baseId: "penitent-greaves", side: "buy", candle: 5820000 }
+Example key:    1744440123456:maker_full_pub:x8k2m1
 ```
 
 | Segment | Content | Validated by |
 |---|---|---|
-| seg 0 | `candle` = `Math.floor(Date.now() / 300000)` | `SEA.candle()` — window ±8h/10min |
-| seg 1 | `item_slug` (1–128 chars) | Pen `length` check |
-| seg 2 | `"buy"` or `"sell"` | Pen `or/eq` check |
-| seg 3 | `pub8` = `M.pub.slice(0, 8)` | Pen `PRE(R[5], seg3)` — writer identity |
-| seg 4 | `nonce` — client iterates until PoW passes | PoW `difficulty: 2` |
+| soul | `params = { baseId, side, candle }` | Compile-time soul identity via `SEA.pen({ params })` |
+| seg 0 | `timestamp_ms = Date.now()` | `floor(timestamp_ms / 300000) === candle` |
+| seg 1 | `pub = M.pub` | Dynamic equality with writer register `R[5]` |
+| seg 2 | `nonce` — client iterates until PoW passes | PoW `difficulty: 3` |
 
 **orderId** is stored in the value (not the key), enabling:
-- Range queries by candle/item/type without knowing orderId
+- Stable identity independent of timestamp/nonce
 - Price changes without key recreation
-- Simpler LEX range queries (candle-first)
+- Matching/cancellation by key while market window stays derivable from timestamp
 
 **Candle calculation:**
 ```javascript
 const candle = Math.floor(Date.now() / 300000)  // 5-minute candles
 
-// Full key construction:
-const pub8 = pair.pub.slice(0, 8)
-const nonce = await computePowNonce(`${candle}:${item}:${type}:${pub8}`, 2)
-const key = `${candle}:${item}:${type}:${pub8}:${nonce}`
+// Full key construction inside soul({ baseId, side, candle }):
+const timestamp = Date.now()
+const pub = pair.pub
+const nonce = await computePowNonce(`${timestamp}:${pub}`, 3)
+const key = `${timestamp}:${pub}:${nonce}`
 ```
 
 **Benefits:**
-- Old orders auto-expire (can't write keys outside window)
-- Discovery queries scoped to recent candles
+- Soul identity is exact to one market window
+- Full pub is stronger than `pub8` for ownership and cancellation checks
+- Discovery queries start from exact baseId/side/candle souls
 - No manual cleanup needed
-- Only Maker can write/overwrite their own order keys (Pen enforces via pub8)
+- Market noise from other items, sides, or candles does not pollute discovery
 
 ---
 
@@ -744,6 +778,7 @@ Gun SEA enforces write restriction via signature — **no Pen needed**.
 | `unlock_index_CL` (number) | Buyer (M or T) | Own | Step 5 — at confirmation |
 | `confirmed` (true) | Buyer (M or T) | Own | Step 5 — receipt confirmed |
 | `disputed` (object) | Either party | Own | Step 6 — if dispute filed |
+| `release_ready` / `refund_ready` | Platform | Escrow's | Step 6 — platform has resolved deterministic spend paths but has not settled on-chain yet |
 
 **Key security property**: `unlock_index_TL` and `unlock_index_CL` live in the **buyer's own namespace**. Seller must actively read buyer's namespace to obtain the index. Buyer controls when seller can withdraw — no premature self-release is possible.
 
@@ -866,7 +901,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 | In-game item delivery fraud | Medium | Dispute resolution by P with proof requirements |
 | Candle drift (client time skew) | Low | Accept ±2 candles forward, ±100 backward |
 | Trade record soul | ✅ Resolved | Dual user-namespace model (Section 6.3). Each party writes to `gun.user(own.pub).get("trades").get(tradeId)`. Gun SEA enforces authorship. No Pen needed. |
-| Order soul overwrite | ✅ Resolved | `pub8 = M.pub.slice(0,8)` in seg 3; Pen validates `PRE(R[5], seg3)`. Only Maker's authenticated pair can write to their own key prefix (Section 6.1). |
+| Order soul overwrite | ✅ Resolved in direction | Full writer pub now lives in key seg 1, and soul identity is parameterized by `{ baseId, side, candle }` via `SEA.pen({ params })` (Section 6.1). |
 
 ---
 
@@ -887,7 +922,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 - [ ] `src/core/Affiliate.js` — referral tracking + commission calculation
 - [ ] `src/UI/routes/order/` — order book UI + trade flow
 - [ ] Pen soul definition for orders
-- [ ] Gun .map() discovery queries
+- [ ] Per-baseId + per-side Gun discovery queries with candle range scanning
 - [ ] Auto-release 24h timer (both TL and CL)
 - [ ] Affiliate index release mechanism (via Gun)
 - [ ] Dispute UI at `/dispute`

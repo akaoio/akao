@@ -1,26 +1,18 @@
 import { putTradeRecord, resolveTradeId } from "./helpers.js"
 
-// Write initial trade records to all available authenticated participant namespaces.
-// Each side can later extend only its own record.
-export async function create({ tradeId, matchedAt = Date.now() } = {}) {
+// Taker accepts maker's order and authors the initial trade coordination record.
+// Later transitions are appended by whichever actor owns that state change.
+export async function create({ tradeId, matchedAt = Date.now(), taker = null } = {}) {
     const resolvedTradeId = await resolveTradeId(this, tradeId)
-    const record = { tradeId: resolvedTradeId, status: "matched", matchedAt }
-    const writers = [
-        this.maker?.pair ? { pub: this.maker.pub, pair: this.maker.pair, role: "maker" } : null,
-        this.taker?.pair ? { pub: this.taker.pub, pair: this.taker.pair, role: "taker" } : null
-    ].filter(Boolean)
-
-    if (!writers.length) throw new Error("writerPairRequired")
-
-    await Promise.all(
-        writers.map(({ pub, pair }) => putTradeRecord({
-            gun: this.gun,
-            pub,
-            tradeId: resolvedTradeId,
-            fields: record,
-            pair
-        }))
-    )
-
-    return { ...record, writers: writers.map(({ role }) => role) }
+    const actor = taker || this.taker
+    if (!actor?.pub || !actor?.pair) throw new Error("takerPairRequired")
+    const record = { tradeId: resolvedTradeId, status: "matched", matched: true, matchedAt }
+    await putTradeRecord({
+        gun: this.gun,
+        pub: actor.pub,
+        tradeId: resolvedTradeId,
+        fields: record,
+        pair: actor.pair
+    })
+    return { ...record, writer: "taker" }
 }

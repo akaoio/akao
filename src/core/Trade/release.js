@@ -16,25 +16,25 @@ export async function release({ tradeId, payer, recipient, affiliate = null, pla
     const payerEntity = roles.payer
     const recipientEntity = roles.recipient
     const affiliateEntity = roles.affiliate
+    if (!platformPair) throw new Error("platpairRequired")
     const recipientXpub = await resolvePublishedXpub({
         gun: this.gun,
         party: recipientEntity,
         platpair: platformPair
     })
 
-    if (!platformPair) throw new Error("platpairRequired")
-
     const recipientRoot = await rootFromSecret(await globalThis.sea.secret(recipientEntity.epub, platformPair))
     const tl = new Lock({
         payer: payerEntity.pair,
         escrow: this.escrow,
         recipient: { xpub: recipientXpub },
-        trade: resolvedTradeId,
+        tradeId: resolvedTradeId,
         type: "TL"
     })
     const unlockTL = await tl.unlock(recipientRoot.extendedKey)
 
     let unlockCL = null
+    let unlockIndexCL = null
     if (affiliateEntity?.pub && affiliateEntity?.epub) {
         const affiliateXpub = await resolvePublishedXpub({
             gun: this.gun,
@@ -46,27 +46,21 @@ export async function release({ tradeId, payer, recipient, affiliate = null, pla
             payer: payerEntity.pair,
             escrow: this.escrow,
             recipient: { xpub: affiliateXpub },
-            trade: resolvedTradeId,
+            tradeId: resolvedTradeId,
             type: "CL"
         })
         unlockCL = await cl.unlock(affiliateRoot.extendedKey)
+        unlockIndexCL = await cl.index()
     }
 
-    // TODO(debt): this marks the trade as "released" after deriving platform-spendable keys
-    // and indexes, but does not yet execute an on-chain withdrawal or reveal flow.
-    // The persisted status is therefore authorization metadata, not proof of fund movement.
+    // This resolves the deterministic release paths and indexes,
+    // but does not execute settlement on-chain yet.
     const fields = {
-        released: true,
-        releasedAt: Date.now(),
-        status: "released",
+        releaseReady: true,
+        releaseReadyAt: Date.now(),
+        status: "release_ready",
         unlock_index_TL: await tl.index(),
-        unlock_index_CL: unlockCL ? await new Lock({
-            payer: payerEntity.pair,
-            escrow: this.escrow,
-            recipient: { xpub: await resolvePublishedXpub({ gun: this.gun, party: affiliateEntity, platpair: platformPair }) },
-            trade: resolvedTradeId,
-            type: "CL"
-        }).index() : null
+        unlock_index_CL: unlockIndexCL
     }
 
     if (this.escrow?.pub)

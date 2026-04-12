@@ -16,7 +16,7 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
     const roles = resolveRoles(this, { payer, recipient, affiliate })
     const payerEntity = roles.payer
     const recipientEntity = roles.recipient
-    const affiliateEntity = roles.affiliate || (this.order?.referrer ? { pub: this.order.referrer } : null)
+    const affiliateEntity = roles.affiliate || this.order?.affiliate || null
 
     if (!payerEntity?.pair) throw new Error("payerPairRequired")
     if (!recipientEntity?.pub && !xpub) throw new Error("recipientRequired")
@@ -36,7 +36,7 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
         payer: payerEntity.pair,
         escrow: this.escrow,
         recipient: { xpub: recipientXpub },
-        trade: resolvedTradeId,
+        tradeId: resolvedTradeId,
         type: "TL"
     })
     const tlAddr = await tl.address()
@@ -47,7 +47,7 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
             payer: payerEntity.pair,
             escrow: this.escrow,
             recipient: { xpub: affiliateXpub },
-            trade: resolvedTradeId,
+            tradeId: resolvedTradeId,
             type: "CL"
         })
         clAddr = await cl.address()
