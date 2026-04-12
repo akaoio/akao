@@ -1,6 +1,6 @@
 # akao 🛍️
 
-**akao** is a modern **serverless eCommerce engine** built with pure Web Components. Framework-free, fully static, and ready for the decentralized web.
+**akao** is a modern **serverless, local-first eCommerce engine** built with pure Web Components. It is framework-free, fully static, and designed for a more decentralized web.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Web Components](https://img.shields.io/badge/Web-Components-29ABE2.svg)](https://www.webcomponents.org/)
@@ -9,10 +9,10 @@
 
 ## ✨ Features
 
-- 🌍 **19 Languages** - Full internationalization with static routes per locale for optimal SEO
+- 🌍 **18 Languages** - Full internationalization with static routes per locale for optimal SEO
 - 💱 **Multi-Currency** - Fiat currencies + on-chain crypto (ETH, BSC, and testnets)
 - 🚀 **Serverless** - Pure static files deployable anywhere (Netlify, Vercel, GitHub Pages, S3)
-- 🧩 **Web Components** - 29 native custom elements, no framework dependencies
+- 🧩 **Web Components** - Native custom elements with no framework dependency
 - 🔐 **Passwordless Auth** - WebAuthn passkeys (Face ID, Touch ID, Windows Hello)
 - 🔗 **DeFi Integration** - Uniswap V2/V3 DEX support, on-chain wallet, token swaps
 - 📡 **Decentralized** - Optional GunDB integration for peer-to-peer data sync
@@ -135,9 +135,9 @@ npm run lint:fix
 │   │   ├── Wallet.js        # Crypto wallet (key derivation, balance, send)
 │   │   └── WebAuthn.js      # WebAuthn/FIDO2 passkey wrapper
 │   ├── UI/                   # User interface
-│   │   ├── components/      # 29 reusable web components
+│   │   ├── components/      # Reusable web components
 │   │   ├── layouts/         # Page layouts
-│   │   ├── routes/          # 10 route handlers
+│   │   ├── routes/          # Route handlers
 │   │   └── css/             # Global styles
 │   └── statics/              # Static data and content
 │       ├── i18n/            # 200+ translation files
@@ -169,14 +169,14 @@ npm run lint:fix
 
 ### Core Philosophy
 
-This project embraces **framework-less development**, leveraging native web standards:
+The project is grounded in a few durable convictions:
 
-- **Web Components API** - Custom elements with Shadow DOM
-- **ES Modules** - Native JavaScript modules
-- **Template Literals** - Zero-overhead templating
-- **Web Standards** - No proprietary abstractions
+- **Native over ornamental abstraction** - trust the web platform before escaping it
+- **Static and local-first by default** - push capability toward the browser and keep deployment simple
+- **Verifiability over trust theater** - prefer explicit proofs, deterministic structure, and testable flows
+- **User sovereignty over custody** - identity, data, and value should remain as close to the user as possible
 
-See [the-philosophy-of-framework-less.md](docs/thoughts/the-philosophy-of-framework-less.md) for detailed rationale.
+For the broader worldview behind the codebase, start with [docs/phylosophy/README.md](docs/phylosophy/README.md).
 
 ### UI System
 
@@ -594,11 +594,12 @@ mystore.com: mystore
 
 ## 📚 Documentation
 
+- [Philosophy Index](docs/phylosophy/README.md) — The worldview behind the codebase
 - [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) — Why no framework?
 - [SQLite WASM + OPFS Architecture](docs/thoughts/sqlite-wasm-opfs-worker.md) — SQL storage design
 - [Offline-First In-Browser Server](docs/thoughts/offline-first-browser-server.md) — RTC, Torrent, P2P stack architecture & feasibility
 - [WebAuthn PRF Extension](docs/thoughts/webauthn-prf-extension.md) — Passkey deep-dive
-- [White Paper Draft](docs/thoughts/white-paper-draft.md) — 4-party escrow design
+- [White Paper](docs/thoughts/white-paper.md) — 4-party escrow design
 - [Chat](docs/thoughts/chat.md) — escrow chat protocol
 
 ## 🤝 Contributing

@@ -1,6 +1,6 @@
-# Contributing to Shop
+# Contributing to akao
 
-Thank you for considering contributing to Shop! It's people like you that make this project a great tool for the community.
+Thank you for considering contributing to akao. It's people like you that make this project stronger for the community.
 
 ## Code of Conduct
 
@@ -51,11 +51,11 @@ Before filing a bug report, check existing issues to avoid duplicates. Include:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR-USERNAME/shop.git
-cd shop
+git clone https://github.com/YOUR-USERNAME/akao.git
+cd akao
 
 # Add upstream remote
-git remote add upstream https://github.com/akaoio/shop.git
+git remote add upstream https://github.com/akaoio/akao.git
 
 # Install dependencies
 npm install
@@ -91,12 +91,12 @@ npm run test:geo             # geo data integrity tests
 ## Project Structure
 
 ```
-shop/
+akao/
 ├── src/
 │   ├── core/          # Core systems (UI, States, Router, Chain, Dex, Wallet…)
 │   ├── UI/
-│   │   ├── components/  # 29 Web Components
-│   │   ├── routes/      # 10 route handlers
+│   │   ├── components/  # Web Components
+│   │   ├── routes/      # route handlers
 │   │   ├── layouts/     # Page layouts
 │   │   └── css/         # Global styles
 │   └── statics/       # Data files (YAML)
@@ -485,8 +485,8 @@ chore: update ethers to 6.16
 
 ## Questions?
 
-- **Issues:** [GitHub Issues](https://github.com/akaoio/shop/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/akaoio/shop/discussions)
+- **Issues:** [GitHub Issues](https://github.com/akaoio/akao/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/akaoio/akao/discussions)
 
 ## Additional Resources
 
@@ -499,4 +499,4 @@ chore: update ethers to 6.16
 
 ---
 
-Thank you for contributing to Shop! 🎉
+Thank you for contributing to akao! 🎉
