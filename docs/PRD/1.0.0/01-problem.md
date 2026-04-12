@@ -13,7 +13,7 @@ Hiện tại, giao dịch in-game items giữa người chơi chủ yếu diễn
 Các marketplace crypto hiện tại (OpenSea, Rarible) tập trung vào NFT, không hỗ trợ:
 - In-game items truyền thống (không phải NFT)
 - Gaming services (boosting, coaching, account trading)
-- Mô hình escrow phù hợp cho delivery không tức thời (seller cần thời gian fulfill)
+- Mô hình platform phù hợp cho delivery không tức thời (seller cần thời gian fulfill)
 
 ### 3. Rào cản crypto cho gamers
 
@@ -24,7 +24,7 @@ Các marketplace crypto hiện tại (OpenSea, Rarible) tập trung vào NFT, kh
 
 ## Evidence
 
-- Mô hình escrow 4 bên được thiết kế để giải quyết trust problem giữa buyer/seller, trong đó platform giữ quyền kiểm soát ví escrow nhưng không giữ tiền trực tiếp (ref: docs/thoughts/white-paper-draft.md)
+- Mô hình platform 4 bên được thiết kế để giải quyết trust problem giữa buyer/seller, trong đó platform giữ quyền kiểm soát ví platform nhưng không giữ tiền trực tiếp (ref: docs/thoughts/white-paper-draft.md)
 - Auth bằng WebAuthn passkey thay vì password/seed phrase — giảm rào cản crypto (ref: src/core/Access.js, docs/WebAuthn-PRF-Extension.md)
 - Ví được derive tự động từ passkey, user không cần quản lý private key (ref: src/core/Wallet.js)
 

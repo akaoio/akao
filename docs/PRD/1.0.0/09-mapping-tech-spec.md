@@ -12,7 +12,7 @@ Bảng này chỉ ra mỗi section PRD cần được implement chi tiết trong
 | **Flow 2: Browse & Cart** ✅ | Data Layer (Static JSON items, IndexedDB cart), Component Architecture (ui-items, ui-cart) | Cart persistence qua Indexes.Cart, SHA256 dedup key |
 | **Flow 3: Cart Management** ✅ | State Flow (Cart.js reactive updates), Data Layer (IndexedDB) | Cart.add() dedup logic bằng SHA256 key |
 | **Flow 4: Deposit** ✅ | Client Architecture (Wallet.js address), On-chain Interface (balance read) | Deterministic address generation. [TBD] Balance auto-polling design |
-| **Flow 5: Checkout & Escrow** 🔲 | Key Derivation (VSE/VAE wallet), On-chain Interface (3 transactions), State Flow (checkout → order), Thread Coordination (tx broadcast + confirmation) | **Section quan trọng nhất** — cần mô tả đầy đủ escrow wallet derivation theo white-paper |
+| **Flow 5: Checkout & Platform** 🔲 | Key Derivation (VSE/VAE wallet), On-chain Interface (3 transactions), State Flow (checkout → order), Thread Coordination (tx broadcast + confirmation) | **Section quan trọng nhất** — cần mô tả đầy đủ platform wallet derivation theo white-paper |
 | **Flow 6: Fulfill & Confirm** 🔲 | Data Layer (GunDB order data), State Flow (order status updates), Key Derivation (seed release to seller) | GunDB P2P sync cho seller nhận order. Route /inventory chưa tồn tại |
 | **Flow 7: Withdraw** ✅ | On-chain Interface (send transaction), RPC Retry (failover), Error Handling (tx failure) | Gas estimation debounce 500ms. [TBD] Passkey confirm trước withdraw |
 | **Flow 8: Dispute** 🔲 | Data Layer (dispute state in GunDB), Key Derivation (Platform refund via xprv) | Platform cần access xprv để refund. Route /dispute chỉ placeholder |

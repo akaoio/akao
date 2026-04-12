@@ -6,6 +6,7 @@ export const TESTS = [
     { file: "Forex.test.js", browser: true, node: true },
     { file: "IDB.test.js", browser: true, node: true },
     { file: "DB.test.js", browser: true, node: true },
+    { file: "Platform.test.js", browser: true, node: true },
     { file: "UI.test.js", browser: true, node: false },
     { file: "Context.test.js", browser: true, node: true },
     { file: "RTC.test.js", browser: true, node: true },

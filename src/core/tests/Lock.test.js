@@ -1,12 +1,14 @@
 import Test from "../Test.js"
 import { sha256 } from "../Utils/crypto.js"
 import { Lock } from "../Lock.js"
+import { devplatform } from "../Platform.js"
 import { HDNodeWallet, getBytes } from "../Ethers.js"
 
 const _SEA = globalThis.sea
 
-const [PAYER_PAIR, ESCROW_PAIR] = await Promise.all([
-    _SEA.pair(), _SEA.pair()
+const PLATFORM = await devplatform({ sea: _SEA })
+const [PAYER_PAIR] = await Promise.all([
+    _SEA.pair()
 ])
 
 const RECIPIENT_ROOT = HDNodeWallet.fromSeed(getBytes("0x" + sha256("lock-recipient-root")))
@@ -15,26 +17,26 @@ const RECIPIENT_XPUB = RECIPIENT_ROOT.neuter().extendedKey
 function makeLock(type = "TL") {
     return new Lock({
         payer: PAYER_PAIR,
-        escrow: ESCROW_PAIR,
+        platform: PLATFORM.pair,
         recipient: { xpub: RECIPIENT_XPUB },
         tradeId: "trade-lock-1",
         type
     })
 }
 
-Test.describe("Lock — escrow derivation primitives", () => {
+Test.describe("Lock — platform derivation primitives", () => {
 
     Test.it("constructor throws invalidInput when tradeId is missing", () => {
         Test.assert.throws(() => new Lock({
             payer: PAYER_PAIR,
-            escrow: ESCROW_PAIR,
+            platform: PLATFORM.pair,
             recipient: { xpub: RECIPIENT_XPUB }
         }), "invalidInput")
     })
 
-    Test.it("secret() matches SEA shared secret with escrow epub", async () => {
+    Test.it("secret() matches SEA shared secret with platform epub", async () => {
         const lock = makeLock()
-        const expected = await _SEA.secret(ESCROW_PAIR.epub, PAYER_PAIR)
+        const expected = await _SEA.secret(PLATFORM.epub, PAYER_PAIR)
         Test.assert.equal(await lock.secret(), expected)
     })
 
@@ -60,7 +62,7 @@ Test.describe("Lock — escrow derivation primitives", () => {
     Test.it("address() rejects when recipient xpub is missing", async () => {
         const lock = new Lock({
             payer: PAYER_PAIR,
-            escrow: ESCROW_PAIR,
+            platform: PLATFORM.pair,
             recipient: {},
             tradeId: "trade-lock-2",
             type: "TL"

@@ -261,7 +261,7 @@ gun.get(prvSoul).map().on((order, key) => {
 | **Market orders** (nhanh) | 60s | 5 | 1 | ±5-10 phút |
 | **Limit orders** (trung bình) | 5min | 48 | 2 | ±4 giờ |
 | **GTC orders** (dài hạn) | 5min | 100 | 2 | ~8 giờ |
-| **Escrow contracts** | 1h | 720 | 10 | ±30 ngày |
+| **Platform contracts** | 1h | 720 | 10 | ±30 ngày |
 | **Chat messages** | 5min | 288 | 2 | ±24 giờ |
 
 ### Clock Skew Tolerance
@@ -338,7 +338,7 @@ back: 5-10, fwd: 1-2     // Minutes to hours
 // Medium (limit orders, sessions)
 back: 48-100, fwd: 2     // Hours to half-day
 
-// Loose (GTC, escrow)
+// Loose (GTC, platform)
 back: 288-720, fwd: 10   // Days to weeks
 ```
 

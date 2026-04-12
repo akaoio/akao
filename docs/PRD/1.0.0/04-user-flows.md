@@ -111,7 +111,7 @@ Mỗi flow ghi rõ trạng thái implementation:
 
 ---
 
-## Flow 5: Checkout & Escrow Payment 🔲
+## Flow 5: Checkout & Platform Payment 🔲
 
 **Trạng thái:** Route `/checkout` tồn tại nhưng chỉ có empty div, KHÔNG có logic nào. Toàn bộ flow dưới đây là **requirement cần implement**, không phải mô tả code hiện tại.
 
@@ -127,9 +127,9 @@ Mỗi flow ghi rõ trạng thái implementation:
 2. User chọn chain + currency để thanh toán
 3. User bấm "Thanh toán" → xác nhận bằng passkey
 4. Hệ thống tạo giao dịch on-chain:
-   - Tiền cho Seller → vào ví escrow VSE (Platform kiểm soát, Seller chưa rút được)
+   - Tiền cho Seller → vào ví platform VSE (Platform kiểm soát, Seller chưa rút được)
    - Phí sàn → vào ví Platform
-   - Phí affiliate → vào ví escrow VAE (nếu có referrer)
+   - Phí affiliate → vào ví platform VAE (nếu có referrer)
 5. User thấy progress bar trong quá trình xử lý
 6. Thành công → chuyển sang `/order` → thấy status "Holding"
 7. Thất bại → hiển thị lỗi cụ thể, tiền không mất (giao dịch revert on-chain)
@@ -156,7 +156,7 @@ Mỗi flow ghi rõ trạng thái implementation:
 ### Phía Buyer
 4. Buyer nhận thông báo Seller đã giao hàng — [TBD] Notification mechanism: in-app? push? GunDB event? Hiện chưa có notification system
 5. Buyer vào `/order` → xem order details
-6. **Trường hợp A — Buyer confirm:** Bấm "Xác nhận đã nhận" → Escrow release tiền cho Seller → Status = "Released"
+6. **Trường hợp A — Buyer confirm:** Bấm "Xác nhận đã nhận" → Platform release tiền cho Seller → Status = "Released"
 7. **Trường hợp B — Buyer không phản hồi:** Sau 24h kể từ khi Seller request confirm → Hệ thống tự động release cho Seller
 8. **Trường hợp C — Buyer phản đối:** Bấm "Mở Dispute" → Chuyển sang Flow 8
 

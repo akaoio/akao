@@ -15,7 +15,7 @@ export async function confirm({ tradeId, buyerpair = null, buyer = null } = {}) 
     if (!buyerEntity?.pub || !pair) throw new Error("buyerPairRequired")
     if (!payerEntity?.pub || payerEntity.pub !== buyerEntity.pub) throw new Error("buyerMustBePayer")
 
-    const secret = await sea.secret(this.escrow.epub, payerEntity.pair)
+    const secret = await sea.secret(this.platform.epub, payerEntity.pair)
     const index_TL = parseInt(sha256(secret + ":TL:" + resolvedTradeId).slice(0, 8), 16) & 0x7fffffff
     const index_CL = parseInt(sha256(secret + ":CL:" + resolvedTradeId).slice(0, 8), 16) & 0x7fffffff
     const fields = {

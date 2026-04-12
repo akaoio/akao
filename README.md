@@ -51,6 +51,8 @@ npm start
 
 The default dev surface is `http://localhost:8080`. If a hostname is mapped to the same site in `src/statics/domains.yaml` and resolves to this machine (for example `peer0.akao.io`), the same dev server can also be reached through that host. `npm start` restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8765` before starting a fresh stack.
 
+In DEV, `Construct.Site()` patches `Statics.site.platform` with a deterministic fallback identity when `platform.pub`, `platform.epub`, or `platform.xpub` is missing. The fallback is derived from the shared seed `"seed"` via `SEA.pair(null, { seed: "seed" })` plus the matching HD root `xpub`, so local development and tests do not need a separately stored platform keypair.
+
 ### Development Workflow
 
 ```bash
@@ -599,8 +601,8 @@ mystore.com: mystore
 - [SQLite WASM + OPFS Architecture](docs/thoughts/sqlite-wasm-opfs-worker.md) — SQL storage design
 - [Offline-First In-Browser Server](docs/thoughts/offline-first-browser-server.md) — RTC, Torrent, P2P stack architecture & feasibility
 - [WebAuthn PRF Extension](docs/thoughts/webauthn-prf-extension.md) — Passkey deep-dive
-- [White Paper](docs/thoughts/white-paper.md) — 4-party escrow design
-- [Chat](docs/thoughts/chat.md) — escrow chat protocol
+- [White Paper](docs/thoughts/white-paper.md) — 4-party platform design
+- [Chat](docs/thoughts/chat.md) — platform chat protocol
 
 ## 🤝 Contributing
 

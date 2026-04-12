@@ -20,7 +20,7 @@ Các ràng buộc sản phẩm áp dụng cho Phase 1 (MVP).
 | Chỉ ETH + BSC | 2 mainnet (Ethereum chain ID 1, BSC chain ID 56) + 2 testnet (Sepolia 11155111, BSC Testnet 97) |
 | Chỉ crypto payment | Không hỗ trợ fiat payment gateway (Stripe, PayPal...). User phải nạp crypto trước |
 | Gas fee do user chịu | Mỗi giao dịch yêu cầu native coin (ETH/BNB) cho gas fee, ngoài token amount |
-| On-chain = final | Giao dịch đã confirm on-chain không thể reverse. Refund chỉ thực hiện bằng giao dịch mới từ ví escrow |
+| On-chain = final | Giao dịch đã confirm on-chain không thể reverse. Refund chỉ thực hiện bằng giao dịch mới từ ví platform |
 | Stablecoins ưu tiên | Payment currency ưu tiên: USDT, USDC, BUSD. Hỗ trợ thêm native coin (ETH, BNB) |
 
 ## Authentication

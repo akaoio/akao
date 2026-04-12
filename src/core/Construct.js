@@ -4,6 +4,7 @@ import { BROWSER } from "./Utils.js"
 import { NODE } from "./Utils/environment.js"
 import Router from "./Router.js"
 import DB from "./DB.js"
+import { patchsiteplatform } from "./Platform.js"
 
 function isLoopbackHost(hostname = "") {
     return hostname === "localhost"
@@ -46,6 +47,7 @@ export const Construct = {
         }
 
         Statics.site = domain?.site ? await DB.get(["statics", "sites", domain.site, "configs.json"]) : null
+        if (Statics.site) await patchsiteplatform(Statics.site)
         console.log("Constructed: Site")
         return !!Statics.site
     },

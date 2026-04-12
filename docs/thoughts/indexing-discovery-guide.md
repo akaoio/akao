@@ -824,7 +824,7 @@ async function handleAcceptOrder(order) {
         created: Date.now()
     }, ack => {
         if (ack.err) console.error('Trade creation failed:', ack.err)
-        else alert('Trade matched! Waiting for maker deposit to escrow...')
+        else alert('Trade matched! Waiting for maker deposit to platform...')
     })
 }
 ```
@@ -846,7 +846,7 @@ export class TRADE_MONITOR extends HTMLElement {
             // Update UI based on status
             switch (trade.status) {
                 case 'matched':
-                    this.showStatus('⏳ Waiting for deposit to escrow...')
+                    this.showStatus('⏳ Waiting for deposit to platform...')
                     break
                 case 'deposited':
                     this.showStatus('✅ Funds locked. Deliver item in-game.')

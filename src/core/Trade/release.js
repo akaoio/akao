@@ -11,7 +11,7 @@ import {
 // Platform recomputes indexes from payer's secret, derives recipient spending keys
 export async function release({ tradeId, payer, recipient, affiliate = null, platpair = null } = {}) {
     const resolvedTradeId = await resolveTradeId(this, tradeId)
-    const platformPair = platpair || this.escrow?.pair
+    const platformPair = platpair || this.platform?.pair
     const roles = resolveRoles(this, { payer, recipient, affiliate })
     const payerEntity = roles.payer
     const recipientEntity = roles.recipient
@@ -26,7 +26,7 @@ export async function release({ tradeId, payer, recipient, affiliate = null, pla
     const recipientRoot = await rootFromSecret(await globalThis.sea.secret(recipientEntity.epub, platformPair))
     const tl = new Lock({
         payer: payerEntity.pair,
-        escrow: this.escrow,
+        platform: this.platform,
         recipient: { xpub: recipientXpub },
         tradeId: resolvedTradeId,
         type: "TL"
@@ -44,7 +44,7 @@ export async function release({ tradeId, payer, recipient, affiliate = null, pla
         const affiliateRoot = await rootFromSecret(await globalThis.sea.secret(affiliateEntity.epub, platformPair))
         const cl = new Lock({
             payer: payerEntity.pair,
-            escrow: this.escrow,
+            platform: this.platform,
             recipient: { xpub: affiliateXpub },
             tradeId: resolvedTradeId,
             type: "CL"
@@ -63,10 +63,10 @@ export async function release({ tradeId, payer, recipient, affiliate = null, pla
         unlock_index_CL: unlockIndexCL
     }
 
-    if (this.escrow?.pub)
+    if (this.platform?.pub)
         await putTradeRecord({
             gun: this.gun,
-            pub: this.escrow.pub,
+            pub: this.platform.pub,
             tradeId: resolvedTradeId,
             fields,
             pair: platformPair

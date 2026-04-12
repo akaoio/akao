@@ -1,4 +1,4 @@
-# P2P Trading Escrow Protocol
+# P2P Trading Platform Protocol
 
 **Version** 2.0 · **Status** Production · **Date** 2026-04-06
 
@@ -10,15 +10,15 @@
 
 ## Abstract
 
-This document specifies a **trustless, serverless escrow protocol for peer-to-peer trading** of digital assets (game items, NFTs, digital goods). The protocol enables a platform operator to mediate trades between two traders (maker and taker) using deterministic cryptographic key derivation — eliminating the need for smart contracts, custodial accounts, or trusted third-party oracles.
+This document specifies a **trustless, serverless platform protocol for peer-to-peer trading** of digital assets (game items, NFTs, digital goods). The protocol enables a platform operator to mediate trades between two traders (maker and taker) using deterministic cryptographic key derivation — eliminating the need for smart contracts, custodial accounts, or trusted third-party oracles.
 
-All escrow wallet addresses are derived client-side from **Diffie-Hellman shared secrets** and **BIP-32 hierarchical deterministic key derivation**, ensuring that each party holds exactly the access rights the protocol intends, and no more.
+All platform wallet addresses are derived client-side from **Diffie-Hellman shared secrets** and **BIP-32 hierarchical deterministic key derivation**, ensuring that each party holds exactly the access rights the protocol intends, and no more.
 
 ### Think DEX, Not Marketplace
 
 **Traditional marketplace** (v1.0 - deprecated):
 - ❌ Fixed roles: Buyer pays, Seller sells
-- ❌ Item-centric: Each item has separate escrow tree
+- ❌ Item-centric: Each item has separate platform tree
 - ❌ One-directional: Only buyers initiate trades
 - ❌ Custodial mindset: Platform holds listings
 
@@ -31,10 +31,10 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 - ✅ **Non-custodial (happy path)**: Platform arbitrates disputes/refunds, not involved in normal trades
 
 **Key innovations**:
-- **Dual escrow wallets** per trade: Transaction Lock (TL) + Commission Lock (CL)
+- **Dual platform wallets** per trade: Transaction Lock (TL) + Commission Lock (CL)
 - **Temporal validation**: Orders auto-expire using candle-based epochs (Pen DSL)
 - **Post-match deposits**: Both order types deposit after matching (pure P2P, no Platform involvement)
-- **Trustless verification**: Anyone can verify escrow addresses on-chain before accepting
+- **Trustless verification**: Anyone can verify platform addresses on-chain before accepting
 
 ---
 
@@ -47,8 +47,8 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 | **T** | Taker | Trader who accepts/matches an order |
 | **A** | Affiliate | Referrer who earns commission on trades |
 | **FP** | Fund Proof | Pre-deposit wallet for buy orders (proof of funds) |
-| **TL** | Transaction Lock | Escrow wallet holding trade payment |
-| **CL** | Commission Lock | Escrow wallet holding affiliate commission |
+| **TL** | Transaction Lock | Platform wallet holding trade payment |
+| **CL** | Commission Lock | Platform wallet holding affiliate commission |
 | **SEA** | Security, Encryption, Authorization | GunDB's cryptography library (Curve25519) |
 | **BIP-32** | Bitcoin Improvement Proposal 32 | Hierarchical deterministic wallet standard |
 | **ECDH** | Elliptic Curve Diffie-Hellman | Shared secret key exchange protocol |
@@ -65,30 +65,30 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 
 | Role | Symbol | Description |
 |---|---|---|
-| **Platform** | **P** | Marketplace operator. Holds authority to release or refund escrow funds. Acts as trusted arbiter in disputes. |
+| **Platform** | **P** | Marketplace operator. Holds authority to release or refund platform funds. Acts as trusted arbiter in disputes. |
 | **Maker** | **M** | Trader who creates an order (buy or sell). |
 | **Taker** | **T** | Trader who accepts/matches an existing order. |
 | **Affiliate** | **A** | Referrer who brought the payer to the platform. Earns commission on successful trades. |
 
 **Note:** M and T are symmetric — both are traders. A trader can be M in one trade and T in another. The distinction only matters during a specific trade execution. A is optional — if payer has no referrer, no affiliate commission is paid.
 
-### 1.2 Escrow Wallets
+### 1.2 Platform Wallets
 
 | Wallet | Symbol | Full Name | Purpose | Derived From |
 |--------|--------|-----------|---------|--------------|
 | Fund Proof | **FP** | Fund Proof | Pre-deposit for buy orders (proof of funds) | `root_M` (Maker's own root) |
-| Payment escrow | **TL** | Transaction Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` (recipient's root) |
-| Commission escrow | **CL** | Commission Lock | Holds affiliate commission (payer → affiliate) | `root_AP` (affiliate's root) |
+| Payment platform | **TL** | Transaction Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` (recipient's root) |
+| Commission platform | **CL** | Commission Lock | Holds affiliate commission (payer → affiliate) | `root_AP` (affiliate's root) |
 
 **Notes:** 
 - **FP** (buy orders only): Maker deposits before posting order → Taker verifies on-chain → funds transfer to TL/CL after matching
 - Each trade creates exactly 2 lock wallets: 1 TL (payment) + 1 CL (commission, if affiliate exists)
-- FP uses **maker's own root** (maker controls funds), TL/CL use **recipient's root** (trustless escrow)
+- FP uses **maker's own root** (maker controls funds), TL/CL use **recipient's root** (trustless platform)
 
 ### Trust Assumptions
 
 - **P is trusted** to act honestly as arbiter (semi-centralized model)
-- **No party other than P** can unilaterally move funds from escrow before trade resolution
+- **No party other than P** can unilaterally move funds from platform before trade resolution
 - **Both traders trust P** to resolve disputes fairly
 - All parties have valid **SEA key pairs** registered via WebAuthn
 
@@ -190,7 +190,7 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 1. Maker creates order → writes to the Pen soul compiled for the exact `(baseId, side, candle)` market window (no deposit)
 2. Taker discovers order → compiles the current and previous `(baseId, side, candle)` souls, then scans both
 3. Taker accepts order → trade status: "open" → "matched" (both parties known)
-4. Payer deposits to escrow (Maker for buy, Taker for sell):
+4. Payer deposits to platform (Maker for buy, Taker for sell):
    - Computes TL/CL from recipient's xpub + payer's index
    - Deposits within 10-min timeout or trade auto-cancels
 5. In-game item delivery (trade/mail/drop)
@@ -202,12 +202,12 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 ### 3.3 Key Derivation Strategy
 
 **Changes from v1.0:**
-- **No per-item escrow roots** (items don't need separate xpub trees for settlement)
+- **No per-item platform roots** (items don't need separate xpub trees for settlement)
 - **Per-item, per-type, per-candle Pen souls** for discovery (`item + side + time window` define the soul identity)
 - **One root per trader-platform pair**
-- **Two escrow wallets per trade:**
-  - **Payment escrow (TL)** — holds trade payment (M/P or T/P root)
-  - **Affiliate escrow (CL)** — holds affiliate commission (A/P root)
+- **Two platform wallets per trade:**
+  - **Payment platform (TL)** — holds trade payment (M/P or T/P root)
+  - **Affiliate platform (CL)** — holds affiliate commission (A/P root)
 
 ---
 
@@ -245,13 +245,13 @@ root_AP    =  fromSeed(seed_AP)    // full node — known to A and P
 - Taker: `xpub_TP = root_TP.neuter().extendedKey`
 - Affiliate: `xpub_AP = root_AP.neuter().extendedKey` (in referral link)
 
-### 4.3 Per-Transaction Lock Wallets (Dual Escrow)
+### 4.3 Per-Transaction Lock Wallets (Dual Platform)
 
-**Key principle from original design**: Escrow wallet = **RECIPIENT's root xpub** + **INDEX from PAYER's secret**
+**Key principle from original design**: Platform wallet = **RECIPIENT's root xpub** + **INDEX from PAYER's secret**
 
 **Critical design decision**: Both buy and sell orders deposit **AFTER matching** to preserve pure P2P architecture (Platform not involved in happy path).
 
-For each trade, derive **two escrow wallets**:
+For each trade, derive **two platform wallets**:
 
 #### 4.3.1 Transaction Lock (TL)
 
@@ -273,7 +273,7 @@ secret_payer = sea.secret(P.epub, payer.pair)
 seed_index = sha256(secret_payer + ":TL:" + tradeId)
 index_TL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
 
-// Step 3: Payer derives escrow from RECIPIENT's xpub + PAYER's index
+// Step 3: Payer derives platform from RECIPIENT's xpub + PAYER's index
 TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
 //   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Recipient's root (watch-only)
 //                                               ^^^^^^^^^ Payer's index
@@ -314,7 +314,7 @@ CL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_CL)
 ```
 
 **Security properties**:
-- Payer derives escrow address from **recipient's xpub** (watch-only)
+- Payer derives platform address from **recipient's xpub** (watch-only)
 - Payer uses index from **own secret** (knows index)
 - Payer **cannot spend** (doesn't have recipient's xprv, only xpub)
 - Recipient **cannot spend yet** (doesn't know index)
@@ -329,7 +329,7 @@ CL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_CL)
 - No pre-deposit required → Platform not involved in happy path → pure P2P
 
 **Access control:**
-- **Payer (M or T):** Computes escrow addresses from recipient's xpub + own index. **Cannot spend** (has xpub only, not xprv).
+- **Payer (M or T):** Computes platform addresses from recipient's xpub + own index. **Cannot spend** (has xpub only, not xprv).
 - **Recipient (seller):** 
   - Buy order: Taker receives `index_TL` from Maker → derives spending key from own `root_TP`
   - Sell order: Maker receives `index_TL` from Taker → derives spending key from own `root_MP`
@@ -360,7 +360,7 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 - But doesn't know which **index** was used (payer's secret + entropy)
 - Without index, 2^31 possible child keys to try (infeasible)
 
-**Original security mindset preserved**: Escrow wallet = recipient's root + payer's index
+**Original security mindset preserved**: Platform wallet = recipient's root + payer's index
 
 ---
 
@@ -391,7 +391,7 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 
 **Problem**: Takers waste time accepting buy orders from makers who don't actually have funds.
 
-**Solution**: Buy order makers deposit funds into a **deterministic order wallet** before creating the order. This provides **trustless proof of budget** without locking funds in escrow yet.
+**Solution**: Buy order makers deposit funds into a **deterministic order wallet** before creating the order. This provides **trustless proof of budget** without locking funds in platform yet.
 
 **Order Wallet Derivation** (buy orders only):
 
@@ -470,9 +470,9 @@ await M.wallet.sendTransaction({
    ```
 6. Trade status → `"matched"` (both parties known, waiting for deposit)
 
-### Step 3 — Payer Deposits to Escrow
+### Step 3 — Payer Deposits to Platform
 
-**Payer** (Maker for buy order, Taker for sell order) now computes escrow addresses:
+**Payer** (Maker for buy order, Taker for sell order) now computes platform addresses:
 
 ```javascript
 // Determine payer and recipient based on order type
@@ -500,12 +500,12 @@ const CL = referrer ?
     HDNodeWallet.fromExtendedKey(xpub_affiliate).deriveChild(index_CL) : 
     null
 
-// Payer deposits to escrow locks
+// Payer deposits to platform locks
 // For buy orders: Transfer from orderWallet → TL/CL (sequential, NOT atomic — check each tx receipt)
 // For sell orders: Direct deposit from Taker's wallet → TL/CL
 
 if (orderType === 'buy') {
-    // Maker transfers from order wallet to escrow locks
+    // Maker transfers from order wallet to platform locks
     const orderWallet = M.root.deriveChild(index_order)  // Maker has private key
     
     await orderWallet.sendTransaction({ to: TL.address, value: paymentAmount })
@@ -517,7 +517,7 @@ if (orderType === 'buy') {
         value: platformFee 
     })
 } else {
-    // Taker deposits directly to escrow locks
+    // Taker deposits directly to platform locks
     await T.wallet.sendTransaction({ to: TL.address, value: paymentAmount })
     if (CL) {
         await T.wallet.sendTransaction({ to: CL.address, value: commissionAmount })
@@ -593,11 +593,11 @@ Trade status → `"completed"`
 
 ### Step 6 — Dispute Resolution and Refunds by P
 
-**Critical limitation**: Refunds REQUIRE Platform involvement due to escrow design.
+**Critical limitation**: Refunds REQUIRE Platform involvement due to platform design.
 
 **Why payer cannot self-refund:**
 ```javascript
-// Escrow = Recipient's xpub + Payer's index
+// Platform = Recipient's xpub + Payer's index
 TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
 
 // Payer has:
@@ -616,7 +616,7 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
 
 **Platform-initiated refund mechanism:**
 
-P can always recompute both escrow spending keys:
+P can always recompute both platform spending keys:
 
 ```javascript
 // P knows all parties' epub keys (Curve25519) — never .pub (Ed25519)
@@ -628,7 +628,7 @@ const secret_payer = await sea.secret(payer.epub, P.pair)
 const index_TL = parseInt(sha256(secret_payer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
 const index_CL = parseInt(sha256(secret_payer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
 
-// P derives both escrow spending keys
+// P derives both platform spending keys
 const TL = root_recipient.deriveChild(index_TL)
 // TL.privateKey → P can release to seller OR refund to payer
 
@@ -778,7 +778,7 @@ Gun SEA enforces write restriction via signature — **no Pen needed**.
 | `unlock_index_CL` (number) | Buyer (M or T) | Own | Step 5 — at confirmation |
 | `confirmed` (true) | Buyer (M or T) | Own | Step 5 — receipt confirmed |
 | `disputed` (object) | Either party | Own | Step 6 — if dispute filed |
-| `release_ready` / `refund_ready` | Platform | Escrow's | Step 6 — platform has resolved deterministic spend paths but has not settled on-chain yet |
+| `release_ready` / `refund_ready` | Platform | Platform's | Step 6 — platform has resolved deterministic spend paths but has not settled on-chain yet |
 
 **Key security property**: `unlock_index_TL` and `unlock_index_CL` live in the **buyer's own namespace**. Seller must actively read buyer's namespace to obtain the index. Buyer controls when seller can withdraw — no premature self-release is possible.
 
@@ -811,13 +811,13 @@ gun.user(T.pub).get("trades").get(tradeId)              // Taker's side
 
 ### 7.1 The Refund Limitation
 
-**Critical design constraint**: Payer cannot self-refund in the current escrow model.
+**Critical design constraint**: Payer cannot self-refund in the current platform model.
 
 **Why this limitation exists:**
 
-The escrow security relies on **asymmetric key access**:
+The platform security relies on **asymmetric key access**:
 ```
-Escrow = Recipient's xpub (watch-only) + Payer's index (secret)
+Platform = Recipient's xpub (watch-only) + Payer's index (secret)
 
 Payer has:
 ├─ Recipient's xpub (public extended key)
@@ -855,7 +855,7 @@ Platform has:
 
 | Property | Mechanism |
 |---|---|
-| P holds full escrow authority | P knows all **epub** keys (Curve25519) → recomputes all DH secrets via `sea.secret(party.epub, P.pair)` → derives all root xprv and child spending keys for both TL and CL |
+| P holds full platform authority | P knows all **epub** keys (Curve25519) → recomputes all DH secrets via `sea.secret(party.epub, P.pair)` → derives all root xprv and child spending keys for both TL and CL |
 | Payer cannot withdraw (even for refund) | Payer has recipient's xpub only (watch-only). Cannot derive private key from xpub. **Refunds require Platform intervention.** |
 | Recipient cannot claim early | Recipient has xprv but doesn't know index until payer reveals it |
 | Affiliate cannot claim prematurely | A has xpub_AP but not `index_CL`; receives index only after successful trade completion |
@@ -863,7 +863,7 @@ Platform has:
 
 ### 7.3 Per-Trade Address Isolation
 
-Each `tradeId` is unique → `index_TL` and `index_CL` unique → escrow addresses never collide across trades.
+Each `tradeId` is unique → `index_TL` and `index_CL` unique → platform addresses never collide across trades.
 
 Even if same affiliate refers multiple trades, each trade gets unique CL wallet (different `tradeId` → different `index_CL`).
 
@@ -891,7 +891,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 | Crafted/wrong xpub by recipient | **High** | Recipient could write xpub for which they (and Platform) have no xprv → funds permanently locked in TL. **Platform MUST verify `xpub_MP` is derived from `sha256(sea.secret(P.epub, M.pair))`** before trade proceeds to deposit. |
 | Order ID collision | Very low | `sha256(orderId ":" M.pub ":" T.pub ":" timestamp)` |
 | Order overwrite attack | High | Pen `sign:true` allows any authenticated user to overwrite order keys at PoW cost ~256 attempts. Mitigate: embed maker pub prefix in key and validate `EQ(SEGR(0,':',4), R[5])` in Pen — or move orders to `gun.user()` namespace. |
-| FP race condition | High | Maker can drain FP wallet between Taker accepting and payer depositing to TL/CL. Design limitation of non-smart-contract escrow. Taker should re-verify FP balance at matching time, not just at discovery time. |
+| FP race condition | High | Maker can drain FP wallet between Taker accepting and payer depositing to TL/CL. Design limitation of non-smart-contract platform. Taker should re-verify FP balance at matching time, not just at discovery time. |
 | Partial FP→TL/CL transfer | High | Sequential EVM transactions mean TL could be funded but CL fails. Trade contract must check all receipts; implementation needs a recovery path (refund from partial TL if CL fails). |
 | Commission fate with no affiliate | Medium | When referrer is null, `commissionAmount` is unaccounted for in current protocol. Must define: goes to platform fee, added to payment, or simply not charged. |
 | Child key leakage in BIP-32 | Medium | Non-hardened derivation: `child_priv + xpub → parent_priv`. Spending keys (TL, CL) must be wiped from memory immediately after `sendTransaction()`. Never log or store them. |
@@ -917,7 +917,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 
 ## 10. Implementation Checklist
 
-- [ ] `src/core/Lock.js` — escrow key derivation primitives (TL + CL, `index()`, `address()`, `unlock()`)
+- [ ] `src/core/Lock.js` — platform key derivation primitives (TL + CL, `index()`, `address()`, `unlock()`)
 - [ ] `src/core/Order.js` — Gun order CRUD helpers
 - [ ] `src/core/Affiliate.js` — referral tracking + commission calculation
 - [ ] `src/UI/routes/order/` — order book UI + trade flow
@@ -926,7 +926,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 - [ ] Auto-release 24h timer (both TL and CL)
 - [ ] Affiliate index release mechanism (via Gun)
 - [ ] Dispute UI at `/dispute`
-- [ ] Test suite: dual escrow address derivation consistency
+- [ ] Test suite: dual platform address derivation consistency
 - [ ] Test suite: `sea.secret` determinism
 - [ ] Test suite: candle window validation
 - [ ] Test suite: affiliate commission calculation

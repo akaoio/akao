@@ -4,10 +4,10 @@ import { address } from "./Lock/address.js"
 import { unlock } from "./Lock/unlock.js"
 
 export class Lock {
-    constructor({ payer, escrow, recipient, tradeId, trade, type = "TL" } = {}) {
-        if (!payer || !escrow || !recipient || !(tradeId || trade)) throw new Error("invalidInput")
+    constructor({ payer, platform, recipient, tradeId, trade, type = "TL" } = {}) {
+        if (!payer || !platform || !recipient || !(tradeId || trade)) throw new Error("invalidInput")
         this.payer = payer
-        this.escrow = escrow
+        this.platform = platform
         this.recipient = recipient
         this.tradeId = tradeId || trade
         this.type = type

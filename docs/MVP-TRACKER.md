@@ -19,15 +19,15 @@
 ## 🎯 MVP Definition
 
 **What investors need to see:**
-1. ✅ Buyer pays → money goes to on-chain escrow wallet (visible on blockchain explorer)
+1. ✅ Buyer pays → money goes to on-chain platform wallet (visible on blockchain explorer)
 2. ✅ 3 separate transactions: seller payment, platform fee, affiliate commission
 3. ✅ Seller delivers → buyer confirms → money released to seller
 4. ✅ Auto-release after 24h if buyer doesn't respond
 5. ✅ Full flow runs on testnet without backend server
 
 **Critical Features (Must Have):**
-- [ ] Checkout & escrow payment flow
-- [ ] Order status page (buyer sees money "held" in escrow)
+- [ ] Checkout & platform payment flow
+- [ ] Order status page (buyer sees money "held" in platform)
 - [ ] Seller delivery & buyer confirmation
 - [ ] Auto-release after 24h
 - [ ] Auto wallet balance updates
@@ -38,7 +38,7 @@
 - ❌ Dispute resolution UI (handled outside system in Phase 1)
 - ❌ Wave Signin (device sync)
 - ❌ Profile management page
-- ❌ Escrow timeline history
+- ❌ Platform timeline history
 - ❌ Advanced tag page features
 
 ---
@@ -53,11 +53,11 @@
 - [x] Basic routes (home, item, checkout, order, inventory, deposit, withdraw)
 
 ### 🔄 Sprint 1 (Week 1-2): Foundation — IN PROGRESS
-**Goal:** Create VSE/VAE escrow wallets on testnet. UI skeletons ready.
+**Goal:** Create VSE/VAE platform wallets on testnet. UI skeletons ready.
 
 **Logic Tasks:**
-- [ ] **CRITICAL** `src/core/Escrow.js` - VSE wallet derivation (seller escrow)
-- [ ] **CRITICAL** `src/core/Escrow.js` - VAE wallet derivation (affiliate escrow)
+- [ ] **CRITICAL** `src/core/Platform.js` - VSE wallet derivation (seller platform)
+- [ ] **CRITICAL** `src/core/Platform.js` - VAE wallet derivation (affiliate platform)
 - [x] Order schema definition (`src/core/Order.js` exists)
 - [ ] GunDB helpers: createOrder(), getOrder(), updateOrder()
 
@@ -70,7 +70,7 @@
 - [ ] Affiliate commission % agreed
 - [ ] Order data schema documented
 
-**Sprint 1 Checkpoint (Week 2):** Create escrow wallet on testnet from buyer+seller keys
+**Sprint 1 Checkpoint (Week 2):** Create platform wallet on testnet from buyer+seller keys
 
 ### ⏳ Sprint 2 (Week 3-4): End-to-End Payment — UPCOMING
 **Goal:** Buyer can pay on testnet — 3 on-chain transactions visible on explorer.
@@ -137,13 +137,13 @@
 - [x] Order.js module exists
 
 ### In Progress
-- [ ] Escrow wallet derivation (VSE/VAE) - **STATUS UNKNOWN**
+- [ ] Platform wallet derivation (VSE/VAE) - **STATUS UNKNOWN**
 - [ ] Checkout UI skeleton - **STATUS UNKNOWN**
 - [ ] Order UI skeleton - **STATUS UNKNOWN**
 - [ ] Huy: Swap pool implementation
 
 ### Blockers
-- ⚠️ Need status update on Escrow.js implementation
+- ⚠️ Need status update on Platform.js implementation
 - ⚠️ Need platform fee & affiliate % decisions
 - ⚠️ Need order schema documentation
 
@@ -173,7 +173,7 @@
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| Escrow derivation more complex than expected | HIGH - delays Sprint 1-2 | MEDIUM | Prototype on testnet week 1, validate with whitepaper early |
+| Platform derivation more complex than expected | HIGH - delays Sprint 1-2 | MEDIUM | Prototype on testnet week 1, validate with whitepaper early |
 | 3-tx checkout partial failure | HIGH - money stuck | MEDIUM | Sequential send, check each tx, save state for retry |
 | GunDB sync unreliable | MEDIUM - UX degraded | LOW | Local-first design: IndexedDB + background sync |
 | 24h timer won't run if no one opens app | MEDIUM - money stuck | MEDIUM | Check timestamp on page load, trigger if >24h |
@@ -187,7 +187,7 @@
 ### Immediate (This Week)
 1. **Get status updates from team**
    - Huy: Swap pool progress, checkout UI status
-   - Đức: Escrow.js implementation status
+   - Đức: Platform.js implementation status
    - Sơn: Platform fee & affiliate % decisions
 
 2. **Sprint 1 completion verification**

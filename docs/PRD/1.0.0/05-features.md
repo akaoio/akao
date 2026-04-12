@@ -59,13 +59,13 @@ Phân loại theo priority. Mỗi feature ghi rõ: user nào, mô tả, chain de
   - User: Buyer
   - (ref: src/core/Cart.js — đã implement)
 
-### Checkout & Escrow
-- **Checkout Flow** 🔲: Buyer xem tóm tắt đơn hàng (items + phí sàn + phí affiliate), chọn chain/currency, bấm thanh toán, xác nhận passkey, hệ thống tạo giao dịch escrow on-chain.
+### Checkout & Platform
+- **Checkout Flow** 🔲: Buyer xem tóm tắt đơn hàng (items + phí sàn + phí affiliate), chọn chain/currency, bấm thanh toán, xác nhận passkey, hệ thống tạo giao dịch platform on-chain.
   - User: Buyer
   - Chain dependency: ETH + BSC
   - (ref: src/UI/routes/checkout/ — route tồn tại nhưng chỉ có empty div, CHƯA implement logic)
 
-- **Order Status** 🔲: Buyer/Seller xem trạng thái escrow (Holding / Released / Disputed / Refunded) trên trang /order.
+- **Order Status** 🔲: Buyer/Seller xem trạng thái platform (Holding / Released / Disputed / Refunded) trên trang /order.
   - User: Buyer, Seller
   - Chain dependency: ETH + BSC (đọc balance on-chain)
   - (ref: src/UI/routes/order/ — route tồn tại nhưng chỉ có Lorem ipsum placeholder, CHƯA implement)
@@ -113,7 +113,7 @@ Phân loại theo priority. Mỗi feature ghi rõ: user nào, mô tả, chain de
   - User: Buyer
   - [ASSUMPTION] Hiện tại mỗi site config define chains supported, nhưng UI chọn chain khi checkout chưa rõ flow.
 
-- **Escrow History Timeline** 🔲: Hiển thị toàn bộ lịch sử thay đổi trạng thái escrow (created → holding → released) với timestamp.
+- **Platform History Timeline** 🔲: Hiển thị toàn bộ lịch sử thay đổi trạng thái platform (created → holding → released) với timestamp.
   - User: Buyer, Seller
 
 - **Profile Management** 🔲: User cập nhật avatar, quản lý danh sách ví, xem lịch sử giao dịch trên /profile.

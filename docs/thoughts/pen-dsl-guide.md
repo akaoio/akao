@@ -666,7 +666,7 @@ SEA.candle({ size: 300000, back: 48,  fwd: 2 })
 // Loose (GTC orders: ±8 giờ) — DEFAULT
 SEA.candle({ size: 300000, back: 100, fwd: 2 })
 
-// Ultra loose (escrow: ±30 ngày)
+// Ultra loose (platform: ±30 ngày)
 SEA.candle({ size: 3600000, back: 720, fwd: 10 })
 ```
 

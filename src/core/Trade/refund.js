@@ -7,11 +7,11 @@ import {
     rootFromSecret
 } from "./helpers.js"
 
-// Platform refunds payer — requires Platform pair (escrow authority)
+// Platform refunds payer — requires platform authority pair
 // Platform recomputes all spending keys via DH shared secrets
 export async function refund({ tradeId, payer, recipient, affiliate = null, platpair = null, to = null } = {}) {
     const resolvedTradeId = await resolveTradeId(this, tradeId)
-    const platformPair = platpair || this.escrow?.pair
+    const platformPair = platpair || this.platform?.pair
     const roles = resolveRoles(this, { payer, recipient, affiliate })
     const payerEntity = roles.payer
     const recipientEntity = roles.recipient
@@ -26,7 +26,7 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
     const recipientRoot = await rootFromSecret(await globalThis.sea.secret(recipientEntity.epub, platformPair))
     const tl = new Lock({
         payer: payerEntity.pair,
-        escrow: this.escrow,
+        platform: this.platform,
         recipient: { xpub: recipientXpub },
         tradeId: resolvedTradeId,
         type: "TL"
@@ -44,7 +44,7 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
         const affiliateRoot = await rootFromSecret(await globalThis.sea.secret(affiliateEntity.epub, platformPair))
         const cl = new Lock({
             payer: payerEntity.pair,
-            escrow: this.escrow,
+            platform: this.platform,
             recipient: { xpub: affiliateXpub },
             tradeId: resolvedTradeId,
             type: "CL"
@@ -64,10 +64,10 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
         unlock_index_CL: unlockIndexCL
     }
 
-    if (this.escrow?.pub)
+    if (this.platform?.pub)
         await putTradeRecord({
             gun: this.gun,
-            pub: this.escrow.pub,
+            pub: this.platform.pub,
             tradeId: resolvedTradeId,
             fields,
             pair: platformPair

@@ -59,7 +59,7 @@ Mỗi P0 feature có ít nhất 2 AC. Mỗi AC ghi rõ trạng thái:
 
 ---
 
-## Checkout & Escrow 🔲
+## Checkout & Platform 🔲
 
 **Toàn bộ section này là requirement cần implement. Route /checkout hiện chỉ có empty div, route /order chỉ có Lorem ipsum.**
 

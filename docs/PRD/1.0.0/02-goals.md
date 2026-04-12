@@ -4,10 +4,10 @@
 
 ### Phase 1 — MVP (Target: 2 tháng)
 
-1. **User trade được in-game items qua escrow on-chain** — Buyer thanh toán, tiền vào ví escrow, seller giao hàng, buyer confirm, tiền release
+1. **User trade được in-game items qua platform on-chain** — Buyer thanh toán, tiền vào ví platform, seller giao hàng, buyer confirm, tiền release
 2. **User đăng nhập không cần password** — Passkey (vân tay/Face ID) là phương thức duy nhất, ví crypto derive on-demand từ passkey credential
 3. **User nạp/rút crypto dễ dàng** — Deposit và withdraw trực tiếp trên nền tảng, không cần ví ngoài
-4. **User theo dõi được trạng thái giao dịch** — Escrow status (Holding/Released/Disputed) hiển thị rõ ràng
+4. **User theo dõi được trạng thái giao dịch** — Platform status (Holding/Released/Disputed) hiển thị rõ ràng
 5. **Hỗ trợ multi-chain** — ETH và BSC làm 2 chain chính
 6. **Hỗ trợ đa ngôn ngữ** — 18 locales, hoạt động đúng trên tất cả ngôn ngữ bao gồm RTL (Arabic, Hebrew, Urdu)
 7. **Hỗ trợ đa tiền tệ** — Hiển thị giá theo 40+ fiat currencies, thanh toán bằng crypto (stablecoins + native coin)

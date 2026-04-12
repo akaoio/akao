@@ -1,6 +1,6 @@
 # User Personas
 
-Hệ thống AKAO có 3 roles chính, dựa trên mô hình escrow 4 bên (bên thứ 4 — Platform/Escrow — là hệ thống, không phải user).
+Hệ thống AKAO có 3 roles chính, dựa trên mô hình platform 4 bên (bên thứ 4 — Platform/Platform — là hệ thống, không phải user).
 
 (ref: docs/thoughts/white-paper-draft.md — E, B, S, A)
 
@@ -14,7 +14,7 @@ Hệ thống AKAO có 3 roles chính, dựa trên mô hình escrow 4 bên (bên 
 - Browse và tìm kiếm items theo game, tag, rarity
 - Thêm items vào cart, checkout và thanh toán bằng crypto
 - Nạp crypto vào ví trên sàn (deposit)
-- Theo dõi trạng thái order (escrow status)
+- Theo dõi trạng thái order (platform status)
 - Confirm nhận hàng để release tiền cho seller
 - Mở dispute nếu chưa nhận hàng hoặc sai hàng
 

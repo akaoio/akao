@@ -2,16 +2,16 @@
 
 ---
 
-## Sprint 1 (Tuần 1-2): Nền tảng — Tạo ví escrow + Dựng giao diện khung
+## Sprint 1 (Tuần 1-2): Nền tảng — Tạo ví platform + Dựng giao diện khung
 
-**Mục tiêu sprint:** Cuối tuần 2, tạo được ví escrow VSE và VAE trên testnet. Giao diện checkout và order đã có khung, chờ wire logic.
+**Mục tiêu sprint:** Cuối tuần 2, tạo được ví platform VSE và VAE trên testnet. Giao diện checkout và order đã có khung, chờ wire logic.
 
 ### Phần logic
 
 | Task | Output cụ thể | Liên quan feature # |
 |------|---------------|---------------------|
-| Viết module tạo ví escrow VSE | File `src/core/Escrow.js` — function `deriveVSE()` chạy đúng trên testnet Sepolia + BSC Testnet | #1 |
-| Viết function tạo ví escrow VAE | Function `deriveVAE()` trong cùng file `Escrow.js` | #2 |
+| Viết module tạo ví platform VSE | File `src/core/Platform.js` — function `deriveVSE()` chạy đúng trên testnet Sepolia + BSC Testnet | #1 |
+| Viết function tạo ví platform VAE | Function `deriveVAE()` trong cùng file `Platform.js` | #2 |
 | Định nghĩa cấu trúc dữ liệu đơn hàng + helpers GunDB | Document schema + functions `createOrder()`, `getOrder()`, `updateOrder()` trong `src/core/Order.js` | #5 |
 
 ### Phần giao diện
@@ -126,8 +126,8 @@
 
 | Rủi ro | Hậu quả | Cách giảm thiểu |
 |--------|---------|-----------------|
-| Thuật toán tạo ví escrow (VSE/VAE) phức tạp hơn dự kiến | Trễ Sprint 1-2, ảnh hưởng toàn bộ timeline | Prototype trên testnet ngay tuần 1, validate với white-paper sớm |
-| 3 giao dịch on-chain — giao dịch thứ 2 thất bại giữa chừng | Tiền bị kẹt: 1 phần trong escrow, 1 phần chưa gửi | Gửi tuần tự, kiểm tra mỗi tx thành công trước khi gửi tiếp. Nếu fail giữa chừng → lưu trạng thái để retry |
+| Thuật toán tạo ví platform (VSE/VAE) phức tạp hơn dự kiến | Trễ Sprint 1-2, ảnh hưởng toàn bộ timeline | Prototype trên testnet ngay tuần 1, validate với white-paper sớm |
+| 3 giao dịch on-chain — giao dịch thứ 2 thất bại giữa chừng | Tiền bị kẹt: 1 phần trong platform, 1 phần chưa gửi | Gửi tuần tự, kiểm tra mỗi tx thành công trước khi gửi tiếp. Nếu fail giữa chừng → lưu trạng thái để retry |
 | GunDB đồng bộ P2P chậm hoặc không ổn định | Seller không thấy đơn hàng, buyer không thấy cập nhật | Thiết kế local-first: lưu IndexedDB trước, GunDB sync nền. Nếu sync chậm thì data local vẫn đúng |
-| Timer 24h auto-release không hoạt động nếu không ai mở app | Tiền bị kẹt trong escrow vô thời hạn | Không dùng timer chạy nền. Kiểm tra timestamp mỗi lần ai đó mở trang → trigger release nếu quá 24h |
+| Timer 24h auto-release không hoạt động nếu không ai mở app | Tiền bị kẹt trong platform vô thời hạn | Không dùng timer chạy nền. Kiểm tra timestamp mỗi lần ai đó mở trang → trigger release nếu quá 24h |
 | 1 trong 3 thành viên nghỉ → mất 33% capacity | Trễ 1 sprint | Sprint 4 có buffer cho unexpected. Nếu trễ nhiều → cắt feature #8 (affiliate) và #12 (cart UX) |

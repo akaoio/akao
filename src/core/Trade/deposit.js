@@ -34,7 +34,7 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
 
     const tl = new Lock({
         payer: payerEntity.pair,
-        escrow: this.escrow,
+        platform: this.platform,
         recipient: { xpub: recipientXpub },
         tradeId: resolvedTradeId,
         type: "TL"
@@ -45,7 +45,7 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
     if (affiliateXpub) {
         const cl = new Lock({
             payer: payerEntity.pair,
-            escrow: this.escrow,
+            platform: this.platform,
             recipient: { xpub: affiliateXpub },
             tradeId: resolvedTradeId,
             type: "CL"

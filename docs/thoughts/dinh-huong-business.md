@@ -2,7 +2,7 @@
 
 Mô hình: sàn thương mại in-game items, gamming services
 
-Ban đầu, khi bắt đầu dự án này tôi vốn chỉ định xây dựng một hệ thống cho riêng hoạt động kinh doanh dropshipping các sản phẩm vật lý của mình. Khi đó, các items chỉ cần là dữ liệu tĩnh, được lưu dạng json. Trong quá trình kinh doanh dropshipping sản phẩm vật lý từ VN/CN qua US, tôi nhận thấy shipping fee là một vấn đề nan giải, nên đã quyết định chuyển qua mô hình in-game item/service escrow. Nay nhận thấy lý thuyết mã hóa đã hoàn thiện hơn, các công nghệ lõi như gun đã trưởng thành, tôi quyết định xây dựng nền tảng này thành một sàn thương mại in-game item/service P2P phi tập trung nhưng trong đó sàn (tôi) có toàn quyền.
+Ban đầu, khi bắt đầu dự án này tôi vốn chỉ định xây dựng một hệ thống cho riêng hoạt động kinh doanh dropshipping các sản phẩm vật lý của mình. Khi đó, các items chỉ cần là dữ liệu tĩnh, được lưu dạng json. Trong quá trình kinh doanh dropshipping sản phẩm vật lý từ VN/CN qua US, tôi nhận thấy shipping fee là một vấn đề nan giải, nên đã quyết định chuyển qua mô hình in-game item/service platform. Nay nhận thấy lý thuyết mã hóa đã hoàn thiện hơn, các công nghệ lõi như gun đã trưởng thành, tôi quyết định xây dựng nền tảng này thành một sàn thương mại in-game item/service P2P phi tập trung nhưng trong đó sàn (tôi) có toàn quyền.
 
 **Lý thuyết:** xem [./white-paper-draft.md]
 
