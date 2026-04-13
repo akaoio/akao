@@ -1,0 +1,10 @@
+id: 1902469
+icon: 2403703945
+name: Ebonpiercer
+itemTypeName: Amulet
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Neck
+popularity: 42

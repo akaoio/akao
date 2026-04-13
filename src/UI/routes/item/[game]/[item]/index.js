@@ -24,6 +24,11 @@ export class GAME_ITEM_ROUTE extends Route {
         const game = this.states.get("game")
         const id = this.states.get("id")
         const meta = await logic.meta(game, id)
+        if (!meta) {
+            this.states.set({ meta: null, missing: true })
+            this.render()
+            return
+        }
         this.states.set({ meta })
         this.sub(Context.on("locale", this.render))
         this.listen(this.shadowRoot.querySelector("#decrease"), "click", this.decrease)
@@ -127,6 +132,25 @@ export class GAME_ITEM_ROUTE extends Route {
         const game = this.states.get("game")
         const id = this.states.get("id")
         const meta = this.states.get("meta")
+        if (!meta) {
+            Router.setHead({ title: "Item not found", description: "" })
+            Context.set({ item: { name: "Item not found", description: "This item is no longer available." } })
+
+            const root = this.shadowRoot
+            root.querySelector("#breadcrumb").style.display = game ? "" : "none"
+            root.querySelector("#back-link").textContent = game ? game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : ""
+            root.querySelector("#back-link").dataset.to = game ? `/game/${game}` : "/"
+            root.querySelector("#breadcrumb-name").textContent = id || ""
+            root.querySelector("#image").style.display = "none"
+            root.querySelector(".badges").style.display = "none"
+            root.querySelector("#flavor-text").style.display = "none"
+            root.querySelector("#stats").style.display = "none"
+            root.querySelector("#slots").style.display = "none"
+            root.querySelector("#pricing").style.display = "none"
+            root.querySelector("#attributes").style.display = "none"
+            root.querySelector("footer").style.display = "none"
+            return
+        }
         const data = await logic.locale(game, id, Context.get("locale").code)
         if (!data) return
         this.states.set({ data })

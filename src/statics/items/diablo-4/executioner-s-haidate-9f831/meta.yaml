@@ -1,0 +1,26 @@
+id: executioner-s-haidate-9f831
+game: diablo-4
+type: Pants
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - pants
+rarity: Special
+itemTypeName: Pants
+classes:
+  - Necromancer
+slots:
+  - Legs
+value: 14
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

@@ -370,7 +370,7 @@ DB.js (tương lai)
 ```javascript
 import SQL from "/core/SQL.js"
 
-const db = new SQL({ name: "shop" })
+const db = new SQL({ name: "app" })
 await db.ready   // chờ worker mở DB xong
 
 await db.exec(`
@@ -783,7 +783,7 @@ DB.js (tương lai)
 ```javascript
 import SQL from "/core/SQL.js"
 
-const db = new SQL({ name: "shop" })
+const db = new SQL({ name: "app" })
 await db.ready
 
 // DDL

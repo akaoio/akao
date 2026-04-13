@@ -1,0 +1,27 @@
+id: light-s-rebuke-780dc
+game: diablo-4
+type: Flail
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - flail
+rarity: Legendary
+itemTypeName: Flail
+classes:
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 153
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

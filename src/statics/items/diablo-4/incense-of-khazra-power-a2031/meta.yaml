@@ -1,0 +1,24 @@
+id: incense-of-khazra-power-a2031
+game: diablo-4
+type: Incense
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - incense
+rarity: Rare
+itemTypeName: Incense
+classes: null
+slots: null
+value: 23
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

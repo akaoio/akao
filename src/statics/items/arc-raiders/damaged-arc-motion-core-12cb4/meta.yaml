@@ -1,0 +1,32 @@
+id: damaged-arc-motion-core-12cb4
+game: arc-raiders
+type: Recyclable
+catalog: game
+tags:
+  - uncommon
+  - recyclable
+rarity: Uncommon
+subtype: null
+value: 640
+stat_block:
+  weight: 0.25
+  stackSize: 5
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: ARC
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

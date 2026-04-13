@@ -1,0 +1,10 @@
+id: 2419147
+icon: 62474037
+name: The Hand of Naz
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Head
+popularity: 20

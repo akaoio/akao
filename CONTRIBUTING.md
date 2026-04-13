@@ -1,6 +1,6 @@
-# Contributing to Shop
+# Contributing to akao
 
-Thank you for considering contributing to Shop! It's people like you that make this project a great tool for the community.
+Thank you for considering contributing to akao. It's people like you that make this project stronger for the community.
 
 ## Code of Conduct
 
@@ -51,11 +51,11 @@ Before filing a bug report, check existing issues to avoid duplicates. Include:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR-USERNAME/shop.git
-cd shop
+git clone https://github.com/YOUR-USERNAME/akao.git
+cd akao
 
 # Add upstream remote
-git remote add upstream https://github.com/akaoio/shop.git
+git remote add upstream https://github.com/akaoio/akao.git
 
 # Install dependencies
 npm install
@@ -64,12 +64,13 @@ npm install
 npm start
 ```
 
-The dev server runs at `http://localhost:8080` with hot reload enabled.
+The default dev surface is `http://localhost:8080`. If a hostname is mapped in `src/statics/domains.yaml` and resolves to this machine, the same dev server can be reached through that alias as well. `npm start` also restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8765` before starting a fresh stack.
 
 ### Build Commands
 
 ```bash
-npm start                    # build:core + dev server (recommended for development)
+npm start                    # restart dev stack, start Gun relay, build crypto + core --dev, then serve app
+npm run start:headless       # build crypto + core --dev, then boot build/core/Launcher.js in Node
 npm run build                # full build (crypto + core + geo)
 npm run build:core           # YAML→JSON, routes, i18n, hashes, forex rates
 npm run build:crypto         # blockchain ABIs, chain configs, DEX pool lists
@@ -78,20 +79,24 @@ npm run scan:crypto          # scan on-chain data for currencies/pools
 npm run fix:geo              # fix specific GeoNames entries without full rebuild
 npm run format               # Prettier formatting
 npm run lint                 # ESLint
-npm run test                 # full test suite
-npm run test:core            # core module tests
+npm test                     # same as test:core
+npm run test:core            # build-first core suite + isomorphic runtime checks
+npm run test:build           # verify generated build/ artifacts only
+npm run test:browser         # build/core + Node headless browser-route runner
+npm run test:playwright      # Playwright assertions against the browser runtime
+npm run test:isomorphic      # test:browser + test:playwright
 npm run test:geo             # geo data integrity tests
 ```
 
 ## Project Structure
 
 ```
-shop/
+akao/
 ├── src/
 │   ├── core/          # Core systems (UI, States, Router, Chain, Dex, Wallet…)
 │   ├── UI/
-│   │   ├── components/  # 29 Web Components
-│   │   ├── routes/      # 10 route handlers
+│   │   ├── components/  # Web Components
+│   │   ├── routes/      # route handlers
 │   │   ├── layouts/     # Page layouts
 │   │   └── css/         # Global styles
 │   └── statics/       # Data files (YAML)
@@ -369,12 +374,16 @@ details: Detailed specifications
 ### Running Tests
 
 ```bash
-npm test              # full test suite (Node.js)
-npm run test:core     # core module unit tests only
-npm run test:geo      # geo data integrity tests
+npm test              # same as test:core
+npm run test:core     # build verification + browser runtime + Playwright assertions
+npm run test:build    # verify generated build/ artifacts only
+npm run test:browser  # build/core + Node headless browser-route runner
+npm run test:playwright
+npm run test:isomorphic
+npm run test:geo      # build/geo integrity tests
 ```
 
-For live feedback during development, open `http://localhost:8080/en/test` in the browser. The `/test` route runs the same suite in the browser and shows pass/fail per test with inline error messages. You can re-run individual suites or only the failed tests without refreshing the page.
+The canonical rule is that tests revolve around `build/`, not ad hoc temp mirrors. For live feedback during development, open `/{locale}/test` in the browser (for example `http://localhost:8080/en/test` or an alias host served by the same dev stack). The `/test` route runs the browser-side suite inside the real app/runtime and shows pass/fail per test with inline error messages. You can re-run individual suites or only the failed tests without refreshing the page.
 
 ### Test Runner (`src/core/Test.js`)
 
@@ -476,8 +485,8 @@ chore: update ethers to 6.16
 
 ## Questions?
 
-- **Issues:** [GitHub Issues](https://github.com/akaoio/shop/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/akaoio/shop/discussions)
+- **Issues:** [GitHub Issues](https://github.com/akaoio/akao/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/akaoio/akao/discussions)
 
 ## Additional Resources
 
@@ -490,4 +499,4 @@ chore: update ethers to 6.16
 
 ---
 
-Thank you for contributing to Shop! 🎉
+Thank you for contributing to akao! 🎉

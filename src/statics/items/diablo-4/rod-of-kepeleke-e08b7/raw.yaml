@@ -1,0 +1,10 @@
+id: 2093166
+icon: 518597483
+name: Rod of Kepeleke
+itemTypeName: Quarterstaff
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 158

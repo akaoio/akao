@@ -1,0 +1,10 @@
+id: 1210594
+icon: 301491024
+name: 100,000 Steps
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Feet
+popularity: 66

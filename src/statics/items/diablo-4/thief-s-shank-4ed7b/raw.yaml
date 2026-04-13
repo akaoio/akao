@@ -1,0 +1,11 @@
+id: 459944
+icon: 2153830655
+name: Thief's Shank
+itemTypeName: Dagger
+quality: 3
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 14

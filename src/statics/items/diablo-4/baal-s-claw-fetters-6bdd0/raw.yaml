@@ -1,0 +1,10 @@
+id: 2131273
+icon: 3268020912
+name: Baal's Claw Fetters
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Feet
+popularity: 10

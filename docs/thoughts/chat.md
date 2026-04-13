@@ -10,7 +10,7 @@ STACKS:
 Lưu ý: derive trên sea.pair là hệ curve P256, không như ethers là hệ secp256k1, curve khác nhau.
 
 Có 3 bên:
-E: Escrow - quyền tối cao, xử lý kiện tụng
+E: Platform - quyền tối cao, xử lý kiện tụng
 B: Buyer - trader
 S: Seller - trader
 

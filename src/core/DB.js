@@ -16,7 +16,7 @@
  */
 import { FS } from "./FS.js"
 import { Indexes } from "./Stores.js"
-import { DEV } from "./Utils/environment.js"
+import { BROWSER, DEV } from "./Utils/environment.js"
 import { transform } from "./DB/transformer.js"
 
 export class DB {
@@ -40,34 +40,63 @@ export class DB {
         return new Promise((r) => setTimeout(r, 0))
     }
 
+    static async _hash(path = []) {
+        if (!(BROWSER && typeof fetch === "function")) {
+            const hash = await FS.load(path, { quiet: true })
+            return typeof hash === "string"
+                ? { ok: true, status: 200, hash }
+                : { ok: false, status: null, hash: undefined }
+        }
+
+        try {
+            const url = Array.isArray(path) ? `/${path.filter(Boolean).join("/")}` : String(path ?? "")
+            const response = await fetch(url)
+            if (response.ok) return { ok: true, status: response.status, hash: await response.text() }
+            if (response.status === 404) return { ok: false, status: 404, hash: undefined }
+            return { ok: false, status: response.status, hash: undefined }
+        } catch {
+            return { ok: false, status: null, hash: undefined }
+        }
+    }
+
     static async get(path = []) {
         let type = path.at?.(-1)?.endsWith?.(".hash") ? "hash" : "data"
 
         // Dev mode: skip hash validation, always load fresh — but still index IDB + SQL
         if (DEV) {
             if (type === "hash") return FS.load(path)
-            const data = await FS.load(path)
+            const data = await FS.load(path, { fresh: true, quiet: true })
             if (typeof data !== "undefined") {
                 await Indexes.Statics.get(path).put(data)
                 DB.$syncToSQL(path, data)
+            } else {
+                await Indexes.Statics.del(path)
+                await Indexes.Hashes.del(path)
+                DB.$syncdel(path)
             }
             return data
         }
 
         const memory = await Indexes.Hashes.get(path).once()
-        const hash = await FS.load(path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash")))
-        if (memory && hash && memory === hash) {
+        const hashpth = path?.with?.(-1, path?.at?.(-1)?.replace?.(/\.\w+$/, ".hash"))
+        const hashres = await DB._hash(hashpth)
+        const hash = hashres.hash
+        if (memory && hashres.ok && memory === hash) {
             if (type === "hash") return hash
             const cached = await Indexes.Statics.get(path).once()
             DB._syncInsert(path, cached)
             return cached
         }
-        if (hash) await Indexes.Hashes.get(path).put(hash)
+        if (hashres.ok) await Indexes.Hashes.get(path).put(hash)
         if (type === "hash") return hash
         const data = await FS.load(path)
         if (typeof data !== "undefined") {
             await Indexes.Statics.get(path).put(data)
             DB.$syncToSQL(path, data)
+        } else if (memory && hashres.status === 404) {
+            await Indexes.Hashes.del(path)
+            await Indexes.Statics.del(path)
+            DB.$syncdel(path)
         }
         return data
     }
@@ -230,6 +259,16 @@ export class DB {
         const op = transform(path, data)
         if (!op) return
         DB._pending.push(op)
+        if (!DB._scheduled) {
+            DB._scheduled = true
+            queueMicrotask(() => DB._flush())
+        }
+    }
+
+    static $syncdel(path) {
+        const op = transform(path, null)
+        if (!op?.delete) return
+        DB._pending.push({ schema: op.schema, sql: op.delete, values: op.values })
         if (!DB._scheduled) {
             DB._scheduled = true
             queueMicrotask(() => DB._flush())

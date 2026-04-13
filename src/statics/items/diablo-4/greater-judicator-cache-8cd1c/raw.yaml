@@ -1,9 +1,0 @@
-id: 2521947
-icon: 671472196
-name: "Greater Judicator Cache "
-itemTypeName: Cache
-quality: 5
-playerClassNames:
-  - Paladin
-slotNames: []
-popularity: 17

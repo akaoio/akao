@@ -1,9 +1,18 @@
-// Write initial trade record to both Gun user namespaces
-// Each party writes to their own namespace — Gun SEA enforces authorship
-export async function create({ tradeId }) {
-    const record = { tradeId, status: "matched", ts: Date.now() }
-    // TODO: gun.user().get("trades").get(tradeId).put(record)
-    // Both maker and taker write their own side
-    await this.gun.user(this.maker.pub).get("trades").get(tradeId).put(record)
-    await this.gun.user(this.taker.pub).get("trades").get(tradeId).put(record)
+import { putTradeRecord, resolveTradeId } from "./helpers.js"
+
+// Taker accepts maker's order and authors the initial trade coordination record.
+// Later transitions are appended by whichever actor owns that state change.
+export async function create({ tradeId, matchedAt = Date.now(), taker = null } = {}) {
+    const resolvedTradeId = await resolveTradeId(this, tradeId)
+    const actor = taker || this.taker
+    if (!actor?.pub || !actor?.pair) throw new Error("takerPairRequired")
+    const record = { tradeId: resolvedTradeId, status: "matched", matched: true, matchedAt }
+    await putTradeRecord({
+        gun: this.gun,
+        pub: actor.pub,
+        tradeId: resolvedTradeId,
+        fields: record,
+        pair: actor.pair
+    })
+    return { ...record, writer: "taker" }
 }

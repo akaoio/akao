@@ -1,6 +1,6 @@
 # Indexing & Discovery Architecture Guide
 
-**Version** 1.0 · **Status** Production · **Date** 2026-04-07
+**Version** 1.1 · **Status** Production · **Date** 2026-04-12
 
 > Comprehensive guide to the 4-layer data architecture powering decentralized P2P trading: Gun (sync) → Pen (validation) → SQL (query) → IDB (cache)
 
@@ -91,27 +91,37 @@
 import gun from "/core/Gun.js"
 import SEA from "/core/SEA.js"
 
-// Define validation schema
+// Compile the exact market window soul
 const orderSoul = SEA.pen({
     key: { and: [
-        SEA.candle({ seg: 0, sep: ':', size: 300000, back: 100, fwd: 2 }),
-        { seg: { sep: ':', idx: 1, match: { eq: itemSlug } } },
-        { seg: { sep: ':', idx: 2, match: { or: [{ eq: 'buy' }, { eq: 'sell' }] } } }
+        {
+            let: {
+                bind: 0,
+                def: { divu: [{ tonum: { seg: { sep: ':', idx: 0, of: { reg: 0 } } } }, 300000] },
+                body: { and: [
+                    { gte: [{ reg: 128 }, candle] },
+                    { lte: [{ reg: 128 }, candle] }
+                ]}
+            }
+        },
+        { eq: [
+            { seg: { sep: ':', idx: 1, of: { reg: 0 } } },
+            { reg: 5 }
+        ]}
     ]},
     sign: true,
-    pow: { field: 0, difficulty: 2 }
+    pow: { field: 0, difficulty: 3 },
+    params: { baseId: itemSlug, side: orderType, candle }
 })
 
-// Write data (validated at Gun peer level)
-const key = `${candle}:${item}:${type}:${nonce}`
+// Write data inside this market window
+const key = `${Date.now()}:${Access.states.pub}:${nonce}`
 gun.get(orderSoul).get(key).put(orderData, ack => {
     if (ack.err) console.error('Validation failed:', ack.err)
 })
 
-// Subscribe to updates (real-time)
-gun.get(orderSoul).map().on((order, key) => {
-    console.log('New order:', key, order)
-})
+// Scan exact souls, not prefixes inside a global bucket
+gun.get(orderSoul).map().on((order, key) => console.log('Order in selected market window:', key, order))
 ```
 
 ---
@@ -148,7 +158,7 @@ SQL.all()  ─────postMessage────→ sqlite3.exec() ────
 import SQL from "/core/SQL.js"
 
 // Initialize (lazy-loads worker + WASM)
-const db = new SQL({ name: "shop" })
+const db = new SQL({ name: "app" })
 await db.ready
 
 // Create tables
@@ -254,15 +264,16 @@ const results = await DB.query(`
 
 ## Order Book Discovery
 
-### Temporal Key Format
+### Market-First Key Format
 
-**Key Structure**: `<candle>:<item_slug>:<type>:<nonce>`
+**Partition rule**:
+- **Soul** identifies the market window via `params = { baseId, side, candle }`
+- **Key** identifies the write inside that soul: `<timestamp>:<pub>:<nonce>`
 
 **Examples**:
 ```
-5820000:penitent-greaves:buy:a3f7b2    # Buy order
-5820001:penitent-greaves:sell:x8k2m1   # Sell order
-5820002:diablo-4-gold:buy:m9n3k5       # Another buy order
+SEA.pen({ params: { baseId: 'penitent-greaves', side: 'buy', candle: 5820000 } })  →  1744440123456:maker_full_pub:x8k2m1
+SEA.pen({ params: { baseId: 'penitent-greaves', side: 'sell', candle: 5820001 } }) →  1744440423456:maker_full_pub:p9q3r7
 ```
 
 **Candle Calculation**:
@@ -273,52 +284,45 @@ const candle = Math.floor(Date.now() / CANDLE_SIZE)
 
 **Benefits**:
 - Auto-expiry: Orders outside candle window are rejected
+- Market isolation: Other items and the opposite side never enter the same scan
 - Chronological ordering: Lower candle = older order
-- Efficient range queries: `5820000:*` to `5820100:*`
+- Efficient exact-window scans: one soul per candle, query current and previous only
 
 ---
 
 ### Creating an Order
 
-**Step 1: Define Pen Schema** (`src/core/OrderPen.js`)
+**Step 1: Define parameterized Pen soul** (`src/core/OrderPen.js`)
 
 ```javascript
 import SEA from "/core/SEA.js"
 
-export function createOrderSoul() {
+export function createOrderSoul({ baseId, side, candle }) {
     return SEA.pen({
         key: { and: [
-            // Temporal validation: ±8 hours past, ±10 min future
-            SEA.candle({ 
-                seg: 0,           // Candle is first segment
-                sep: ':',         // Separator
-                size: 300000,     // 5-minute candles
-                back: 100,        // 100 candles back (~8 hours)
-                fwd: 2            // 2 candles forward (~10 min)
-            }),
-            
-            // Item slug validation
-            { seg: { 
-                sep: ':', 
-                idx: 1, 
-                of: { reg: 0 }, 
-                match: { length: [1, 128] } 
-            }},
-            
-            // Type validation: buy or sell only
-            { seg: { 
-                sep: ':', 
-                idx: 2, 
-                of: { reg: 0 },
-                match: { or: [{ eq: 'buy' }, { eq: 'sell' }] }
-            }}
+            {
+                let: {
+                    bind: 0,
+                    def: { divu: [{ tonum: { seg: { sep: ':', idx: 0, of: { reg: 0 } } } }, 300000] },
+                    body: { and: [
+                        { gte: [{ reg: 128 }, candle] },
+                        { lte: [{ reg: 128 }, candle] }
+                    ]}
+                }
+            },
+            { eq: [
+                { seg: { sep: ':', idx: 1, of: { reg: 0 } } },
+                { reg: 5 }
+            ]},
+            { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } }
         ]},
         val: { type: 'string' },  // JSON-encoded order metadata
         sign: true,               // Require cryptographic signature
         pow: {                    // Proof-of-work anti-spam
             field: 0,             // Apply PoW to key (not value)
-            difficulty: 2         // Require 2 leading zero bits
-        }
+            difficulty: 3
+        },
+        params: { baseId, side, candle }
     })
 }
 ```
@@ -330,26 +334,27 @@ import gun from "/core/Gun.js"
 import { createOrderSoul } from "/core/OrderPen.js"
 import { Access } from "/core/Access.js"
 
-export async function createOrder({ item, type, quantity, price, currency, chain }) {
-    const soul = createOrderSoul()
+export async function createOrder({ baseId, side, baseQuantity, quoteQuantity, contract, chain }) {
     const candle = Math.floor(Date.now() / 300000)
+    const soul = createOrderSoul({ baseId, side, candle })
     
     // Generate random nonce (for PoW mining)
     let nonce = Math.random().toString(36).slice(2, 8)
     
-    // Key format: <candle>:<item>:<type>:<nonce>
-    const key = `${candle}:${item}:${type}:${nonce}`
+    // Key format inside soul({ baseId, side, candle }): <timestamp>:<pub>:<nonce>
+    const key = `${Date.now()}:${Access.states.pub}:${nonce}`
     
     // Order metadata (stored as value, not in key)
     const orderData = JSON.stringify({
-        orderId: sha256(`${Access.states.pub}:${item}:${Date.now()}`),
-        type,
-        item,
-        quantity,
-        price,
-        currency,
-        chain,
-        trader: Access.states.pub,
+        orderId: sha256(`${Access.states.pub}:${baseId}:${Date.now()}`),
+        maker: {
+            pub: Access.states.pub,
+            epub: Access.states.epub,
+            xpub: Access.states.xpub
+        },
+        side,
+        base: { type: "item", id: baseId, quantity: baseQuantity },
+        quote: { type: "crypto", quantity: quoteQuantity, contract, chain },
         created: Date.now(),
         status: 'open'
     })
@@ -368,23 +373,17 @@ export async function createOrder({ item, type, quantity, price, currency, chain
 
 ### Discovering Orders
 
-**Pattern 1: Real-time Subscription** (Gun `.map()`)
+**Pattern 1: Market-first candle scan**
 
 ```javascript
 export function subscribeOrders(itemSlug, type, callback) {
-    const soul = createOrderSoul()
     const candle = Math.floor(Date.now() / 300000)
-    
-    // Subscribe to current + recent candles
-    for (let i = 0; i < 10; i++) {
-        const c = candle - i
-        const prefix = `${c}:${itemSlug}:${type}:`
-        
-        gun.get(soul).map({
-            '.': { '*': prefix }  // Wildcard match: c:item:type:*
-        }).on((orderJson, key) => {
+
+    // Scan only current and previous candle souls
+    for (const c of [candle - 1, candle]) {
+        gun.get(createOrderSoul({ baseId: itemSlug, side: type, candle: c })).map().on((orderJson, key) => {
             if (!orderJson) return
-            
+
             try {
                 const order = JSON.parse(orderJson)
                 callback({ ...order, key })
@@ -397,7 +396,7 @@ export function subscribeOrders(itemSlug, type, callback) {
 
 // Usage
 subscribeOrders('penitent-greaves', 'buy', (order) => {
-    console.log('New buy order:', order.price, order.quantity)
+    console.log('New buy order:', order.quote.quantity, order.base.quantity)
 })
 ```
 
@@ -426,9 +425,10 @@ const deals = await findCheapestOrders('penitent-greaves', 100, 5)
 
 ```javascript
 import { Indexes } from "/core/Stores.js"
+const candle = Math.floor(Date.now() / 300000)
 
-// Cache order when discovered
-gun.get(soul).map().on((orderJson, key) => {
+// Cache order when discovered from a specific market window soul
+gun.get(createOrderSoul({ baseId: itemSlug, side: type, candle })).map().on((orderJson, key) => {
     const order = JSON.parse(orderJson)
     Indexes.Lives.get(["orders", order.orderId]).put(order)
 })
@@ -492,7 +492,7 @@ let db = null
 
 thread.init = async function() {
     const sqlite3 = await sqlite3InitModule()
-    db = new sqlite3.oo1.OpfsDb("/shop.db")
+    db = new sqlite3.oo1.OpfsDb("/app.db")
     
     // Enable WAL mode for better concurrency
     db.exec("PRAGMA journal_mode=WAL")
@@ -795,10 +795,10 @@ import { Chain } from "/core/Stores.js"
 // Subscribe to buy orders for this item
 subscribeOrders(itemSlug, 'buy', async (order) => {
     // Verify maker has funds (on-chain check)
-    const chain = Chain.get(order.chain)
+    const chain = Chain.get(order.quote.chain)
     const balance = await chain.provider.getBalance(order.fundProof)
     const required = ethers.parseUnits(
-        (order.price * order.quantity + 10).toString(), 
+        (order.quote.quantity * order.base.quantity + 10).toString(), 
         6
     )
     
@@ -824,7 +824,7 @@ async function handleAcceptOrder(order) {
         created: Date.now()
     }, ack => {
         if (ack.err) console.error('Trade creation failed:', ack.err)
-        else alert('Trade matched! Waiting for maker deposit to escrow...')
+        else alert('Trade matched! Waiting for maker deposit to platform...')
     })
 }
 ```
@@ -846,7 +846,7 @@ export class TRADE_MONITOR extends HTMLElement {
             // Update UI based on status
             switch (trade.status) {
                 case 'matched':
-                    this.showStatus('⏳ Waiting for deposit to escrow...')
+                    this.showStatus('⏳ Waiting for deposit to platform...')
                     break
                 case 'deposited':
                     this.showStatus('✅ Funds locked. Deliver item in-game.')
@@ -920,7 +920,7 @@ const topTraders = await DB.query(`
 **❌ Bad: Scan entire Gun graph**
 ```javascript
 gun.get('orders').map().on((order) => {
-    if (order.price < 100 && order.type === 'sell') {
+    if (order.quote.quantity < 100 && order.side === 'sell') {
         // This iterates ALL orders in memory!
     }
 })
@@ -962,13 +962,15 @@ setInterval(async () => {
 **Cache hot data, not everything**:
 
 ```javascript
-// ❌ Bad: Cache every order
-gun.get(soul).map().on((order, key) => {
+const candle = Math.floor(Date.now() / 300000)
+
+// ❌ Bad: Cache every order in the selected market window
+gun.get(createOrderSoul({ baseId: itemSlug, side: type, candle })).map().on((order, key) => {
     Indexes.Lives.get(['orders', key]).put(order) // Bloats cache
 })
 
 // ✅ Good: Cache only user's orders
-gun.get(soul).map().on((order, key) => {
+gun.get(createOrderSoul({ baseId: itemSlug, side: type, candle })).map().on((order, key) => {
     if (order.trader === myPubKey) {
         Indexes.Lives.get(['orders', key]).put(order)
     }
@@ -988,7 +990,7 @@ const db2 = new SQL({ name: 'db2' })
 // Uses 2 workers!
 
 // ✅ Good: Reuse single worker
-const db = new SQL({ name: 'shop' })
+const db = new SQL({ name: 'app' })
 // All queries use same worker
 ```
 

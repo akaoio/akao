@@ -1,0 +1,26 @@
+id: glyph-canny-b20e6
+game: diablo-4
+type: Paragon Glyph
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - paragon glyph
+rarity: Rare
+itemTypeName: Paragon Glyph
+classes:
+  - Paladin
+  - Rogue
+  - Spiritborn
+slots: null
+value: 63
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

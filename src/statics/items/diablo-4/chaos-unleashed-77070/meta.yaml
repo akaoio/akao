@@ -1,0 +1,24 @@
+id: chaos-unleashed-77070
+game: diablo-4
+type: Chaos Perk
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - chaos perk
+rarity: Legendary
+itemTypeName: Chaos Perk
+classes: null
+slots: null
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

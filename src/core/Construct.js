@@ -1,27 +1,81 @@
 import { Chains, Wallets, Dexs, Statics } from "./Stores.js"
 import { Context, getTheme, getFiat, getReferrer } from "./Context.js"
 import { BROWSER } from "./Utils.js"
+import { NODE } from "./Utils/environment.js"
 import Router from "./Router.js"
 import DB from "./DB.js"
+import { patchsiteplatform } from "./Platform.js"
+
+function isLoopbackHost(hostname = "") {
+    return hostname === "localhost"
+        || hostname === "127.0.0.1"
+        || hostname === "::1"
+        || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)
+}
+
+function domainCandidates(hostname = "") {
+    const value = String(hostname || "").toLowerCase().trim()
+    if (!value || isLoopbackHost(value)) return ["localhost"]
+
+    const labels = value.split(".").filter(Boolean)
+    if (labels.length < 2) return [value]
+
+    const candidates = []
+    for (let i = 0; i <= labels.length - 2; i++) {
+        const candidate = labels.slice(i).join(".")
+        if (!candidates.includes(candidate)) candidates.push(candidate)
+    }
+    return candidates
+}
 
 export const Construct = {
     Site: async function () {
         const hostname = BROWSER ? globalThis.location?.hostname : "localhost"
-        Statics.domain = /^(localhost|\d+\.\d+\.\d+\.\d+)$/.test(hostname) ? "localhost" : hostname?.split(".")?.slice(-2)?.join(".") || "localhost"
-        const domain = await DB.get(["statics", "domains", `${Statics.domain}.json`])
-        Statics.site = await DB.get(["statics", "sites", domain.site, "configs.json"])
+        let domain = null
+
+        for (const candidate of domainCandidates(hostname)) {
+            const next = await DB.get(["statics", "domains", `${candidate}.json`])
+            if (!next?.site) continue
+            Statics.domain = candidate
+            domain = next
+            break
+        }
+
+        if (!domain?.site) {
+            Statics.domain = "localhost"
+            domain = await DB.get(["statics", "domains", "localhost.json"])
+        }
+
+        Statics.site = domain?.site ? await DB.get(["statics", "sites", domain.site, "configs.json"]) : null
+        if (Statics.site) await patchsiteplatform(Statics.site)
         console.log("Constructed: Site")
-        return true
+        return !!Statics.site
     },
     GDB: async function () {
         if (!Statics.site) return
+        if (BROWSER && !globalThis.crypto?.subtle) {
+            globalThis.gun = null
+            globalThis.Gun = null
+            globalThis.SEA = null
+            globalThis.sea = null
+            console.warn("Skipping GDB: WebCrypto is unavailable in this context")
+            return false
+        }
+        let GUN
+        let SEA
+
         await import("./GDB.js")
+        GUN = globalThis.GUN || globalThis.Gun
+        SEA = globalThis.SEA || globalThis.Gun?.SEA
+
         globalThis.gun = GUN({
             peers: Statics.site?.peers || [],
             localStorage: false,
             radisk: true,
             file: "GDB"
         })
+        globalThis.Gun = GUN
+        globalThis.SEA = SEA
         globalThis.sea = SEA
         console.log("Constructed: GDB")
         return true

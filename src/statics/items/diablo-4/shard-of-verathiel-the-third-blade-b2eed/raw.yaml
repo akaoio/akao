@@ -1,0 +1,16 @@
+id: 2043695
+icon: 2397813522
+name: Shard of Verathiel / The Third Blade
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 19

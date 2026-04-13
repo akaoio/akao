@@ -1,0 +1,27 @@
+id: herald-s-morningstar-1c2a7
+game: diablo-4
+type: Mace
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - mace
+rarity: Legendary
+itemTypeName: Mace
+classes:
+  - Paladin
+slots:
+  - Main Hand
+  - Off-Hand
+value: 562
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

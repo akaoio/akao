@@ -1,0 +1,9 @@
+id: 1928151
+icon: 3001443825
+name: Necromancer Invigoration
+itemTypeName: Temper Manual
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames: []
+popularity: 12

@@ -1,0 +1,10 @@
+id: 592306
+icon: 3890975620
+name: Sparr
+itemTypeName: Two-Handed Scythe
+quality: 5
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 11

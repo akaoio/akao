@@ -1,4 +1,4 @@
-import { threads } from "/core/Threads.js"
+import { threads } from "../Threads.js"
 
 // Serialize queue — all SQL calls go through here one at a time.
 // Prevents flooding the SQL worker when many calls arrive simultaneously.

@@ -9,11 +9,13 @@ const thread = new Thread()
 const forex = {}
 
 thread.init = async () => {
-    await Construct.GDB()
+    const ready = await Construct.GDB()
+    if (!ready || !globalThis.gun) return
     await thread.forex()
 }
 
 thread.forex = async () => {
+    if (!globalThis.gun) return
     const pub = Statics?.site?.market?.pub
     if (!pub) return
     // Initialize forex store

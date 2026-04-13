@@ -1,0 +1,10 @@
+id: 2157125
+icon: 3453452797
+name: Phantom's Step
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 10

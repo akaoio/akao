@@ -1,7 +1,9 @@
-# Shop - AI Coding Agent Instructions
+# akao - AI Coding Agent Instructions
 
 ## Project Overview
-Framework-less, serverless eCommerce engine built with pure Web Components. All UI is pre-rendered static HTML per locale (19 languages). No React, Vue, or framework dependencies—just native browser APIs. Includes optional DeFi/blockchain features (EVM chains, Uniswap V2/V3 DEX, on-chain wallets).
+Framework-free, serverless, local-first eCommerce engine built with pure Web Components. All UI is pre-rendered static HTML per locale (currently 18 locales). No React, Vue, or framework dependencies—just native browser APIs. Includes optional DeFi/blockchain features (EVM chains, Uniswap V2/V3 DEX, on-chain wallets).
+
+The current mindset is broader than "no framework": trust the web platform before escaping it, keep deployment static and simple, prefer explicit verifiability over trust theater, and push capability toward the browser and the user whenever possible. See `docs/phylosophy/README.md` for the higher-level worldview.
 
 ## Critical Architecture Patterns
 
@@ -100,7 +102,7 @@ Build outputs to `build/` (gitignored). Creates structure:
 ```
 build/
 ├── en/index.html, item/[slug]/index.html
-├── fr/index.html, ...  (19 locales)
+├── fr/index.html, ...  (18 locales)
 ├── core/               — copied JS modules
 ├── UI/                 — copied components
 ├── statics/
@@ -125,7 +127,12 @@ src/UI/routes/
 ├── deposit/index.js           → /deposit
 ├── withdraw/index.js          → /withdraw
 ├── order/index.js             → /order
-├── inventory/index.js         → /inventory
+├── showcase/index.js          → /showcase
+├── swap/index.js              → /swap
+├── pools/index.js             → /pools
+├── game/[game]/index.js       → /game/[game]
+├── item/[game]/[item]/index.js→ /item/[game]/[item]
+├── tag/[tag]/index.js         → /tag/[tag]
 ├── dispute/index.js           → /dispute
 ├── profile/index.js           → /profile
 └── test/index.js              → /test
@@ -239,7 +246,7 @@ import { Indexes, Statics, Lives, Chains, Dexs, Wallets, Elements } from "/core/
 4. Access at `/{locale}/my-route` (e.g., `/en/my-route`)
 
 ### Adding Translation Keys
-1. Create `src/statics/i18n/my-key.yaml` with all 19 locale codes
+1. Create `src/statics/i18n/my-key.yaml` with all 18 locale codes
 2. Run `npm run build:core` to generate JSON
 3. Access: `Context.get(["dictionary", "myKey"])`
 
@@ -278,7 +285,9 @@ import { Indexes, Statics, Lives, Chains, Dexs, Wallets, Elements } from "/core/
 - [dev.js](dev.js) → Dev server with hot reload
 
 ## Testing
-Run tests: `npm test` or `npm run test:core` / `npm run test:geo`. Tests cover core modules and geo data integrity.
+Run tests against the real `build/` runtime: `npm test` (same as `npm run test:core`) for the default build-first core suite, `npm run test:build` for build artifact validation only, `npm run test:browser` for the Node headless runtime runner, `npm run test:playwright` for browser assertions against the live app runtime, `npm run test:isomorphic` for the combined Node-headless + browser-runtime flow, and `npm run test:geo` for geo data integrity.
+
+Testing philosophy matters here: prefer real boot paths over narrow module verification, prefer generated `build/` artifacts over source-only assumptions, and prefer real dependencies over mocks whenever practical.
 
 ## Performance Philosophy
 - **No Virtual DOM**: Direct DOM manipulation, no diffing overhead

@@ -21,6 +21,11 @@ export class ITEM extends Route {
 
     async onconnect() {
         const meta = await logic.meta(this.states.get("id"))
+        if (!meta) {
+            this.states.set({ meta: null, missing: true })
+            this.render()
+            return
+        }
         this.states.set({ meta })
         this.sub(Context.on("locale", this.render))
         this.listen(this.shadowRoot.querySelector("#decrease"), "click", this.decrease)
@@ -128,6 +133,23 @@ export class ITEM extends Route {
     async render() {
         const id = this.states.get("id")
         const meta = this.states.get("meta")
+        if (!meta) {
+            Router.setHead({ title: "Item not found", description: "" })
+            Context.set({ item: { name: "Item not found", description: "This item is no longer available." } })
+
+            const root = this.shadowRoot
+            root.querySelector("#breadcrumb").style.display = "none"
+            root.querySelector("#image").style.display = "none"
+            root.querySelector(".badges").style.display = "none"
+            root.querySelector("#flavor-text").style.display = "none"
+            root.querySelector("#stats").style.display = "none"
+            root.querySelector("#slots").style.display = "none"
+            root.querySelector("#pricing").style.display = "none"
+            root.querySelector("#attributes").style.display = "none"
+            root.querySelector("footer").style.display = "none"
+            root.querySelector("#breadcrumb-name").textContent = id || ""
+            return
+        }
         const data = await logic.locale(id, Context.get("locale").code)
         if (!data) return
         this.states.set({ data })

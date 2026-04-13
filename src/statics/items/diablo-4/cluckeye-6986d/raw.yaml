@@ -1,0 +1,10 @@
+id: 2548923
+icon: 175076750
+name: Cluckeye
+itemTypeName: Bow
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+popularity: 59

@@ -3,6 +3,12 @@ import States from "./States.js"
 import { sha256 } from "./Utils.js"
 import DB from "./DB.js"
 
+function metapath(id) {
+    const parts = String(id || "").split("/").filter(Boolean)
+    if (!parts.length) return ["statics", "items", "meta.json"]
+    return ["statics", "items", ...parts, "meta.json"]
+}
+
 export class Cart {
     constructor() {
         this.states = new States({ cart: {}, list: [], total: 0, quantity: 0 })
@@ -23,7 +29,7 @@ export class Cart {
     async add(data = {}) {
         let { id, sku, quantity, ...rest } = data
         if (!id || !sku) return
-        const meta = this.metas?.[id] || (await DB.get(["statics", "items", id, "meta.json"]))
+        const meta = this.metas?.[id] || (await DB.get(metapath(id)))
         if (meta && !this.metas?.[id]) this.metas[id] = meta
         const key = sha256(
             `id:${id}.sku:${sku}.${Object.entries(rest)
@@ -65,10 +71,10 @@ export class Cart {
         const list = []
         const sorted = Object.entries(this.states.get("cart")).sort((a, b) => b[1].timestamp - a[1].timestamp)
         for (const [key, item] of sorted) {
-            const meta = this.metas?.[item.id] || (await DB.get(["statics", "items", item.id, "meta.json"]))
+            const meta = this.metas?.[item.id] || (await DB.get(metapath(item.id)))
             if (!meta) return this.remove(key)
             if (!this.metas[item.id]) this.metas[item.id] = meta
-            const $price = meta?.sale || meta?.price || 0
+            const $price = meta?.sale || meta?.price || meta?.value || 0
             const $total = $price * item.quantity
             total += $total
             quantity += item.quantity

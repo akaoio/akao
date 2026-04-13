@@ -1,0 +1,25 @@
+id: brute-innovation-30d75
+game: diablo-4
+type: Temper Manual
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - temper manual
+rarity: Unique
+itemTypeName: Temper Manual
+classes:
+  - Barbarian
+slots: null
+value: 14
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

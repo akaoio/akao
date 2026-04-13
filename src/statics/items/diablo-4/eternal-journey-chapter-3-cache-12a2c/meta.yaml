@@ -1,0 +1,24 @@
+id: eternal-journey-chapter-3-cache-12a2c
+game: diablo-4
+type: Journey Cache
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - journey cache
+rarity: Legendary
+itemTypeName: Journey Cache
+classes: null
+slots: null
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

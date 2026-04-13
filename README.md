@@ -1,6 +1,6 @@
-# Shop 🛍️
+# akao 🛍️
 
-A modern **serverless eCommerce engine** built with pure Web Components. Framework-free, fully static, and ready for the decentralized web.
+**akao** is a modern **serverless, local-first eCommerce engine** built with pure Web Components. It is framework-free, fully static, and designed for a more decentralized web.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Web Components](https://img.shields.io/badge/Web-Components-29ABE2.svg)](https://www.webcomponents.org/)
@@ -9,10 +9,10 @@ A modern **serverless eCommerce engine** built with pure Web Components. Framewo
 
 ## ✨ Features
 
-- 🌍 **19 Languages** - Full internationalization with static routes per locale for optimal SEO
+- 🌍 **18 Languages** - Full internationalization with static routes per locale for optimal SEO
 - 💱 **Multi-Currency** - Fiat currencies + on-chain crypto (ETH, BSC, and testnets)
 - 🚀 **Serverless** - Pure static files deployable anywhere (Netlify, Vercel, GitHub Pages, S3)
-- 🧩 **Web Components** - 29 native custom elements, no framework dependencies
+- 🧩 **Web Components** - Native custom elements with no framework dependency
 - 🔐 **Passwordless Auth** - WebAuthn passkeys (Face ID, Touch ID, Windows Hello)
 - 🔗 **DeFi Integration** - Uniswap V2/V3 DEX support, on-chain wallet, token swaps
 - 📡 **Decentralized** - Optional GunDB integration for peer-to-peer data sync
@@ -39,8 +39,8 @@ When prompted, click **Install All**. If the prompt does not appear, open Extens
 
 ```bash
 # Clone the repository
-git clone https://github.com/akaoio/shop.git
-cd shop
+git clone https://github.com/akaoio/akao.git
+cd akao
 
 # Install dev dependencies
 npm install
@@ -49,13 +49,19 @@ npm install
 npm start
 ```
 
-The dev server will open at `http://localhost:8080` with hot reload enabled.
+The default dev surface is `http://localhost:8080`. If a hostname is mapped to the same site in `src/statics/domains.yaml` and resolves to this machine (for example `peer0.akao.io`), the same dev server can also be reached through that host. `npm start` restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8765` before starting a fresh stack.
+
+In DEV, `Construct.Site()` patches `Statics.site.platform` with a deterministic fallback identity when `platform.pub`, `platform.epub`, or `platform.xpub` is missing. The fallback is derived from the shared seed `"seed"` via `SEA.pair(null, { seed: "seed" })` plus the matching HD root `xpub`, so local development and tests do not need a separately stored platform keypair.
 
 ### Development Workflow
 
 ```bash
-# Start dev server (auto runs build:core first)
+# Restart dev stack, start Gun relay, build crypto + core --dev, then serve app
 npm start
+
+# Start Node headless runtime through build/core/Launcher.js
+npm start -- --headless
+npm run start:headless
 
 # Full build (crypto + core + geo)
 npm run build
@@ -74,9 +80,13 @@ npm run scan:crypto:pools
 npm run fix:geo
 
 # Testing
-npm test
-npm run test:core
-npm run test:geo
+npm test              # same as test:core
+npm run test:core     # build-first core suite + isomorphic runtime checks
+npm run test:build    # verify generated build/ artifacts only
+npm run test:browser  # build/core + Node headless browser-route runner
+npm run test:playwright
+npm run test:isomorphic
+npm run test:geo      # separate geo integrity suite
 
 # Code quality
 npm run format   # Prettier
@@ -87,7 +97,7 @@ npm run lint:fix
 ## 📁 Project Structure
 
 ```
-shop/
+ akao/
 ├── src/                      # Source files (never edit build/)
 │   ├── core/                 # Core systems
 │   │   ├── UI/              # Template engine (html, render, css)
@@ -127,9 +137,9 @@ shop/
 │   │   ├── Wallet.js        # Crypto wallet (key derivation, balance, send)
 │   │   └── WebAuthn.js      # WebAuthn/FIDO2 passkey wrapper
 │   ├── UI/                   # User interface
-│   │   ├── components/      # 29 reusable web components
+│   │   ├── components/      # Reusable web components
 │   │   ├── layouts/         # Page layouts
-│   │   ├── routes/          # 10 route handlers
+│   │   ├── routes/          # Route handlers
 │   │   └── css/             # Global styles
 │   └── statics/              # Static data and content
 │       ├── i18n/            # 200+ translation files
@@ -161,14 +171,14 @@ shop/
 
 ### Core Philosophy
 
-This project embraces **framework-less development**, leveraging native web standards:
+The project is grounded in a few durable convictions:
 
-- **Web Components API** - Custom elements with Shadow DOM
-- **ES Modules** - Native JavaScript modules
-- **Template Literals** - Zero-overhead templating
-- **Web Standards** - No proprietary abstractions
+- **Native over ornamental abstraction** - trust the web platform before escaping it
+- **Static and local-first by default** - push capability toward the browser and keep deployment simple
+- **Verifiability over trust theater** - prefer explicit proofs, deterministic structure, and testable flows
+- **User sovereignty over custody** - identity, data, and value should remain as close to the user as possible
 
-See [the-philosophy-of-framework-less.md](docs/thoughts/the-philosophy-of-framework-less.md) for detailed rationale.
+For the broader worldview behind the codebase, start with [docs/phylosophy/README.md](docs/phylosophy/README.md).
 
 ### UI System
 
@@ -248,7 +258,7 @@ Full SQL capabilities in the browser via `@sqlite.org/sqlite-wasm` running insid
 ```javascript
 import SQL from "/core/SQL.js"
 
-const db = new SQL({ name: "shop" })
+const db = new SQL({ name: "akao" })
 await db.ready   // wait for worker to open the DB
 
 await db.exec(`CREATE TABLE IF NOT EXISTS orders (
@@ -518,34 +528,31 @@ Used by `<ui-geo>` for cascading country → region → city selection.
 
 The project ships a micro test runner (`src/core/Test.js`) with zero external dependencies that works in both Node.js and the browser.
 
+The important rule is architectural, not just procedural: tests revolve around the generated `build/` runtime. The suite first verifies real build artifacts, then boots the real runtime through `Launcher.js` in Node headless mode and in the browser route `/test`.
+
 ### Running Tests
 
 ```bash
-npm test              # full test suite (Node.js, coloured console output)
-npm run test:core     # core module unit tests only
-npm run test:geo      # geo data integrity tests
+npm test              # same as test:core
+npm run test:core     # build verification + browser runtime + Playwright assertions
+npm run test:build    # verify generated build/ artifacts only
+npm run test:browser  # build/core + Node headless browser-route runner
+npm run test:playwright
+npm run test:isomorphic
+npm run test:geo      # build/geo integrity tests
 ```
 
-For a live interactive view, open `/{locale}/test` in the dev server (e.g. `http://localhost:8080/en/test`). The browser UI shows pass/fail per suite in real time, lets you re-run individual suites or only failed tests, and displays inline error messages.
+For a live interactive view, open `/{locale}/test` in the dev server (for example `http://localhost:8080/en/test` or an alias host such as `http://peer0.akao.io:8080/en/test`). The browser UI shows pass/fail per suite in real time, lets you re-run individual suites or only failed tests, and displays inline error messages.
 
-### Test Coverage (14 files, 38 suites, 180 tests)
+### Coverage Areas
 
-| File | Modules covered | Tests |
-|---|---|---|
-| `Events.test.js` | Events | 8 |
-| `States.test.js` | States | 19 |
-| `Utils.test.js` | all Utils helpers | 51 |
-| `Router.test.js` | Router | 21 |
-| `Forex.test.js` | Forex | 9 |
-| `IDB.test.js` | IDB | 8 |
-| `DB.test.js` | DB | 11 |
-| `Cart.test.js` | Cart | 14 |
-| `UI.test.js` | html(), render() | 13 |
-| `Context.test.js` | Context helpers | 8 |
-| `Access.test.js` | Access | 8 |
-| `WebAuthn.test.js` | WebAuthn passkey lifecycle | 4 |
-| `RTC.test.js` | RTC (on/off, snapshot, send guard) | 3 |
-| `Torrent.test.js` | Torrent (list, get, destroy) | 3 |
+The active suite spans:
+
+- build artifact verification in `build/`
+- Node headless boot through `build/core/Launcher.js`
+- browser runtime boot through `/{locale}/test`
+- core modules such as Events, States, Utils, Router, DB, Context, Access, RTC, Torrent, Order, Lock, and Trade
+- interactive or browser-only cases surfaced in the live `/test` route when they are not suitable for automated headless runs
 
 Tests marked `{ browser: true }` are skipped in Node.js. Tests marked `{ interactive: true }` (e.g. WebAuthn hardware) are always skipped in automated runs and triggered manually in the browser UI.
 
@@ -589,12 +596,13 @@ mystore.com: mystore
 
 ## 📚 Documentation
 
+- [Philosophy Index](docs/phylosophy/README.md) — The worldview behind the codebase
 - [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) — Why no framework?
 - [SQLite WASM + OPFS Architecture](docs/thoughts/sqlite-wasm-opfs-worker.md) — SQL storage design
 - [Offline-First In-Browser Server](docs/thoughts/offline-first-browser-server.md) — RTC, Torrent, P2P stack architecture & feasibility
 - [WebAuthn PRF Extension](docs/thoughts/webauthn-prf-extension.md) — Passkey deep-dive
-- [White Paper Draft](docs/thoughts/white-paper-draft.md) — 4-party escrow design
-- [Chat](docs/thoughts/chat.md) — escrow chat protocol
+- [White Paper](docs/thoughts/white-paper.md) — 4-party platform design
+- [Chat](docs/thoughts/chat.md) — platform chat protocol
 
 ## 🤝 Contributing
 

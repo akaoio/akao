@@ -1,6 +1,6 @@
 import { renderSVG, encode } from "./QR/encoder.js"
 import QrScanner from "./QR/decoder.js"
-import { threads } from "/core/Threads.js"
+import { threads } from "./Threads.js"
 
 class QR {
     static request({ method, params, transfer, timeout = 12000 } = {}) {

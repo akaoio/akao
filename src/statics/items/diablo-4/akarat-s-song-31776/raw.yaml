@@ -1,0 +1,16 @@
+id: 1976738
+icon: 2397813523
+name: Akarat's Song
+itemTypeName: Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 25

@@ -1,0 +1,14 @@
+id: 2394977
+icon: 1245922632
+name: Chain Hammer
+itemTypeName: Flail
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 15

@@ -111,7 +111,10 @@ thread.init = async function () {
     })
     // Pass full Context state so render() preserves search params in history
     Context.on("path", ({ value: path }) => render({ path, route: Context.get("route"), locale: Context.get("locale"), params: Context.get("params") }))
-    Context.on("locale", ({ value: locale }) => Router.setLocale(locale.code))
+    Context.on("locale", ({ value: locale, last }) => {
+        const code = locale?.code
+        if (code && code !== last?.code) Router.setLocale(code)
+    })
     Progress.set({ Context: await Construct.Context() })
     splash(false)
     const access = new ACCESS()

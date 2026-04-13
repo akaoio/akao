@@ -1,0 +1,16 @@
+id: 1871404
+icon: 1639170353
+name: Carved Sword
+itemTypeName: Sword
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 19

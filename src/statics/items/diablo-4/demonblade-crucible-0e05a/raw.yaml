@@ -1,0 +1,12 @@
+id: 2602335
+icon: 587952553
+name: Demonblade (Crucible)
+itemTypeName: Two-Handed Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 10

@@ -1,0 +1,10 @@
+id: 2465761
+icon: 257793376
+name: Khamsin Steppewalkers
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Feet
+popularity: 29

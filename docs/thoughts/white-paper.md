@@ -1,4 +1,4 @@
-# P2P Trading Escrow Protocol
+# P2P Trading Platform Protocol
 
 **Version** 2.0 · **Status** Production · **Date** 2026-04-06
 
@@ -10,15 +10,15 @@
 
 ## Abstract
 
-This document specifies a **trustless, serverless escrow protocol for peer-to-peer trading** of digital assets (game items, NFTs, digital goods). The protocol enables a platform operator to mediate trades between two traders (maker and taker) using deterministic cryptographic key derivation — eliminating the need for smart contracts, custodial accounts, or trusted third-party oracles.
+This document specifies a **trustless, serverless platform protocol for peer-to-peer trading** of digital assets (game items, NFTs, digital goods). The protocol enables a platform operator to mediate trades between two traders (maker and taker) using deterministic cryptographic key derivation — eliminating the need for smart contracts, custodial accounts, or trusted third-party oracles.
 
-All escrow wallet addresses are derived client-side from **Diffie-Hellman shared secrets** and **BIP-32 hierarchical deterministic key derivation**, ensuring that each party holds exactly the access rights the protocol intends, and no more.
+All platform wallet addresses are derived client-side from **Diffie-Hellman shared secrets** and **BIP-32 hierarchical deterministic key derivation**, ensuring that each party holds exactly the access rights the protocol intends, and no more.
 
 ### Think DEX, Not Marketplace
 
 **Traditional marketplace** (v1.0 - deprecated):
 - ❌ Fixed roles: Buyer pays, Seller sells
-- ❌ Item-centric: Each item has separate escrow tree
+- ❌ Item-centric: Each item has separate platform tree
 - ❌ One-directional: Only buyers initiate trades
 - ❌ Custodial mindset: Platform holds listings
 
@@ -26,15 +26,15 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 - ✅ **Symmetric roles**: Anyone can create buy OR sell orders
 - ✅ **Trader-centric**: Maker/Taker like Uniswap, dYdX, Binance
 - ✅ **Bi-directional**: Orders are just intentions (buy intention = sell intention from other side)
-- ✅ **Order book**: Decentralized discovery via Gun + Pen validation
+- ✅ **Order book**: Decentralized discovery via Gun + Pen validation, partitioned by item soul and order-side soul
 - ✅ **Affiliate economy**: Built-in referral commissions
 - ✅ **Non-custodial (happy path)**: Platform arbitrates disputes/refunds, not involved in normal trades
 
 **Key innovations**:
-- **Dual escrow wallets** per trade: Transaction Lock (TL) + Commission Lock (CL)
+- **Dual platform wallets** per trade: Transaction Lock (TL) + Commission Lock (CL)
 - **Temporal validation**: Orders auto-expire using candle-based epochs (Pen DSL)
 - **Post-match deposits**: Both order types deposit after matching (pure P2P, no Platform involvement)
-- **Trustless verification**: Anyone can verify escrow addresses on-chain before accepting
+- **Trustless verification**: Anyone can verify platform addresses on-chain before accepting
 
 ---
 
@@ -47,8 +47,8 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 | **T** | Taker | Trader who accepts/matches an order |
 | **A** | Affiliate | Referrer who earns commission on trades |
 | **FP** | Fund Proof | Pre-deposit wallet for buy orders (proof of funds) |
-| **TL** | Transaction Lock | Escrow wallet holding trade payment |
-| **CL** | Commission Lock | Escrow wallet holding affiliate commission |
+| **TL** | Transaction Lock | Platform wallet holding trade payment |
+| **CL** | Commission Lock | Platform wallet holding affiliate commission |
 | **SEA** | Security, Encryption, Authorization | GunDB's cryptography library (Curve25519) |
 | **BIP-32** | Bitcoin Improvement Proposal 32 | Hierarchical deterministic wallet standard |
 | **ECDH** | Elliptic Curve Diffie-Hellman | Shared secret key exchange protocol |
@@ -65,30 +65,30 @@ All escrow wallet addresses are derived client-side from **Diffie-Hellman shared
 
 | Role | Symbol | Description |
 |---|---|---|
-| **Platform** | **P** | Marketplace operator. Holds authority to release or refund escrow funds. Acts as trusted arbiter in disputes. |
+| **Platform** | **P** | Marketplace operator. Holds authority to release or refund platform funds. Acts as trusted arbiter in disputes. |
 | **Maker** | **M** | Trader who creates an order (buy or sell). |
 | **Taker** | **T** | Trader who accepts/matches an existing order. |
 | **Affiliate** | **A** | Referrer who brought the payer to the platform. Earns commission on successful trades. |
 
 **Note:** M and T are symmetric — both are traders. A trader can be M in one trade and T in another. The distinction only matters during a specific trade execution. A is optional — if payer has no referrer, no affiliate commission is paid.
 
-### 1.2 Escrow Wallets
+### 1.2 Platform Wallets
 
 | Wallet | Symbol | Full Name | Purpose | Derived From |
 |--------|--------|-----------|---------|--------------|
 | Fund Proof | **FP** | Fund Proof | Pre-deposit for buy orders (proof of funds) | `root_M` (Maker's own root) |
-| Payment escrow | **TL** | Transaction Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` (recipient's root) |
-| Commission escrow | **CL** | Commission Lock | Holds affiliate commission (payer → affiliate) | `root_AP` (affiliate's root) |
+| Payment platform | **TL** | Transaction Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` (recipient's root) |
+| Commission platform | **CL** | Commission Lock | Holds affiliate commission (payer → affiliate) | `root_AP` (affiliate's root) |
 
 **Notes:** 
 - **FP** (buy orders only): Maker deposits before posting order → Taker verifies on-chain → funds transfer to TL/CL after matching
 - Each trade creates exactly 2 lock wallets: 1 TL (payment) + 1 CL (commission, if affiliate exists)
-- FP uses **maker's own root** (maker controls funds), TL/CL use **recipient's root** (trustless escrow)
+- FP uses **maker's own root** (maker controls funds), TL/CL use **recipient's root** (trustless platform)
 
 ### Trust Assumptions
 
 - **P is trusted** to act honestly as arbiter (semi-centralized model)
-- **No party other than P** can unilaterally move funds from escrow before trade resolution
+- **No party other than P** can unilaterally move funds from platform before trade resolution
 - **Both traders trust P** to resolve disputes fairly
 - All parties have valid **SEA key pairs** registered via WebAuthn
 
@@ -134,18 +134,28 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 
 ## 3. Order Types and Lifecycle
 
-### 3.1 Order Types
+### 3.1 Order Sides
 
 **Buy Order:**
 ```javascript
 {
-    type: "buy",
-    trader: "maker_pub_key",
-    item: "diablo-4/penitent-greaves-d76bc",
-    quantity: 1,
-    price: 100,        // willing to pay
-    currency: "USDT",
-    chain: 1,          // Ethereum
+    side: "buy",
+    maker: {
+        pub: "maker_pub_key",
+        epub: "maker_epub_key",
+        xpub: "maker_root_xpub"
+    },
+    base: {
+        type: "item",
+        id: "diablo-4/penitent-greaves-d76bc",
+        quantity: 1
+    },
+    quote: {
+        type: "crypto",
+        quantity: 100,
+        contract: "USDT",
+        chain: 1
+    },
     status: "open"
 }
 ```
@@ -153,13 +163,23 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 **Sell Order:**
 ```javascript
 {
-    type: "sell",
-    trader: "maker_pub_key",
-    item: "diablo-4/penitent-greaves-d76bc",
-    quantity: 1,
-    price: 95,         // willing to accept
-    currency: "USDT",
-    chain: 1,
+    side: "sell",
+    maker: {
+        pub: "maker_pub_key",
+        epub: "maker_epub_key",
+        xpub: "maker_root_xpub"
+    },
+    base: {
+        type: "item",
+        id: "diablo-4/penitent-greaves-d76bc",
+        quantity: 1
+    },
+    quote: {
+        type: "crypto",
+        quantity: 95,
+        contract: "USDT",
+        chain: 1
+    },
     status: "open"
 }
 ```
@@ -167,10 +187,10 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 ### 3.2 Trade Execution Flow
 
 ```
-1. Maker creates order → writes to Gun with Pen-validated key (no deposit)
-2. Taker discovers order → Gun .map() query
+1. Maker creates order → writes to the Pen soul compiled for the exact `(baseId, side, candle)` market window (no deposit)
+2. Taker discovers order → compiles the current and previous `(baseId, side, candle)` souls, then scans both
 3. Taker accepts order → trade status: "open" → "matched" (both parties known)
-4. Payer deposits to escrow (Maker for buy, Taker for sell):
+4. Payer deposits to platform (Maker for buy, Taker for sell):
    - Computes TL/CL from recipient's xpub + payer's index
    - Deposits within 10-min timeout or trade auto-cancels
 5. In-game item delivery (trade/mail/drop)
@@ -182,11 +202,12 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 ### 3.3 Key Derivation Strategy
 
 **Changes from v1.0:**
-- **No per-item roots** (items don't need separate xpub trees)
+- **No per-item platform roots** (items don't need separate xpub trees for settlement)
+- **Per-item, per-type, per-candle Pen souls** for discovery (`item + side + time window` define the soul identity)
 - **One root per trader-platform pair**
-- **Two escrow wallets per trade:**
-  - **Payment escrow (TL)** — holds trade payment (M/P or T/P root)
-  - **Affiliate escrow (CL)** — holds affiliate commission (A/P root)
+- **Two platform wallets per trade:**
+  - **Payment platform (TL)** — holds trade payment (M/P or T/P root)
+  - **Affiliate platform (CL)** — holds affiliate commission (A/P root)
 
 ---
 
@@ -224,13 +245,13 @@ root_AP    =  fromSeed(seed_AP)    // full node — known to A and P
 - Taker: `xpub_TP = root_TP.neuter().extendedKey`
 - Affiliate: `xpub_AP = root_AP.neuter().extendedKey` (in referral link)
 
-### 4.3 Per-Transaction Lock Wallets (Dual Escrow)
+### 4.3 Per-Transaction Lock Wallets (Dual Platform)
 
-**Key principle from original design**: Escrow wallet = **RECIPIENT's root xpub** + **INDEX from PAYER's secret**
+**Key principle from original design**: Platform wallet = **RECIPIENT's root xpub** + **INDEX from PAYER's secret**
 
 **Critical design decision**: Both buy and sell orders deposit **AFTER matching** to preserve pure P2P architecture (Platform not involved in happy path).
 
-For each trade, derive **two escrow wallets**:
+For each trade, derive **two platform wallets**:
 
 #### 4.3.1 Transaction Lock (TL)
 
@@ -239,7 +260,7 @@ For each trade, derive **two escrow wallets**:
 ```javascript
 // AFTER MATCHING (both parties known)
 // "TR:" domain separator + ":" field separators prevent hash space collision with orderId ("OR:")
-tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
+tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
 
 // Step 1: Recipient (Taker for buy order, Maker for sell order) publishes xpub
 secret_recipient = sea.secret(P.epub, recipient.pair)
@@ -252,7 +273,7 @@ secret_payer = sea.secret(P.epub, payer.pair)
 seed_index = sha256(secret_payer + ":TL:" + tradeId)
 index_TL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
 
-// Step 3: Payer derives escrow from RECIPIENT's xpub + PAYER's index
+// Step 3: Payer derives platform from RECIPIENT's xpub + PAYER's index
 TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
 //   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Recipient's root (watch-only)
 //                                               ^^^^^^^^^ Payer's index
@@ -272,7 +293,7 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
 
 ```javascript
 // AFTER MATCHING (payer known)
-tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
+tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
 
 // Affiliate publishes xpub
 secret_AP = sea.secret(P.epub, A.pair)
@@ -293,7 +314,7 @@ CL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_CL)
 ```
 
 **Security properties**:
-- Payer derives escrow address from **recipient's xpub** (watch-only)
+- Payer derives platform address from **recipient's xpub** (watch-only)
 - Payer uses index from **own secret** (knows index)
 - Payer **cannot spend** (doesn't have recipient's xprv, only xpub)
 - Recipient **cannot spend yet** (doesn't know index)
@@ -308,7 +329,7 @@ CL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_CL)
 - No pre-deposit required → Platform not involved in happy path → pure P2P
 
 **Access control:**
-- **Payer (M or T):** Computes escrow addresses from recipient's xpub + own index. **Cannot spend** (has xpub only, not xprv).
+- **Payer (M or T):** Computes platform addresses from recipient's xpub + own index. **Cannot spend** (has xpub only, not xprv).
 - **Recipient (seller):** 
   - Buy order: Taker receives `index_TL` from Maker → derives spending key from own `root_TP`
   - Sell order: Maker receives `index_TL` from Taker → derives spending key from own `root_MP`
@@ -339,7 +360,7 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 - But doesn't know which **index** was used (payer's secret + entropy)
 - Without index, 2^31 possible child keys to try (infeasible)
 
-**Original security mindset preserved**: Escrow wallet = recipient's root + payer's index
+**Original security mindset preserved**: Platform wallet = recipient's root + payer's index
 
 ---
 
@@ -350,17 +371,18 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 **Both order types follow same pattern** (symmetric design):
 
 1. M creates order on UI (buy or sell)
-2. M generates `orderId = sha256("OR:" + M.pub + ":" + item + ":" + price + ":" + timestamp)`
-3. M retrieves referrer (if any) from localStorage: `Context.getReferrer()`
-4. M writes order to Gun with Pen-validated key:
+2. M generates `orderId = sha256("OR:" + canonicalOrderIntent + ":" + timestamp + ":" + randomness)`
+3. M retrieves affiliate (if any) from localStorage: `Context.getReferrer()`
+4. M compiles the Pen soul for the exact `(baseId, side, candle)` window, then writes under a Pen-validated key:
    ```
-   <candle>:<item_slug>:<type>:<pub8>:<nonce>
-   
-   Example buy:  5820000:penitent-greaves:buy:a1b2c3d4:x8k2m1
-   Example sell: 5820000:penitent-greaves:sell:a1b2c3d4:p9q3r7
+   soul params: { baseId: <base_item_id>, side: <side>, candle: <candle> }
+   key:         <timestamp_ms>:<pub>:<nonce>
+
+   Example soul params: { baseId: "penitent-greaves", side: "buy", candle: 5820000 }
+   Example key:         1744440123456:maker_full_pub:x8k2m1
    ```
-   `pub8` = `M.pub.slice(0, 8)` — Pen enforces writer's pub starts with this segment
-5. Order includes metadata: `{ orderId, type, item, price, currency, chain, referrer }`
+   `pub` is the maker's full public key, not a truncated shard
+5. Order includes metadata: `{ orderId, maker, side, base, quote, affiliate }`
 6. Order status: `"open"` (no funds locked yet, waiting for Taker)
 
 **No pre-deposit** for either order type → pure P2P (Platform not involved)
@@ -369,7 +391,7 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 
 **Problem**: Takers waste time accepting buy orders from makers who don't actually have funds.
 
-**Solution**: Buy order makers deposit funds into a **deterministic order wallet** before creating the order. This provides **trustless proof of budget** without locking funds in escrow yet.
+**Solution**: Buy order makers deposit funds into a **deterministic order wallet** before creating the order. This provides **trustless proof of budget** without locking funds in platform yet.
 
 **Order Wallet Derivation** (buy orders only):
 
@@ -419,34 +441,38 @@ await M.wallet.sendTransaction({
 
 ### Step 2 — Taker Discovers and Accepts Order
 
-1. T queries Gun order book:
-   ```javascript
-   gun.get(orderSoul).map({
-       '.': { '*': `${candle}:penitent-greaves:buy:` }
-   })
-   ```
-2. T sees M's order
-   - **For buy orders**: T verifies on-chain balance of `orderWallet.address` before accepting
-     ```javascript
-     const balance = await chain.getBalance(order.orderWallet)
+1. T compiles the exact market-window souls in Gun:
+    ```javascript
+    const current = Order.soul({ baseId: "penitent-greaves", side: "buy", candle })
+    const previous = Order.soul({ baseId: "penitent-greaves", side: "buy", candle: candle - 1 })
+    ```
+2. T scans both souls:
+    ```javascript
+    gun.get(current).map()
+    gun.get(previous).map()
+    ```
+3. T sees M's order
+    - **For buy orders**: T verifies on-chain balance of `orderWallet.address` before accepting
+      ```javascript
+      const balance = await chain.getBalance(order.orderWallet)
      if (balance < requiredAmount) {
          UI.error("Maker has insufficient funds")
          return
      }
      ```
    - **For sell orders**: No verification needed (seller will prove ownership by delivery)
-3. T clicks "Accept"
-4. **Trade matching** (creates `tradeId`):
+4. T clicks "Accept"
+5. **Trade matching** (creates `tradeId`):
    ```javascript
    // tradeId computed once at match time, stored in Gun trade record — never recomputed
    // "TR:" domain separator prevents hash space collision with orderId ("OR:")
-   tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub + ":" + timestamp)
+   tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
    ```
-5. Trade status → `"matched"` (both parties known, waiting for deposit)
+6. Trade status → `"matched"` (both parties known, waiting for deposit)
 
-### Step 3 — Payer Deposits to Escrow
+### Step 3 — Payer Deposits to Platform
 
-**Payer** (Maker for buy order, Taker for sell order) now computes escrow addresses:
+**Payer** (Maker for buy order, Taker for sell order) now computes platform addresses:
 
 ```javascript
 // Determine payer and recipient based on order type
@@ -474,12 +500,12 @@ const CL = referrer ?
     HDNodeWallet.fromExtendedKey(xpub_affiliate).deriveChild(index_CL) : 
     null
 
-// Payer deposits to escrow locks
+// Payer deposits to platform locks
 // For buy orders: Transfer from orderWallet → TL/CL (sequential, NOT atomic — check each tx receipt)
 // For sell orders: Direct deposit from Taker's wallet → TL/CL
 
 if (orderType === 'buy') {
-    // Maker transfers from order wallet to escrow locks
+    // Maker transfers from order wallet to platform locks
     const orderWallet = M.root.deriveChild(index_order)  // Maker has private key
     
     await orderWallet.sendTransaction({ to: TL.address, value: paymentAmount })
@@ -491,7 +517,7 @@ if (orderType === 'buy') {
         value: platformFee 
     })
 } else {
-    // Taker deposits directly to escrow locks
+    // Taker deposits directly to platform locks
     await T.wallet.sendTransaction({ to: TL.address, value: paymentAmount })
     if (CL) {
         await T.wallet.sendTransaction({ to: CL.address, value: commissionAmount })
@@ -567,11 +593,11 @@ Trade status → `"completed"`
 
 ### Step 6 — Dispute Resolution and Refunds by P
 
-**Critical limitation**: Refunds REQUIRE Platform involvement due to escrow design.
+**Critical limitation**: Refunds REQUIRE Platform involvement due to platform design.
 
 **Why payer cannot self-refund:**
 ```javascript
-// Escrow = Recipient's xpub + Payer's index
+// Platform = Recipient's xpub + Payer's index
 TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
 
 // Payer has:
@@ -590,7 +616,7 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
 
 **Platform-initiated refund mechanism:**
 
-P can always recompute both escrow spending keys:
+P can always recompute both platform spending keys:
 
 ```javascript
 // P knows all parties' epub keys (Curve25519) — never .pub (Ed25519)
@@ -602,7 +628,7 @@ const secret_payer = await sea.secret(payer.epub, P.pair)
 const index_TL = parseInt(sha256(secret_payer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
 const index_CL = parseInt(sha256(secret_payer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
 
-// P derives both escrow spending keys
+// P derives both platform spending keys
 const TL = root_recipient.deriveChild(index_TL)
 // TL.privateKey → P can release to seller OR refund to payer
 
@@ -650,73 +676,81 @@ const CL = root_affiliate.deriveChild(index_CL)
 
 ### 6.1 Temporal Validation
 
-Orders use **candle-based expiry** to prevent stale orders:
+Orders use **parameterized Pen souls** and **timestamp keys**:
 
 ```javascript
 const orderSoul = SEA.pen({
     key: { and: [
-        // seg 0: Candle window (5-min candles, ~8h back, ~10min fwd)
-        SEA.candle({ seg: 0, sep: ":", size: 300000, back: 100, fwd: 2 }),
-
-        // seg 1: Item slug (1–128 chars)
-        { seg: { sep: ":", idx: 1, of: { reg: 0 },
-                 match: { length: [1, 128] } } },
-
-        // seg 2: Order type — "buy" or "sell"
-        { seg: { sep: ":", idx: 2, of: { reg: 0 },
-                 match: { or: [{ eq: "buy" }, { eq: "sell" }] } } },
-
-        // seg 3: pub8 = M.pub.slice(0, 8) — exactly 8 hex chars
-        // PRE(R[5], seg3): R[5] (writer's actual pub) must start with this segment
-        // Prevents any other authenticated user from writing to a maker's key prefix
-        { seg: { sep: ":", idx: 3, of: { reg: 0 }, match: { length: [8, 8] } } },
-        { pre: [{ reg: 5 }, { seg: { sep: ":", idx: 3, of: { reg: 0 } } }] }
-
-        // seg 4: nonce — iterated by client for PoW
+        // seg 0: timestamp_ms whose derived candle must equal the soul candle
+        {
+            let: {
+                bind: 0,
+                def: { divu: [{ tonum: { seg: { sep: ":", idx: 0, of: { reg: 0 } } } }, 300000] },
+                body: { and: [
+                    { gte: [{ reg: 128 }, candle] },
+                    { lte: [{ reg: 128 }, candle] }
+                ]}
+            }
+        },
+        // seg 1: full writer pub must equal R[5]
+        { eq: [
+            { seg: { sep: ":", idx: 1, of: { reg: 0 } } },
+            { reg: 5 }
+        ]},
+        // seg 2: nonce — iterated by client for PoW
+        { seg: { sep: ":", idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } }
     ]},
-    val: { type: "string" },  // JSON order metadata (orderId, price, currency, chain, etc.)
+    val: { type: "string" },  // JSON order metadata (orderId, maker, side, base, quote, affiliate, etc.)
     sign: true,
-    pow: { field: 0, difficulty: 2 }  // Anti-spam PoW — client iterates nonce at seg 4
+    pow: { field: 0, difficulty: 3 },  // Anti-spam PoW — client iterates nonce at seg 2
+    params: { baseId, side, candle }
 })
 ```
 
+**Important partitioning rule**:
+- **Soul identity carries market window**: `params = { baseId, side, candle }`
+- **Key carries order instance identity**: `<timestamp>:<pub>:<nonce>`
+- **Read path starts from the right soul**, not from a global order bucket
+
 ### 6.2 Key Format
 
-```
-<candle>:<item_slug>:<type>:<pub8>:<nonce>
+```text
+soul params: { baseId: <base_item_id>, side: <side>, candle: <candle> }
+key:         <timestamp_ms>:<pub>:<nonce>
 
-Example buy:  5820000:penitent-greaves:buy:a1b2c3d4:x8k2m1
-Example sell: 5820000:penitent-greaves:sell:a1b2c3d4:p9q3r7
+Example params: { baseId: "penitent-greaves", side: "buy", candle: 5820000 }
+Example key:    1744440123456:maker_full_pub:x8k2m1
 ```
 
 | Segment | Content | Validated by |
 |---|---|---|
-| seg 0 | `candle` = `Math.floor(Date.now() / 300000)` | `SEA.candle()` — window ±8h/10min |
-| seg 1 | `item_slug` (1–128 chars) | Pen `length` check |
-| seg 2 | `"buy"` or `"sell"` | Pen `or/eq` check |
-| seg 3 | `pub8` = `M.pub.slice(0, 8)` | Pen `PRE(R[5], seg3)` — writer identity |
-| seg 4 | `nonce` — client iterates until PoW passes | PoW `difficulty: 2` |
+| soul | `params = { baseId, side, candle }` | Compile-time soul identity via `SEA.pen({ params })` |
+| seg 0 | `timestamp_ms = Date.now()` | `floor(timestamp_ms / 300000) === candle` |
+| seg 1 | `pub = M.pub` | Dynamic equality with writer register `R[5]` |
+| seg 2 | `nonce` — client iterates until PoW passes | PoW `difficulty: 3` |
 
 **orderId** is stored in the value (not the key), enabling:
-- Range queries by candle/item/type without knowing orderId
+- Stable identity independent of timestamp/nonce
 - Price changes without key recreation
-- Simpler LEX range queries (candle-first)
+- Matching/cancellation by key while market window stays derivable from timestamp
 
 **Candle calculation:**
 ```javascript
 const candle = Math.floor(Date.now() / 300000)  // 5-minute candles
 
-// Full key construction:
-const pub8 = pair.pub.slice(0, 8)
-const nonce = await computePowNonce(`${candle}:${item}:${type}:${pub8}`, 2)
-const key = `${candle}:${item}:${type}:${pub8}:${nonce}`
+// Full key construction inside soul({ baseId, side, candle }):
+const timestamp = Date.now()
+const pub = pair.pub
+const nonce = await computePowNonce(`${timestamp}:${pub}`, 3)
+const key = `${timestamp}:${pub}:${nonce}`
 ```
 
 **Benefits:**
-- Old orders auto-expire (can't write keys outside window)
-- Discovery queries scoped to recent candles
+- Soul identity is exact to one market window
+- Full pub is stronger than `pub8` for ownership and cancellation checks
+- Discovery queries start from exact baseId/side/candle souls
 - No manual cleanup needed
-- Only Maker can write/overwrite their own order keys (Pen enforces via pub8)
+- Market noise from other items, sides, or candles does not pollute discovery
 
 ---
 
@@ -744,6 +778,7 @@ Gun SEA enforces write restriction via signature — **no Pen needed**.
 | `unlock_index_CL` (number) | Buyer (M or T) | Own | Step 5 — at confirmation |
 | `confirmed` (true) | Buyer (M or T) | Own | Step 5 — receipt confirmed |
 | `disputed` (object) | Either party | Own | Step 6 — if dispute filed |
+| `release_ready` / `refund_ready` | Platform | Platform's | Step 6 — platform has resolved deterministic spend paths but has not settled on-chain yet |
 
 **Key security property**: `unlock_index_TL` and `unlock_index_CL` live in the **buyer's own namespace**. Seller must actively read buyer's namespace to obtain the index. Buyer controls when seller can withdraw — no premature self-release is possible.
 
@@ -776,13 +811,13 @@ gun.user(T.pub).get("trades").get(tradeId)              // Taker's side
 
 ### 7.1 The Refund Limitation
 
-**Critical design constraint**: Payer cannot self-refund in the current escrow model.
+**Critical design constraint**: Payer cannot self-refund in the current platform model.
 
 **Why this limitation exists:**
 
-The escrow security relies on **asymmetric key access**:
+The platform security relies on **asymmetric key access**:
 ```
-Escrow = Recipient's xpub (watch-only) + Payer's index (secret)
+Platform = Recipient's xpub (watch-only) + Payer's index (secret)
 
 Payer has:
 ├─ Recipient's xpub (public extended key)
@@ -820,7 +855,7 @@ Platform has:
 
 | Property | Mechanism |
 |---|---|
-| P holds full escrow authority | P knows all **epub** keys (Curve25519) → recomputes all DH secrets via `sea.secret(party.epub, P.pair)` → derives all root xprv and child spending keys for both TL and CL |
+| P holds full platform authority | P knows all **epub** keys (Curve25519) → recomputes all DH secrets via `sea.secret(party.epub, P.pair)` → derives all root xprv and child spending keys for both TL and CL |
 | Payer cannot withdraw (even for refund) | Payer has recipient's xpub only (watch-only). Cannot derive private key from xpub. **Refunds require Platform intervention.** |
 | Recipient cannot claim early | Recipient has xprv but doesn't know index until payer reveals it |
 | Affiliate cannot claim prematurely | A has xpub_AP but not `index_CL`; receives index only after successful trade completion |
@@ -828,7 +863,7 @@ Platform has:
 
 ### 7.3 Per-Trade Address Isolation
 
-Each `tradeId` is unique → `index_TL` and `index_CL` unique → escrow addresses never collide across trades.
+Each `tradeId` is unique → `index_TL` and `index_CL` unique → platform addresses never collide across trades.
 
 Even if same affiliate refers multiple trades, each trade gets unique CL wallet (different `tradeId` → different `index_CL`).
 
@@ -856,7 +891,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 | Crafted/wrong xpub by recipient | **High** | Recipient could write xpub for which they (and Platform) have no xprv → funds permanently locked in TL. **Platform MUST verify `xpub_MP` is derived from `sha256(sea.secret(P.epub, M.pair))`** before trade proceeds to deposit. |
 | Order ID collision | Very low | `sha256(orderId ":" M.pub ":" T.pub ":" timestamp)` |
 | Order overwrite attack | High | Pen `sign:true` allows any authenticated user to overwrite order keys at PoW cost ~256 attempts. Mitigate: embed maker pub prefix in key and validate `EQ(SEGR(0,':',4), R[5])` in Pen — or move orders to `gun.user()` namespace. |
-| FP race condition | High | Maker can drain FP wallet between Taker accepting and payer depositing to TL/CL. Design limitation of non-smart-contract escrow. Taker should re-verify FP balance at matching time, not just at discovery time. |
+| FP race condition | High | Maker can drain FP wallet between Taker accepting and payer depositing to TL/CL. Design limitation of non-smart-contract platform. Taker should re-verify FP balance at matching time, not just at discovery time. |
 | Partial FP→TL/CL transfer | High | Sequential EVM transactions mean TL could be funded but CL fails. Trade contract must check all receipts; implementation needs a recovery path (refund from partial TL if CL fails). |
 | Commission fate with no affiliate | Medium | When referrer is null, `commissionAmount` is unaccounted for in current protocol. Must define: goes to platform fee, added to payment, or simply not charged. |
 | Child key leakage in BIP-32 | Medium | Non-hardened derivation: `child_priv + xpub → parent_priv`. Spending keys (TL, CL) must be wiped from memory immediately after `sendTransaction()`. Never log or store them. |
@@ -866,7 +901,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 | In-game item delivery fraud | Medium | Dispute resolution by P with proof requirements |
 | Candle drift (client time skew) | Low | Accept ±2 candles forward, ±100 backward |
 | Trade record soul | ✅ Resolved | Dual user-namespace model (Section 6.3). Each party writes to `gun.user(own.pub).get("trades").get(tradeId)`. Gun SEA enforces authorship. No Pen needed. |
-| Order soul overwrite | ✅ Resolved | `pub8 = M.pub.slice(0,8)` in seg 3; Pen validates `PRE(R[5], seg3)`. Only Maker's authenticated pair can write to their own key prefix (Section 6.1). |
+| Order soul overwrite | ✅ Resolved in direction | Full writer pub now lives in key seg 1, and soul identity is parameterized by `{ baseId, side, candle }` via `SEA.pen({ params })` (Section 6.1). |
 
 ---
 
@@ -882,16 +917,16 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 
 ## 10. Implementation Checklist
 
-- [ ] `src/core/Lock.js` — escrow key derivation primitives (TL + CL, `index()`, `address()`, `unlock()`)
+- [ ] `src/core/Lock.js` — platform key derivation primitives (TL + CL, `index()`, `address()`, `unlock()`)
 - [ ] `src/core/Order.js` — Gun order CRUD helpers
 - [ ] `src/core/Affiliate.js` — referral tracking + commission calculation
 - [ ] `src/UI/routes/order/` — order book UI + trade flow
 - [ ] Pen soul definition for orders
-- [ ] Gun .map() discovery queries
+- [ ] Per-baseId + per-side Gun discovery queries with candle range scanning
 - [ ] Auto-release 24h timer (both TL and CL)
 - [ ] Affiliate index release mechanism (via Gun)
 - [ ] Dispute UI at `/dispute`
-- [ ] Test suite: dual escrow address derivation consistency
+- [ ] Test suite: dual platform address derivation consistency
 - [ ] Test suite: `sea.secret` determinism
 - [ ] Test suite: candle window validation
 - [ ] Test suite: affiliate commission calculation

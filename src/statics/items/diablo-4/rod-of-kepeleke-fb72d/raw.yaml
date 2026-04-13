@@ -1,0 +1,10 @@
+id: 2389419
+icon: 1228627587
+name: Rod of Kepeleke
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Torso
+popularity: 12

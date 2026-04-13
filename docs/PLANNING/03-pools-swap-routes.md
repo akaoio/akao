@@ -224,7 +224,7 @@ onchain thread → thread.send({ Lives: { pools: { [pool.chain]: { [address]: da
 
 ### 1.8 Khoảng trống cần vá trước khi triển khai
 
-Sau khi nghiên cứu kỹ mã nguồn, có **3 gap** giữa wallet repo và shop hiện tại:
+Sau khi nghiên cứu kỹ mã nguồn, có **3 gap** giữa wallet repo và akao hiện tại:
 
 #### Gap 1 — `Threads.process()` không xử lý `Lives` messages ⚠️
 

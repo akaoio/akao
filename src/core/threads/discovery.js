@@ -224,7 +224,8 @@ async function scanCycle() {
 }
 
 thread.init = async () => {
-    await Construct.GDB()
+    const ready = await Construct.GDB()
+    if (!ready || !globalThis.gun) return
     await Promise.all(Object.values(Indexes).map((index) => index.ready))
 
     const savedCursor = Number(await Indexes.Lives.get("discovery").get("meta").get("cursor").once())

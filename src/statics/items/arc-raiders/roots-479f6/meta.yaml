@@ -1,0 +1,32 @@
+id: roots-479f6
+game: arc-raiders
+type: Nature
+catalog: game
+tags:
+  - uncommon
+  - nature
+rarity: Uncommon
+subtype: null
+value: 640
+stat_block:
+  weight: 0.2
+  stackSize: 10
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Nature
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

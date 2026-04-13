@@ -1,8 +1,10 @@
 import { soul } from "./soul.js"
 
-// Query order book — returns observable Gun set
-// candle defaults to current 5-min window
-export function fetch({ gun, item, type, candle = Math.floor(Date.now() / 300000) } = {}) {
-    const prefix = `${candle}:${item}:${type}:`
-    return gun.get(soul()).map({ ".": { "*": prefix } })
+// Query order book for a given base item and side.
+// Returns an array of two Gun observable maps: [current candle soul, previous candle soul].
+// Querying both souls avoids missing orders posted just before a candle boundary.
+export function fetch({ gun, baseId, side, candle = Math.floor(Date.now() / 300000) } = {}) {
+    const cur = gun.get(soul({ baseId, side, candle })).map()
+    const prev = gun.get(soul({ baseId, side, candle: candle - 1 })).map()
+    return [cur, prev]
 }

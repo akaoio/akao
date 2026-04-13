@@ -1,0 +1,27 @@
+id: ahavarion-spear-of-lycander-c7d74
+game: diablo-4
+type: Staff
+catalog: game
+tags:
+  - diablo-4
+  - mythic
+  - staff
+rarity: Mythic
+itemTypeName: Staff
+classes:
+  - Druid
+  - Sorcerer
+slots:
+  - Main Hand
+value: 82
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

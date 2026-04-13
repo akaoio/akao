@@ -1,0 +1,10 @@
+id: 1554732
+icon: 1569520272
+name: Diadem of the Golden Priest
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Head
+popularity: 10

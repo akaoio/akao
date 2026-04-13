@@ -1,0 +1,34 @@
+id: water-filter-800dc
+game: arc-raiders
+type: Recyclable
+catalog: game
+tags:
+  - rare
+  - recyclable
+rarity: Rare
+subtype: null
+value: 1000
+stat_block:
+  weight: 2
+  stackSize: 3
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Industrial
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

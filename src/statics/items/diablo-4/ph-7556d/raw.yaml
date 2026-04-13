@@ -1,0 +1,10 @@
+id: 2120722
+icon: 4024940556
+name: "[PH]"
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Head
+popularity: 10

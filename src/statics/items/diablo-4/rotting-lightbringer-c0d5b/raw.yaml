@@ -1,0 +1,10 @@
+id: 2458322
+icon: 776327186
+name: Rotting Lightbringer
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Feet
+popularity: 10

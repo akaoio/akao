@@ -1,0 +1,10 @@
+id: 2458236
+icon: 406001947
+name: Esadora's Overflowing Cameo
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Feet
+popularity: 10

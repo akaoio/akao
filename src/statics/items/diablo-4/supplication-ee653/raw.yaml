@@ -1,0 +1,11 @@
+id: 2439786
+icon: 2397813551
+name: Supplication
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 84

@@ -1,0 +1,10 @@
+id: 1902313
+icon: 3468537875
+name: Scoundrel's Kiss
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Ring
+popularity: 20

@@ -1,0 +1,15 @@
+id: 1325418
+icon: 254083094
+name: Mace of Blazing Furor
+itemTypeName: Mace
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 19

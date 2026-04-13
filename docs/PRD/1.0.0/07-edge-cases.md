@@ -4,12 +4,12 @@ Chỉ mô tả edge case ở mức business logic. Edge case kỹ thuật (RPC f
 
 ---
 
-## Escrow & Payment
+## Platform & Payment
 
 | Edge Case | Expected Behavior |
 |-----------|-------------------|
 | Buyer thanh toán nhưng transaction chưa confirm (pending on-chain) | Hiển thị status "Đang xử lý", buyer chờ cho đến khi block confirm. Không cho phép tạo order mới cho cùng items trong cart |
-| Buyer thanh toán xong nhưng seller không phản hồi (không giao hàng, không request confirm) | Tiền nằm trong ví escrow VSE. Buyer có thể mở dispute sau thời gian chờ hợp lý. [TBD] Cần confirm: Thời gian chờ tối đa trước khi buyer được mở dispute là bao lâu? |
+| Buyer thanh toán xong nhưng seller không phản hồi (không giao hàng, không request confirm) | Tiền nằm trong ví platform VSE. Buyer có thể mở dispute sau thời gian chờ hợp lý. [TBD] Cần confirm: Thời gian chờ tối đa trước khi buyer được mở dispute là bao lâu? |
 | Seller đã request confirm nhưng buyer bỏ mặc (không confirm, không dispute) | Sau 24h kể từ khi seller request → Hệ thống tự động release tiền cho seller (ref: white-paper Bước 4) |
 | Buyer và seller dispute — cả hai đều claim đúng | Platform phân xử dựa trên proof. Nếu không đủ evidence → [TBD] Cần confirm policy: thiên về buyer hay seller? |
 | Buyer thanh toán cho item nhưng item hết hàng / không còn khả dụng | [TBD] Cần confirm: Hệ thống check inventory trước khi cho checkout? Hiện tại items là static, chưa có stock management |

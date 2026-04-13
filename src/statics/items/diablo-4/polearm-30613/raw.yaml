@@ -1,0 +1,12 @@
+id: 1224656
+icon: 2665147328
+name: Polearm
+itemTypeName: Polearm
+quality: 1
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 10

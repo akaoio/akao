@@ -28,16 +28,15 @@ export class Threads {
         // If thread already exists, return it
         if (this.threads[name]) return this.threads[name]
 
-        // Create path to thread file
-        const path = FS.join(["core", "threads", `${name}.js`])
+        const url = configs?.url || new URL(configs?.path || `./threads/${name}.js`, import.meta.url)
         // If main thread, import the module directly
-        if (configs?.main) this.threads[name] = import(`/core/threads/${name}.js`)
+        if (configs?.main) this.threads[name] = import(url.href)
         // If worker thread, create a new Worker
         else if (configs?.worker) {
             // Get Worker class (Web Worker for browser, worker_threads.Worker for Node.js)
             let $Worker = typeof Worker !== "undefined" ? Worker : NODE && typeof Worker === "undefined" ? (await import("worker_threads"))?.Worker : undefined
             if (typeof $Worker === "undefined") throw new Error("Worker class not found")
-            this.threads[name] = new $Worker(path, configs)
+            this.threads[name] = new $Worker(url, configs)
 
             // Set up error and message handlers for the worker
             if (NODE) {

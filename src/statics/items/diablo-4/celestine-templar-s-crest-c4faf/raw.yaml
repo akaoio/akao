@@ -1,0 +1,10 @@
+id: 2298475
+icon: 279619570
+name: Celestine Templar's Crest
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 10

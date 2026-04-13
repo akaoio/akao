@@ -1,0 +1,10 @@
+id: 2151869
+icon: 3580374443
+name: Umbral Cohort Egis
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Torso
+popularity: 10

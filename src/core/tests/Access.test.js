@@ -1,5 +1,5 @@
 /**
- * Access module tests — browser only (requires localStorage).
+ * Access module tests — headless-compatible (requires storage only).
  */
 import Test from "../Test.js"
 import { Access, getWallet, setWallet, getAvatar, setAvatar } from "../Access.js"
@@ -38,7 +38,7 @@ Test.describe("Access — getWallet()", () => {
         restoreLS("wallet", prev)
     })
 
-}, { browser: true })
+})
 
 Test.describe("Access — setWallet()", () => {
 
@@ -79,7 +79,7 @@ Test.describe("Access — setWallet()", () => {
         restoreLS("wallet", prevLS)
     })
 
-}, { browser: true })
+})
 
 Test.describe("Access — getAvatar()", () => {
 
@@ -99,4 +99,4 @@ Test.describe("Access — getAvatar()", () => {
         restoreLS("avatar", prev)
     })
 
-}, { browser: true })
+})

@@ -69,9 +69,10 @@ export default class Thread {
             })
 
         // Initialize site and thread (calls init() if defined)
-        Construct.Site().then(async () => {
+        this.ready = Construct.Site().then(async () => {
             if (typeof this?.init === "function") await this.init()
             this.initialized = true
+            return this
         })
     }
 

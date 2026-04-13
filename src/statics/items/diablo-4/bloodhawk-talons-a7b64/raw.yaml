@@ -1,0 +1,10 @@
+id: 1524777
+icon: 433443692
+name: Bloodhawk Talons
+itemTypeName: Gloves
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Hands
+popularity: 10

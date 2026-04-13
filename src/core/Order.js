@@ -6,26 +6,27 @@ import { cancel } from "./Order/cancel.js"
 import { proof } from "./Order/proof.js"
 import { match } from "./Order/match.js"
 import { fetch } from "./Order/fetch.js"
+import { normalize, validate } from "./Order/schema.js"
 
 export class Order {
-    // gun   — GDB instance
-    // pair  — maker's SEA pair
-    // item  — item slug (e.g. "diablo-4/penitent-greaves-d76bc")
-    // type  — "buy" | "sell"
-    // price — amount in currency units
-    // currency — e.g. "USDT"
-    // chain    — EVM chain id
-    // referrer — affiliate pub key (optional)
-    constructor({ gun, pair, item, type, price, currency, chain, referrer = null } = {}) {
-        if (!gun || !pair || !item || !type || !price || !currency || !chain) return { error: "invalidInput" }
+    // gun      — GDB instance
+    // pair     — maker's SEA pair
+    // side     — "buy" | "sell"
+    // base     — { type: "item", id, quantity }
+    // quote    — { type: "crypto", quantity, contract, chain }
+    // affiliate — { pub } | pub string (optional)
+    // xpub     — maker's root extended public key (required in every raw order maker object)
+    constructor({ gun, pair, side, base, quote, affiliate = null, referrer = null, xpub = null } = {}) {
+        if (!gun || !pair) throw new Error("invalidInput")
+        const normalized = normalize({ pair, side, base, quote, affiliate, referrer, xpub })
+        validate(normalized)
         this.gun = gun
         this.pair = pair
-        this.item = item
-        this.type = type
-        this.price = price
-        this.currency = currency
-        this.chain = chain
-        this.referrer = referrer
+        this.side = normalized.side
+        this.maker = normalized.maker
+        this.base = normalized.base
+        this.quote = normalized.quote
+        this.affiliate = normalized.affiliate
     }
 
     id = id
