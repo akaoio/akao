@@ -1,0 +1,9 @@
+id: 1861360
+icon: 3001443825
+name: Ultimate Efficiency — Barbarian
+itemTypeName: Temper Manual
+quality: 5
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 15

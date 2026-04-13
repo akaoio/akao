@@ -365,6 +365,7 @@ for (const filePath of gunFiles) {
     const dest = [...paths.build.core, "GDB", ...segments]
     await FS.copy(src, dest)
 }
+await FS.copy(["node_modules", "@akaoio", "gun", "lib", "opfs.js"], [...paths.build.core, "GDB", "lib", "opfs.js"])
 log.ok(`Copied gun files to GDB`)
 
 // Build routes list using regex pattern and post-process

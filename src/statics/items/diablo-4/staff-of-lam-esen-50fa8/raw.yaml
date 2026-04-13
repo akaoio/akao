@@ -1,0 +1,10 @@
+id: 2407523
+icon: 1483093339
+name: Staff of Lam Esen
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Hands
+popularity: 11

@@ -1,0 +1,11 @@
+id: 495769
+icon: 2153830653
+name: Tecpatl
+itemTypeName: Dagger
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 12

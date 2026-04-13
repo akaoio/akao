@@ -1,0 +1,10 @@
+id: 2048758
+icon: 4054921607
+name: Quarterstaff
+itemTypeName: Quarterstaff
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 13

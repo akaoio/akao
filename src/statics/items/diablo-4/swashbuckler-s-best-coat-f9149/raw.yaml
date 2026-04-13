@@ -1,0 +1,10 @@
+id: 1919794
+icon: 1564127337
+name: Swashbuckler's Best Coat
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 13

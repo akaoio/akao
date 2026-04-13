@@ -1,0 +1,10 @@
+id: 2414302
+icon: 121881341
+name: Chainshot Staff
+itemTypeName: Staff
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 12

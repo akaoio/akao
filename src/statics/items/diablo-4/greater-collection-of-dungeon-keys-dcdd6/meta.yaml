@@ -1,0 +1,24 @@
+id: greater-collection-of-dungeon-keys-dcdd6
+game: diablo-4
+type: Grand Cache
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - grand cache
+rarity: Unique
+itemTypeName: Grand Cache
+classes: null
+slots: null
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

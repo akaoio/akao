@@ -1,0 +1,11 @@
+id: 262013
+icon: 2193423679
+name: Legendary Two-Handed Sword 01
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 14

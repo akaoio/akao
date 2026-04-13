@@ -1,0 +1,10 @@
+id: 2120656
+icon: 2220505246
+name: Guise of War
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 13

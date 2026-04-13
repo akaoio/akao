@@ -1,0 +1,14 @@
+id: 1052096
+icon: 654257271
+name: Weak Iron Barb Elixir
+itemTypeName: Elixir
+quality: 0
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+slotNames: []
+popularity: 10

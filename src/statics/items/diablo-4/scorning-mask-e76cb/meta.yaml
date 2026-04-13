@@ -1,0 +1,26 @@
+id: scorning-mask-e76cb
+game: diablo-4
+type: Focus
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - focus
+rarity: Rare
+itemTypeName: Focus
+classes:
+  - Sorcerer
+slots:
+  - Off-Hand
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

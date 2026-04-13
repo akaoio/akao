@@ -67,13 +67,17 @@ export const Construct = {
         await import("./GDB.js")
         GUN = globalThis.GUN || globalThis.Gun
         SEA = globalThis.SEA || globalThis.Gun?.SEA
-
-        globalThis.gun = GUN({
+        const file = "GDB"
+        const opfs = globalThis.ROPFS
+        const gunOptions = {
             peers: Statics.site?.peers || [],
             localStorage: false,
             radisk: true,
-            file: "GDB"
-        })
+            file
+        }
+        if (opfs?.supported?.({ file })) gunOptions.store = opfs({ file })
+
+        globalThis.gun = GUN(gunOptions)
         globalThis.Gun = GUN
         globalThis.SEA = SEA
         globalThis.sea = SEA

@@ -1,0 +1,13 @@
+id: 1970224
+icon: 1644840241
+name: Heretic's Executioner
+itemTypeName: Two-Handed Axe
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 10
