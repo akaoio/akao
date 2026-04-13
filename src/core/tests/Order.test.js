@@ -122,9 +122,8 @@ function makeQuote(quantity = 100, contract = "USDT", chain = 1) {
     return { type: "crypto", quantity, contract, chain }
 }
 
-function orderInput({ gun = makeGun(), pair = PAIR_MAKER, side = "sell", baseId = ITEM, baseQuantity = 1, quoteQuantity = 95, contract = "USDT", chain = 1, xpub = MAKER_XPUB, affiliate = null } = {}) {
+function orderInput({ pair = PAIR_MAKER, side = "sell", baseId = ITEM, baseQuantity = 1, quoteQuantity = 95, contract = "USDT", chain = 1, xpub = MAKER_XPUB, affiliate = null } = {}) {
     return {
-        gun,
         pair,
         side,
         base: makeBase(baseId, baseQuantity),
@@ -134,7 +133,7 @@ function orderInput({ gun = makeGun(), pair = PAIR_MAKER, side = "sell", baseId 
     }
 }
 
-async function publishOrder({ gun, pair = PAIR_MAKER, baseId = ITEM, side = "buy", stamp, quoteQuantity = 100 } = {}) {
+async function publishOrder({ pair = PAIR_MAKER, baseId = ITEM, side = "buy", stamp, quoteQuantity = 100 } = {}) {
     const key = await keyAtStamp(stamp, pair.pub)
     const candle = Math.floor(stamp / 300000)
     const record = {
@@ -151,7 +150,7 @@ async function publishOrder({ gun, pair = PAIR_MAKER, baseId = ITEM, side = "buy
         status: "open"
     }
     const value = await _SEA.sign(JSON.stringify(record), pair)
-    await new Promise((resolve) => gun.get(soulFn({ baseId, side, candle })).get(key).put(value, resolve, { opt: { authenticator: pair } }))
+    await new Promise((resolve) => globalThis.gun.get(soulFn({ baseId, side, candle })).get(key).put(value, resolve, { opt: { authenticator: pair } }))
     return { key, candle, value }
 }
 
@@ -180,58 +179,44 @@ function newSell(overrides = {}) {
 
 Test.describe("Order — constructor: missing required fields", () => {
 
-    Test.it("throws invalidInput when gun is missing", () => {
-        const gun = makeGun()
-        Test.assert.throws(
-            () => new Order({ pair: PAIR_A, side: "sell", base: makeBase(), quote: makeQuote(10), xpub: MAKER_XPUB }),
-            "invalidInput"
-        )
-    })
-
     Test.it("throws invalidInput when pair is missing", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, side: "sell", base: makeBase(), quote: makeQuote(10), xpub: MAKER_XPUB }),
+            () => new Order({ side: "sell", base: makeBase(), quote: makeQuote(10), xpub: MAKER_XPUB }),
             "invalidInput"
         )
     })
 
     Test.it("throws invalidInput when base is missing", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, pair: PAIR_A, side: "sell", quote: makeQuote(10), xpub: MAKER_XPUB }),
+            () => new Order({ pair: PAIR_A, side: "sell", quote: makeQuote(10), xpub: MAKER_XPUB }),
             "invalidInput"
         )
     })
 
     Test.it("throws invalidInput when side is missing", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, pair: PAIR_A, base: makeBase(), quote: makeQuote(10), xpub: MAKER_XPUB }),
+            () => new Order({ pair: PAIR_A, base: makeBase(), quote: makeQuote(10), xpub: MAKER_XPUB }),
             "invalidInput"
         )
     })
 
     Test.it("throws invalidInput when quote is missing", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, pair: PAIR_A, side: "sell", base: makeBase(), xpub: MAKER_XPUB }),
+            () => new Order({ pair: PAIR_A, side: "sell", base: makeBase(), xpub: MAKER_XPUB }),
             "invalidInput"
         )
     })
 
     Test.it("throws invalidInput when quote contract is missing", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, pair: PAIR_A, side: "sell", base: makeBase(), quote: { type: "crypto", quantity: 10, chain: 1 }, xpub: MAKER_XPUB }),
+            () => new Order({ pair: PAIR_A, side: "sell", base: makeBase(), quote: { type: "crypto", quantity: 10, chain: 1 }, xpub: MAKER_XPUB }),
             "invalidInput"
         )
     })
 
     Test.it("throws invalidInput when quote chain is missing", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, pair: PAIR_A, side: "sell", base: makeBase(), quote: { type: "crypto", quantity: 10, contract: "USDT" }, xpub: MAKER_XPUB }),
+            () => new Order({ pair: PAIR_A, side: "sell", base: makeBase(), quote: { type: "crypto", quantity: 10, contract: "USDT" }, xpub: MAKER_XPUB }),
             "invalidInput"
         )
     })
@@ -249,41 +234,36 @@ Test.describe("Order — constructor: missing required fields", () => {
 Test.describe("Order — constructor: quote quantity validation", () => {
 
     Test.it("throws invalidQuoteQuantity for quote.quantity = 0", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: 0 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: 0 })),
             "invalidQuoteQuantity"
         )
     })
 
     Test.it("throws invalidQuoteQuantity for negative quote.quantity", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: -1 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: -1 })),
             "invalidQuoteQuantity"
         )
     })
 
     Test.it("throws invalidQuoteQuantity for NaN", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: NaN })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: NaN })),
             "invalidQuoteQuantity"
         )
     })
 
     Test.it("throws invalidQuoteQuantity for Infinity", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: Infinity })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: Infinity })),
             "invalidQuoteQuantity"
         )
     })
 
     Test.it("throws invalidQuoteQuantity for string quote.quantity (type confusion)", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: "100" })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: "100" })),
             "invalidQuoteQuantity"
         )
     })
@@ -293,25 +273,22 @@ Test.describe("Order — constructor: quote quantity validation", () => {
 Test.describe("Order — constructor: side validation", () => {
 
     Test.it("throws invalidSide for unknown side 'admin'", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "admin", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "admin", quoteQuantity: 10 })),
             "invalidSide"
         )
     })
 
     Test.it("throws invalidSide for uppercase 'BUY'", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "BUY", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "BUY", quoteQuantity: 10 })),
             "invalidSide"
         )
     })
 
     Test.it("throws invalidSide for 'Buy' (mixed case)", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "Buy", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "Buy", quoteQuantity: 10 })),
             "invalidSide"
         )
     })
@@ -321,25 +298,22 @@ Test.describe("Order — constructor: side validation", () => {
 Test.describe("Order — constructor: base id separator injection", () => {
 
     Test.it("throws invalidBaseId for base id containing single colon", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", baseId: "item:hack", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", baseId: "item:hack", quoteQuantity: 10 })),
             "invalidBaseId"
         )
     })
 
     Test.it("throws invalidBaseId for base id 'buy:sell:0:nonce' (segment shift attack)", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", baseId: "buy:sell:0:nonce", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", baseId: "buy:sell:0:nonce", quoteQuantity: 10 })),
             "invalidBaseId"
         )
     })
 
     Test.it("throws invalidBaseId for base id with only colons", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", baseId: ":::", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", baseId: ":::", quoteQuantity: 10 })),
             "invalidBaseId"
         )
     })
@@ -349,17 +323,15 @@ Test.describe("Order — constructor: base id separator injection", () => {
 Test.describe("Order — constructor: maker xpub requirement", () => {
 
     Test.it("throws xpubRequired when maker xpub is missing", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, pair: PAIR_A, side: "buy", base: makeBase(), quote: makeQuote(10) }),
+            () => new Order({ pair: PAIR_A, side: "buy", base: makeBase(), quote: makeQuote(10) }),
             "xpubRequired"
         )
     })
 
     Test.it("sell order also requires xpub because maker payload is always full", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order({ gun, pair: PAIR_A, side: "sell", base: makeBase(), quote: makeQuote(10) }),
+            () => new Order({ pair: PAIR_A, side: "sell", base: makeBase(), quote: makeQuote(10) }),
             "xpubRequired"
         )
     })
@@ -494,20 +466,20 @@ Test.describe("Order — cancel: ownership enforcement", () => {
     })
 
     Test.it("cancel clears entry in Gun when full pub matches owner", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
+        globalThis.gun = makeGun()
+        const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         await o.cancel(key)
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(gun.get(s).get(key))
+        const stored = await gunOnce(globalThis.gun.get(s).get(key))
         Test.assert.falsy(stored && stored !== null && typeof stored === "object" && stored.quote,
             "Gun entry must be cleared after cancel")
     })
 
     Test.it("cancel with correct full pub does not return notOwner", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
+        globalThis.gun = makeGun()
+        const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const validKey = `${Date.now()}:${PAIR_MAKER.pub}:xyz`
         const result = await o.cancel(validKey)
         Test.assert.falsy(result?.error, "should not return error for valid owner cancel")
@@ -520,16 +492,14 @@ Test.describe("Order — cancel: ownership enforcement", () => {
 Test.describe("Order — match: tradeId determinism + domain isolation", () => {
 
     Test.it("tradeId is a 64-char hex string", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
+        const o = new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
         const { tradeId } = await o.match({ orderId: "abc123", makerpub: "makerpub" })
         Test.assert.equal(tradeId.length, 64)
         Test.assert.truthy(/^[0-9a-f]{64}$/.test(tradeId))
     })
 
     Test.it("same orderId + makerpub + taker always produces same tradeId (deterministic)", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
+        const o = new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
         const args = { orderId: "fixedorder123", makerpub: "makerX" }
         const a = await o.match(args)
         const b = await o.match(args)
@@ -537,10 +507,9 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
     })
 
     Test.it("different takers produce different tradeIds for same order", async () => {
-        const g1 = makeGun()
-        const g2 = makeGun()
-        const oA = new Order(orderInput({ gun: g1, pair: PAIR_A, side: "sell", baseId: ITEM, quoteQuantity: 95 }))
-        const oB = new Order(orderInput({ gun: g2, pair: PAIR_B, side: "sell", baseId: ITEM, quoteQuantity: 95 }))
+        globalThis.gun = makeGun()
+        const oA = new Order(orderInput({ pair: PAIR_A, side: "sell", baseId: ITEM, quoteQuantity: 95 }))
+        const oB = new Order(orderInput({ pair: PAIR_B, side: "sell", baseId: ITEM, quoteQuantity: 95 }))
         const args = { orderId: "fixedorder123", makerpub: "makerX" }
         const { tradeId: ta } = await oA.match(args)
         const { tradeId: tb } = await oB.match(args)
@@ -548,16 +517,14 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
     })
 
     Test.it("different orderIds produce different tradeIds for same taker", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
+        const o = new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
         const a = await o.match({ orderId: "order-AAA", makerpub: "maker1" })
         const b = await o.match({ orderId: "order-BBB", makerpub: "maker1" })
         Test.assert.notEqual(a.tradeId, b.tradeId)
     })
 
     Test.it("return value has exactly { tradeId } — no timestamp leaked", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
+        const o = new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: 95 }))
         const result = await o.match({ orderId: "o1", makerpub: "m1" })
         Test.assert.truthy("tradeId" in result)
         Test.assert.falsy("ts" in result, "timestamp must not be in return value")
@@ -576,13 +543,13 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
     })
 
     Test.it("match writes trade record to Gun when key is provided", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
+        globalThis.gun = makeGun()
+        const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key, orderId } = await o.create()
         await o.match({ orderId, makerpub: PAIR_MAKER.pub, key })
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(gun.get(s).get(key))
+        const stored = await gunOnce(globalThis.gun.get(s).get(key))
         Test.assert.truthy(stored, "trade record must be written to Gun")
         Test.assert.truthy(typeof stored === "string", "stored value is a signed string")
     })
@@ -676,27 +643,27 @@ Test.describe("Order — proof: balance validation", () => {
 Test.describe("Order — fetch: dual candle discovery", () => {
 
     Test.it("returns an array of exactly 2 elements", () => {
-        const gun = makeGun()
-        const result = fetchFn({ gun, baseId: ITEM, side: "buy" })
+        globalThis.gun = makeGun()
+        const result = fetchFn({ baseId: ITEM, side: "buy" })
         Test.assert.truthy(Array.isArray(result))
         Test.assert.equal(result.length, 2)
     })
 
     Test.it("current candle element contains matching order from the exact baseId/side/candle partition", async () => {
-        const gun = makeGun()
+        globalThis.gun = makeGun()
         const candle = Math.floor(Date.now() / 300000)
         const currentStamp = candle * 300000 + 1234
         const previousStamp = (candle - 1) * 300000 + 2345
         const oldStamp = (candle - 2) * 300000 + 3456
         const foreignItem = "arc-raiders/foreign-item"
 
-        const current = await publishOrder({ gun, baseId: ITEM, side: "buy", stamp: currentStamp })
-        const previous = await publishOrder({ gun, baseId: ITEM, side: "buy", stamp: previousStamp })
-        const wrongSide = await publishOrder({ gun, baseId: ITEM, side: "sell", stamp: currentStamp + 1 })
-        const wrongItem = await publishOrder({ gun, baseId: foreignItem, side: "buy", stamp: currentStamp + 2 })
-        const tooOld = await publishOrder({ gun, baseId: ITEM, side: "buy", stamp: oldStamp })
+        const current = await publishOrder({ baseId: ITEM, side: "buy", stamp: currentStamp })
+        const previous = await publishOrder({ baseId: ITEM, side: "buy", stamp: previousStamp })
+        const wrongSide = await publishOrder({ baseId: ITEM, side: "sell", stamp: currentStamp + 1 })
+        const wrongItem = await publishOrder({ baseId: foreignItem, side: "buy", stamp: currentStamp + 2 })
+        const tooOld = await publishOrder({ baseId: ITEM, side: "buy", stamp: oldStamp })
 
-        const [cur, prev] = fetchFn({ gun, baseId: ITEM, side: "buy", candle })
+        const [cur, prev] = fetchFn({ baseId: ITEM, side: "buy", candle })
         const curValues = await collectMapValues(cur)
         const prevValues = await collectMapValues(prev)
 
@@ -710,15 +677,15 @@ Test.describe("Order — fetch: dual candle discovery", () => {
     })
 
     Test.it("explicit candle argument shifts discovery window deterministically", async () => {
-        const gun = makeGun()
+        globalThis.gun = makeGun()
         const candle = Math.floor(Date.now() / 300000)
         const targetStamp = (candle - 1) * 300000 + 4444
         const olderStamp = (candle - 2) * 300000 + 5555
 
-        const target = await publishOrder({ gun, baseId: ITEM, side: "sell", stamp: targetStamp, quoteQuantity: 95 })
-        const older = await publishOrder({ gun, baseId: ITEM, side: "sell", stamp: olderStamp, quoteQuantity: 96 })
+        const target = await publishOrder({ baseId: ITEM, side: "sell", stamp: targetStamp, quoteQuantity: 95 })
+        const older = await publishOrder({ baseId: ITEM, side: "sell", stamp: olderStamp, quoteQuantity: 96 })
 
-        const [cur, prev] = fetchFn({ gun, baseId: ITEM, side: "sell", candle: candle - 1 })
+        const [cur, prev] = fetchFn({ baseId: ITEM, side: "sell", candle: candle - 1 })
         const curValues = await collectMapValues(cur)
         const prevValues = await collectMapValues(prev)
 
@@ -762,48 +729,49 @@ Test.describe("Order — fetch: dual candle discovery", () => {
 Test.describe("Order — create: authenticator + payload integrity", () => {
 
     Test.it("create writes signed entry to Gun and it is readable back", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
+        globalThis.gun = makeGun()
+        const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(gun.get(s).get(key))
+        const stored = await gunOnce(globalThis.gun.get(s).get(key))
         Test.assert.truthy(stored, "entry must exist in Gun after create")
         Test.assert.truthy(typeof stored === "string", "stored value must be a signed string")
     })
 
     Test.it("payload contains maker envelope", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
+        globalThis.gun = makeGun()
+        const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(gun.get(s).get(key))
+        const stored = await gunOnce(globalThis.gun.get(s).get(key))
         Test.assert.truthy(stored.includes(PAIR_MAKER.pub.slice(0, 12)))
         Test.assert.truthy(stored.includes(PAIR_MAKER.epub.slice(0, 12)))
     })
 
     Test.it("payload always contains maker xpub", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_MAKER, side: "buy", quoteQuantity: 100 }))
+        globalThis.gun = makeGun()
+        const o = new Order(orderInput({ pair: PAIR_MAKER, side: "buy", quoteQuantity: 100 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "buy", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(gun.get(s).get(key))
+        const stored = await gunOnce(globalThis.gun.get(s).get(key))
         Test.assert.truthy(stored.includes("xpub"))
     })
 
     Test.it("sell order payload also contains xpub", async () => {
-        const gun = makeGun()
-        const o = new Order(orderInput({ gun, pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
+        globalThis.gun = makeGun()
+        const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(gun.get(s).get(key))
+        const stored = await gunOnce(globalThis.gun.get(s).get(key))
         Test.assert.truthy(stored.includes("xpub"), "sell order must carry full maker material too")
     })
 
     Test.it("create returns { orderId, key }", async () => {
+        globalThis.gun = makeGun()
         const o = newSell()
         const result = await o.create()
         Test.assert.truthy("orderId" in result)
@@ -818,19 +786,17 @@ Test.describe("Order — create: authenticator + payload integrity", () => {
 Test.describe("Order — attacker: adversarial inputs", () => {
 
     Test.it("quote.quantity=0 is rejected before any Gun write can occur", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", quoteQuantity: 0 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: 0 })),
             "invalidQuoteQuantity"
         )
     })
 
     Test.it("100 different pairs produce 100 unique orderIds (entropy adequacy)", async () => {
-        const gun = makeGun()
         const ids = await Promise.all(
             Array.from({ length: 100 }, (_, i) => {
                 const pair = { pub: `pair${i.toString().padStart(28, "0")}`, epub: "e" }
-                const o = new Order(orderInput({ gun, pair, side: "sell", quoteQuantity: 10 }))
+                const o = new Order(orderInput({ pair, side: "sell", quoteQuantity: 10 }))
                 return o.id()
             })
         )
@@ -870,9 +836,8 @@ Test.describe("Order — attacker: adversarial inputs", () => {
     Test.it("1000 tradeIds from different takers on same order — all unique", async () => {
         const ids = await Promise.all(
             Array.from({ length: 1000 }, (_, i) => {
-                const gun = makeGun()
                 const pair = { pub: `taker${i.toString().padStart(27, "0")}`, epub: "e" }
-                const o = new Order(orderInput({ gun, pair, side: "sell", quoteQuantity: 95 }))
+                const o = new Order(orderInput({ pair, side: "sell", quoteQuantity: 95 }))
                 return o.match({ orderId: "fixed-order", makerpub: "maker" })
             })
         )
@@ -890,13 +855,12 @@ Test.describe("Order — attacker: adversarial inputs", () => {
     })
 
     Test.it("base id with leading/trailing colon is rejected", () => {
-        const gun = makeGun()
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", baseId: ":item", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", baseId: ":item", quoteQuantity: 10 })),
             "invalidBaseId"
         )
         Test.assert.throws(
-            () => new Order(orderInput({ gun, pair: PAIR_A, side: "sell", baseId: "item:", quoteQuantity: 10 })),
+            () => new Order(orderInput({ pair: PAIR_A, side: "sell", baseId: "item:", quoteQuantity: 10 })),
             "invalidBaseId"
         )
     })
