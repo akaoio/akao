@@ -5,7 +5,7 @@ import { template } from "./template.js"
 
 export class SELECT extends Component {
     static module = import.meta.url
-    
+
     constructor(props = {}) {
         super()
         this.props = props || {}
@@ -14,22 +14,21 @@ export class SELECT extends Component {
         render(template, this.shadowRoot)
         this.change = this.change.bind(this)
         this.render = this.render.bind(this)
+        this.renderSelected = this.renderSelected.bind(this)
     }
 
     static get observedAttributes() {
-        return ["data-name", "data-placeholder", "data-required", "data-selected"]
+        return ["data-name", "data-required", "data-selected"]
     }
 
     attributeChangedCallback(name, last, value) {
         if (last === value) return
         this.select = this.select || this.shadowRoot.querySelector("select")
-        this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")
         if (name === "data-name") this.select.setAttribute("name", value)
-        else if (name === "data-placeholder") this.placeholder.forEach(e => e.dataset.key = value)
-        else if (name === "data-required") 
+        else if (name === "data-required")
             if (value !== null) this.select.setAttribute("required", "required")
             else this.select.removeAttribute("required")
-        
+
         if (name === "data-selected") {
             this.states.set({ selected: value })
             this.select.value = value
@@ -39,13 +38,17 @@ export class SELECT extends Component {
     onconnect() {
         this.select = this.select || this.shadowRoot.querySelector("select")
         this.select.setAttribute("name", this.props.name || this.dataset.name)
-        this.placeholder = this.placeholder || this.shadowRoot.querySelectorAll("ui-context.placeholder")
         if (this.dataset.required || this.props.required) this.select.setAttribute("required", "required")
         if (this.dataset.name) this.select.setAttribute("name", this.dataset.name)
-        this.placeholder.forEach(e => e.dataset.key = this.props.placeholder || this.dataset.placeholder || "")
         this.listen(this.select, "change", this.change)
         this.watch(this.states, "options", this.render)
+        this.watch(this.states, "selected", this.renderSelected)
         this.render()
+        this.renderSelected()
+    }
+
+    renderSelected() {
+        this.toggleAttribute("data-has-value", !!this.states.get("selected"))
     }
 
     change(event) {
@@ -54,12 +57,12 @@ export class SELECT extends Component {
     }
 
     render() {
-        this.select.querySelectorAll("option").forEach(option => option.remove())
-        const options = this.states.get("options").map(option => html`
-            <option value="${option.value}" ${option.value === this.states.get("selected") ? "selected" : ""}>
-                ${option.label}
-            </option>
-        `)
+        this.select.querySelectorAll("option").forEach((option) => option.remove())
+        const options = this.states.get("options").map(
+            (option) => html`
+                <option value="${option.value}" ${option.value === this.states.get("selected") ? "selected" : ""}>${option.label}</option>
+            `
+        )
         render(options, this.select, { append: true })
     }
 }

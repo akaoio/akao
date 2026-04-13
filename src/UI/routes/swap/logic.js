@@ -3,21 +3,16 @@ import { fiatValue } from "/core/Utils/contracts.js"
 export class Logic {
     static options(chain, pools, Chains) {
         const opts = []
-        if (Chains[chain]?.currencies) {
-            for (const [address, contract] of Object.entries(Chains[chain].currencies)) {
-                opts.push({ address, configs: contract })
-            }
-        }
+        if (Chains[chain]?.currencies) for (const [address, contract] of Object.entries(Chains[chain].currencies)) opts.push({ address, configs: contract })
+
         if (pools) {
             const known = new Set(opts.map((o) => o.address))
-            for (const pool of Object.values(pools)) {
-                for (const token of [pool.token0, pool.token1]) {
+            for (const pool of Object.values(pools))
+                for (const token of [pool.token0, pool.token1])
                     if (token?.address && !known.has(token.address) && token.configs) {
                         opts.push({ address: token.address, configs: token.configs })
                         known.add(token.address)
                     }
-                }
-            }
         }
         return opts
     }
@@ -32,9 +27,7 @@ export class Logic {
     static find(from, to, chain, pools, Dexs) {
         if (!chain || !from || !to || !pools) return null
         for (const [address, pool] of Object.entries(pools)) {
-            const match =
-                (pool.token0?.address === from && pool.token1?.address === to) ||
-                (pool.token0?.address === to && pool.token1?.address === from)
+            const match = (pool.token0?.address === from && pool.token1?.address === to) || (pool.token0?.address === to && pool.token1?.address === from)
             if (!match) continue
             const dex = Dexs[`${chain}.${pool.dex}${pool.version}`]
             if (!dex) continue
@@ -52,14 +45,10 @@ export class Logic {
     static async quote({ from, to, amount, chain, pools, Dexs, balances, fiat, forex, Wallets, address }) {
         if (!from || !to || !amount || !chain) return { error: null, amountOut: 0, fiatOut: 0, gasAmount: null, gasSymbol: null }
 
-        if (!Logic.check(amount, chain, from.address, balances)) {
-            return { error: "insufficientBalance", amountOut: 0, fiatOut: 0, gasAmount: null, gasSymbol: null }
-        }
+        if (!Logic.check(amount, chain, from.address, balances)) return { error: "insufficientBalance", amountOut: 0, fiatOut: 0, gasAmount: null, gasSymbol: null }
 
         const found = Logic.find(from.address, to.address, chain, pools, Dexs)
-        if (!found) {
-            return { error: "nopoolFound", amountOut: 0, fiatOut: 0, gasAmount: null, gasSymbol: null }
-        }
+        if (!found) return { error: "nopoolFound", amountOut: 0, fiatOut: 0, gasAmount: null, gasSymbol: null }
 
         const { dex, pool } = found
         let result
@@ -80,18 +69,22 @@ export class Logic {
             const wallet = Wallets?.[chain]
             if (wallet && address) {
                 const fee = await wallet.fee({ to: pool.address, amount, currency: from.configs })
-                if (fee) { gasAmount = fee.amount; gasSymbol = fee.symbol }
+                if (fee) {
+                    gasAmount = fee.amount
+                    gasSymbol = fee.symbol
+                }
             }
-        } catch (_) { /* non-fatal */ }
+        } catch (_) {
+            /* non-fatal */
+        }
 
         return { error: null, amountOut, fiatOut, gasAmount, gasSymbol }
     }
 
     static async swap({ from, to, amount, slippage, chain, pools, Dexs, balances }) {
         if (!from || !to || !amount || !chain) return { success: false, error: "missingRequiredFields" }
-        if (!Logic.check(amount, chain, from.address, balances)) {
-            return { success: false, error: "insufficientBalance" }
-        }
+        if (!Logic.check(amount, chain, from.address, balances)) return { success: false, error: "insufficientBalance" }
+
         const found = Logic.find(from.address, to.address, chain, pools, Dexs)
         if (!found) return { success: false, error: "nopoolFound" }
         const { dex, pool } = found

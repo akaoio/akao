@@ -154,6 +154,38 @@ export const styles = css`
         --section-label-color: var(--neon-g);
         --section-label-shadow: var(--glow-g);
 
+        /* ── Semantic Surface Tokens ──────────────────────────────────────────
+           Abstracts palette stops into role-based names.
+           Components reference these; never reference --navy-*, --green-*, etc. directly.
+        ──────────────────────────────────────────────────────────────────── */
+
+        /* Card surfaces */
+        --card-bg: var(--navy-800);
+        --card-header-bg: color-mix(in hsl, var(--green-900) 60%, var(--navy-900));
+        --card-header-border: color-mix(in hsl, var(--green-700) 30%, var(--navy-700));
+        --card-shadow: 0 6px 40px color-mix(in hsl, var(--neon-c) 10%, transparent);
+
+        /* Card toolbar band (mirrors .catalog-toolbar anatomy) */
+        --card-toolbar-bg: color-mix(in hsl, var(--color) 3%, transparent);
+        --card-toolbar-border: color-mix(in hsl, var(--color) 12%, transparent);
+        --card-toolbar-bg-focus: color-mix(in hsl, var(--neon-c) 3%, transparent);
+        --card-toolbar-border-focus: color-mix(in hsl, var(--neon-c) 45%, transparent);
+
+        /* Field / token input surfaces (replaces raw --navy-700 / --teal-700 usage) */
+        --field-bg: color-mix(in hsl, var(--navy-700) 35%, transparent);
+        --field-bg-hover: color-mix(in hsl, var(--teal-700) 25%, transparent);
+        --field-bg-focus: color-mix(in hsl, var(--teal-700) 40%, transparent);
+        --field-inset-bg: color-mix(in hsl, var(--navy-700) 25%, transparent);
+        --field-inset-border: color-mix(in hsl, var(--navy-700) 60%, transparent);
+
+        /* Semantic interactive accents */
+        --accent-info: var(--neon-c);       /* filters, search, links, info states */
+        --accent-action: var(--neon-g);     /* confirm, submit, price, positive */
+        --accent-danger: var(--neon-m);     /* error, destructive, warning */
+        --glow-info: var(--glow-c);
+        --glow-action: var(--glow-g);
+        --glow-danger: var(--glow-m);
+
         /* Item cards */
         --item-border-left: 3px solid var(--neon-c);
         --item-name-color: var(--neon-c);

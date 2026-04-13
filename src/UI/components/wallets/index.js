@@ -49,13 +49,21 @@ export class WALLETS extends HTMLElement {
         }
 
         this.subs.push(
-            this.$identicons.events.on("select", ({ detail: { id } }) => { this.id = id }),
-            this.$identicons.events.on("increase", () => { this.total += this.step }),
-            this.$identicons.events.on("decrease", () => { if (this.total - this.step > this.id) this.total -= this.step }),
+            this.$identicons.events.on("select", ({ detail: { id } }) => {
+                this.id = id
+            }),
+            this.$identicons.events.on("increase", () => {
+                this.total += this.step
+            }),
+            this.$identicons.events.on("decrease", () => {
+                if (this.total - this.step > this.id) this.total -= this.step
+            }),
             Access.on("authenticated", async ({ value }) => {
                 this.toggleAttribute("hidden", !value)
-                if (value) { await seed(); this.change() }
-                else {
+                if (value) {
+                    await seed()
+                    this.change()
+                } else {
                     this.states.set({ address: null })
                     this.$identicons.clear()
                 }
@@ -72,11 +80,14 @@ export class WALLETS extends HTMLElement {
         }
 
         let currency, chains, chain
-        
+
         if (this.dataset.currency === "false") {
             // For swap route: no currency selector, show all chains
-            chains = Object.values(Chains).map(c => ({
-                label: html`<ui-svg class="icon" data-src="/images/cryptos/${c.configs?.symbol || ""}" /> ${c.configs?.name || c.id}`,
+            chains = Object.values(Chains).map((c) => ({
+                label: html`
+                    <ui-svg class="icon" data-src="/images/cryptos/${c.configs?.symbol || ""}" />
+                    ${c.configs?.name || c.id}
+                `,
                 value: c.id
             }))
             chain = this.states.get("chain") || chains[0]?.value || null
@@ -85,9 +96,7 @@ export class WALLETS extends HTMLElement {
             // For deposit/withdraw: show currency + chains that support it
             currency = this.states.get("currency") || this.currencies[0]?.value || null
             chains = this.chains(currency)
-            chain = chains.some(o => o.value === this.states.get("chain"))
-                ? this.states.get("chain")
-                : chains[0]?.value || null
+            chain = chains.some((o) => o.value === this.states.get("chain")) ? this.states.get("chain") : chains[0]?.value || null
             this.states.set({ currency: currency, chain: chain })
         }
 
@@ -127,50 +136,50 @@ export class WALLETS extends HTMLElement {
             const { name, value } = event.target
             if (name === "currency") {
                 const options = this.chains(value)
-                const chain = options.some(o => o.value === this.states.get("chain"))
-                    ? this.states.get("chain")
-                    : options[0]?.value || null
+                const chain = options.some((o) => o.value === this.states.get("chain")) ? this.states.get("chain") : options[0]?.value || null
                 this.$chains.states.set({ options, selected: chain })
                 this.states.set({ currency: value, chain })
-            } else 
-                this.states.set({ [name]: value })
-            
+            } else this.states.set({ [name]: value })
         }
         this.$identicons.id = this.id
         this.$identicons.total = this.total
-        
+
         const chain = this.states.get("chain")
         const wallet = Wallets[chain]
         const address = wallet?.address || null
         this.states.set({ address })
         this.$address.textContent = address || ""
-        
+
         if (this.dataset.currency === "false") return
-        
+
         if (chain && this.states.get("currency")) {
             const currency = logic.currency(wallet, this.states.get("currency"))
             const fiat = Context.get("fiat")?.code || "USD"
             const { raw, amount } = await logic.balance({ wallet, currency, fiat, forex: Lives.forex })
             if (raw !== null) {
                 const locale = Context.get("locale")?.code || "en"
-                const fiatstr = amount > 0
-                    ? " ≈ " + new Intl.NumberFormat(locale, { style: "currency", currency: fiat, notation: "compact" }).format(amount)
-                    : ""
+                const fiatstr = amount > 0 ? " ≈ " + new Intl.NumberFormat(locale, { style: "currency", currency: fiat, notation: "compact" }).format(amount) : ""
                 this.$balance.textContent = `${raw}${fiatstr}`
             }
         }
     }
 
     get currencies() {
-        return logic.currencies(Chains).map(c => ({
-            label: html`<ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" /> ${c.name}`,
+        return logic.currencies(Chains).map((c) => ({
+            label: html`
+                <ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" />
+                ${c.name}
+            `,
             value: c.name
         }))
     }
 
     chains(currency = null) {
-        return logic.chains(Chains, currency).map(c => ({
-            label: html`<ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" /> ${c.name}`,
+        return logic.chains(Chains, currency).map((c) => ({
+            label: html`
+                <ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" />
+                ${c.name}
+            `,
             value: c.id
         }))
     }
