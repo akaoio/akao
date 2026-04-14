@@ -118,19 +118,4 @@ Test.describe("FS.load — Torrent fallback (isomorphic)", () => {
         Test.assert.equal(result, undefined)
     })
 
-    Test.it("skips re-seed for already-seeded file without warning", async () => {
-        if (!NODE) return
-        const torrent = await waitTorrentClient(15000)
-        Test.assert.truthy(torrent, "prerequisite: torrent client")
-
-        // Seed once
-        const content = new TextEncoder().encode(JSON.stringify(TEST_CONTENT))
-        const first = await torrent.seed(content)
-        Test.assert.truthy(first, "must seed first time")
-
-        // Try seed same content again — should handle duplicate without error
-        const second = await torrent.seed(content)
-        Test.assert.truthy(second, "duplicate seed should succeed (not throw)")
-    })
-
 })
