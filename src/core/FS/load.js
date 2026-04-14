@@ -1,6 +1,7 @@
 import { YAML, BROWSER, driver, isBinary } from "./shared.js"
 import { join } from "./join.js"
 import { parse as parseCSV } from "../CSV.js"
+import { leech } from "../Torrent/leech.js"
 
 /**
  * Load content from files or directories (JSON, YAML, or plain text).
@@ -180,7 +181,6 @@ async function _leech(path = []) {
 async function _leechNode(path = []) {
     const { Statics } = await import("../Stores.js")
     if (!Statics?.torrent) return null
-    const { leech } = await import("../Torrent/leech.js")
     return await leech(Statics.torrent, path)
 }
 
