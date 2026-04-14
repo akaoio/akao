@@ -1,5 +1,5 @@
-import Gun from "@akaoio/gun"
-import "@akaoio/gun/sea.js"
+import Gun from "@akaoio/zen"
+import "@akaoio/zen/sea.js"
 import { FS } from "./src/core/FS.js"
 import http from "http"
 
@@ -106,7 +106,7 @@ const loop = async () => {
         if (data) update(data)
         data = await erapi()
         if (data) update(data)
-        const node = db.user(marketPub).get("forex")
+        const node = db.get(`~${marketPub}`).get("forex")
         if (marketPair) node.put(rates, null, { opt: { authenticator: marketPair } })
         else node.put(rates)
     } catch (error) {

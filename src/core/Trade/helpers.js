@@ -1,5 +1,6 @@
 import { sha256 } from "../Utils/crypto.js"
 import { HDNodeWallet, getBytes } from "../Ethers.js"
+import zen, { userSoul } from "../ZEN.js"
 
 export function resolveRoles(trade, overrides = {}) {
     const maker = overrides.maker || trade.maker
@@ -34,14 +35,15 @@ export async function resolveOrderId(order, orderId = null) {
     throw new Error("orderIdRequired")
 }
 
-export async function putTradeRecord({ gun, pub, tradeId, fields, pair } = {}) {
-    if (!gun || !tradeId || !fields) throw new Error("invalidTradeWrite")
-    if (pub && pair) await ensureUserNamespace({ gun, pub, pair })
+export async function putTradeRecord({ runtime = zen, gun, pub, tradeId, fields, pair } = {}) {
+    runtime = runtime || gun
+    if (!runtime || !tradeId || !fields) throw new Error("invalidTradeWrite")
+    if (pub && pair) await ensureUserNamespace({ runtime, pub, pair })
 
     return await new Promise((resolve, reject) => {
-        const node = pub
-            ? gun.user(pub).get("trades").get(tradeId)
-            : gun.user().get("trades").get(tradeId)
+        const owner = pub || pair?.pub
+        if (!owner) return reject(new Error("tradeOwnerRequired"))
+        const node = runtime.get(userSoul(owner)).get("trades").get(tradeId)
         const callback = (ack) => {
             if (ack?.err) return reject(new Error(ack.err))
             resolve({ tradeId, ...fields })
@@ -61,14 +63,16 @@ export async function once(node, timeoutMs = 800) {
     })
 }
 
-export async function readTradeRecord({ gun, pub, tradeId, timeoutMs = 800 } = {}) {
-    if (!gun || !pub || !tradeId) throw new Error("invalidTradeRead")
-    return cleanRecord(await once(gun.user(pub).get("trades").get(tradeId), timeoutMs))
+export async function readTradeRecord({ runtime = zen, gun, pub, tradeId, timeoutMs = 800 } = {}) {
+    runtime = runtime || gun
+    if (!runtime || !pub || !tradeId) throw new Error("invalidTradeRead")
+    return cleanRecord(await once(runtime.get(userSoul(pub)).get("trades").get(tradeId), timeoutMs))
 }
 
-export async function readPublishedValue({ gun, pub, field, timeoutMs = 800 } = {}) {
-    if (!gun || !pub || !field) throw new Error("invalidPublishedRead")
-    return await once(gun.user(pub).get(field), timeoutMs)
+export async function readPublishedValue({ runtime = zen, gun, pub, field, timeoutMs = 800 } = {}) {
+    runtime = runtime || gun
+    if (!runtime || !pub || !field) throw new Error("invalidPublishedRead")
+    return await once(runtime.get(userSoul(pub)).get(field), timeoutMs)
 }
 
 export async function rootFromSecret(secret) {
@@ -78,15 +82,14 @@ export async function rootFromSecret(secret) {
 
 export async function expectedXpub({ epub, platpair } = {}) {
     if (!epub || !platpair) throw new Error("invalidXpubValidation")
-    const { sea } = globalThis
-    if (!sea) throw new Error("Trade: SEA not initialized")
-    const secret = await sea.secret(epub, platpair)
+    const secret = await zen.secret(epub, platpair)
     return (await rootFromSecret(secret)).neuter().extendedKey
 }
 
-export async function resolvePublishedXpub({ gun, party, field = "xpub", platpair = null } = {}) {
+export async function resolvePublishedXpub({ runtime = zen, gun, party, field = "xpub", platpair = null } = {}) {
     if (!party?.pub) throw new Error("partyPubRequired")
-    const xpub = await readPublishedValue({ gun, pub: party.pub, field })
+    runtime = runtime || gun
+    const xpub = await readPublishedValue({ runtime, pub: party.pub, field })
     if (!xpub) throw new Error("xpubNotFound")
     if (platpair && party.epub) {
         const expected = await expectedXpub({ epub: party.epub, platpair })
@@ -127,9 +130,10 @@ function cleanRecord(data) {
     return record
 }
 
-async function ensureUserNamespace({ gun, pub, pair } = {}) {
+async function ensureUserNamespace({ runtime = zen, gun, pub, pair } = {}) {
+    runtime = runtime || gun
     await new Promise((resolve, reject) => {
-        gun.user(pub).get("pub").put(pub, (ack) => {
+        runtime.get(userSoul(pub)).get("pub").put(pub, (ack) => {
             if (ack?.err) return reject(new Error(ack.err))
             resolve()
         }, { opt: { authenticator: pair } })

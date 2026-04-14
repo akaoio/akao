@@ -30,7 +30,7 @@ Progress.set({
     Chains: false,
     Dexs: false,
     Wallets: false,
-    GDB: false,
+    ZEN: false,
     User: false,
     Context: false
 })
@@ -96,7 +96,7 @@ thread.init = async function () {
     Progress.set({ Chains: await Construct.Chains() })
     Progress.set({ Dexs: await Construct.Dexs() })
     Progress.set({ Wallets: await Construct.Wallets() })
-    Progress.set({ GDB: await Construct.GDB() })
+    Progress.set({ ZEN: await Construct.ZEN() })
     if (DEV) await restoreDevSession()
     // Listen to the popstate event, which is triggered when the user navigates back to the previous page
     // Updates Context with the new route info
@@ -120,3 +120,5 @@ thread.init = async function () {
     const access = new ACCESS()
     document.body.appendChild(access)
 }
+
+export default thread

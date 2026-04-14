@@ -1,5 +1,6 @@
 import { Access, setWallet } from "/core/Access.js"
 import { fiatValue } from "/core/Utils/contracts.js"
+import zen from "/core/ZEN.js"
 
 export class Logic {
     static currencies(Chains) {
@@ -39,9 +40,8 @@ export class Logic {
     static async seed() {
         const rawSeed = Access.get("seed")
         if (!rawSeed) return null
-        const { sea } = globalThis
-        if (!sea) return null
-        return sea.work(rawSeed, "wallet")
+        if (!zen) return null
+        return zen.work(rawSeed, "wallet")
     }
 
     static id() {

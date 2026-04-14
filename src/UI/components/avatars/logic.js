@@ -1,12 +1,11 @@
 import { Access, setAvatar } from "/core/Access.js"
+import zen, { userSoul } from "/core/ZEN.js"
 
 export class Logic {
     static async seed() {
         const rawSeed = Access.get("seed")
         if (!rawSeed) return null
-        const { sea } = globalThis
-        if (!sea) return null
-        return sea.work(rawSeed, "avatar")
+        return zen.work(rawSeed, "avatar")
     }
 
     static id() {
@@ -22,7 +21,7 @@ export class Logic {
         const total = value >= current ? Math.ceil((value + 1) / step) * step : current
         setAvatar({ id: value, total: total !== current ? total : undefined })
         const pair = Access.get("pair")
-        if (pair) globalThis.gun.get(`~${pair.pub}`).get("avatar").put(value, null, { opt: { authenticator: pair } })
+        if (pair) zen.get(userSoul(pair.pub)).get("avatar").put(value, null, { opt: { authenticator: pair } })
         return value
     }
 

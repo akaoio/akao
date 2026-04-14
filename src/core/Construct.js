@@ -51,14 +51,15 @@ export const Construct = {
         console.log("Constructed: Site")
         return !!Statics.site
     },
-    GDB: async function () {
+    ZEN: async function () {
         if (!Statics.site) return
         if (BROWSER && !globalThis.crypto?.subtle) {
-            console.warn("Skipping GDB: WebCrypto is unavailable in this context")
+            console.warn("Skipping ZEN: WebCrypto is unavailable in this context")
             return false
         }
-        await import("./GDB.js")
-        console.log("Constructed: GDB")
+        const { initZEN } = await import("./ZEN.js")
+        await initZEN()
+        console.log("Constructed: ZEN")
         return true
     },
     Chain: async function ({ id } = {}) {

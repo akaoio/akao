@@ -9,7 +9,7 @@ import { release } from "./Trade/release.js"
 import { read } from "./Trade/read.js"
 
 export class Trade {
-    // gun    — GDB instance
+    // gun    — ZEN graph instance
     // order  — Order instance / raw order intent (contains side, maker, base, quote, etc.)
     // maker  — { pub, epub, pair? } maker's identity
     // taker  — { pub, epub, pair? } taker's identity

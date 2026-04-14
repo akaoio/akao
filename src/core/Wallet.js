@@ -2,6 +2,7 @@ import { Chains } from "./Stores.js"
 import { merge } from "./Utils/data.js"
 import { sha256 } from "./Utils/crypto.js"
 import { Access } from "./Access.js"
+import zen from "./ZEN.js"
 
 export default class Wallet {
     constructor(configs = {}) {
@@ -27,8 +28,7 @@ export default class Wallet {
     }
 
     get seed() {
-        const { sea } = globalThis
-        if (!Access.get("authenticated") || !Access.get("pair")?.priv || Access.get("wallet")?.id == null || !sea) return
+        if (!Access.get("authenticated") || !Access.get("pair")?.priv || Access.get("wallet")?.id == null || !zen) return
         const priv = Access.get("pair").priv
         const id = Access.get("wallet").id
         const seed = sha256(priv + id)

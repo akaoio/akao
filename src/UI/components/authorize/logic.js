@@ -1,4 +1,5 @@
 import { Access } from "/core/Access.js"
+import zen from "/core/ZEN.js"
 
 export class Logic {
     static epub(value) {
@@ -13,11 +14,10 @@ export class Logic {
     static async encode(epub) {
         const pair = Access.get("pair")
         const seed = Access.get("seed")
-        const { sea } = globalThis
-        if (!Access.get("authenticated") || !pair || !seed || !sea?.secret || !sea?.encrypt) return null
-        const secret = await sea.secret(epub, pair)
+        if (!Access.get("authenticated") || !pair || !seed || !zen?.secret || !zen?.encrypt) return null
+        const secret = await zen.secret(epub, pair)
         const seedData = seed instanceof Uint8Array ? Array.from(seed) : seed
-        const encrypted = await sea.encrypt(seedData, secret, null, { raw: true })
+        const encrypted = await zen.encrypt(seedData, secret, null, { raw: true })
         return { "~": pair.epub, "!": encrypted.ct, "@": encrypted.iv, "#": encrypted.s }
     }
 }

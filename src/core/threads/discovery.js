@@ -2,6 +2,7 @@ import Thread from "/core/Thread.js"
 import { randomInt } from "/core/Utils.js"
 import { Construct } from "/core/Construct.js"
 import { Indexes } from "/core/Stores.js"
+import zen from "/core/ZEN.js"
 
 const thread = new Thread()
 
@@ -124,7 +125,7 @@ async function readNode(path = []) {
     const soul = soulFromPath(path)
     return await new Promise((resolve) => {
         try {
-            globalThis.gun.get(soul).once((data) => resolve(data))
+            zen.get(soul).once((data) => resolve(data))
         } catch {
             resolve(undefined)
         }
@@ -185,7 +186,7 @@ async function seedRootByMap() {
         }, 1500)
 
         try {
-            globalThis.gun.get("~").map().once((value, key, message, event) => {
+            zen.get("~").map().once((value, key, message, event) => {
                 ref = event
                 if (!key || key === "_") return
                 if (!SHARD_CHUNK.test(key)) return
@@ -224,8 +225,8 @@ async function scanCycle() {
 }
 
 thread.init = async () => {
-    const ready = await Construct.GDB()
-    if (!ready || !globalThis.gun) return
+    const ready = await Construct.ZEN()
+    if (!ready) return
     await Promise.all(Object.values(Indexes).map((index) => index.ready))
 
     const savedCursor = Number(await Indexes.Lives.get("discovery").get("meta").get("cursor").once())

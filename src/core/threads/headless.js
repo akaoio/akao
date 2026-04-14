@@ -59,7 +59,7 @@ Progress.set({
     Chains: false,
     Dexs: false,
     Wallets: false,
-    GDB: false,
+    ZEN: false,
     Context: false
 })
 
@@ -79,7 +79,7 @@ thread.init = async function () {
     Progress.set({ Chains: await Construct.Chains() })
     Progress.set({ Dexs: await Construct.Dexs() })
     Progress.set({ Wallets: await Construct.Wallets() })
-    Progress.set({ GDB: await Construct.GDB() })
+    Progress.set({ ZEN: await Construct.ZEN() })
     Progress.set({ Context: await Construct.Context() })
 
     globalThis.headless = true

@@ -356,17 +356,20 @@ await FS.copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3.wa
 await FS.copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3-opfs-async-proxy.js"], [...paths.build.core, "SQL", "sqlite3-opfs-async-proxy.js"])
 log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite3-opfs-async-proxy.js")
 
-// Copy gun library files to GDB folder
-log.info("Copying gun library to GDB...")
-const gunFiles = ["gun.js", "sea.js", "lib/"]
+// Copy zen runtime files to ZEN folder
+log.info("Copying zen library to ZEN...")
+const gunFiles = ["gun.js", "sea.js", "zen.js", "pen.wasm", "lib/"]
 for (const filePath of gunFiles) {
     const segments = filePath.split("/").filter(Boolean)
-    const src = ["node_modules", "@akaoio", "gun", ...segments]
-    const dest = [...paths.build.core, "GDB", ...segments]
+    const src = ["node_modules", "@akaoio", "zen", ...segments]
+    const dest = [...paths.build.core, "ZEN", ...segments]
     await FS.copy(src, dest)
 }
-await FS.copy(["node_modules", "@akaoio", "gun", "lib", "opfs.js"], [...paths.build.core, "GDB", "lib", "opfs.js"])
-log.ok(`Copied gun files to GDB`)
+await FS.copy(["node_modules", "@akaoio", "zen", "lib", "opfs.js"], [...paths.build.core, "ZEN", "lib", "opfs.js"])
+await FS.copy(["node_modules", "@akaoio", "zen", "src", "pen.js"], [...paths.build.core, "ZEN", "src", "pen.js"])
+await FS.copy(["node_modules", "@akaoio", "zen", "src", "pen.wasm"], [...paths.build.core, "ZEN", "src", "pen.wasm"])
+await FS.copy(["node_modules", "@akaoio", "zen", "src", "zen", "security.js"], [...paths.build.core, "ZEN", "src", "zen", "security.js"])
+log.ok(`Copied zen files to ZEN`)
 
 // Build routes list using regex pattern and post-process
 log.info("Building routes list...")

@@ -18,13 +18,16 @@ import { match  as matchFn  } from "../Order/match.js"
 import { proof  as proofFn  } from "../Order/proof.js"
 import { fetch  as fetchFn  } from "../Order/fetch.js"
 import { soul   as soulFn   } from "../Order/soul.js"
+import zen, { initZEN } from "../ZEN.js"
 import { ethers, HDNodeWallet, getBytes } from "../Ethers.js"
 
 // ─── Bootstrap: real headless runtime + EVM ───────────────────────────────────
 
 const _req  = createRequire(import.meta.url)
 const Ganache = _req("ganache")
-const _SEA = globalThis.sea
+const _SEA = zen
+const state = { zen: null }
+await initZEN()
 
 // ─── Deterministic test environment ──────────────────────────────────────────
 
@@ -91,7 +94,7 @@ console.log("═".repeat(W) + "\n")
 
 /** Create a real in-memory Gun node (no persistence, no peers). */
 function makeGun() {
-    return new globalThis.Gun({ localStorage: false, radisk: false, peers: [] })
+    return new zen.constructor({ localStorage: false, radisk: false, peers: [] })
 }
 
 /** Read a Gun node once, with timeout. Resolves undefined on timeout. */
@@ -150,7 +153,7 @@ async function publishOrder({ pair = PAIR_MAKER, baseId = ITEM, side = "buy", st
         status: "open"
     }
     const value = await _SEA.sign(JSON.stringify(record), pair)
-    await new Promise((resolve) => globalThis.gun.get(soulFn({ baseId, side, candle })).get(key).put(value, resolve, { opt: { authenticator: pair } }))
+    await new Promise((resolve) => state.zen.get(soulFn({ baseId, side, candle })).get(key).put(value, resolve, { opt: { authenticator: pair } }))
     return { key, candle, value }
 }
 
@@ -466,19 +469,19 @@ Test.describe("Order — cancel: ownership enforcement", () => {
     })
 
     Test.it("cancel clears entry in Gun when full pub matches owner", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         await o.cancel(key)
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(globalThis.gun.get(s).get(key))
+        const stored = await gunOnce(state.zen.get(s).get(key))
         Test.assert.falsy(stored && stored !== null && typeof stored === "object" && stored.quote,
             "Gun entry must be cleared after cancel")
     })
 
     Test.it("cancel with correct full pub does not return notOwner", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const validKey = `${Date.now()}:${PAIR_MAKER.pub}:xyz`
         const result = await o.cancel(validKey)
@@ -507,7 +510,7 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
     })
 
     Test.it("different takers produce different tradeIds for same order", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const oA = new Order(orderInput({ pair: PAIR_A, side: "sell", baseId: ITEM, quoteQuantity: 95 }))
         const oB = new Order(orderInput({ pair: PAIR_B, side: "sell", baseId: ITEM, quoteQuantity: 95 }))
         const args = { orderId: "fixedorder123", makerpub: "makerX" }
@@ -543,13 +546,13 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
     })
 
     Test.it("match writes trade record to Gun when key is provided", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key, orderId } = await o.create()
         await o.match({ orderId, makerpub: PAIR_MAKER.pub, key })
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(globalThis.gun.get(s).get(key))
+        const stored = await gunOnce(state.zen.get(s).get(key))
         Test.assert.truthy(stored, "trade record must be written to Gun")
         Test.assert.truthy(typeof stored === "string", "stored value is a signed string")
     })
@@ -643,14 +646,14 @@ Test.describe("Order — proof: balance validation", () => {
 Test.describe("Order — fetch: dual candle discovery", () => {
 
     Test.it("returns an array of exactly 2 elements", () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const result = fetchFn({ baseId: ITEM, side: "buy" })
         Test.assert.truthy(Array.isArray(result))
         Test.assert.equal(result.length, 2)
     })
 
     Test.it("current candle element contains matching order from the exact baseId/side/candle partition", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const candle = Math.floor(Date.now() / 300000)
         const currentStamp = candle * 300000 + 1234
         const previousStamp = (candle - 1) * 300000 + 2345
@@ -677,7 +680,7 @@ Test.describe("Order — fetch: dual candle discovery", () => {
     })
 
     Test.it("explicit candle argument shifts discovery window deterministically", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const candle = Math.floor(Date.now() / 300000)
         const targetStamp = (candle - 1) * 300000 + 4444
         const olderStamp = (candle - 2) * 300000 + 5555
@@ -729,49 +732,49 @@ Test.describe("Order — fetch: dual candle discovery", () => {
 Test.describe("Order — create: authenticator + payload integrity", () => {
 
     Test.it("create writes signed entry to Gun and it is readable back", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(globalThis.gun.get(s).get(key))
+        const stored = await gunOnce(state.zen.get(s).get(key))
         Test.assert.truthy(stored, "entry must exist in Gun after create")
         Test.assert.truthy(typeof stored === "string", "stored value must be a signed string")
     })
 
     Test.it("payload contains maker envelope", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(globalThis.gun.get(s).get(key))
+        const stored = await gunOnce(state.zen.get(s).get(key))
         Test.assert.truthy(stored.includes(PAIR_MAKER.pub.slice(0, 12)))
         Test.assert.truthy(stored.includes(PAIR_MAKER.epub.slice(0, 12)))
     })
 
     Test.it("payload always contains maker xpub", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "buy", quoteQuantity: 100 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "buy", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(globalThis.gun.get(s).get(key))
+        const stored = await gunOnce(state.zen.get(s).get(key))
         Test.assert.truthy(stored.includes("xpub"))
     })
 
     Test.it("sell order payload also contains xpub", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
-        const stored = await gunOnce(globalThis.gun.get(s).get(key))
+        const stored = await gunOnce(state.zen.get(s).get(key))
         Test.assert.truthy(stored.includes("xpub"), "sell order must carry full maker material too")
     })
 
     Test.it("create returns { orderId, key }", async () => {
-        globalThis.gun = makeGun()
+        state.zen = makeGun()
         const o = newSell()
         const result = await o.create()
         Test.assert.truthy("orderId" in result)

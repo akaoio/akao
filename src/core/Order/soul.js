@@ -1,3 +1,5 @@
+import zen from "../ZEN.js"
+
 // Returns the Pen soul string for one market window:
 // params = { baseId, side, candle }
 // key    = <timestamp>:<pub>:<nonce>
@@ -9,10 +11,9 @@
 //   seg 2 — nonce (PoW uniqueness)
 export function soul({ baseId = this?.base?.id, side = this?.side, candle = Math.floor(Date.now() / 300000) } = {}) {
     if (!baseId || !side) throw new Error("invalidInput")
-    const { pen } = globalThis.sea
     const stamp = { tonum: { seg: { sep: ":", idx: 0, of: { reg: 0 } } } }
     const writer = { seg: { sep: ":", idx: 1, of: { reg: 0 } } }
-    return pen({
+    return zen.pen({
         key: {
             and: [
                 {

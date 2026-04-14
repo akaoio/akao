@@ -2,6 +2,7 @@ import template from "./template.js"
 import { html, render } from "/core/UI.js"
 import Events from "/core/Events.js"
 import Component from "/core/UI/Component.js"
+import zen from "/core/ZEN.js"
 
 const _workCache = new Map()
 
@@ -18,7 +19,7 @@ function hashHue(str) {
 export async function cachedWork(data, salt) {
     const key = `${data}:${salt}`
     if (_workCache.has(key)) return _workCache.get(key)
-    const result = await globalThis.sea.work(data, salt)
+    const result = await zen.work(data, salt)
     _workCache.set(key, result)
     return result
 }

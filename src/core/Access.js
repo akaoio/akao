@@ -7,6 +7,7 @@
 import WebAuthn from "./WebAuthn.js"
 import States from "./States.js"
 import { DEV } from "./Utils/environment.js"
+import zen, { initZEN, once, userSoul } from "./ZEN.js"
 
 const DEV_SESSION_KEY = "__dev_auth__"
 
@@ -131,9 +132,8 @@ export function setAvatar({ id, total } = {}) {
  */
 async function next(credential) {
     if (!credential || !credential?.id || !credential?.seed) return { error: "Invalid credential" }
-    const { sea } = globalThis
-    // Generate SEA key pair for user (used for encrypting data in Gun)
-    const pair = await sea.pair(null, { seed: credential.seed })
+    await initZEN()
+    const pair = await zen.pair(null, { seed: credential.seed })
     Access.set({
         authenticated: true,
         id: credential.id,
@@ -166,17 +166,15 @@ async function next(credential) {
  * @returns {Object} Encrypted public key data
  */
 async function save(credential) {
-    const { gun, sea } = globalThis
+    await initZEN()
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
-    // Encrypt passkey pub with user's key pair
-    const encrypted = await sea.encrypt(credential.pub, pair)
-    // Store encrypted pub in Gun database under user's pub
-    gun.get(`~${pair.pub}`).get("@").put(encrypted, null, { opt: { authenticator: pair } })
+    const encrypted = await zen.encrypt(credential.pub, pair)
+    zen.get(userSoul(pair.pub)).get("@").put(encrypted, null, { opt: { authenticator: pair } })
     // Register pub in the ~ shard network so it can be discovered by prefix traversal
     // Break the pub into smaller chunks to avoid hitting Gun's node size limits
     const chunks = pair.pub.match(/.{1,2}/g) || []
-    let node = gun.get("~")
+    let node = zen.get("~")
     // Traverse or create nodes for each chunk of the pub key
     // It now looks like this: gun.get("~").get("ab").get("cd").get("ef")... and so on until the full pub is traversed
     for (const chunk of chunks) node = node.get(chunk)
@@ -192,14 +190,12 @@ async function save(credential) {
  * @returns {Object} Decrypted public key or error
  */
 async function restore() {
-    const { gun, sea } = globalThis
+    await initZEN()
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
-    // Retrieve encrypted pub from Gun database
-    const encrypted = await gun.get(`~${pair.pub}`).get("@")
+    const encrypted = await once(zen.get(userSoul(pair.pub)).get("@"))
     if (!encrypted) return { error: "No encrypted public key found" }
-    // Decrypt using user's key pair
-    const decrypted = await sea.decrypt(encrypted, pair)
+    const decrypted = await zen.decrypt(encrypted, pair)
     if (!decrypted) return { error: "Unable to decrypt data" }
     Access.set({ pub: decrypted })
     return decrypted
@@ -261,7 +257,7 @@ export function signout() {
     if (DEV && globalThis.localStorage) globalThis.localStorage.removeItem(DEV_SESSION_KEY)
 }
 
-// Called from main.js after Construct.GDB() so that globalThis.sea is available
+// Called from main.js after Construct.ZEN() so that the runtime singleton is ready
 export async function restoreDevSession() {
     if (!DEV || !globalThis.localStorage) return
     const stored = globalThis.localStorage.getItem(DEV_SESSION_KEY)

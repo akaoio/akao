@@ -4,13 +4,15 @@ import { sha256 } from "../Utils/crypto.js"
 import { Trade } from "../Trade.js"
 import { Lock } from "../Lock.js"
 import { devplatform } from "../Platform.js"
+import zen, { initZEN, userSoul } from "../ZEN.js"
 import { ethers, HDNodeWallet, getBytes } from "../Ethers.js"
 
 const _req = createRequire(import.meta.url)
 const Ganache = _req("ganache")
-const _SEA = globalThis.sea
+const _SEA = zen
+await initZEN()
 
-const PLATFORM = await devplatform({ sea: _SEA })
+const PLATFORM = await devplatform({ runtime: _SEA })
 const [MAKER_PAIR, TAKER_PAIR, AFFILIATE_PAIR] = await Promise.all([
     _SEA.pair(), _SEA.pair(), _SEA.pair()
 ])
@@ -31,7 +33,7 @@ const [MAKER_ROOT, TAKER_ROOT, AFFILIATE_ROOT] = await Promise.all([
 ])
 
 function makeGun() {
-    return new globalThis.Gun({ localStorage: false, radisk: false, peers: [] })
+    return new zen.constructor({ localStorage: false, radisk: false, peers: [] })
 }
 
 async function once(node, timeoutMs = 1000) {
@@ -46,12 +48,12 @@ async function once(node, timeoutMs = 1000) {
 
 async function put(gun, pub, pair, key, value) {
     await new Promise((resolve) => {
-        gun.user(pub).get(key).put(value, resolve, { opt: { authenticator: pair } })
+        gun.get(userSoul(pub)).get(key).put(value, resolve, { opt: { authenticator: pair } })
     })
 }
 
 async function tradeRecord(gun, pub, tradeId) {
-    const data = await once(gun.user(pub).get("trades").get(tradeId))
+    const data = await once(gun.get(userSoul(pub)).get("trades").get(tradeId))
     if (!data || typeof data !== "object") return data
     const clean = {}
     for (const [key, value] of Object.entries(data))

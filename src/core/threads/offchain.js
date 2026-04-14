@@ -2,6 +2,7 @@ import { Indexes, Statics } from "/core/Stores.js"
 import Thread from "/core/Thread.js"
 import { clone } from "/core/Utils.js"
 import { Construct } from "/core/Construct.js"
+import zen, { userSoul } from "/core/ZEN.js"
 
 const thread = new Thread()
 
@@ -9,18 +10,15 @@ const thread = new Thread()
 const forex = {}
 
 thread.init = async () => {
-    const ready = await Construct.GDB()
-    if (!ready || !globalThis.gun) return
+    const ready = await Construct.ZEN()
+    if (!ready) return
     await thread.forex()
 }
 
 thread.forex = async () => {
-    if (!globalThis.gun) return
     const pub = Statics?.site?.market?.pub
     if (!pub) return
-    // Initialize forex store
-    globalThis.gun
-        .user(pub)
+    zen.get(userSoul(pub))
         .get("forex")
         .map()
         .on((quotes, base) => {

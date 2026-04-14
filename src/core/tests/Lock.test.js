@@ -2,11 +2,13 @@ import Test from "../Test.js"
 import { sha256 } from "../Utils/crypto.js"
 import { Lock } from "../Lock.js"
 import { devplatform } from "../Platform.js"
+import zen, { initZEN } from "../ZEN.js"
 import { HDNodeWallet, getBytes } from "../Ethers.js"
 
-const _SEA = globalThis.sea
+const _SEA = zen
+await initZEN()
 
-const PLATFORM = await devplatform({ sea: _SEA })
+const PLATFORM = await devplatform({ runtime: _SEA })
 const [PAYER_PAIR] = await Promise.all([
     _SEA.pair()
 ])
