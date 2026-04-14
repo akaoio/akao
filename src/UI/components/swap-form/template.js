@@ -9,7 +9,10 @@ import styles from "./styles.css.js"
 export const template = html`
     ${styles}
     <div id="toolbar">
-        <span id="toolbar-dot" class="toolbar-dot"></span>
+        <span class="toolbar-item" id="toolbar-network">
+            <span class="toolbar-dot" id="toolbar-dot"></span>
+            <span class="toolbar-num" id="toolbar-chain">—</span>
+        </span>
         <span class="toolbar-divider"></span>
         <span class="toolbar-item" id="toolbar-dex">
             <span class="toolbar-label"><ui-context data-key="dictionary.pool" /></span>

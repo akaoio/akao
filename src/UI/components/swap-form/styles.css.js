@@ -4,6 +4,7 @@ export const styles = css`
     :host {
         display: flex;
         flex-direction: column;
+        flex: 1;
     }
 
     /* ── Toolbar ── */
@@ -37,6 +38,11 @@ export const styles = css`
         text-shadow: var(--glow-info);
     }
 
+    @keyframes dot-pulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.3; }
+    }
+
     .toolbar-dot {
         width: 0.45em;
         height: 0.45em;
@@ -48,6 +54,14 @@ export const styles = css`
         &[data-active="true"] {
             background: var(--accent-action);
             box-shadow: 0 0 6px color-mix(in hsl, var(--accent-action) 60%, transparent);
+        }
+
+        &[data-polling="true"] {
+            animation: dot-pulse 1s ease-in-out infinite;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            &[data-polling="true"] { animation: none; }
         }
     }
 
@@ -71,15 +85,15 @@ export const styles = css`
 
     /* ── Fields ── */
     #fields {
-        padding: var(--space);
+        padding: var(--space-4) var(--space);
         display: flex;
         flex-direction: column;
-        gap: var(--space-sm);
+        gap: var(--space);
     }
 
     .token-field {
         background: var(--field-bg);
-        padding: var(--space);
+        padding: var(--space) var(--space) var(--space-7);
         display: flex;
         flex-direction: column;
         gap: var(--space-sm);
@@ -174,7 +188,7 @@ export const styles = css`
         align-items: center;
         justify-content: space-between;
         gap: var(--space-2);
-        min-width: 7.5rem;
+        min-width: 9.5rem;
         padding: var(--space-2) var(--space-4);
         background: transparent;
         border: 1px solid color-mix(in hsl, var(--color) 25%, transparent);
@@ -256,6 +270,10 @@ export const styles = css`
         padding: var(--space-sm) var(--space);
         background: var(--field-inset-bg);
         border-top: 1px solid var(--field-inset-border);
+        width: fit-content;
+        align-self: flex-end;
+        border-left: 1px solid var(--field-inset-border);
+        border-radius: 0 0 0 var(--radius-sm);
     }
 
     .slippage-label {

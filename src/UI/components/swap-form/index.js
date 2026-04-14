@@ -136,12 +136,23 @@ export class SWAP_FORM extends HTMLElement {
         this.balanceIn = ""
     }
 
-    updateToolbar({ chain, dexLabel, fee, poolCount } = {}) {
+    updateToolbar({ chain, dexLabel, fee, poolCount, polling = false } = {}) {
         const r = (id) => this.shadowRoot.querySelector(id)
-        r("#toolbar-dot").dataset.active         = chain ? "true" : "false"
-        r("#toolbar-dex-name").textContent       = dexLabel ?? "—"
-        r("#toolbar-fee-value").textContent      = fee != null ? `${fee / 10000}%` : "—"
-        r("#toolbar-pool-count").textContent     = poolCount ?? "—"
+        const dot = r("#toolbar-dot")
+        dot.dataset.active   = chain ? "true" : "false"
+        dot.dataset.polling  = polling ? "true" : "false"
+
+        const dexEl   = r("#toolbar-dex-name")
+        const feeEl   = r("#toolbar-fee-value")
+        const countEl = r("#toolbar-pool-count")
+
+        const nextDex   = dexLabel ?? "—"
+        const nextFee   = fee != null ? `${fee / 10000}%` : "—"
+        const nextCount = String(poolCount ?? "—")
+
+        if (dexEl.textContent   !== nextDex)   dexEl.textContent   = nextDex
+        if (feeEl.textContent   !== nextFee)   feeEl.textContent   = nextFee
+        if (countEl.textContent !== nextCount) countEl.textContent = nextCount
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

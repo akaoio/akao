@@ -19,7 +19,8 @@ export const TESTS = [
     { file: "Order.test.js", browser: false, node: true },
     { file: "Lock.test.js", browser: false, node: true },
     { file: "Trade.test.js", browser: false, node: true },
-    { file: "Launcher.test.js", browser: false, node: true }
+    { file: "Launcher.test.js", browser: false, node: true },
+    { file: "WalletLabel.test.js", browser: false, node: true }
 ]
 
 export default TESTS

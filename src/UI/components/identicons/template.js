@@ -1,4 +1,5 @@
 import "/UI/components/identicon/index.js"
+import "/UI/components/svg/index.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
 
@@ -15,12 +16,18 @@ export const template = html`
             </span>
         </span>
         <span class="status-right">
-            <span class="actions__sep" aria-hidden="true"></span>
-            <span class="status-total-group">
-                <button id="status-decrease" class="status-nav-btn" aria-label="Show fewer avatars" disabled>‹</button>
-                <span id="status-total" class="status-total"></span>
-                <button id="status-increase" class="status-nav-btn" aria-label="Show more avatars">›</button>
-            </span>
+            <!-- carousel mode: prev/next page -->
+            <button id="status-decrease" class="status-nav-btn status-nav-btn--carousel" aria-label="Show fewer" disabled>
+                <ui-svg data-src="/images/icons/chevron-left.svg" />
+            </button>
+            <span id="status-total" class="status-total status-nav-btn--carousel"></span>
+            <button id="status-increase" class="status-nav-btn status-nav-btn--carousel" aria-label="Show more">
+                <ui-svg data-src="/images/icons/chevron-right.svg" />
+            </button>
+            <!-- picker mode: add new slot -->
+            <button id="status-add" class="status-nav-btn status-nav-btn--picker" aria-label="Add">
+                <ui-svg data-src="/images/icons/plus-lg.svg" />
+            </button>
             <slot name="actions"></slot>
         </span>
     </div>
