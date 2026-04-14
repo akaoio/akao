@@ -7,5 +7,5 @@ import { parts } from "./parts.js"
 export async function cancel(key) {
     const meta = parts(key)
     if (!meta || meta.pub !== this.pair.pub) return { error: "notOwner" }
-    await new Promise(r => this.gun.get(soul.call(this, { candle: meta.candle })).get(key).put(null, r, { opt: { authenticator: this.pair } }))
+    await new Promise(r => globalThis.gun.get(soul.call(this, { candle: meta.candle })).get(key).put(null, r, { opt: { authenticator: this.pair } }))
 }

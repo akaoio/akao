@@ -15,7 +15,7 @@ export async function match({ orderId, makerpub, key }) {
         if (!meta) return { error: "invalidKey" }
         const data = JSON.stringify({ tradeId, taker: this.pair.pub, status: "matched" })
         const value = await globalThis.sea.sign(data, this.pair)
-        await new Promise(r => this.gun.get(soul.call(this, { candle: meta.candle })).get(key).put(value, r, { opt: { authenticator: this.pair } }))
+        await new Promise(r => globalThis.gun.get(soul.call(this, { candle: meta.candle })).get(key).put(value, r, { opt: { authenticator: this.pair } }))
     }
     return { tradeId }
 }

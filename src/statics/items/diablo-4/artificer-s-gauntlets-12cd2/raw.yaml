@@ -1,0 +1,10 @@
+id: 1640423
+icon: 75090955
+name: Artificer's Gauntlets
+itemTypeName: Gloves
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Hands
+popularity: 10

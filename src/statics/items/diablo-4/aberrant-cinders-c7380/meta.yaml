@@ -1,0 +1,24 @@
+id: aberrant-cinders-c7380
+game: diablo-4
+type: Misc
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - misc
+rarity: Special
+itemTypeName: null
+classes: null
+slots: null
+value: 15
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

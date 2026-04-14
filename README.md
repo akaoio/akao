@@ -596,6 +596,7 @@ mystore.com: mystore
 
 ## 📚 Documentation
 
+- [Tại Sao AKAO](docs/thoughts/akao.md) — triết lý và nguồn gốc
 - [Philosophy Index](docs/phylosophy/README.md) — The worldview behind the codebase
 - [The Philosophy of Framework-less](docs/thoughts/the-philosophy-of-framework-less.md) — Why no framework?
 - [SQLite WASM + OPFS Architecture](docs/thoughts/sqlite-wasm-opfs-worker.md) — SQL storage design

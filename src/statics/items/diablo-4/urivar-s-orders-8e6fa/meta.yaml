@@ -1,0 +1,24 @@
+id: urivar-s-orders-8e6fa
+game: diablo-4
+type: Lorebook
+catalog: game
+tags:
+  - diablo-4
+  - common
+  - lorebook
+rarity: Common
+itemTypeName: Lorebook
+classes: null
+slots: null
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

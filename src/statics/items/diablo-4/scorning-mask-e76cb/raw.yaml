@@ -1,0 +1,10 @@
+id: 459857
+icon: 2314865141
+name: Scorning Mask
+itemTypeName: Focus
+quality: 3
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 11

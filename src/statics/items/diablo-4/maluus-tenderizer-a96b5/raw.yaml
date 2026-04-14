@@ -1,0 +1,15 @@
+id: 2216771
+icon: 1014222516
+name: Maluus' Tenderizer
+itemTypeName: Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

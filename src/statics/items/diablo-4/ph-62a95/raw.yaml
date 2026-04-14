@@ -1,0 +1,10 @@
+id: 2297768
+icon: 1626133936
+name: "[PH]"
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Hands
+popularity: 10

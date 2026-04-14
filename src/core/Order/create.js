@@ -12,6 +12,6 @@ export async function create() {
     const s = soul.call(this, { candle: meta.candle })
     const data = payload(this, { orderId, status: "open" })
     const value = await globalThis.sea.sign(JSON.stringify(data), this.pair)
-    await new Promise(r => this.gun.get(s).get(k).put(value, r, { opt: { authenticator: this.pair } }))
+    await new Promise(r => globalThis.gun.get(s).get(k).put(value, r, { opt: { authenticator: this.pair } }))
     return { orderId, key: k }
 }
