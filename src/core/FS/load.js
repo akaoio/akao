@@ -40,11 +40,11 @@ export async function load(path, options = {}) {
                 if (response.ok) {
                     if (_isBinary) {
                         const buf = await response.arrayBuffer()
-                        driver.writeBytes(path, new Uint8Array(buf)).then(() => _prefetch(path)).catch((e) => console.warn("OPFS cache write failed:", e))
+                        driver.writeBytes(path, new Uint8Array(buf)).then(() => { try { _prefetch(path) } catch {} }).catch((e) => console.warn("OPFS cache write failed:", e))
                         return new Uint8Array(buf)
                     }
                     httpText = await response.text()
-                    driver.writeBytes(path, new TextEncoder().encode(httpText)).then(() => _prefetch(path)).catch((e) => console.warn("OPFS cache write failed:", e))
+                    driver.writeBytes(path, new TextEncoder().encode(httpText)).then(() => { try { _prefetch(path) } catch {} }).catch((e) => console.warn("OPFS cache write failed:", e))
                 } else if (fresh && response.status === 404) await driver.remove(path)
             } catch {}
 

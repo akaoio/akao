@@ -87,6 +87,8 @@ async function _extract(t, path, fileName, timeoutMs) {
                 if (!blob) { finish(null); return }
                 const bytes = new Uint8Array(await blob.arrayBuffer())
                 try { await driver.writeBytes(path, bytes) } catch {}
+                // Remove torrent after extraction to prevent unbounded growth
+                if (torrentInstance.remove && t.infoHash) torrentInstance.remove(t.infoHash).catch(() => {})
                 finish(bytes)
             } catch (e) {
                 console.debug("[leech] extract failed:", e?.message)

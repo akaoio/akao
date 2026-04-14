@@ -16,10 +16,10 @@ thread.init = async function () {
  */
 thread.status = function () {
     const t = Statics.torrent
-    if (!t) return { ready: false, seeded: 0, tracker: null, scheme: null }
+    if (!t) return { ready: false, tracked: 0, tracker: null, scheme: null }
     return {
         ready: true,
-        seeded: t.torrents?.size ?? 0,
+        tracked: t.torrents?.size ?? 0,
         tracker: t._active ?? null,
         scheme: t._scheme ?? null,
         pool: t.pool?.length ?? 0
@@ -64,6 +64,8 @@ thread.seed = async function ({ path }) {
 
         return { success: true }
     } catch (e) {
+        // WebTorrent throws "same id" for duplicate — treat as success
+        if (e?.message?.includes("same id") || e?.message?.includes("duplicate")) return { success: true }
         console.debug("[torrent.seed] error:", e?.message)
         return { success: false }
     }
