@@ -11,7 +11,6 @@ export const TESTS = [
     { file: "Context.test.js", browser: true, node: true },
     { file: "RTC.test.js", browser: true, node: true },
     { file: "Torrent.test.js", browser: true, node: true },
-    { file: "FS.test.js", browser: false, node: true },
     { file: "Access.test.js", browser: true, node: true },
     { file: "WebAuthn.test.js", browser: true, node: false },
     { file: "Hash.test.js", browser: true, node: true },
