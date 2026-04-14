@@ -48,10 +48,9 @@ thread.seed = async function ({ path }) {
     // Skip metadata files — seeding them writes wrong .torrent metadata
     if (last.endsWith(".hash") || last.endsWith(".torrent")) return { success: true }
 
-    // Skip if already seeded by name — avoids WebTorrent's "same id" warning
-    // Note: WebTorrent may not set .path on torrent objects, so we match by name only
-    if (torrent.client?.torrents?.some(tr => tr.name === last)) return { success: true }
-
+    // Note: we don't pre-check by name — files like meta.json exist in many dirs
+    // and name-only check would skip valid seeds. WebTorrent handles duplicates
+    // via "same id" error → treat as success.
     const contentBytes = await driver.readBytes(path).catch(() => null)
     if (!contentBytes) return { success: false }
 

@@ -40,11 +40,11 @@ export async function load(path, options = {}) {
                 if (response.ok) {
                     if (_isBinary) {
                         const buf = await response.arrayBuffer()
-                        driver.writeBytes(path, new Uint8Array(buf)).then(() => _prefetchTorrent(path)).catch((e) => console.warn("OPFS cache write failed:", e))
+                        driver.writeBytes(path, new Uint8Array(buf)).then(() => _prefetch(path)).catch((e) => console.warn("OPFS cache write failed:", e))
                         return new Uint8Array(buf)
                     }
                     httpText = await response.text()
-                    driver.writeBytes(path, new TextEncoder().encode(httpText)).then(() => _prefetchTorrent(path)).catch((e) => console.warn("OPFS cache write failed:", e))
+                    driver.writeBytes(path, new TextEncoder().encode(httpText)).then(() => _prefetch(path)).catch((e) => console.warn("OPFS cache write failed:", e))
                 } else if (fresh && response.status === 404) await driver.remove(path)
             } catch {}
 
@@ -63,7 +63,7 @@ export async function load(path, options = {}) {
                 if (buf) return buf
 
                 // Torrent fallback — worker already cached to OPFS
-                const torrentData = await _leechFromTorrent(path)
+                const torrentData = await _leech(path)
                 if (torrentData) return torrentData
 
                 if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
@@ -76,7 +76,7 @@ export async function load(path, options = {}) {
                 if (buf) text = new TextDecoder().decode(buf)
                 else {
                     // Torrent fallback — worker already cached to OPFS
-                    const torrentData = await _leechFromTorrent(path)
+                    const torrentData = await _leech(path)
                     if (torrentData) text = new TextDecoder().decode(torrentData)
                     else {
                         if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
@@ -104,7 +104,7 @@ export async function load(path, options = {}) {
             text = new TextDecoder().decode(bytes)
         } else {
             // Disk miss → leech directly from in-process Statics.torrent
-            const torrentData = await _leechDirect(path)
+            const torrentData = await _leechNode(path)
             if (torrentData) {
                 if (isBinary(_path)) return torrentData
                 text = new TextDecoder().decode(torrentData)
@@ -144,11 +144,10 @@ export async function load(path, options = {}) {
 }
 
 /**
- * BROWSER mode: leech via torrent worker thread (avoids blocking UI).
+ * Browser: leech via worker thread (avoids blocking UI).
  * Worker handles P2P + cache. Main thread reads back from OPFS.
- * Returns Uint8Array on success, null on failure. Timeout: 12s.
  */
-async function _leechFromTorrent(path = []) {
+async function _leech(path = []) {
     const threads = globalThis.threads
     if (!threads?.threads?.torrent) return null
 
@@ -175,10 +174,10 @@ async function _leechFromTorrent(path = []) {
 }
 
 /**
- * NODE.js headless mode: leech directly via in-process Statics.torrent.
- * No worker round-trip — torrent client lives in same thread (no UI to block).
+ * Node.js: leech directly via in-process Statics.torrent.
+ * No worker round-trip — torrent client lives in same thread.
  */
-async function _leechDirect(path = []) {
+async function _leechNode(path = []) {
     const { Statics } = await import("../Stores.js")
     if (!Statics?.torrent) return null
     const { leech } = await import("../Torrent/leech.js")
@@ -190,7 +189,7 @@ async function _leechDirect(path = []) {
  * Only seeds real content files from public directories (statics/).
  * Skips .hash and .torrent metadata files.
  */
-function _prefetchTorrent(path) {
+function _prefetch(path) {
     if (!BROWSER || !Array.isArray(path)) return
     // Only seed from public statics/ directory — prevents data leaks
     if (path[0] !== "statics") return

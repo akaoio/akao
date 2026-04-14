@@ -5,7 +5,7 @@ import { join } from "../FS/join.js"
  * Leech a file from P2P and cache it to local storage.
  * Shared logic used by:
  *   - Worker mode (browser):     threads/torrent.js → thread.leech
- *   - Main-thread mode (Node):   FS/load.js → _leechDirect
+ *   - Main-thread mode (Node):   FS/load.js → _leechNode
  *
  * Handles the case where the torrent is already seeded in-process
  * (WebTorrent throws "duplicate torrent" on add() — we fall back to .get()).
@@ -59,10 +59,10 @@ export async function leech(torrentInstance, path, timeoutMs = 10000) {
         if (!t) return null
     }
 
-    return _extractAndCache(t, path, last, timeoutMs)
+    return _extract(t, path, last, timeoutMs)
 }
 
-async function _extractAndCache(t, path, fileName, timeoutMs) {
+async function _extract(t, path, fileName, timeoutMs) {
     return new Promise((resolve) => {
         let settled = false
         const cleanup = () => {
