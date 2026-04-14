@@ -28,14 +28,22 @@ export async function leechToCache(torrentInstance, path, timeoutMs = 10000) {
     if (!torrentBytes) return null
 
     // Try add() first (download from peers).
-    // WebTorrent throws "duplicate torrent <hash>" if already seeded in-process.
-    // In that case, look up the existing torrent by info hash.
+    // WebTorrent throws if already seeded in-process:
+    //   v1: "Cannot add duplicate torrent <hex40>"
+    //   v2: "A torrent with the same id is already being seeded"
+    // In that case, look up the existing torrent.
     let t
     try {
         t = await torrentInstance.add(torrentBytes)
     } catch (e) {
         const hash = e?.message?.match(/([0-9a-f]{40})/)?.[1]
-        if (hash) t = torrentInstance.get(hash)
+        if (hash) {
+            t = torrentInstance.get(hash)
+        } else {
+            // Fallback: find existing torrent by file name
+            const client = torrentInstance.client
+            t = client?.torrents?.find(tr => tr.name === last)
+        }
         if (!t) return null
     }
 
@@ -56,12 +64,13 @@ async function _extractAndCache(t, path, fileName, timeoutMs) {
                 const bytes = new Uint8Array(await blob.arrayBuffer())
                 try { await driver.writeBytes(path, bytes) } catch {}
                 resolve(bytes)
-            } catch {
+            } catch (e) {
+                console.debug("[leech] extract failed:", e?.message)
                 resolve(null)
             }
         }
 
         if (t.done) { onDone(); return }
-        t.on("done", onDone)
+        t.once("done", onDone)
     })
 }

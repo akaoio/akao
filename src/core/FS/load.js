@@ -40,11 +40,11 @@ export async function load(path, options = {}) {
                 if (response.ok) {
                     if (_isBinary) {
                         const buf = await response.arrayBuffer()
-                        driver.writeBytes(path, new Uint8Array(buf)).catch((e) => console.warn("OPFS cache write failed:", e)) // background cache
+                        driver.writeBytes(path, new Uint8Array(buf)).then(() => _prefetchTorrent(path)).catch((e) => console.warn("OPFS cache write failed:", e))
                         return new Uint8Array(buf)
                     }
                     httpText = await response.text()
-                    driver.writeBytes(path, new TextEncoder().encode(httpText)).catch((e) => console.warn("OPFS cache write failed:", e)) // background cache
+                    driver.writeBytes(path, new TextEncoder().encode(httpText)).then(() => _prefetchTorrent(path)).catch((e) => console.warn("OPFS cache write failed:", e))
                 } else if (fresh && response.status === 404) await driver.remove(path)
             } catch {}
 
@@ -183,4 +183,17 @@ async function _leechDirect(path = []) {
     if (!Statics?.torrent) return null
     const { leechToCache } = await import("../Torrent/leech.js")
     return await leechToCache(Statics.torrent, path)
+}
+
+/**
+ * Background: auto-seed content after OPFS write completes.
+ * Chain via .then() — no race condition. Fire-and-forget.
+ */
+function _prefetchTorrent(path) {
+    if (!BROWSER || !Array.isArray(path)) return
+    const last = path.at(-1)
+    if (!last || !last.includes(".")) return
+    const threads = globalThis.threads
+    if (!threads?.threads?.torrent) return
+    threads.queue({ thread: "torrent", method: "seed", params: { path }, callback: () => {} })
 }

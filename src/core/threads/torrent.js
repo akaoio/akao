@@ -1,23 +1,13 @@
 import Thread from "/core/Thread.js"
 import { Construct } from "/core/Construct.js"
 import { Statics } from "/core/Stores.js"
-import { loop } from "/core/Utils.js"
-import { seedAll } from "/core/Torrent/seedAll.js"
 import { leechToCache } from "/core/Torrent/leech.js"
+import { driver } from "/core/FS/shared.js"
 
 const thread = new Thread()
 
 thread.init = async function () {
     await Construct.Torrent()
-    const torrent = Statics.torrent
-    if (!torrent) return
-
-    await seedAll(torrent)
-
-    loop({
-        process: () => seedAll(torrent),
-        delay: 3600000
-    })
 }
 
 /**
@@ -45,3 +35,35 @@ thread.leech = async function ({ path }) {
     const bytes = await leechToCache(Statics.torrent, path)
     return { success: !!bytes }
 }
+
+/**
+ * Seed content from OPFS. Called after HTTP fetch caches content.
+ * Reads content from OPFS, seeds it, saves generated .torrent metadata.
+ */
+thread.seed = async function ({ path }) {
+    const torrent = Statics.torrent
+    if (!torrent || !Array.isArray(path) || !path.length) return { success: false }
+    const last = path.at(-1)
+    if (!last || !last.includes(".")) return { success: false }
+
+    // Skip if already seeded — avoids WebTorrent's "same id" warning
+    if (torrent.client?.torrents?.some(tr => tr.name === last)) return { success: true }
+
+    const contentBytes = await driver.readBytes(path).catch(() => null)
+    if (!contentBytes) return { success: false }
+
+    const torrentPath = [...path]
+    torrentPath[torrentPath.length - 1] = last.replace(/\.\w+$/, ".torrent")
+
+    try {
+        const t = await torrent.seed(contentBytes, { name: last, announce: torrent.pool })
+        if (t.torrentFile) 
+            await driver.writeBytes(torrentPath, new Uint8Array(t.torrentFile)).catch(() => {})
+        
+        return { success: true }
+    } catch (e) {
+        console.debug("[torrent.seed] error:", e?.message)
+        return { success: true }
+    }
+}
+

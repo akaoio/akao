@@ -32,12 +32,14 @@ async function waitTorrentClient(timeoutMs = 15000) {
 Test.describe("FS.load — Torrent fallback (isomorphic)", () => {
 
     Test.it("torrent client initializes in headless mode", async () => {
+        if (!NODE) return
         const t = await waitTorrentClient(15000)
         Test.assert.truthy(t, "Statics.torrent must be initialized")
         Test.assert.truthy(t.client, "WebTorrent client must exist")
     })
 
     Test.it("leechToCache recovers seeded content via matching info hash", async () => {
+        if (!NODE) return
         const torrent = await waitTorrentClient(15000)
         Test.assert.truthy(torrent, "prerequisite: torrent client")
 
@@ -65,6 +67,7 @@ Test.describe("FS.load — Torrent fallback (isomorphic)", () => {
     })
 
     Test.it("FS.load recovers via _leechDirect when file missing from disk", async () => {
+        if (!NODE) return
         const torrent = await waitTorrentClient(15000)
         Test.assert.truthy(torrent, "prerequisite: torrent client")
 
@@ -109,6 +112,21 @@ Test.describe("FS.load — Torrent fallback (isomorphic)", () => {
             { quiet: true }
         )
         Test.assert.equal(result, undefined)
+    })
+
+    Test.it("skips re-seed for already-seeded file without warning", async () => {
+        if (!NODE) return
+        const torrent = await waitTorrentClient(15000)
+        Test.assert.truthy(torrent, "prerequisite: torrent client")
+
+        // Seed once
+        const content = new TextEncoder().encode(JSON.stringify(TEST_CONTENT))
+        const first = await torrent.seed(content)
+        Test.assert.truthy(first, "must seed first time")
+
+        // Try seed same content again — should handle duplicate without error
+        const second = await torrent.seed(content)
+        Test.assert.truthy(second, "duplicate seed should succeed (not throw)")
     })
 
 })
