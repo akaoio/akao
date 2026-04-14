@@ -1,43 +1,13 @@
 import Thread from "/core/Thread.js"
 import { Construct } from "/core/Construct.js"
-import { FS } from "/core/FS.js"
 import { Statics } from "/core/Stores.js"
 import { loop } from "/core/Utils.js"
+import { seedAll } from "/core/Torrent/seedAll.js"
+import { leechToCache } from "/core/Torrent/leech.js"
 
 const thread = new Thread()
 
-// Directories under statics/ that should NOT be seeded to public P2P swarm.
-// Add sensitive dir names here when going to production (e.g. "sites" if configs.torrent exist).
-const SEED_BLACKLIST = []
-
-// Recursively collect all .torrent file paths under a root path
-async function collectTorrentFiles(path = []) {
-    if (SEED_BLACKLIST.includes(path.at(-1))) return []
-    const entries = await FS.dir(path)
-    if (!entries) return []
-    const results = []
-    for (const entry of entries) {
-        const entryPath = [...path, entry]
-        if (await FS.isDirectory(entryPath)) {
-            const nested = await collectTorrentFiles(entryPath)
-            for (const p of nested) results.push(p)
-        } else if (entry.endsWith(".torrent")) results.push(entryPath)
-        
-    }
-    return results
-}
-
-async function seedAll(torrent) {
-    const files = await collectTorrentFiles(["statics"])
-    for (const filePath of files) {
-        const bytes = await FS.load(filePath)
-        if (!bytes) continue
-        torrent.seed(bytes, { announce: torrent.pool }).catch(() => {})
-    }
-}
-
 thread.init = async function () {
-    // TODO: check p2p_optout from localStorage before starting.
     await Construct.Torrent()
     const torrent = Statics.torrent
     if (!torrent) return
@@ -50,10 +20,28 @@ thread.init = async function () {
     })
 }
 
-// TODO: method disable()
-// thread.disable = async function () {
-//     const torrent = Statics.torrent
-//     if (!torrent) return
-//     await torrent.destroy()
-//     Statics.torrent = null
-// }
+/**
+ * Observability: report current torrent client state.
+ * Used by tests and debug console to verify seeding/tracker health.
+ */
+thread.status = function () {
+    const t = Statics.torrent
+    if (!t) return { ready: false, seeded: 0, tracker: null, scheme: null }
+    return {
+        ready: true,
+        seeded: t.torrents?.size ?? 0,
+        tracker: t._active ?? null,
+        scheme: t._scheme ?? null,
+        pool: t.pool?.length ?? 0
+    }
+}
+
+/**
+ * Leech a file from P2P and cache it to OPFS.
+ * Called from main thread via threads.queue({ thread: "torrent", method: "leech", params: { path } }).
+ * Returns { success: true } if file was leeched and cached.
+ */
+thread.leech = async function ({ path }) {
+    const bytes = await leechToCache(Statics.torrent, path)
+    return { success: !!bytes }
+}

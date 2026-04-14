@@ -1,0 +1,67 @@
+import { driver } from "../FS/shared.js"
+
+/**
+ * Leech a file from P2P and cache it to local storage.
+ * Shared logic used by:
+ *   - Worker mode (browser):     threads/torrent.js → thread.leech
+ *   - Main-thread mode (Node):   FS/load.js → _leechDirect
+ *
+ * Handles the case where the torrent is already seeded in-process
+ * (WebTorrent throws "duplicate torrent" on add() — we fall back to .get()).
+ *
+ * @param {Object} torrentInstance - Live Torrent class instance with .add() / .get()
+ * @param {string[]} path - Content file path (e.g. ["statics","items","x","en.json"])
+ * @param {number} timeoutMs - Max time to wait for piece download
+ * @returns {Promise<Uint8Array|null>} File bytes on success, null on failure
+ */
+export async function leechToCache(torrentInstance, path, timeoutMs = 10000) {
+    if (!torrentInstance || !Array.isArray(path) || !path.length) return null
+    const last = path.at(-1)
+    if (!last || !last.includes(".")) return null
+
+    // Build .torrent metadata path: vi.json → vi.torrent
+    const torrentPath = [...path]
+    torrentPath[torrentPath.length - 1] = last.replace(/\.\w+$/, ".torrent")
+
+    let torrentBytes
+    try { torrentBytes = await driver.readBytes(torrentPath) } catch { return null }
+    if (!torrentBytes) return null
+
+    // Try add() first (download from peers).
+    // WebTorrent throws "duplicate torrent <hash>" if already seeded in-process.
+    // In that case, look up the existing torrent by info hash.
+    let t
+    try {
+        t = await torrentInstance.add(torrentBytes)
+    } catch (e) {
+        const hash = e?.message?.match(/([0-9a-f]{40})/)?.[1]
+        if (hash) t = torrentInstance.get(hash)
+        if (!t) return null
+    }
+
+    return _extractAndCache(t, path, last, timeoutMs)
+}
+
+async function _extractAndCache(t, path, fileName, timeoutMs) {
+    return new Promise((resolve) => {
+        const timeout = setTimeout(() => resolve(null), timeoutMs)
+
+        const onDone = async () => {
+            clearTimeout(timeout)
+            try {
+                const file = t.files?.find(f => f.name === fileName) || t.files?.[0]
+                if (!file) { resolve(null); return }
+                const blob = await (file.blob?.() || file.getBlob?.())
+                if (!blob) { resolve(null); return }
+                const bytes = new Uint8Array(await blob.arrayBuffer())
+                try { await driver.writeBytes(path, bytes) } catch {}
+                resolve(bytes)
+            } catch {
+                resolve(null)
+            }
+        }
+
+        if (t.done) { onDone(); return }
+        t.on("done", onDone)
+    })
+}

@@ -40,14 +40,12 @@ export async function load(path, options = {}) {
                 if (response.ok) {
                     if (_isBinary) {
                         const buf = await response.arrayBuffer()
-                        driver.writeBytes(path, new Uint8Array(buf)).catch((e) => console.warn("OPFS cache write failed:", e))  // background cache
+                        driver.writeBytes(path, new Uint8Array(buf)).catch((e) => console.warn("OPFS cache write failed:", e)) // background cache
                         return new Uint8Array(buf)
                     }
                     httpText = await response.text()
-                    driver.writeBytes(path, new TextEncoder().encode(httpText)).catch((e) => console.warn("OPFS cache write failed:", e))  // background cache
-                } else if (fresh && response.status === 404)
-                    await driver.remove(path)
-                
+                    driver.writeBytes(path, new TextEncoder().encode(httpText)).catch((e) => console.warn("OPFS cache write failed:", e)) // background cache
+                } else if (fresh && response.status === 404) await driver.remove(path)
             } catch {}
 
             if (fresh) {
@@ -63,6 +61,11 @@ export async function load(path, options = {}) {
             } else if (_isBinary) {
                 const buf = await driver.readBytes(path)
                 if (buf) return buf
+
+                // Torrent fallback — worker already cached to OPFS
+                const torrentData = await _leechFromTorrent(path)
+                if (torrentData) return torrentData
+
                 if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
                 return
             }
@@ -72,17 +75,17 @@ export async function load(path, options = {}) {
                 const buf = await driver.readBytes(path)
                 if (buf) text = new TextDecoder().decode(buf)
                 else {
-                    if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
-                    return
+                    // Torrent fallback — worker already cached to OPFS
+                    const torrentData = await _leechFromTorrent(path)
+                    if (torrentData) text = new TextDecoder().decode(torrentData)
+                    else {
+                        if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
+                        return
+                    }
                 }
             }
-        } else {
-            // Node.js: direct read
-            if (!await driver.exists(path)) {
-                if (!quiet) console.error("Path doesn't exist", _path)
-                return
-            }
-
+        } else if (await driver.exists(path)) {
+            // Node.js: disk first, Torrent fallback (main-thread direct, no worker)
             if (await driver.isDir(path)) {
                 const files = {}
                 for (const { name } of await driver.entries(path)) {
@@ -99,7 +102,18 @@ export async function load(path, options = {}) {
                 return
             }
             text = new TextDecoder().decode(bytes)
+        } else {
+            // Disk miss → leech directly from in-process Statics.torrent
+            const torrentData = await _leechDirect(path)
+            if (torrentData) {
+                if (isBinary(_path)) return torrentData
+                text = new TextDecoder().decode(torrentData)
+            } else {
+                if (!quiet) console.error("Path not found on disk or P2P:", _path)
+                return
+            }
         }
+        
 
         // Deserialize text content
         if (typeof text === "string") text = text.trim()
@@ -127,4 +141,46 @@ export async function load(path, options = {}) {
         )
         return content
     }
+}
+
+/**
+ * BROWSER mode: leech via torrent worker thread (avoids blocking UI).
+ * Worker handles P2P + cache. Main thread reads back from OPFS.
+ * Returns Uint8Array on success, null on failure. Timeout: 12s.
+ */
+async function _leechFromTorrent(path = []) {
+    const threads = globalThis.threads
+    if (!threads?.threads?.torrent) return null
+
+    return new Promise((resolve) => {
+        const timeout = setTimeout(() => resolve(null), 12000)
+
+        threads.queue({
+            thread: "torrent",
+            method: "leech",
+            params: { path },
+            callback: (response, error) => {
+                clearTimeout(timeout)
+                if (error || !response?.success) {
+                    resolve(null)
+                    return
+                }
+                driver
+                    .readBytes(path)
+                    .then((buf) => resolve(buf ? new Uint8Array(buf) : null))
+                    .catch(() => resolve(null))
+            }
+        })
+    })
+}
+
+/**
+ * NODE.js headless mode: leech directly via in-process Statics.torrent.
+ * No worker round-trip — torrent client lives in same thread (no UI to block).
+ */
+async function _leechDirect(path = []) {
+    const { Statics } = await import("../Stores.js")
+    if (!Statics?.torrent) return null
+    const { leechToCache } = await import("../Torrent/leech.js")
+    return await leechToCache(Statics.torrent, path)
 }
