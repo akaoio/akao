@@ -1,4 +1,5 @@
 import { driver, BROWSER } from "../FS/shared.js"
+import { join } from "../FS/join.js"
 
 /**
  * Leech a file from P2P and cache it to local storage.
@@ -30,7 +31,7 @@ export async function leech(torrentInstance, path, timeoutMs = 10000) {
     // .torrent metadata is generated at build time and served via HTTP
     if (!torrentBytes && BROWSER) {
         try {
-            const url = "/" + torrentPath.join("/")
+            const url = join(torrentPath)
             const res = await fetch(url)
             if (res.ok) torrentBytes = new Uint8Array(await res.arrayBuffer())
         } catch {}

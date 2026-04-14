@@ -194,6 +194,8 @@ function _prefetchTorrent(path) {
     if (!BROWSER || !Array.isArray(path)) return
     // Only seed from public statics/ directory — prevents data leaks
     if (path[0] !== "statics") return
+    // Skip sensitive config directories
+    if (path[1] === "sites") return
     const last = path.at(-1)
     if (!last || !last.includes(".")) return
     if (last.endsWith(".hash") || last.endsWith(".torrent")) return
