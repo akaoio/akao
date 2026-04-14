@@ -1,4 +1,4 @@
-import { driver } from "../FS/shared.js"
+import { driver, BROWSER } from "../FS/shared.js"
 
 /**
  * Leech a file from P2P and cache it to local storage.
@@ -24,7 +24,18 @@ export async function leech(torrentInstance, path, timeoutMs = 10000) {
     torrentPath[torrentPath.length - 1] = last.replace(/\.\w+$/, ".torrent")
 
     let torrentBytes
-    try { torrentBytes = await driver.readBytes(torrentPath) } catch { return null }
+    try { torrentBytes = await driver.readBytes(torrentPath) } catch {}
+
+    // Browser: fall back to HTTP fetch if .torrent not in OPFS yet
+    // .torrent metadata is generated at build time and served via HTTP
+    if (!torrentBytes && BROWSER) {
+        try {
+            const url = "/" + torrentPath.join("/")
+            const res = await fetch(url)
+            if (res.ok) torrentBytes = new Uint8Array(await res.arrayBuffer())
+        } catch {}
+    }
+
     if (!torrentBytes) return null
 
     // Try add() first (download from peers).
