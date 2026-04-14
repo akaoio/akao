@@ -43,27 +43,29 @@ Test.describe("FS.load — Torrent fallback (isomorphic)", () => {
         const torrent = await waitTorrentClient(15000)
         Test.assert.truthy(torrent, "prerequisite: torrent client")
 
-        // 1. Seed actual content → generates .torrent with matching info hash
-        const contentBytes = new TextEncoder().encode(JSON.stringify(TEST_CONTENT))
-        const seeded = await torrent.seed(contentBytes)
-        Test.assert.truthy(seeded, "must seed content")
-        Test.assert.truthy(seeded.torrentFile, "seeded torrent must have .torrentFile buffer")
+        let seeded
+        try {
+            // 1. Seed actual content → generates .torrent with matching info hash
+            const contentBytes = new TextEncoder().encode(JSON.stringify(TEST_CONTENT))
+            seeded = await torrent.seed(contentBytes)
+            Test.assert.truthy(seeded, "must seed content")
+            Test.assert.truthy(seeded.torrentFile, "seeded torrent must have .torrentFile buffer")
 
-        // 2. Write .torrent metadata to disk so leechToCache can find it
-        try { await driver.mkdir(TEST_DIR) } catch {}
-        try { await driver.writeBytes(TORRENT_META_PATH, new Uint8Array(seeded.torrentFile)) } catch {}
+            // 2. Write .torrent metadata to disk so leechToCache can find it
+            try { await driver.mkdir(TEST_DIR) } catch {}
+            try { await driver.writeBytes(TORRENT_META_PATH, new Uint8Array(seeded.torrentFile)) } catch {}
 
-        // 3. leechToCache should find the seeded torrent (same info hash → instant)
-        const { leechToCache } = await import("../Torrent/leech.js")
-        const result = await leechToCache(torrent, TEST_PATH)
+            // 3. leechToCache should find the seeded torrent (same info hash → instant)
+            const { leechToCache } = await import("../Torrent/leech.js")
+            const result = await leechToCache(torrent, TEST_PATH)
 
-        Test.assert.truthy(result, "leechToCache must return bytes")
-        const parsed = JSON.parse(new TextDecoder().decode(result))
-        Test.assert.deepEqual(parsed, TEST_CONTENT)
-
-        // Cleanup
-        try { await driver.remove(TEST_DIR) } catch {}
-        try { torrent.remove(seeded.infoHash) } catch {}
+            Test.assert.truthy(result, "leechToCache must return bytes")
+            const parsed = JSON.parse(new TextDecoder().decode(result))
+            Test.assert.deepEqual(parsed, TEST_CONTENT)
+        } finally {
+            try { await driver.remove(TEST_DIR) } catch {}
+            if (seeded?.infoHash) try { await torrent.remove(seeded.infoHash) } catch {}
+        }
     })
 
     Test.it("FS.load recovers via _leechDirect when file missing from disk", async () => {
@@ -71,30 +73,32 @@ Test.describe("FS.load — Torrent fallback (isomorphic)", () => {
         const torrent = await waitTorrentClient(15000)
         Test.assert.truthy(torrent, "prerequisite: torrent client")
 
-        // 1. Seed content
-        const contentBytes = new TextEncoder().encode(JSON.stringify(TEST_CONTENT))
-        const seeded = await torrent.seed(contentBytes)
-        Test.assert.truthy(seeded?.torrentFile)
+        let seeded
+        try {
+            // 1. Seed content
+            const contentBytes = new TextEncoder().encode(JSON.stringify(TEST_CONTENT))
+            seeded = await torrent.seed(contentBytes)
+            Test.assert.truthy(seeded?.torrentFile)
 
-        // 2. Write .torrent metadata (so leechToCache resolves info hash)
-        try { await driver.mkdir(TEST_DIR) } catch {}
-        try { await driver.writeBytes(TORRENT_META_PATH, new Uint8Array(seeded.torrentFile)) } catch {}
+            // 2. Write .torrent metadata (so leechToCache resolves info hash)
+            try { await driver.mkdir(TEST_DIR) } catch {}
+            try { await driver.writeBytes(TORRENT_META_PATH, new Uint8Array(seeded.torrentFile)) } catch {}
 
-        // 3. Do NOT write data.json to disk → disk miss → triggers _leechDirect
-        try { await driver.remove(TEST_PATH) } catch {}
+            // 3. Do NOT write data.json to disk → disk miss → triggers _leechDirect
+            try { await driver.remove(TEST_PATH) } catch {}
 
-        // 4. FS.load should recover via Torrent fallback
-        const recovered = await load(TEST_PATH, { quiet: true })
-        Test.assert.truthy(recovered, "FS.load must recover via Torrent fallback")
-        Test.assert.deepEqual(recovered, TEST_CONTENT)
+            // 4. FS.load should recover via Torrent fallback
+            const recovered = await load(TEST_PATH, { quiet: true })
+            Test.assert.truthy(recovered, "FS.load must recover via Torrent fallback")
+            Test.assert.deepEqual(recovered, TEST_CONTENT)
 
-        // 5. Verify file is now cached on disk
-        const cached = await driver.readBytes(TEST_PATH)
-        Test.assert.truthy(cached?.byteLength > 0, "leech must cache to disk")
-
-        // Cleanup
-        try { await driver.remove(TEST_DIR) } catch {}
-        try { torrent.remove(seeded.infoHash) } catch {}
+            // 5. Verify file is now cached on disk
+            const cached = await driver.readBytes(TEST_PATH)
+            Test.assert.truthy(cached?.byteLength > 0, "leech must cache to disk")
+        } finally {
+            try { await driver.remove(TEST_DIR) } catch {}
+            if (seeded?.infoHash) try { await torrent.remove(seeded.infoHash) } catch {}
+        }
     })
 
     Test.it("second load hits local cache (no re-leech)", async () => {

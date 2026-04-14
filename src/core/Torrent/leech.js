@@ -52,25 +52,43 @@ export async function leechToCache(torrentInstance, path, timeoutMs = 10000) {
 
 async function _extractAndCache(t, path, fileName, timeoutMs) {
     return new Promise((resolve) => {
-        const timeout = setTimeout(() => resolve(null), timeoutMs)
+        let settled = false
+        const cleanup = () => {
+            clearTimeout(timeout)
+            t.off?.("done", onDone)
+            t.off?.("error", onError)
+        }
+        const finish = (value) => {
+            if (settled) return
+            settled = true
+            cleanup()
+            resolve(value)
+        }
+        const timeout = setTimeout(() => finish(null), timeoutMs)
 
         const onDone = async () => {
-            clearTimeout(timeout)
+            if (settled) return
             try {
                 const file = t.files?.find(f => f.name === fileName) || t.files?.[0]
-                if (!file) { resolve(null); return }
+                if (!file) { finish(null); return }
                 const blob = await (file.blob?.() || file.getBlob?.())
-                if (!blob) { resolve(null); return }
+                if (!blob) { finish(null); return }
                 const bytes = new Uint8Array(await blob.arrayBuffer())
                 try { await driver.writeBytes(path, bytes) } catch {}
-                resolve(bytes)
+                finish(bytes)
             } catch (e) {
                 console.debug("[leech] extract failed:", e?.message)
-                resolve(null)
+                finish(null)
             }
+        }
+
+        const onError = (e) => {
+            console.debug("[leech] torrent error:", e?.message)
+            finish(null)
         }
 
         if (t.done) { onDone(); return }
         t.once("done", onDone)
+        t.once("error", onError)
     })
 }

@@ -187,12 +187,14 @@ async function _leechDirect(path = []) {
 
 /**
  * Background: auto-seed content after OPFS write completes.
- * Chain via .then() — no race condition. Fire-and-forget.
+ * Only seeds real content files — skips .hash and .torrent metadata.
  */
 function _prefetchTorrent(path) {
     if (!BROWSER || !Array.isArray(path)) return
     const last = path.at(-1)
     if (!last || !last.includes(".")) return
+    // Skip metadata files — seeding them causes collisions
+    if (last.endsWith(".hash") || last.endsWith(".torrent")) return
     const threads = globalThis.threads
     if (!threads?.threads?.torrent) return
     threads.queue({ thread: "torrent", method: "seed", params: { path }, callback: () => {} })

@@ -45,9 +45,12 @@ thread.seed = async function ({ path }) {
     if (!torrent || !Array.isArray(path) || !path.length) return { success: false }
     const last = path.at(-1)
     if (!last || !last.includes(".")) return { success: false }
+    // Skip metadata files — seeding them writes wrong .torrent metadata
+    if (last.endsWith(".hash") || last.endsWith(".torrent")) return { success: true }
 
-    // Skip if already seeded — avoids WebTorrent's "same id" warning
-    if (torrent.client?.torrents?.some(tr => tr.name === last)) return { success: true }
+    // Skip if already seeded by full path — avoids WebTorrent's "same id" warning
+    const joinedPath = path.join("/")
+    if (torrent.client?.torrents?.some(tr => tr.name === last && tr.path === joinedPath)) return { success: true }
 
     const contentBytes = await driver.readBytes(path).catch(() => null)
     if (!contentBytes) return { success: false }
@@ -57,13 +60,13 @@ thread.seed = async function ({ path }) {
 
     try {
         const t = await torrent.seed(contentBytes, { name: last, announce: torrent.pool })
-        if (t.torrentFile) 
+        if (t.torrentFile)
             await driver.writeBytes(torrentPath, new Uint8Array(t.torrentFile)).catch(() => {})
-        
+
         return { success: true }
     } catch (e) {
         console.debug("[torrent.seed] error:", e?.message)
-        return { success: true }
+        return { success: false }
     }
 }
 
