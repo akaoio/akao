@@ -181,19 +181,21 @@ async function _leechFromTorrent(path = []) {
 async function _leechDirect(path = []) {
     const { Statics } = await import("../Stores.js")
     if (!Statics?.torrent) return null
-    const { leechToCache } = await import("../Torrent/leech.js")
-    return await leechToCache(Statics.torrent, path)
+    const { leech } = await import("../Torrent/leech.js")
+    return await leech(Statics.torrent, path)
 }
 
 /**
  * Background: auto-seed content after OPFS write completes.
- * Only seeds real content files — skips .hash and .torrent metadata.
+ * Only seeds real content files from public directories (statics/).
+ * Skips .hash and .torrent metadata files.
  */
 function _prefetchTorrent(path) {
     if (!BROWSER || !Array.isArray(path)) return
+    // Only seed from public statics/ directory — prevents data leaks
+    if (path[0] !== "statics") return
     const last = path.at(-1)
     if (!last || !last.includes(".")) return
-    // Skip metadata files — seeding them causes collisions
     if (last.endsWith(".hash") || last.endsWith(".torrent")) return
     const threads = globalThis.threads
     if (!threads?.threads?.torrent) return

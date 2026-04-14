@@ -1,7 +1,7 @@
 import Thread from "/core/Thread.js"
 import { Construct } from "/core/Construct.js"
 import { Statics } from "/core/Stores.js"
-import { leechToCache } from "/core/Torrent/leech.js"
+import { leech } from "/core/Torrent/leech.js"
 import { driver } from "/core/FS/shared.js"
 
 const thread = new Thread()
@@ -32,7 +32,7 @@ thread.status = function () {
  * Returns { success: true } if file was leeched and cached.
  */
 thread.leech = async function ({ path }) {
-    const bytes = await leechToCache(Statics.torrent, path)
+    const bytes = await leech(Statics.torrent, path)
     return { success: !!bytes }
 }
 

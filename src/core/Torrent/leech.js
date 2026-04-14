@@ -14,7 +14,7 @@ import { driver } from "../FS/shared.js"
  * @param {number} timeoutMs - Max time to wait for piece download
  * @returns {Promise<Uint8Array|null>} File bytes on success, null on failure
  */
-export async function leechToCache(torrentInstance, path, timeoutMs = 10000) {
+export async function leech(torrentInstance, path, timeoutMs = 10000) {
     if (!torrentInstance || !Array.isArray(path) || !path.length) return null
     const last = path.at(-1)
     if (!last || !last.includes(".")) return null
