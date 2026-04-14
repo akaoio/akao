@@ -7,7 +7,7 @@
 import WebAuthn from "./WebAuthn.js"
 import States from "./States.js"
 import { DEV } from "./Utils/environment.js"
-import zen, { initZEN, once, userSoul } from "./ZEN.js"
+import zen, { initZEN } from "./ZEN.js"
 
 const DEV_SESSION_KEY = "__dev_auth__"
 
@@ -170,7 +170,7 @@ async function save(credential) {
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
     const encrypted = await zen.encrypt(credential.pub, pair)
-    zen.get(userSoul(pair.pub)).get("@").put(encrypted, null, { opt: { authenticator: pair } })
+    zen.get("~" + pair.pub).get("@").put(encrypted, null, { opt: { authenticator: pair } })
     // Register pub in the ~ shard network so it can be discovered by prefix traversal
     // Break the pub into smaller chunks to avoid hitting Gun's node size limits
     const chunks = pair.pub.match(/.{1,2}/g) || []
@@ -193,7 +193,7 @@ async function restore() {
     await initZEN()
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
-    const encrypted = await once(zen.get(userSoul(pair.pub)).get("@"))
+    const encrypted = await zen.get("~" + pair.pub).get("@").once()
     if (!encrypted) return { error: "No encrypted public key found" }
     const decrypted = await zen.decrypt(encrypted, pair)
     if (!decrypted) return { error: "Unable to decrypt data" }

@@ -4,6 +4,7 @@ let GUN
 let ZENRuntime
 let zen = null
 let load = null
+let chainOncePatched = false
 
 const root = typeof window !== "undefined"
     ? window
@@ -12,6 +13,44 @@ const root = typeof window !== "undefined"
         : undefined
 
 let init = null
+
+function patchChainOnce() {
+    if (chainOncePatched || !GUN?.chain?.once) return
+    const nativeOnce = GUN.chain.once
+    GUN.chain.once = function (cb, opt) {
+        if (typeof cb === "function") return nativeOnce.call(this, cb, opt)
+        const timeoutMs = typeof cb === "number"
+            ? cb
+            : typeof opt === "number"
+                ? opt
+                : typeof cb?.timeout === "number"
+                    ? cb.timeout
+                    : typeof opt?.timeout === "number"
+                        ? opt.timeout
+                        : 800
+        const onceOpt = typeof cb === "object" && cb && typeof cb !== "function"
+            ? cb
+            : typeof opt === "object" && opt
+                ? opt
+                : undefined
+        return new Promise((resolve) => {
+            let settled = false
+            const timeout = setTimeout(() => {
+                if (settled) return
+                settled = true
+                resolve(undefined)
+            }, timeoutMs)
+            nativeOnce.call(this, (data) => {
+                if (settled) return
+                settled = true
+                clearTimeout(timeout)
+                resolve(data)
+            }, onceOpt)
+        })
+    }
+    GUN.chain.once.native = nativeOnce
+    chainOncePatched = true
+}
 
 async function loadZEN() {
     if (zen && GUN && ZENRuntime) return true
@@ -38,6 +77,7 @@ async function loadZEN() {
                 await import("@akaoio/zen/src/pen.js")
                 ;({ default: ZENRuntime } = await import("@akaoio/zen/zen.js"))
             }
+            patchChainOnce()
             zen = new ZENRuntime()
             return true
         })().catch((error) => {
@@ -77,21 +117,6 @@ export async function initZEN() {
             })
     await init
     return true
-}
-
-export function userSoul(pub) {
-    if (!pub) throw new Error("pubRequired")
-    return `~${pub}`
-}
-
-export async function once(node, timeoutMs = 800) {
-    return await new Promise((resolve) => {
-        const timeout = setTimeout(() => resolve(undefined), timeoutMs)
-        node.once((data) => {
-            clearTimeout(timeout)
-            resolve(data)
-        })
-    })
 }
 
 export { zen as default }

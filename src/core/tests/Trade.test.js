@@ -4,7 +4,7 @@ import { sha256 } from "../Utils/crypto.js"
 import { Trade } from "../Trade.js"
 import { Lock } from "../Lock.js"
 import { devplatform } from "../Platform.js"
-import zen, { initZEN, userSoul } from "../ZEN.js"
+import zen, { initZEN } from "../ZEN.js"
 import { ethers, HDNodeWallet, getBytes } from "../Ethers.js"
 
 const _req = createRequire(import.meta.url)
@@ -36,24 +36,14 @@ function makeGun() {
     return new zen.constructor({ localStorage: false, radisk: false, peers: [] })
 }
 
-async function once(node, timeoutMs = 1000) {
-    return await new Promise((resolve) => {
-        const timeout = setTimeout(() => resolve(undefined), timeoutMs)
-        node.once((data) => {
-            clearTimeout(timeout)
-            resolve(data)
-        })
-    })
-}
-
 async function put(gun, pub, pair, key, value) {
     await new Promise((resolve) => {
-        gun.get(userSoul(pub)).get(key).put(value, resolve, { opt: { authenticator: pair } })
+        gun.get("~" + pub).get(key).put(value, resolve, { opt: { authenticator: pair } })
     })
 }
 
 async function tradeRecord(gun, pub, tradeId) {
-    const data = await once(gun.get(userSoul(pub)).get("trades").get(tradeId))
+    const data = await gun.get("~" + pub).get("trades").get(tradeId).once(1000)
     if (!data || typeof data !== "object") return data
     const clean = {}
     for (const [key, value] of Object.entries(data))

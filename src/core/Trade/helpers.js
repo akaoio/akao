@@ -1,6 +1,6 @@
 import { sha256 } from "../Utils/crypto.js"
 import { HDNodeWallet, getBytes } from "../Ethers.js"
-import zen, { userSoul } from "../ZEN.js"
+import zen from "../ZEN.js"
 
 export function resolveRoles(trade, overrides = {}) {
     const maker = overrides.maker || trade.maker
@@ -43,7 +43,7 @@ export async function putTradeRecord({ runtime = zen, gun, pub, tradeId, fields,
     return await new Promise((resolve, reject) => {
         const owner = pub || pair?.pub
         if (!owner) return reject(new Error("tradeOwnerRequired"))
-        const node = runtime.get(userSoul(owner)).get("trades").get(tradeId)
+        const node = runtime.get("~" + owner).get("trades").get(tradeId)
         const callback = (ack) => {
             if (ack?.err) return reject(new Error(ack.err))
             resolve({ tradeId, ...fields })
@@ -53,26 +53,16 @@ export async function putTradeRecord({ runtime = zen, gun, pub, tradeId, fields,
     })
 }
 
-export async function once(node, timeoutMs = 800) {
-    return await new Promise((resolve) => {
-        const timeout = setTimeout(() => resolve(undefined), timeoutMs)
-        node.once((data) => {
-            clearTimeout(timeout)
-            resolve(data)
-        })
-    })
-}
-
 export async function readTradeRecord({ runtime = zen, gun, pub, tradeId, timeoutMs = 800 } = {}) {
     runtime = runtime || gun
     if (!runtime || !pub || !tradeId) throw new Error("invalidTradeRead")
-    return cleanRecord(await once(runtime.get(userSoul(pub)).get("trades").get(tradeId), timeoutMs))
+    return cleanRecord(await runtime.get("~" + pub).get("trades").get(tradeId).once(timeoutMs))
 }
 
 export async function readPublishedValue({ runtime = zen, gun, pub, field, timeoutMs = 800 } = {}) {
     runtime = runtime || gun
     if (!runtime || !pub || !field) throw new Error("invalidPublishedRead")
-    return await once(runtime.get(userSoul(pub)).get(field), timeoutMs)
+    return await runtime.get("~" + pub).get(field).once(timeoutMs)
 }
 
 export async function rootFromSecret(secret) {
@@ -133,7 +123,7 @@ function cleanRecord(data) {
 async function ensureUserNamespace({ runtime = zen, gun, pub, pair } = {}) {
     runtime = runtime || gun
     await new Promise((resolve, reject) => {
-        runtime.get(userSoul(pub)).get("pub").put(pub, (ack) => {
+        runtime.get("~" + pub).get("pub").put(pub, (ack) => {
             if (ack?.err) return reject(new Error(ack.err))
             resolve()
         }, { opt: { authenticator: pair } })
