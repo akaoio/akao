@@ -2,7 +2,7 @@ import Test from "../Test.js"
 import {
     sha256,
     base64UrlToHex, hexToBase64Url,
-    formatNumber, beautifyNumber, shorten,
+    formatNumber, beautifyNumber, formatBalance, shorten,
     randomInt, randomText, randomItem,
     spintax, encodeQuery, clone, merge,
     evaluate,
@@ -120,6 +120,54 @@ Test.describe("Utils — beautifyNumber", () => {
 
     Test.it("accepts numeric strings", () => {
         Test.assert.equal(beautifyNumber("2,000,000"), "2M")
+    })
+
+})
+
+Test.describe("Utils — formatBalance", () => {
+
+    Test.it("compacts thousands", () => {
+        Test.assert.equal(formatBalance(1500), "1.5K")
+    })
+
+    Test.it("compacts millions", () => {
+        Test.assert.equal(formatBalance(2000000), "2M")
+    })
+
+    Test.it("compacts billions", () => {
+        Test.assert.equal(formatBalance(1200000000), "1.2B")
+    })
+
+    Test.it("formats small integers with no trailing decimals", () => {
+        Test.assert.equal(formatBalance(42, "en"), "42")
+    })
+
+    Test.it("rounds decimals to 4 fraction digits", () => {
+        Test.assert.equal(formatBalance(0.000412, "en"), "0.0004")
+    })
+
+    Test.it("strips trailing zeros from decimals", () => {
+        Test.assert.equal(formatBalance(1.5, "en"), "1.5")
+    })
+
+    Test.it("handles zero", () => {
+        Test.assert.equal(formatBalance(0, "en"), "0")
+    })
+
+    Test.it("returns em-dash for NaN", () => {
+        Test.assert.equal(formatBalance(NaN), "—")
+    })
+
+    Test.it("returns em-dash for non-numeric string", () => {
+        Test.assert.equal(formatBalance("abc"), "—")
+    })
+
+    Test.it("boundary: 999 stays as locale number", () => {
+        Test.assert.equal(formatBalance(999, "en"), "999")
+    })
+
+    Test.it("boundary: 1000 switches to compact", () => {
+        Test.assert.equal(formatBalance(1000), "1K")
     })
 
 })

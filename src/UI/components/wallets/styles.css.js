@@ -58,9 +58,15 @@ export const styles = css`
     }
 
     @keyframes label-edit-splash {
-        0%   { box-shadow: none; }
-        35%  { box-shadow: 0 0 0 2px color-mix(in hsl, var(--accent-action) 45%, transparent); }
-        100% { box-shadow: none; }
+        0% {
+            box-shadow: none;
+        }
+        35% {
+            box-shadow: 0 0 0 2px color-mix(in hsl, var(--accent-action) 45%, transparent);
+        }
+        100% {
+            box-shadow: none;
+        }
     }
 
     /* ── Wallet label input ──────────────────────────────────────────────────────
@@ -143,7 +149,9 @@ export const styles = css`
         outline: none;
         transition: filter var(--speed);
 
-        &[hidden] { display: none; }
+        &[hidden] {
+            display: none;
+        }
 
         ui-svg {
             width: var(--icon-sm);
@@ -152,8 +160,12 @@ export const styles = css`
             --svg-color: currentColor;
         }
 
-        &:hover { filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-g) 60%, transparent)); }
-        &:active { opacity: 0.5; }
+        &:hover {
+            filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-g) 60%, transparent));
+        }
+        &:active {
+            opacity: 0.5;
+        }
     }
 
     /* ── Preview action buttons (DELETE + SWITCH) ───────────────────────────────
@@ -165,7 +177,9 @@ export const styles = css`
         flex-shrink: 0;
         margin-left: auto;
 
-        &[hidden] { display: none; }
+        &[hidden] {
+            display: none;
+        }
     }
 
     #wallet-remove,
@@ -193,20 +207,30 @@ export const styles = css`
             --svg-color: currentColor;
         }
 
-        &:active { opacity: 0.5; }
+        &:active {
+            opacity: 0.5;
+        }
     }
 
     #wallet-remove {
         color: var(--neon-m);
-        &:hover { filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-m) 60%, transparent)); }
-        &[hidden] { display: none; }
+        &:hover {
+            filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-m) 60%, transparent));
+        }
+        &[hidden] {
+            display: none;
+        }
     }
 
     #wallet-switch {
         color: var(--neon-g);
         justify-content: flex-end;
-        &:hover { filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-g) 60%, transparent)); }
-        &[hidden] { display: none; }
+        &:hover {
+            filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-g) 60%, transparent));
+        }
+        &[hidden] {
+            display: none;
+        }
     }
 
     /* ── Delete confirm modal footer ────────────────────────────────────────────
@@ -238,7 +262,10 @@ export const styles = css`
         cursor: pointer;
         outline: none;
         color: var(--neon-m);
-        transition: background var(--speed), filter var(--speed), opacity var(--speed);
+        transition:
+            background var(--speed),
+            filter var(--speed),
+            opacity var(--speed);
 
         ui-svg {
             width: 50%;
@@ -253,18 +280,21 @@ export const styles = css`
             color: var(--background);
         }
 
-        &:active { opacity: 0.6; }
+        &:active {
+            opacity: 0.6;
+        }
     }
 
     /* ── Merged wallet info row ─────────────────────────────────────────────────
-       Address (flex-grow, truncated) on the left; chain trigger pill on the
-       right. Single compact band replaces the two previous token-field sections.
+       Two stacked lines: address row on top, chain selector below.
+       Splitting avoids the chain pill squeezing out the address when the
+       chain name is long (e.g. "Binance Smart Chain Testnet").
        ────────────────────────────────────────────────────────────────────────── */
     #wallet-row {
         display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        padding: var(--space-sm) var(--space);
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
         background: var(--field-bg);
         transition: background var(--speed);
 
@@ -273,17 +303,33 @@ export const styles = css`
         }
     }
 
-    /* ── Wallet address — glowing monospace centrepiece ─────────────────────────
-       Cyan glow gives the hex address the "system readout" feel.
-       flex: 1 + min-width: 0 enables text-overflow: ellipsis inside flex.
-       Click to copy: brief green flash via .copied class (600ms).
+    /* ── Address row — 50/50 grid ───────────────────────────────────────────────
+       Three columns: left half | 1px divider | right half.
+       Grid guarantees an exact midpoint regardless of content length.
        ────────────────────────────────────────────────────────────────────────── */
     #address-wrap {
-        display: inline-flex;
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        align-items: center;
+        width: 100%;
+        padding: var(--space-sm) var(--space);
+        box-sizing: border-box;
+    }
+
+    /* Left half: wallet number + truncated address + copy button */
+    #address-half {
+        display: flex;
         align-items: center;
         gap: var(--space-2);
-        flex: 1;
         min-width: 0;
+        padding-right: var(--space-2);
+    }
+
+    /* Dedicated separator — sits in the 1px grid column */
+    #address-divider {
+        width: 1px;
+        align-self: stretch;
+        background: transparent;
     }
 
     #wallet-num {
@@ -299,6 +345,8 @@ export const styles = css`
     }
 
     #address {
+        flex: 1;
+        text-align: center;
         min-width: 0; /* required for text-overflow inside flex */
         font-family: monospace;
         font-size: var(--text-md);
@@ -322,8 +370,8 @@ export const styles = css`
     }
 
     /* ── Copy button ───────────────────────────────────────────────────────────
-       Sits between #address and the chain trigger. Invisible until address is
-       available; uses the icon system — no hardcoded glyphs.
+       Lives in the left half, flush after the address. No border — the grid
+       divider column handles the separation.
        ────────────────────────────────────────────────────────────────────────── */
     #copy-btn {
         display: inline-flex;
@@ -331,6 +379,7 @@ export const styles = css`
         justify-content: center;
         flex-shrink: 0;
         padding: 0;
+        margin: 0;
         background: none;
         border: none;
         opacity: 0.4;
@@ -376,22 +425,22 @@ export const styles = css`
     }
 
     /* ── Chain trigger pill ─────────────────────────────────────────────────────
-       Inline pill version of the full-width chain selector from the previous
-       design. Anchors to the right side of #wallet-row (flex-shrink: 0).
+       Full-width row below the address — always has room for any chain name.
        Resting border glows cyan at low opacity to signal it is the primary
        selector; hover steps the glow up.
        ────────────────────────────────────────────────────────────────────────── */
     .chain-trigger {
         position: relative;
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: var(--space-2);
-        flex-shrink: 0;
-        padding: var(--space-1) var(--space-2);
+        width: 100%;
+        padding: var(--space-sm) var(--space);
         background: transparent;
-        /* Resting glow: signals this is the primary selector without being loud */
+        /* Resting glow: signals this is a clickable selector */
         border: 1px solid color-mix(in hsl, var(--accent-info) 35%, transparent);
         box-shadow: 0 0 8px color-mix(in hsl, var(--accent-info) 12%, transparent);
+        box-sizing: border-box;
         color: var(--color);
         font-family: var(--header-font);
         font-size: var(--text-xs);
@@ -404,14 +453,14 @@ export const styles = css`
             color var(--speed),
             box-shadow var(--speed);
 
-        /* Chevron — same SVG mask as swap-form token-trigger */
+        /* Chevron — pushed to the right end */
         &::after {
             content: "";
             pointer-events: none;
             width: 10px;
             height: 6px;
             flex-shrink: 0;
-            margin-left: var(--space-1);
+            margin-left: auto;
             background-color: currentColor;
             -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
             mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
@@ -468,48 +517,58 @@ export const styles = css`
         }
     }
 
-    /* ── Balance inset strip ────────────────────────────────────────────────────
-       Always visible — prevents layout shift while the balance loads.
-       CSS ::before on #balance shows -- when the element is empty.
+    /* ── Balance wrap — right grid cell ────────────────────────────────────────
+       Occupies the full right half. Amount + symbol left-aligned with padding
+       from the divider, so the balance reads as a distinct zone.
        ────────────────────────────────────────────────────────────────────────── */
-    #balance-row {
+    #balance-wrap {
         display: flex;
-        align-items: center;
-        gap: var(--space-sm);
-        padding: var(--space-sm) var(--space);
-        background: var(--field-inset-bg);
-        border-top: 1px solid var(--field-inset-border);
+        align-items: baseline;
+        gap: var(--space-2);
+        padding-left: var(--space-2);
+        min-width: 0;
+        justify-content: right;
     }
 
-    /* Muted uppercase label — matches swap-form .toolbar-label */
-    .toolbar-label {
+    /* ── Balance amount ─────────────────────────────────────────────────────────
+       The most outstanding element in the row. Green glow = positive value,
+       consistent with TVL/price displays in pools and swap. Orbitron at text-lg
+       makes it clearly readable at a glance and distinct from the cyan address.
+       ────────────────────────────────────────────────────────────────────────── */
+    .balance-num {
+        color: var(--accent-action);
         font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.07em;
-        text-transform: uppercase;
-        color: var(--color);
-        opacity: 0.4;
-        flex-shrink: 0;
-    }
-
-    /* Pushes balance value to the right */
-    .toolbar-spacer {
-        flex: 1;
-    }
-
-    /* Cyan numeric value — same role as .toolbar-num in swap-form */
-    .toolbar-num {
-        color: var(--accent-info);
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.07em;
-        text-shadow: var(--glow-info);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-shadow: var(--glow-action);
         font-variant-numeric: tabular-nums;
+        white-space: nowrap;
 
-        /* -- placeholder while balance hasn't loaded yet */
         &:empty::before {
             content: "—";
-            opacity: 0.3;
+            color: var(--color);
+            opacity: 0.2;
+            text-shadow: none;
+            font-weight: normal;
+        }
+    }
+
+    /* ── Currency symbol ────────────────────────────────────────────────────────
+       Smaller, dimmer label that anchors the amount without competing with it.
+       ────────────────────────────────────────────────────────────────────────── */
+    .balance-symbol {
+        color: var(--accent-action);
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        opacity: 0.55;
+        text-shadow: var(--glow-action);
+        white-space: nowrap;
+        flex-shrink: 0;
+
+        &:empty {
+            display: none;
         }
     }
 

@@ -44,23 +44,24 @@ export const template = html`
 
     <div id="wallet-row">
         <div id="address-wrap">
-            <span id="wallet-num" aria-label="Wallet number"></span>
-            <div id="address" title=""></div>
-            <button id="copy-btn" aria-label="Copy address" disabled>
-                <ui-icon data-icon="copy" />
-            </button>
+            <span id="address-half">
+                <span id="wallet-num" aria-label="Wallet number"></span>
+                <div id="address" title=""></div>
+                <button id="copy-btn" aria-label="Copy address" disabled>
+                    <ui-icon data-icon="copy" />
+                </button>
+            </span>
+            <span id="address-divider" aria-hidden="true"></span>
+            <span id="balance-wrap">
+                <span id="balance" class="balance-num"></span>
+                <span id="balance-symbol" class="balance-symbol"></span>
+            </span>
         </div>
         <button class="chain-trigger" id="chain-trigger">
             <ui-svg class="trigger-icon" id="chain-icon"></ui-svg>
             <span class="trigger-placeholder"><ui-context data-key="dictionary.chain" /></span>
             <span class="trigger-value" id="chain-name"></span>
         </button>
-    </div>
-
-    <div id="balance-row">
-        <span class="toolbar-label"><ui-context data-key="dictionary.balance" /></span>
-        <span class="toolbar-spacer"></span>
-        <span id="balance" class="toolbar-num"></span>
     </div>
 
     <!-- ── Currency selector (deposit/withdraw routes only) ── -->
