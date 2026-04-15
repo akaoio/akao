@@ -37,6 +37,7 @@ export class SWAP_FORM extends HTMLElement {
             if (!opt) return
             this._fromOpt = opt
             this._updateTrigger(this.$fromTrigger, opt)
+            if (!this._toOpt || !this.amountIn) this.submitReady = false
             this.onquote?.()
         }
         this.$toPicker.callback = (address) => {
@@ -44,6 +45,7 @@ export class SWAP_FORM extends HTMLElement {
             if (!opt) return
             this._toOpt = opt
             this._updateTrigger(this.$toTrigger, opt)
+            if (!this._fromOpt || !this.amountIn) this.submitReady = false
             this.onquote?.()
         }
 
@@ -98,8 +100,16 @@ export class SWAP_FORM extends HTMLElement {
     set enabled(val) {
         if (!this.$amountIn) return
         this.$amountIn.disabled = !val
-        this.$submit.toggleAttribute("disabled", !val)
-        if (!val) this.clear()
+        // When disabling, always disable submit too.
+        // When enabling, only un-disable submit if the form has all required fields —
+        // submitReady controls the CTA state once the user fills the form.
+        if (!val) {
+            this.$submit.toggleAttribute("disabled", true)
+            this.clear()
+        } else {
+            const formReady = !!(this._fromOpt && this._toOpt && this.amountIn)
+            this.$submit.toggleAttribute("disabled", !formReady)
+        }
     }
 
     /** Select a token programmatically (e.g. from URL params). side = "from"|"to" */
@@ -136,28 +146,41 @@ export class SWAP_FORM extends HTMLElement {
         this.balanceIn = ""
     }
 
-    updateToolbar({ chain, dexLabel, fee, poolCount, polling = false } = {}) {
+    updateToolbar({ chain, chainName, dexLabel, fee, poolCount, polling } = {}) {
         const r = (id) => this.shadowRoot.querySelector(id)
         const dot = r("#toolbar-dot")
-        dot.dataset.active   = chain ? "true" : "false"
-        dot.dataset.polling  = polling ? "true" : "false"
+        dot.dataset.active = chain ? "true" : "false"
+        if (polling !== undefined) dot.dataset.polling = polling ? "true" : "false"
+
+        const chainEl = r("#toolbar-chain")
+        if (chainName !== undefined) {
+            const next = chainName ?? "—"
+            if (chainEl.textContent !== next) chainEl.textContent = next
+        }
 
         const dexEl   = r("#toolbar-dex-name")
         const feeEl   = r("#toolbar-fee-value")
         const countEl = r("#toolbar-pool-count")
 
-        const nextDex   = dexLabel ?? "—"
-        const nextFee   = fee != null ? `${fee / 10000}%` : "—"
-        const nextCount = String(poolCount ?? "—")
+        // Only overwrite POOL/FEE when a new value is explicitly provided —
+        // this prevents them from flickering back to "—" during a fetch.
+        if (dexLabel !== undefined) {
+            const nextDex = dexLabel ?? "—"
+            if (dexEl.textContent !== nextDex) dexEl.textContent = nextDex
+        }
+        if (fee !== undefined) {
+            const nextFee = fee != null ? `${fee / 10000}%` : "—"
+            if (feeEl.textContent !== nextFee) feeEl.textContent = nextFee
+        }
 
-        if (dexEl.textContent   !== nextDex)   dexEl.textContent   = nextDex
-        if (feeEl.textContent   !== nextFee)   feeEl.textContent   = nextFee
+        const nextCount = String(poolCount ?? "—")
         if (countEl.textContent !== nextCount) countEl.textContent = nextCount
     }
 
     // ── Private ───────────────────────────────────────────────────────────────
 
     _onInput() {
+        if (!this.amountIn) this.submitReady = false
         this.onquote?.()
     }
 
@@ -179,6 +202,7 @@ export class SWAP_FORM extends HTMLElement {
     }
 
     _onSubmit() {
+        if (this.$submit?.hasAttribute("disabled")) return
         this.onswap?.()
     }
 
@@ -200,6 +224,7 @@ export class SWAP_FORM extends HTMLElement {
         btn.removeAttribute("data-has-value")
         if (side === "from") this._fromOpt = null
         else this._toOpt = null
+        this.submitReady = false
     }
 }
 

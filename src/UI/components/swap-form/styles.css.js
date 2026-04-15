@@ -1,6 +1,18 @@
 import { css } from "/core/UI.js"
 
 export const styles = css`
+    @keyframes dot-pulse {
+        0% {
+            box-shadow: 0 0 0 0 color-mix(in hsl, var(--accent-action) 70%, transparent);
+        }
+        70% {
+            box-shadow: 0 0 0 6px transparent;
+        }
+        100% {
+            box-shadow: 0 0 0 0 transparent;
+        }
+    }
+
     :host {
         display: flex;
         flex-direction: column;
@@ -30,17 +42,12 @@ export const styles = css`
 
     .toolbar-label {
         color: var(--color);
-        opacity: 0.4;
+        opacity: 0.6;
     }
 
     .toolbar-num {
         color: var(--accent-info);
         text-shadow: var(--glow-info);
-    }
-
-    @keyframes dot-pulse {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0.3; }
     }
 
     .toolbar-dot {
@@ -49,7 +56,9 @@ export const styles = css`
         border-radius: 50%;
         background: color-mix(in hsl, var(--color) 30%, transparent);
         flex-shrink: 0;
-        transition: background var(--speed), box-shadow var(--speed);
+        transition:
+            background var(--speed),
+            box-shadow var(--speed);
 
         &[data-active="true"] {
             background: var(--accent-action);
@@ -57,11 +66,13 @@ export const styles = css`
         }
 
         &[data-polling="true"] {
-            animation: dot-pulse 1s ease-in-out infinite;
+            animation: dot-pulse 2s ease-out infinite;
         }
 
         @media (prefers-reduced-motion: reduce) {
-            &[data-polling="true"] { animation: none; }
+            &[data-polling="true"] {
+                animation: none;
+            }
         }
     }
 
@@ -93,7 +104,7 @@ export const styles = css`
 
     .token-field {
         background: var(--field-bg);
-        padding: var(--space) var(--space) var(--space-7);
+        padding: var(--space) var(--space) var(--space-6);
         display: flex;
         flex-direction: column;
         gap: var(--space-sm);
@@ -109,7 +120,7 @@ export const styles = css`
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--color);
-        opacity: 0.5;
+        opacity: 0.65;
     }
 
     .field-row {
@@ -130,8 +141,12 @@ export const styles = css`
         min-width: 0;
         -moz-appearance: textfield;
         &::-webkit-inner-spin-button,
-        &::-webkit-outer-spin-button { -webkit-appearance: none; }
-        &::placeholder { opacity: 0.25; }
+        &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+        &::placeholder {
+            opacity: 0.25;
+        }
         &:disabled {
             opacity: 0.35;
             cursor: not-allowed;
@@ -152,9 +167,11 @@ export const styles = css`
     .field-hint {
         font-size: var(--text-xs);
         color: var(--color);
-        opacity: 0.45;
+        opacity: 0.65;
         min-height: 1em;
-        &:empty { display: none; }
+        &:empty {
+            display: none;
+        }
     }
 
     /* ── Flip ── */
@@ -171,9 +188,16 @@ export const styles = css`
         --background-inverted: transparent;
         --color-inverted: var(--accent-action);
         color: color-mix(in hsl, var(--accent-action) 55%, transparent);
-        transition: color var(--speed), transform var(--speed);
-        &:hover { color: var(--accent-action); }
-        &:active { color: var(--color); transform: scale(0.9); }
+        transition:
+            color var(--speed),
+            transform var(--speed);
+        &:hover {
+            color: var(--accent-action);
+        }
+        &:active {
+            color: var(--color);
+            transform: scale(0.9);
+        }
     }
 
     /* ── Token trigger ── */
@@ -189,17 +213,21 @@ export const styles = css`
         justify-content: space-between;
         gap: var(--space-2);
         min-width: 9.5rem;
+        min-height: 2.75rem;
         padding: var(--space-2) var(--space-4);
         background: transparent;
         border: 1px solid color-mix(in hsl, var(--color) 25%, transparent);
         color: var(--color);
         font-family: var(--header-font);
-        font-size: var(--text-xs);
+        font-size: var(--text-md);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         cursor: pointer;
         outline: none;
-        transition: border-color var(--speed), color var(--speed), box-shadow var(--speed);
+        transition:
+            border-color var(--speed),
+            color var(--speed),
+            box-shadow var(--speed);
 
         &::after {
             content: "";
@@ -222,20 +250,26 @@ export const styles = css`
             border-color: var(--accent-info);
             color: var(--accent-info);
             box-shadow: 0 0 12px color-mix(in hsl, var(--accent-info) 30%, transparent);
-            &::after { opacity: 1; }
+            &::after {
+                opacity: 1;
+            }
         }
         &:focus-visible {
             border-color: var(--accent-info);
             color: var(--accent-info);
             box-shadow: 0 0 12px color-mix(in hsl, var(--accent-info) 30%, transparent);
-            &::after { opacity: 1; }
+            &::after {
+                opacity: 1;
+            }
         }
-        &:active { box-shadow: none; }
+        &:active {
+            box-shadow: none;
+        }
 
         .trigger-icon {
-            width: var(--icon-sm);
-            height: var(--icon-sm);
-            min-width: var(--icon-sm);
+            width: 1.25rem;
+            height: 1.25rem;
+            min-width: 1.25rem;
             flex-shrink: 0;
         }
 
@@ -245,12 +279,18 @@ export const styles = css`
             text-align: left;
         }
 
-        .trigger-placeholder { opacity: 0.45; }
+        .trigger-placeholder {
+            opacity: 0.45;
+        }
 
         &:not([data-has-value]) .trigger-icon,
-        &:not([data-has-value]) .trigger-value { display: none; }
+        &:not([data-has-value]) .trigger-value {
+            display: none;
+        }
 
-        &[data-has-value] .trigger-placeholder { display: none; }
+        &[data-has-value] .trigger-placeholder {
+            display: none;
+        }
     }
 
     /* ── Error ── */
@@ -259,7 +299,9 @@ export const styles = css`
         color: var(--accent-danger);
         font-size: var(--text-sm);
         min-height: 1em;
-        &:empty { display: none; }
+        &:empty {
+            display: none;
+        }
     }
 
     /* ── Slippage ── */
@@ -270,10 +312,6 @@ export const styles = css`
         padding: var(--space-sm) var(--space);
         background: var(--field-inset-bg);
         border-top: 1px solid var(--field-inset-border);
-        width: fit-content;
-        align-self: flex-end;
-        border-left: 1px solid var(--field-inset-border);
-        border-radius: 0 0 0 var(--radius-sm);
     }
 
     .slippage-label {
@@ -282,7 +320,7 @@ export const styles = css`
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--color);
-        opacity: 0.5;
+        opacity: 0.65;
         flex-shrink: 0;
     }
 
@@ -302,7 +340,10 @@ export const styles = css`
         letter-spacing: 0.04em;
         padding: var(--space-1) var(--space-sm);
         cursor: pointer;
-        transition: border-color var(--speed), color var(--speed), box-shadow var(--speed);
+        transition:
+            border-color var(--speed),
+            color var(--speed),
+            box-shadow var(--speed);
         &:hover {
             border-color: color-mix(in hsl, var(--accent-action) 40%, transparent);
             color: var(--accent-action);
@@ -317,16 +358,21 @@ export const styles = css`
     .slippage-inputs input {
         width: 44px;
         background: transparent;
-        border: var(--border-width) solid color-mix(in hsl, var(--color) 15%, transparent);
+        border: var(--border-width) solid color-mix(in hsl, var(--color) 25%, transparent);
         color: var(--color);
+        cursor: text;
         font-family: var(--header-font);
         font-size: var(--text-xs);
         padding: var(--space-1) var(--space-sm);
         text-align: right;
         -moz-appearance: textfield;
-        transition: border-color var(--speed), box-shadow var(--speed);
+        transition:
+            border-color var(--speed),
+            box-shadow var(--speed);
         &::-webkit-inner-spin-button,
-        &::-webkit-outer-spin-button { -webkit-appearance: none; }
+        &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
         &:focus {
             outline: none;
             border-color: var(--accent-info);
@@ -342,6 +388,7 @@ export const styles = css`
 
     /* ── Actions ── */
     .actions {
+        margin-top: auto;
         display: flex;
         flex-direction: column;
         gap: var(--space-sm);
@@ -368,6 +415,13 @@ export const styles = css`
         --btn-color-hover: var(--accent-action);
         --btn-border-color-hover: var(--accent-action);
         --btn-glow-hover: var(--glow-action);
+        box-shadow: 0 0 10px color-mix(in hsl, var(--accent-action) 20%, transparent);
+        &[disabled] {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+        }
     }
 `
 

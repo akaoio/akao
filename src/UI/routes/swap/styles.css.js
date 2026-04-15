@@ -4,13 +4,13 @@ import { bp } from "/UI/css/breakpoints.js"
 export const styles = css`
     :host {
         main {
+            flex: 1;
+            min-height: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: var(--space) var(--space-sm);
             gap: var(--space-sm);
-            /* Fill exactly to the navigator — subtract its size, layout-main top padding, and this element's own vertical padding */
-            height: calc(100dvh - var(--icon-lg) - var(--space-4) - var(--space-4) - var(--space) * 2);
         }
 
         ui-card {
