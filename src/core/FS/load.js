@@ -86,7 +86,7 @@ export async function load(path, options = {}) {
                 }
             }
         } else if (await driver.exists(path)) {
-            // Node.js: disk first, Torrent fallback (main-thread direct, no worker)
+            // Node.js: disk read only (no P2P leech in headless)
             if (await driver.isDir(path)) {
                 const files = {}
                 for (const { name } of await driver.entries(path)) {
@@ -103,18 +103,7 @@ export async function load(path, options = {}) {
                 return
             }
             text = new TextDecoder().decode(bytes)
-        } else {
-            // Disk miss → leech directly from in-process Statics.torrent
-            const torrentData = await _leechNode(path)
-            if (torrentData) {
-                if (isBinary(_path)) return torrentData
-                text = new TextDecoder().decode(torrentData)
-            } else {
-                if (!quiet) console.error("Path not found on disk or P2P:", _path)
-                return
-            }
         }
-        
 
         // Deserialize text content
         if (typeof text === "string") text = text.trim()
@@ -172,16 +161,6 @@ async function _leech(path = []) {
             }
         })
     })
-}
-
-/**
- * Node.js: leech directly via in-process Statics.torrent.
- * No worker round-trip — torrent client lives in same thread.
- */
-async function _leechNode(path = []) {
-    const { Statics } = await import("../Stores.js")
-    if (!Statics?.torrent) return null
-    return await leech(Statics.torrent, path)
 }
 
 /**
