@@ -1,6 +1,7 @@
 import { YAML, BROWSER, driver, isBinary } from "./shared.js"
 import { join } from "./join.js"
 import { parse as parseCSV } from "../CSV.js"
+import { leech } from "../Torrent/leech.js"
 
 /**
  * Load content from files or directories (JSON, YAML, or plain text).
@@ -40,14 +41,12 @@ export async function load(path, options = {}) {
                 if (response.ok) {
                     if (_isBinary) {
                         const buf = await response.arrayBuffer()
-                        driver.writeBytes(path, new Uint8Array(buf)).catch((e) => console.warn("OPFS cache write failed:", e))  // background cache
+                        driver.writeBytes(path, new Uint8Array(buf)).then(() => { try { _prefetch(path) } catch {} }).catch((e) => console.warn("OPFS cache write failed:", e))
                         return new Uint8Array(buf)
                     }
                     httpText = await response.text()
-                    driver.writeBytes(path, new TextEncoder().encode(httpText)).catch((e) => console.warn("OPFS cache write failed:", e))  // background cache
-                } else if (fresh && response.status === 404)
-                    await driver.remove(path)
-                
+                    driver.writeBytes(path, new TextEncoder().encode(httpText)).then(() => { try { _prefetch(path) } catch {} }).catch((e) => console.warn("OPFS cache write failed:", e))
+                } else if (fresh && response.status === 404) await driver.remove(path)
             } catch {}
 
             if (fresh) {
@@ -63,6 +62,11 @@ export async function load(path, options = {}) {
             } else if (_isBinary) {
                 const buf = await driver.readBytes(path)
                 if (buf) return buf
+
+                // Torrent fallback — worker already cached to OPFS
+                const torrentData = await _leech(path)
+                if (torrentData) return torrentData
+
                 if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
                 return
             }
@@ -72,17 +76,17 @@ export async function load(path, options = {}) {
                 const buf = await driver.readBytes(path)
                 if (buf) text = new TextDecoder().decode(buf)
                 else {
-                    if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
-                    return
+                    // Torrent fallback — worker already cached to OPFS
+                    const torrentData = await _leech(path)
+                    if (torrentData) text = new TextDecoder().decode(torrentData)
+                    else {
+                        if (!quiet) console.error("Path not found in HTTP or OPFS:", _path)
+                        return
+                    }
                 }
             }
-        } else {
-            // Node.js: direct read
-            if (!await driver.exists(path)) {
-                if (!quiet) console.error("Path doesn't exist", _path)
-                return
-            }
-
+        } else if (await driver.exists(path)) {
+            // Node.js: disk read only (no P2P leech in headless)
             if (await driver.isDir(path)) {
                 const files = {}
                 for (const { name } of await driver.entries(path)) {
@@ -127,4 +131,53 @@ export async function load(path, options = {}) {
         )
         return content
     }
+}
+
+/**
+ * Browser: leech via worker thread (avoids blocking UI).
+ * Worker handles P2P + cache. Main thread reads back from OPFS.
+ */
+async function _leech(path = []) {
+    const threads = globalThis.threads
+    if (!threads?.threads?.torrent) return null
+
+    return new Promise((resolve) => {
+        const timeout = setTimeout(() => resolve(null), 12000)
+
+        threads.queue({
+            thread: "torrent",
+            method: "leech",
+            params: { path },
+            callback: (response, error) => {
+                clearTimeout(timeout)
+                if (error || !response?.success) {
+                    resolve(null)
+                    return
+                }
+                driver
+                    .readBytes(path)
+                    .then((buf) => resolve(buf ? new Uint8Array(buf) : null))
+                    .catch(() => resolve(null))
+            }
+        })
+    })
+}
+
+/**
+ * Background: auto-seed content after OPFS write completes.
+ * Only seeds real content files from public directories (statics/).
+ * Skips .hash and .torrent metadata files.
+ */
+function _prefetch(path) {
+    if (!BROWSER || !Array.isArray(path)) return
+    // Only seed from public statics/ directory — prevents data leaks
+    if (path[0] !== "statics") return
+    // Skip sensitive config directories
+    if (path[1] === "sites") return
+    const last = path.at(-1)
+    if (!last || !last.includes(".")) return
+    if (last.endsWith(".hash") || last.endsWith(".torrent")) return
+    const threads = globalThis.threads
+    if (!threads?.threads?.torrent) return
+    threads.queue({ thread: "torrent", method: "seed", params: { path }, callback: () => {} })
 }

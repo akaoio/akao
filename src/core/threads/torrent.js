@@ -1,59 +1,73 @@
 import Thread from "/core/Thread.js"
 import { Construct } from "/core/Construct.js"
-import { FS } from "/core/FS.js"
 import { Statics } from "/core/Stores.js"
-import { loop } from "/core/Utils.js"
+import { leech } from "/core/Torrent/leech.js"
+import { driver } from "/core/FS/shared.js"
 
 const thread = new Thread()
 
-// Directories under statics/ that should NOT be seeded to public P2P swarm.
-// Add sensitive dir names here when going to production (e.g. "sites" if configs.torrent exist).
-const SEED_BLACKLIST = []
-
-// Recursively collect all .torrent file paths under a root path
-async function collectTorrentFiles(path = []) {
-    if (SEED_BLACKLIST.includes(path.at(-1))) return []
-    const entries = await FS.dir(path)
-    if (!entries) return []
-    const results = []
-    for (const entry of entries) {
-        const entryPath = [...path, entry]
-        if (await FS.isDirectory(entryPath)) {
-            const nested = await collectTorrentFiles(entryPath)
-            for (const p of nested) results.push(p)
-        } else if (entry.endsWith(".torrent")) results.push(entryPath)
-        
-    }
-    return results
-}
-
-async function seedAll(torrent) {
-    const files = await collectTorrentFiles(["statics"])
-    for (const filePath of files) {
-        const bytes = await FS.load(filePath)
-        if (!bytes) continue
-        torrent.seed(bytes, { announce: torrent.pool }).catch(() => {})
-    }
-}
-
 thread.init = async function () {
-    // TODO: check p2p_optout from localStorage before starting.
     await Construct.Torrent()
-    const torrent = Statics.torrent
-    if (!torrent) return
-
-    await seedAll(torrent)
-
-    loop({
-        process: () => seedAll(torrent),
-        delay: 3600000
-    })
 }
 
-// TODO: method disable()
-// thread.disable = async function () {
-//     const torrent = Statics.torrent
-//     if (!torrent) return
-//     await torrent.destroy()
-//     Statics.torrent = null
-// }
+/**
+ * Observability: report current torrent client state.
+ * Used by tests and debug console to verify seeding/tracker health.
+ */
+thread.status = function () {
+    const t = Statics.torrent
+    if (!t) return { ready: false, tracked: 0, tracker: null, scheme: null }
+    return {
+        ready: true,
+        tracked: t.torrents?.size ?? 0,
+        tracker: t._active ?? null,
+        scheme: t._scheme ?? null,
+        pool: t.pool?.length ?? 0
+    }
+}
+
+/**
+ * Leech a file from P2P and cache it to OPFS.
+ * Called from main thread via threads.queue({ thread: "torrent", method: "leech", params: { path } }).
+ * Returns { success: true } if file was leeched and cached.
+ */
+thread.leech = async function ({ path }) {
+    const bytes = await leech(Statics.torrent, path)
+    return { success: !!bytes }
+}
+
+/**
+ * Seed content from OPFS. Called after HTTP fetch caches content.
+ * Reads content from OPFS, seeds it, saves generated .torrent metadata.
+ */
+thread.seed = async function ({ path }) {
+    const torrent = Statics.torrent
+    if (!torrent || !Array.isArray(path) || !path.length) return { success: false }
+    const last = path.at(-1)
+    if (!last || !last.includes(".")) return { success: false }
+    // Skip metadata files — seeding them writes wrong .torrent metadata
+    if (last.endsWith(".hash") || last.endsWith(".torrent")) return { success: true }
+
+    // Note: we don't pre-check by name — files like meta.json exist in many dirs
+    // and name-only check would skip valid seeds. WebTorrent handles duplicates
+    // via "same id" error → treat as success.
+    const contentBytes = await driver.readBytes(path).catch(() => null)
+    if (!contentBytes) return { success: false }
+
+    const torrentPath = [...path]
+    torrentPath[torrentPath.length - 1] = last.replace(/\.\w+$/, ".torrent")
+
+    try {
+        const t = await torrent.seed(contentBytes, { name: last, announce: torrent.pool })
+        if (t.torrentFile)
+            await driver.writeBytes(torrentPath, new Uint8Array(t.torrentFile)).catch(() => {})
+
+        return { success: true }
+    } catch (e) {
+        // WebTorrent throws "same id" for duplicate — treat as success
+        if (e?.message?.includes("same id") || e?.message?.includes("duplicate")) return { success: true }
+        console.debug("[torrent.seed] error:", e?.message)
+        return { success: false }
+    }
+}
+

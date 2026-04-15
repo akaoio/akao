@@ -16,6 +16,9 @@ node_modules/
 .env.*
 !.env.example
 
+# macOS system file (Finder folder metadata, auto-generated)
+.DS_Store
+
 # Editor directories
 .vscode-test
 
@@ -44,3 +47,4 @@ _bmad-output/
 _bmad/
 .cursor/
 graphify-out/
+.gitnexus
