@@ -11,13 +11,6 @@ export const swap = async function ({ token0: _token0, token1: _token1, amount0,
         if (!router.ABI) throw new Error("Router ABI not found")
         router.contract = this.chain.Contract({ address: this.configs.router, ABI: router.ABI })
 
-        // Get quoter contract
-        const quoter = { configs: await loadContract({ chain: this.configs.chain, address: this.configs.quoter }) }
-        if (!quoter.configs) throw new Error("Quoter contract not found")
-        quoter.ABI = await loadABI({ ABI: quoter.configs.ABI, methods: ["quoteExactInputSingle"] })
-        if (!quoter.ABI) throw new Error("Quoter ABI not found")
-        quoter.contract = this.chain.Contract({ address: this.configs.quoter, ABI: quoter.ABI })
-
         // Get token0 contract
         const token0 = { configs: await loadContract({ chain: this.configs.chain, address: _token0 }) }
         if (!token0.configs) throw new Error("Token0 contract not found")
@@ -37,14 +30,10 @@ export const swap = async function ({ token0: _token0, token1: _token1, amount0,
         // Convert amount to token decimals
         token0.amountBN = new BigNumber(amount0).multipliedBy(new BigNumber(10).pow(token0.configs.decimals)).toString(10)
 
-        // Get expected output amount using quoter
-        const quotedAmount = await quoter.contract.quoteExactInputSingle(
-            _token0,
-            _token1,
-            fee,
-            token0.amountBN,
-            "0" // Use current sqrtPriceX96
-        )
+        // Quote expected output via shared architecture method
+        const quoted = await this.quote({ token0: _token0, token1: _token1, amount: amount0, fee })
+        const quotedAmount = quoted?.token1?.quantityBN
+        if (!quotedAmount) throw new Error("Quote output amount not found")
 
         // Calculate minimum output with slippage
         token1.amountMin = new BigNumber(quotedAmount)
@@ -75,7 +64,7 @@ export const swap = async function ({ token0: _token0, token1: _token1, amount0,
 
         return {
             token0: { amount: new BigNumber(token0.amountBN).dividedBy(new BigNumber(10).pow(token0.configs.decimals)).toString() },
-            token1: { amount: new BigNumber(quotedAmount).dividedBy(new BigNumber(10).pow(token1.configs.decimals)).toString() },
+            token1: { amount: new BigNumber(quoted.token1.quantity).toString() },
             TX
         }
     } catch (error) {

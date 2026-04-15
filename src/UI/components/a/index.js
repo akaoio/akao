@@ -26,7 +26,7 @@ export class A extends HTMLAnchorElement {
 
     disconnectedCallback() {
         this.removeEventListener("click", this.click)
-        this.subs.forEach(off => off())
+        this.subs.forEach((off) => off())
     }
 
     click(e) {
@@ -35,7 +35,9 @@ export class A extends HTMLAnchorElement {
     }
 
     render() {
-        const path = logic.href(this.dataset.to || this.getAttribute("href"), this.dataset.locale || Context.get("locale").code)
+        const to = this.dataset.to || this.getAttribute("href")
+        const locale = this.dataset.locale || Context.get("locale").code
+        const path = logic.href(to, locale)
         if (this.getAttribute("href") !== path) this.setAttribute("href", path)
     }
 }

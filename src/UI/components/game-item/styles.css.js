@@ -2,20 +2,28 @@ import { css } from "/core/UI.js"
 
 export const styles = css`
     :host {
-        display: flex;
-        align-items: stretch;
+        display: block;
         position: relative;
         background: var(--item-background, transparent);
         border: var(--border);
         border-left: 3px solid var(--item-rarity-color, var(--neon-c));
         overflow: hidden;
         transition: box-shadow var(--speed) ease-in-out;
-        cursor: pointer;
 
         &:hover {
             box-shadow:
                 0 0 0 1px var(--item-rarity-color, var(--neon-c)),
                 0 0 16px color-mix(in hsl, var(--item-rarity-color, var(--neon-c)) 30%, transparent);
+        }
+
+        #item-link {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
         }
 
         .icon {
@@ -67,11 +75,6 @@ export const styles = css`
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-
-            a {
-                color: inherit;
-                text-decoration: none;
-            }
         }
 
         .footer {

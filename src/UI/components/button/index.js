@@ -4,6 +4,8 @@ import Component from "/core/UI/Component.js"
 
 export class BUTTON extends Component {
     static module = import.meta.url
+    static observedAttributes = ["disabled"]
+
     constructor() {
         super()
         this.template = template // Store for HMR
@@ -12,7 +14,9 @@ export class BUTTON extends Component {
     }
 
     onconnect() {
-        this.shadowRoot.querySelector("button").classList = this.classList
+        const btn = this.shadowRoot.querySelector("button")
+        btn.classList = this.classList
+        btn.disabled = this.hasAttribute("disabled")
         let left = this.dataset.left
         let right = this.dataset.right
         if (left) {
@@ -22,6 +26,13 @@ export class BUTTON extends Component {
         if (right) {
             if (!right.includes("/")) right = `/images/icons/${right}.svg`
             this.shadowRoot.querySelector("#right").dataset.src = right
+        }
+    }
+
+    attributeChangedCallback(name, _old, value) {
+        if (name === "disabled") {
+            const btn = this.shadowRoot?.querySelector("button")
+            if (btn) btn.disabled = value !== null
         }
     }
 }

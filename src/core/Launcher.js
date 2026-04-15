@@ -1,9 +1,14 @@
 import { threads } from "./Threads.js"
 import { reset } from "./Utils/reset.js"
-import { NODE } from "./Utils/environment.js"
+import { NODE, WIN } from "./Utils/environment.js"
 
 globalThis.reset = reset
-if (NODE && !globalThis._root) globalThis._root = decodeURIComponent(new URL("..", import.meta.url).pathname.replace(/\/$/, ""))
+if (NODE && !globalThis._root) {
+    let _root = decodeURIComponent(new URL("..", import.meta.url).pathname.replace(/\/$/, ""))
+    // On Windows, URL.pathname yields /D:/... — strip the leading slash so Node fs calls work
+    if (WIN && /^\/[A-Za-z]:/.test(_root)) _root = _root.slice(1)
+    globalThis._root = _root
+}
 
 const PROFILES = {
     browser: [

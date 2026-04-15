@@ -85,7 +85,11 @@ export class POOL extends Component {
         }
 
         const $tvl = this.shadowRoot.querySelector(".tvl")
-        if ($tvl) $tvl.textContent = tvl > 0 ? fmt(tvl) : ""
+        if ($tvl) {
+            const hasValue = tvl > 0
+            $tvl.textContent = hasValue ? fmt(tvl) : "N/A"
+            $tvl.toggleAttribute("data-na", !hasValue)
+        }
 
         const $dex = this.shadowRoot.querySelector(".badge.dex")
         if ($dex) {

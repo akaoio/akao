@@ -7,16 +7,20 @@ export const styles = css`
             align-items: center;
             justify-content: center;
             gap: var(--space);
-            background: var(--background);
-            border: var(--border);
-            border-radius: var(--radius);
-            padding: var(--space);
-            color: var(--color);
+            background: var(--btn-bg, var(--background));
+            border: var(--btn-border, var(--border));
+            border-radius: var(--btn-radius, var(--radius));
+            padding: var(--btn-padding, var(--space));
+            color: var(--btn-color, var(--color));
             cursor: pointer;
             white-space: nowrap;
             box-sizing: border-box;
-            font-family: var(--font);
-            font-size: var(--text-sm);
+            font-family: var(--btn-font, var(--font));
+            font-size: var(--btn-font-size, var(--text-sm));
+            font-weight: var(--btn-font-weight, normal);
+            letter-spacing: var(--btn-letter-spacing, normal);
+            text-transform: var(--btn-text-transform, none);
+            transition: background var(--speed), color var(--speed), border-color var(--speed), box-shadow var(--speed);
             &.full {
                 width: 100%;
             }
@@ -30,11 +34,18 @@ export const styles = css`
                 width: var(--icon-sm);
                 aspect-ratio: 1;
             }
+            &:disabled {
+                opacity: 0.35;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
         }
 
-        button:hover {
-            background: var(--background-inverted);
-            color: var(--color-inverted);
+        button:not(:disabled):hover {
+            background: var(--btn-bg-hover, var(--background-inverted));
+            color: var(--btn-color-hover, var(--color-inverted));
+            border-color: var(--btn-border-color-hover, inherit);
+            box-shadow: var(--btn-glow-hover, none);
         }
     }
 `

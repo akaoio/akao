@@ -1,5 +1,6 @@
 import { Access, setWallet } from "/core/Access.js"
 import { fiatValue } from "/core/Utils/contracts.js"
+import { writeLabel, readLabel, subscribeLabel } from "./label.js"
 
 export class Logic {
     static currencies(Chains) {
@@ -27,9 +28,12 @@ export class Logic {
         return Object.values(wallet.chain.currencies).find(c => c.name === name) || null
     }
 
-    static async balance({ wallet, currency, fiat, forex }) {
+    static async balance({ wallet, currency, fiat, forex, address }) {
         if (!wallet || !currency) return { raw: null, amount: 0 }
-        const raw = await wallet.balance({ currency })
+        // Use explicit address when provided (e.g. previewing a different wallet id)
+        const raw = address
+            ? await wallet.chain.balance({ address, currency })
+            : await wallet.balance({ currency })
         if (typeof raw === "undefined") return { raw: null, amount: 0 }
         const chain = Number(wallet.chain?.id)
         const amount = await fiatValue({ chain, currency, amount: Number(raw) || 0, fiat, forex }) || 0
@@ -44,6 +48,10 @@ export class Logic {
         return sea.work(rawSeed, "wallet")
     }
 
+    static writeLabel(pair, id, label) { return writeLabel(pair, id, label) }
+    static readLabel(pub, id) { return readLabel(pub, id) }
+    static subscribeLabel(pub, id, cb) { return subscribeLabel(pub, id, cb) }
+
     static id() {
         return Number(Access.get("wallet")?.id || 0)
     }
@@ -54,7 +62,7 @@ export class Logic {
 
     static setid(value, step, current) {
         value = Number(value)
-        const total = value >= current ? Math.ceil((value + 1) / step) * step : current
+        const total = value >= current ? value + 1 : current
         setWallet({ id: value, total: total !== current ? total : undefined })
         return value
     }

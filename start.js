@@ -8,7 +8,7 @@ function run(cmd, argv, options = {}) {
     return new Promise((resolve, reject) => {
         const child = spawn(cmd, argv, {
             stdio: "inherit",
-            shell: false,
+            shell: process.platform === "win32",
             ...options
         })
 

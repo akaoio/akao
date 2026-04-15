@@ -7,7 +7,7 @@ export const swap = async function ({ token0: _token0, token1: _token1, amount0,
         // Get router contract
         const router = { configs: await loadContract({ chain: this.configs.chain, address: this.configs.router }) }
         if (!router.configs) throw new Error("Router contract not found")
-        router.ABI = await loadABI({ ABI: router.configs.ABI, methods: ["swapExactTokensForTokens", "getAmountsOut"] })
+        router.ABI = await loadABI({ ABI: router.configs.ABI, methods: ["swapExactTokensForTokens"] })
         if (!router.ABI) throw new Error("Router ABI not found")
         router.contract = this.chain.Contract({ address: this.configs.router, ABI: router.ABI })
 
@@ -30,9 +30,11 @@ export const swap = async function ({ token0: _token0, token1: _token1, amount0,
         // Convert amount to big number
         token0.amountBN = new BigNumber(amount0).multipliedBy(new BigNumber(10).pow(token0.configs?.decimals)).toString(10)
 
-        // Get expected output amount
-        const amounts = await router.contract.getAmountsOut(token0.amountBN, [_token0, _token1])
-        token1.amountMin = new BigNumber(amounts[1])
+        // Quote expected output via shared architecture method
+        const quoted = await this.quote({ token0: _token0, token1: _token1, amount: amount0 })
+        const amountOutBN = quoted?.token1?.quantityBN
+        if (!amountOutBN) throw new Error("Quote output amount not found")
+        token1.amountMin = new BigNumber(amountOutBN)
             .multipliedBy(new BigNumber(100 - slippage))
             .dividedBy(100)
             .integerValue()
@@ -51,7 +53,7 @@ export const swap = async function ({ token0: _token0, token1: _token1, amount0,
 
         return {
             token0: { amount: new BigNumber(token0.amountBN).dividedBy(new BigNumber(10).pow(token0.configs?.decimals)).toNumber() },
-            token1: { amount: new BigNumber(amounts[1]).dividedBy(new BigNumber(10).pow(token1.configs?.decimals)).toNumber() },
+            token1: { amount: quoted.token1.quantity },
             TX
         }
     } catch (error) {
