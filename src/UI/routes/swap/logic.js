@@ -53,7 +53,7 @@ export class Logic {
         const { dex, pool } = found
         let result
         try {
-            if (pool.version === "V2") result = await dex.getAmountsOut({ token0: from.address, token1: to.address, amount })
+            if (pool.version === "V2") result = await dex.quote({ token0: from.address, token1: to.address, amount })
             else if (pool.version === "V3") result = await dex.quote({ token0: from.address, token1: to.address, fee: pool.fee, amountIn: amount })
         } catch (e) {
             return { error: e?.message || String(e), amountOut: 0, fiatOut: 0, gasAmount: null, gasSymbol: null }

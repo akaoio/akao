@@ -1,7 +1,7 @@
 import { BigNumber } from "../../Utils.js"
 import { loadContract, loadABI } from "../../Utils/contracts.js"
 
-export const getAmountsOut = async function ({ token0: _token0, token1: _token1, amount } = {}) {
+export const quote = async function ({ token0: _token0, token1: _token1, amount } = {}) {
     try {
         const router = { configs: await loadContract({ chain: this.configs.chain, address: this.configs.router }) }
         if (!router.configs) throw new Error("Router contract not found")
@@ -31,12 +31,18 @@ export const getAmountsOut = async function ({ token0: _token0, token1: _token1,
         const amounts = await router.contract.getAmountsOut(amountBN, [_token0, _token1])
 
         return {
-            token0: { quantity: amount },
-            token1: { quantity: new BigNumber(amounts[1]).dividedBy(new BigNumber(10).pow(token1.configs.decimals)).toNumber() }
+            token0: {
+                quantity: amount,
+                quantityBN: amountBN
+            },
+            token1: {
+                quantity: new BigNumber(amounts[1]).dividedBy(new BigNumber(10).pow(token1.configs.decimals)).toNumber(),
+                quantityBN: amounts[1].toString()
+            }
         }
     } catch (error) {
         throw error
     }
 }
 
-export default getAmountsOut
+export default quote
