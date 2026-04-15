@@ -47,7 +47,7 @@ export class Logic {
         ])
         if (!meta) return null
         const icon = meta.images?.[0] ? `/statics/items/${gameId}/${itemId}/images/${meta.images[0]}` : null
-        return { ...meta, ...(loc || {}), id: itemId, icon, catalog: "game" }
+        return { ...meta, ...(loc || {}), id: itemId, game: gameId, icon, catalog: "game" }
     }
 
     static async page(gameId, pageNum) {

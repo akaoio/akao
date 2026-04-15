@@ -5,11 +5,12 @@ export const styles = css`
     :host {
         display: grid;
         grid-template-columns:
-            var(--col-pair,   minmax(180px, 2fr))
-            var(--col-tvl,    120px)
-            var(--col-rate,   minmax(140px, 1.5fr))
+            var(--col-pair, minmax(180px, 2fr))
+            var(--col-tvl, 120px)
+            var(--col-rate, minmax(140px, 1.5fr))
             var(--col-badges, 160px);
         align-items: center;
+        min-height: 56px;
         border-bottom: var(--border);
         position: relative;
         transition: background var(--speed);
@@ -75,6 +76,13 @@ export const styles = css`
         color: var(--neon-g);
         text-shadow: var(--glow-g);
         white-space: nowrap;
+
+        &:is([data-na]) {
+            color: var(--color);
+            text-shadow: none;
+            opacity: 0.25;
+            font-weight: 400;
+        }
     }
 
     /* ── Rates ── */
@@ -134,7 +142,9 @@ export const styles = css`
 
     /* ── Responsive: md (≤1023px) — hide rate column ── */
     @media (max-width: ${bp.md}px) {
-        .col-rate { display: none; }
+        .col-rate {
+            display: none;
+        }
     }
 
     /* ── Responsive: sm (≤767px) — 3-col card: pair | rate | badges ── */
@@ -160,7 +170,9 @@ export const styles = css`
             gap: var(--space-1);
         }
 
-        .pair-sep { display: none; }
+        .pair-sep {
+            display: none;
+        }
 
         /* Rate: row 1, col 2 — override the md hide */
         .col-rate {
@@ -172,7 +184,9 @@ export const styles = css`
             text-align: right;
         }
 
-        .rates { align-items: flex-end; }
+        .rates {
+            align-items: flex-end;
+        }
 
         .rate {
             font-size: 0.6rem;
@@ -204,7 +218,9 @@ export const styles = css`
             padding-top: 0;
         }
 
-        .tvl { font-size: var(--text-xs); }
+        .tvl {
+            font-size: var(--text-xs);
+        }
     }
 
     /* ── Responsive: xs (≤375px) — iPhone SE: drop rate, smaller fonts ── */
@@ -213,17 +229,29 @@ export const styles = css`
             grid-template-columns: 1fr auto;
         }
 
-        .col-rate { display: none; }
+        .col-rate {
+            display: none;
+        }
 
-        .col-badges { grid-column: 2; }
+        .col-badges {
+            grid-column: 2;
+        }
 
-        .col-tvl { grid-column: 1 / 3; }
+        .col-tvl {
+            grid-column: 1 / 3;
+        }
 
-        .pair { gap: 2px; }
+        .pair {
+            gap: 2px;
+        }
 
-        .rate { font-size: var(--text-xs); }
+        .rate {
+            font-size: var(--text-xs);
+        }
 
-        .tvl { font-size: 0.65rem; }
+        .tvl {
+            font-size: 0.65rem;
+        }
     }
 `
 

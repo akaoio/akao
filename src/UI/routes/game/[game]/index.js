@@ -7,7 +7,20 @@ import { html, render } from "/core/UI.js"
 import logic from "./logic.js"
 
 const INITIAL_PAGES = 3
-const LOAD_MORE_PAGES = 1
+const PAGE_SIZE = 30
+const ITEM_CONCURRENCY = 10
+
+// Fetch items in bounded batches to avoid ERR_INSUFFICIENT_RESOURCES from
+// firing hundreds of concurrent requests (each item needs meta.json + locale.json).
+async function loadItemsBatched(ids, gameId, locale) {
+    const results = []
+    for (let i = 0; i < ids.length; i += ITEM_CONCURRENCY) {
+        const batch = ids.slice(i, i + ITEM_CONCURRENCY)
+        const items = (await Promise.all(batch.map((itemId) => logic.item(gameId, itemId, locale)))).filter(Boolean)
+        results.push(...items)
+    }
+    return results
+}
 
 const SORT_OPTIONS = [
     { key: "name", label: "Name", asc: "name", desc: "name-desc", indAsc: "↑", indDesc: "↓" },
@@ -33,11 +46,14 @@ export class GAME extends HTMLElement {
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
+        this._displayPage = 1
+        this._readyPromise = null
+        this._generation = 0
         this.subs = []
         this._loadingAll = false
         this.render = this.render.bind(this)
         this.applyFilters = this.applyFilters.bind(this)
-        this._applyFiltersWithLoad = this._applyFiltersWithLoad.bind(this)
+        this._handleFilterChange = this._handleFilterChange.bind(this)
         this.loadMore = this.loadMore.bind(this)
     }
 
@@ -114,6 +130,7 @@ export class GAME extends HTMLElement {
                     const idx = sortCycle.indexOf(current)
                     const next = sortCycle[(idx + 1) % sortCycle.length]
                     this.states.set({ sort: next })
+                    this._displayPage = 1
                     this.applyFilters()
                 }
                 pillSortEl.addEventListener("click", onPillSort)
@@ -160,6 +177,7 @@ export class GAME extends HTMLElement {
                 pillSearchEl.addEventListener("click", onPillSearch)
                 this.subs.push(() => pillSearchEl.removeEventListener("click", onPillSearch))
             }
+            // ui-search exposes focus() which delegates to its inner input
 
             // Collapse button → collapse (animated).
             const collapseBtn = this.shadowRoot.querySelector("#catalog-collapse")
@@ -190,33 +208,28 @@ export class GAME extends HTMLElement {
         ;["--game-primary", "--game-text-color", "--game-title-shadow"].forEach((v) => document.documentElement.style.removeProperty(v))
     }
 
-    async _loadAllRemaining() {
-        if (this._loadingAll) return
-        this._loadingAll = true
-        const grid = this.shadowRoot.querySelector("#items")
-        if (grid) grid.classList.add("is-loading-all")
-
-        const id = this.states.get("id")
-        const locale = Context.get("locale")?.code || "en"
-        const fromPage = this.states.get("loadedPages")
-        const totalPages = this.states.get("totalPages")
+    async _loadAllInBackground(id, locale, fromPage, totalPages, gen) {
         const count = totalPages - fromPage
-
         const pageIdBatches = await Promise.all(Array.from({ length: count }, (_, i) => logic.page(id, fromPage + i + 1)))
-        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => logic.item(id, itemId, locale)) : [])))).filter(Boolean)
+        const allIds = pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids : []))
+        const newItems = await loadItemsBatched(allIds, id, locale)
+
+        if (this._generation !== gen) return // render() was called again — discard stale data
 
         const allItems = [...this.states.get("allItems"), ...newItems]
         this.states.set({ allItems, loadedPages: totalPages })
-
-        this._loadingAll = false
-        if (grid) grid.classList.remove("is-loading-all")
+        this._readyPromise = null
+        this.applyFilters() // refresh Load More count now that all items are in memory
     }
 
-    async _applyFiltersWithLoad() {
-        const anyFilter = this.states.get("activeType") || this.states.get("activeRarity") || this.states.get("search")
-        if (anyFilter && this.states.get("loadedPages") < this.states.get("totalPages")) {
-            this.applyFilters()
-            await this._loadAllRemaining()
+    async _handleFilterChange() {
+        this._displayPage = 1
+        this.applyFilters() // sync filter UI state immediately (colors, active classes, count)
+        if (this._readyPromise) {
+            const wrap = this.shadowRoot.querySelector("#items-wrap")
+            if (wrap) wrap.classList.add("is-loading-all")
+            await this._readyPromise
+            if (wrap) wrap.classList.remove("is-loading-all")
         }
         this.applyFilters()
     }
@@ -228,8 +241,6 @@ export class GAME extends HTMLElement {
         const sort = this.states.get("sort")
         const search = this.states.get("search")
         const rarityOrder = this.states.get("rarityOrder")
-        const loadedPages = this.states.get("loadedPages")
-        const totalPages = this.states.get("totalPages")
         const totalItems = this.states.get("totalItems")
 
         let filtered = allItems
@@ -241,9 +252,14 @@ export class GAME extends HTMLElement {
         }
         filtered = logic.sort(filtered, sort, rarityOrder)
 
-        // Count
+        const anyFilterActive = !!(activeType || activeRarity || search)
+        // While background pages are still loading, the filtered count is partial — show "…"
+        const countValue = anyFilterActive ? (this._readyPromise ? `${filtered.length}+` : filtered.length) : totalItems
+
+        // Count — when browsing without a filter, show the catalog total immediately
+        // so the number doesn't flicker as background pages load in
         const countEl = this.shadowRoot.querySelector("#count-num")
-        if (countEl) countEl.textContent = filtered.length
+        if (countEl) countEl.textContent = countValue
 
         // ── Sync collapsed pill ──
         const pillType = this.shadowRoot.querySelector("#pill-type")
@@ -271,7 +287,7 @@ export class GAME extends HTMLElement {
                 pillRarityDot.classList.remove("active")
             }
 
-        if (pillCount) pillCount.textContent = filtered.length
+        if (pillCount) pillCount.textContent = countValue
         if (pillSort) {
             const activeSortOpt = SORT_OPTIONS.find((o) => o.asc === sort || o.desc === sort)
             if (activeSortOpt) {
@@ -285,51 +301,33 @@ export class GAME extends HTMLElement {
         const stickyEl = this.shadowRoot.querySelector(".catalog-sticky")
         if (stickyEl && stickyEl.classList.contains("is-stuck") && !stickyEl.classList.contains("is-expanded") && this._syncPillWidth) this._syncPillWidth()
 
-        // Grid
+        // Grid — always paginate via the display window, filter or not
+        const visible = filtered.slice(0, this._displayPage * PAGE_SIZE)
         const grid = this.shadowRoot.querySelector("#items")
-        const elements = filtered.map((item) => {
+        const elements = visible.map((item) => {
             const el = new ITEM()
             el.dataset.item = JSON.stringify(item)
             return el
         })
         grid.replaceChildren(...elements)
 
-        // Load more button — hidden whenever a filter is active (all pages load eagerly then)
+        // Load More — client-side only, advances the display window over in-memory data
         const loadMoreBtn = this.shadowRoot.querySelector("#load-more")
         if (loadMoreBtn) {
-            const anyFilterActive = !!(activeType || activeRarity || search)
-            const hasMore = loadedPages < totalPages && !anyFilterActive
+            const hasMore = filtered.length > this._displayPage * PAGE_SIZE
             loadMoreBtn.hidden = !hasMore
             if (hasMore) {
-                const remaining = totalItems - allItems.length
+                const remaining = filtered.length - this._displayPage * PAGE_SIZE
                 loadMoreBtn.textContent = `Load More — ${remaining} remaining`
             }
         }
 
-        // Sync active filter states — buttons
-        this.shadowRoot.querySelectorAll(".type-tabs button").forEach((btn) => {
-            btn.classList.toggle("active", btn.dataset.type === (activeType || ""))
-        })
-        this.shadowRoot.querySelectorAll(".rarity-pills button").forEach((btn) => {
-            btn.classList.toggle("active", btn.dataset.rarity === (activeRarity || ""))
-        })
+        // Sync filter components
+        const typeFilter = this.shadowRoot.querySelector("#type-filter")
+        if (typeFilter) typeFilter.value = activeType
 
-        // Sync active filter states — selects (mobile)
-        const typeSelect = this.shadowRoot.querySelector("#type-select")
-        if (typeSelect) {
-            typeSelect.value = activeType || ""
-            typeSelect.classList.toggle("active", !!activeType)
-        }
-        const raritySelect = this.shadowRoot.querySelector("#rarity-select")
-        if (raritySelect) {
-            raritySelect.value = activeRarity || ""
-            raritySelect.classList.toggle("active", !!activeRarity)
-            const rarityWrap = raritySelect.parentElement
-            if (activeRarity) {
-                const key = activeRarity.toLowerCase().replace(/\s+/g, "-")
-                rarityWrap.style.setProperty("--select-accent", `var(--rarity-${key}, var(--neon-c))`)
-            } else rarityWrap.style.removeProperty("--select-accent")
-        }
+        const rarityFilter = this.shadowRoot.querySelector("#rarity-filter")
+        if (rarityFilter) rarityFilter.value = activeRarity
         this.shadowRoot.querySelectorAll(".sort-bar button[data-sort-key]").forEach((btn) => {
             const isAsc = sort === btn.dataset.sortAsc
             const isDesc = sort === btn.dataset.sortDesc
@@ -339,23 +337,8 @@ export class GAME extends HTMLElement {
         })
     }
 
-    async loadMore() {
-        const id = this.states.get("id")
-        const loadedPages = this.states.get("loadedPages")
-        const totalPages = this.states.get("totalPages")
-        if (loadedPages >= totalPages) return
-
-        const loadMoreBtn = this.shadowRoot.querySelector("#load-more")
-        if (loadMoreBtn) loadMoreBtn.disabled = true
-
-        const locale = Context.get("locale")?.code || "en"
-        const pagesToLoad = Math.min(LOAD_MORE_PAGES, totalPages - loadedPages)
-        const pageIdBatches = await Promise.all(Array.from({ length: pagesToLoad }, (_, i) => logic.page(id, loadedPages + i + 1)))
-        const newItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => logic.item(id, itemId, locale)) : [])))).filter(Boolean)
-        const allItems = [...this.states.get("allItems"), ...newItems]
-        this.states.set({ allItems, loadedPages: loadedPages + pagesToLoad })
-
-        if (loadMoreBtn) loadMoreBtn.disabled = false
+    loadMore() {
+        this._displayPage++
         this.applyFilters()
     }
 
@@ -440,158 +423,59 @@ export class GAME extends HTMLElement {
         const rarities = meta.rarity_order || []
         this.states.set({ totalPages: pages, totalItems: itemsMeta.children || 0 })
 
-        // Load first N pages in parallel
+        // Reset display state for this render (e.g. locale change)
+        this._generation++
+        this._displayPage = 1
+        this._readyPromise = null
+
+        // Load first N pages in parallel for immediate display
         const initialPages = Math.min(INITIAL_PAGES, pages)
         const pageIdBatches = await Promise.all(Array.from({ length: initialPages }, (_, i) => logic.page(id, i + 1)))
-        const firstItems = (await Promise.all(pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids.map((itemId) => logic.item(id, itemId, locale)) : [])))).filter(Boolean)
+        const allInitialIds = pageIdBatches.flatMap((ids) => (Array.isArray(ids) ? ids : []))
+        const firstItems = await loadItemsBatched(allInitialIds, id, locale)
         this.states.set({ allItems: firstItems, loadedPages: initialPages })
 
-        // Build type tabs with collapse
-        const VISIBLE_TYPES = 6
-        const typeTabs = this.shadowRoot.querySelector("#type-tabs")
-        typeTabs.classList.remove("expanded")
-        const typeButtons = [this._makeFilterBtn("All", null, "activeType"), ...types.map((t) => this._makeFilterBtn(t, t, "activeType"))]
-        const overflowCount = Math.max(0, types.length - VISIBLE_TYPES)
-        if (overflowCount > 0) {
-            typeButtons.forEach((btn, i) => {
-                if (i > VISIBLE_TYPES) btn.dataset.overflow = "true"
-            })
-            const toggleBtn = document.createElement("button")
-            toggleBtn.className = "type-tabs__toggle"
-            toggleBtn.textContent = `+${overflowCount} more`
-            toggleBtn.addEventListener("click", () => {
-                const expanded = typeTabs.classList.toggle("expanded")
-                toggleBtn.textContent = expanded ? "Show less" : `+${overflowCount} more`
-            })
-            typeButtons.push(toggleBtn)
-        }
-        typeTabs.replaceChildren(...typeButtons)
+        // Remaining pages load silently in the background
+        if (initialPages < pages) this._readyPromise = this._loadAllInBackground(id, locale, initialPages, pages, this._generation)
 
-        // Build type select (mobile)
-        const typeSelect = this.shadowRoot.querySelector("#type-select")
-        const typeSelectOptions = [{ label: "All Types", value: "" }, ...types.map((t) => ({ label: t, value: t }))]
-        typeSelect.replaceChildren(
-            ...typeSelectOptions.map(({ label, value }) => {
-                const opt = document.createElement("option")
-                opt.value = value
-                opt.textContent = label
-                return opt
-            })
-        )
-        typeSelect.value = this.states.get("activeType") || ""
-        typeSelect.onchange = () => {
-            this.states.set({ activeType: typeSelect.value || null })
-            this._applyFiltersWithLoad()
-        }
+        // Build type filter
+        const typeFilter = this.shadowRoot.querySelector("#type-filter")
+        typeFilter.allLabel = "All Types"
+        typeFilter.options = types.map((t) => ({ label: t, value: t }))
+        typeFilter.value = this.states.get("activeType")
+        typeFilter.addEventListener("filter", (e) => {
+            this.states.set({ activeType: e.detail.value })
+            this._handleFilterChange()
+        })
 
-        // Build rarity pills
-        const rarityPills = this.shadowRoot.querySelector("#rarity-pills")
-        const rarityButtons = [
-            this._makeFilterBtn("All", null, "activeRarity"),
-            ...rarities.map((r) => {
-                const btn = this._makeFilterBtn(r, r, "activeRarity")
-                btn.dataset.rarity = r
-                const key = r.toLowerCase().replace(/\s+/g, "-")
-                btn.setAttribute("data-rarity-key", key)
-                btn.style.setProperty("--rarity-pill-color", `var(--rarity-${key}, var(--color-accent))`)
-                return btn
-            })
-        ]
-        rarityPills.replaceChildren(...rarityButtons)
+        // Build rarity filter
+        const rarityFilter = this.shadowRoot.querySelector("#rarity-filter")
+        rarityFilter.allLabel = "All Rarities"
+        rarityFilter.options = rarities.map((r) => {
+            const key = r.toLowerCase().replace(/\s+/g, "-")
+            return { label: r, value: r, color: `var(--rarity-${key}, var(--color-accent))` }
+        })
+        rarityFilter.value = this.states.get("activeRarity")
+        rarityFilter.addEventListener("filter", (e) => {
+            this.states.set({ activeRarity: e.detail.value })
+            this._handleFilterChange()
+        })
 
-        // Build rarity select (mobile)
-        const raritySelect = this.shadowRoot.querySelector("#rarity-select")
-        const raritySelectOptions = [{ label: "All Rarities", value: "" }, ...rarities.map((r) => ({ label: r, value: r }))]
-        raritySelect.replaceChildren(
-            ...raritySelectOptions.map(({ label, value }) => {
-                const opt = document.createElement("option")
-                opt.value = value
-                opt.textContent = label
-                return opt
-            })
-        )
-        raritySelect.value = this.states.get("activeRarity") || ""
-        raritySelect.onchange = () => {
-            this.states.set({ activeRarity: raritySelect.value || null })
-            this._applyFiltersWithLoad()
-        }
-
-        // Wire search input + autocomplete
-        const searchInput = this.shadowRoot.querySelector("#search")
-        const suggestions = this.shadowRoot.querySelector("#search-suggestions")
-        searchInput.value = ""
+        // Wire ui-search component
+        const searchEl = this.shadowRoot.querySelector("#search")
+        searchEl.clear()
         this.states.set({ search: "" })
 
-        const closeSuggestions = () => suggestions.classList.remove("open")
-
-        const openSuggestions = (query) => {
-            if (!query || query.length < 2) return closeSuggestions()
-            const q = query.toLowerCase()
-            const matches = this.states
-                .get("allItems")
-                .filter((i) => (i.name || "").toLowerCase().includes(q))
-                .slice(0, 8)
-            if (!matches.length) return closeSuggestions()
-
-            const items = matches.map((item) => {
-                const li = document.createElement("li")
-                li.className = "catalog-search__suggestion"
-
-                const nameEl = document.createElement("span")
-                nameEl.className = "suggestion__name"
-                nameEl.textContent = item.name || ""
-
-                const rarityEl = document.createElement("span")
-                rarityEl.className = "suggestion__rarity"
-                rarityEl.textContent = item.rarity || ""
-                const key = (item.rarity || "").toLowerCase().replace(/\s+/g, "-")
-                rarityEl.style.setProperty("--rarity-pill-color", `var(--rarity-${key}, var(--color-accent))`)
-
-                li.append(nameEl, rarityEl)
-                li.addEventListener("mousedown", (e) => {
-                    e.preventDefault()
-                    searchInput.value = item.name
-                    this.states.set({ search: item.name })
-                    closeSuggestions()
-                    this._applyFiltersWithLoad()
-                })
-                return li
-            })
-
-            suggestions.replaceChildren(...items)
-            suggestions.classList.add("open")
-        }
-
-        searchInput.oninput = (e) => {
-            const val = e.target.value.trim()
+        searchEl.addEventListener("search", (e) => {
+            const val = e.detail.value
             this.states.set({ search: val })
-            openSuggestions(val)
-            this._applyFiltersWithLoad()
-        }
-
-        searchInput.onfocus = (e) => openSuggestions(e.target.value.trim())
-
-        searchInput.onblur = () => setTimeout(closeSuggestions, 150)
-
-        searchInput.onkeydown = (e) => {
-            const lis = [...suggestions.querySelectorAll(".catalog-search__suggestion")]
-            const hi = lis.findIndex((li) => li.classList.contains("highlighted"))
-            if (e.key === "ArrowDown") {
-                e.preventDefault()
-                lis[hi]?.classList.remove("highlighted")
-                lis[Math.min(hi + 1, lis.length - 1)]?.classList.add("highlighted")
-            } else if (e.key === "ArrowUp") {
-                e.preventDefault()
-                lis[hi]?.classList.remove("highlighted")
-                lis[Math.max(hi - 1, 0)]?.classList.add("highlighted")
-            } else if (e.key === "Enter" && hi >= 0) {
-                e.preventDefault()
-                lis[hi]?.dispatchEvent(new MouseEvent("mousedown"))
-            } else if (e.key === "Escape") {
-                closeSuggestions()
-                searchInput.blur()
-            }
-        }
+            // Feed current items as suggestion source
+            searchEl.items = this.states.get("allItems").map((item) => {
+                const key = (item.rarity || "").toLowerCase().replace(/\s+/g, "-")
+                return { name: item.name, meta: item.rarity || "", color: `var(--rarity-${key}, var(--color-accent))` }
+            })
+            this._handleFilterChange()
+        })
 
         // Build sort bar
         const sortBar = this.shadowRoot.querySelector("#sort")
@@ -613,6 +497,7 @@ export class GAME extends HTMLElement {
                 const current = this.states.get("sort")
                 const next = current === opt.asc ? opt.desc : opt.asc
                 this.states.set({ sort: next })
+                this._displayPage = 1
                 this.applyFilters()
             })
             return btn
@@ -644,17 +529,6 @@ export class GAME extends HTMLElement {
         this.applyFilters()
     }
 
-    _makeFilterBtn(label, value, stateKey) {
-        const btn = document.createElement("button")
-        btn.textContent = label
-        if (stateKey === "activeType") btn.dataset.type = value || ""
-        if (stateKey === "activeRarity") btn.dataset.rarity = value || ""
-        btn.addEventListener("click", () => {
-            this.states.set({ [stateKey]: value })
-            this._applyFiltersWithLoad()
-        })
-        return btn
-    }
 }
 
 customElements.define("route-game", GAME)

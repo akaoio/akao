@@ -85,7 +85,7 @@ Lives.pools[1]["0x004375..."]                          ← key là chain.id nume
 
 **V2** (`DeFi/V2.js`):
 ```
-getAmountsOut(amountIn, [token0, token1])
+quote(amountIn, [token0, token1])
 → amountOutMin = amounts[1] × (100 − slippage) / 100
 → ERC20.approve(router, amountIn)
 → router.swapExactTokensForTokens(amountIn, amountOutMin, path, recipient, deadline)
@@ -813,7 +813,7 @@ html`<ui-svg class="icon" data-src="/images/cryptos/${token.configs.symbol}" /> 
  events.on("Lives.pools", refreshtokens)
    → rebuild token dropdown options
  amount input → quote() debounced 500ms
-   → dex.getAmountsOut() or dex.quote()
+   → dex.quote()
    → update quote display
 
 [offchain.js thread]

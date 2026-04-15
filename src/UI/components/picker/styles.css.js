@@ -1,31 +1,112 @@
-import icon from "/css/elements/icon.css.js"
-import radioItem from "/css/elements/radio-item.css.js"
 import { css } from "/core/UI.js"
 
 export const styles = css`
-    ${icon}
-    ${radioItem}
-
     :host {
-        input[type="radio"] {
-            display: none;
-            appearance: none;
-            &:checked + label {
-                background-color: var(--background-inverted);
-                color: var(--color-inverted);
+        /* ── Override modal chrome to match swap card language ── */
+        ui-modal {
+            /* section surface */
+            --background: var(--card-bg, var(--background));
+
+            dialog {
+                min-width: 18rem;
+                max-width: min(22rem, 90vw);
+                max-height: 70vh;
+            }
+
+            section {
+                padding: 0;
+                border-color: color-mix(in hsl, var(--accent-info) 35%, transparent);
+                box-shadow: 0 0 32px color-mix(in hsl, var(--accent-info) 12%, transparent);
+                overflow-y: auto;
             }
         }
 
+        /* ── Search input in header slot ── */
+        .search-slot {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: var(--space-2) var(--space-sm);
+            border-bottom: 1px solid color-mix(in hsl, var(--accent-info) 20%, transparent);
+        }
+
+        .picker-search {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--color);
+            font-family: var(--font);
+            font-size: var(--text-sm);
+            padding: var(--space-1) var(--space-sm);
+            outline: none;
+            &::placeholder {
+                color: var(--color);
+                opacity: 0.3;
+                font-family: var(--header-font);
+                font-size: var(--text-xs);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
+        }
+
+        /* ── Row container ── */
+        .picker-row {
+            display: contents;
+            &[hidden] { display: none; }
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        /* ── Default mode rows ── */
         label {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            width: 100%;
             color: var(--color);
             cursor: pointer;
-            padding: var(--space);
-            transition: var(--speed) ease-in-out;
+            padding: var(--space-2) var(--space);
+            border-bottom: 1px solid color-mix(in hsl, var(--color) 6%, transparent);
+            transition: background var(--speed), color var(--speed);
+            &:last-of-type { border-bottom: none; }
             &:hover {
-                background-color: var(--background-inverted);
-                color: var(--color-inverted);
+                background: color-mix(in hsl, var(--accent-info) 8%, transparent);
+                color: var(--accent-info);
             }
+        }
+
+        /* ── Token mode rows ── */
+        label:has(.token-icon) {
+            padding: var(--space-2) var(--space);
+            gap: var(--space-sm);
+            min-height: calc(var(--icon-sm) + var(--space-2) * 2);
+        }
+
+        input[type="radio"]:checked + label {
+            background: color-mix(in hsl, var(--accent-action) 10%, transparent);
+            border-left: 2px solid var(--accent-action);
+            box-shadow: inset 0 0 20px color-mix(in hsl, var(--accent-action) 5%, transparent);
+            .token-symbol { color: var(--accent-action); }
+        }
+
+        .token-icon {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+            min-width: var(--icon-sm);
+            max-width: var(--icon-sm);
+            max-height: var(--icon-sm);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .token-symbol {
+            font-family: var(--header-font);
+            font-size: var(--text-xs);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color);
         }
     }
 `

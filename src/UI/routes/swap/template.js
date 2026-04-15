@@ -1,43 +1,20 @@
 import { html } from "/core/UI.js"
 import "/UI/layouts/main/index.js"
 import "/UI/components/wallets/index.js"
-import "/UI/components/context/index.js"
-import "/UI/components/button/index.js"
+import "/UI/components/card/index.js"
+import "/UI/components/swap-form/index.js"
 import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
     <layout-main>
-        <h1><ui-context data-key="dictionary.swap" /></h1>
         <main>
-            <ui-wallets data-currency="false" />
-            <div class="field">
-                <label><ui-context data-key="dictionary.from" /></label>
-                <div class="row">
-                    <div id="from-token"></div>
-                    <input type="number" id="amount-in" min="0" step="any" disabled />
-                </div>
-                <div class="info" id="balance-in"></div>
-            </div>
-            <div class="field">
-                <label><ui-context data-key="dictionary.to" /></label>
-                <div class="row">
-                    <div id="to-token"></div>
-                    <div id="quote-out"></div>
-                </div>
-            </div>
-            <div id="slippage-row">
-                <span><ui-context data-key="dictionary.slippage" />:</span>
-                <input type="number" id="slippage" value="0.5" min="0.1" max="50" step="0.1" />
-                <span>%</span>
-            </div>
-            <div id="gas"></div>
-            <div id="error"></div>
-            <div class="buttons">
-                <ui-button class="full" id="submit" disabled>
-                    <ui-context data-key="dictionary.swap" />
-                </ui-button>
-            </div>
+            <ui-card data-title="wallet">
+                <ui-wallets data-currency="false" />
+            </ui-card>
+            <ui-card id="swap-card" data-title="swap">
+                <ui-swap-form id="swap-form" />
+            </ui-card>
         </main>
     </layout-main>
 `

@@ -3,7 +3,7 @@
  * and their compiled JSON to build/statics/items/<game-id>/<item-id>/.
  *
  * Responsibilities:
- *   - write raw.yaml per item (crawler data, icon field stripped)
+ *   - write raw.yaml per item (crawler data, popularity pinned to existing value)
  *   - sync YAML sources to src/ (non-destructive: patch meta.yaml, create locale only if missing)
  *   - compile JSON to build/ (non-destructive: patch meta.json, create locale only if missing)
  *
@@ -278,8 +278,11 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
     const srcDir = [...paths.src.items, gameId, itemId]
     const buildDir = [...paths.build.statics, "items", gameId, itemId]
 
-    // ── raw.yaml (always overwrite: tracks latest crawler output, verbatim) ──
-    await FS.write([...srcDir, "raw.yaml"], raw)
+    // ── raw.yaml (always overwrite: tracks latest crawler output, popularity pinned to existing) ──
+    const rawYamlPath = [...srcDir, "raw.yaml"]
+    const existingRaw = (await FS.exist(rawYamlPath)) ? await FS.load(rawYamlPath) : null
+    const rawToWrite = existingRaw?.popularity != null ? { ...raw, popularity: existingRaw.popularity } : raw
+    await FS.write(rawYamlPath, rawToWrite)
 
     // ── images: hash-based dedupe, append new, mirror to build ──
     stats.imagesSeeded += await syncItemImages(gameId, srcDir, sourceImageMap)

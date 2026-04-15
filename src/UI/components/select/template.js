@@ -6,7 +6,9 @@ export const template = html`
     ${styles}
     <slot></slot>
     <select>
-        <button><ui-context class="placeholder" /><selectedcontent></selectedcontent></button>
+        <button>
+            <selectedcontent></selectedcontent>
+        </button>
     </select>
 `
 

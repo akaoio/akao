@@ -1,6 +1,7 @@
 import { html } from "/core/UI.js"
 import "/UI/layouts/main/index.js"
 import "/UI/components/context/index.js"
+import "/UI/components/loader/index.js"
 import "/UI/components/pool/index.js"
 import styles from "./styles.css.js"
 
@@ -21,9 +22,7 @@ export const template = html`
             </p>
         </section>
 
-        <div id="loader" aria-label="Loading pools">
-            <div class="loader-spinner"></div>
-        </div>
+        <ui-loader id="loader" aria-label="Loading pools"></ui-loader>
 
         <div class="pools-content" hidden>
         <div class="sticky-sentinel"></div>

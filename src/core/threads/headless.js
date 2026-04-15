@@ -60,7 +60,8 @@ Progress.set({
     Dexs: false,
     Wallets: false,
     ZEN: false,
-    Context: false
+    Context: false,
+    Torrent: false
 })
 
 thread.init = async function () {
@@ -81,6 +82,12 @@ thread.init = async function () {
     Progress.set({ Wallets: await Construct.Wallets() })
     Progress.set({ ZEN: await Construct.ZEN() })
     Progress.set({ Context: await Construct.Context() })
+
+    // Init torrent client in main thread for on-demand leech.
+    // Headless does NOT seedAll (97K+ torrents overwhelm Node.js UDP stack).
+    // Seeding is browser-worker-only. Headless = leech-capable P2P client.
+    await Construct.Torrent()
+    if (Statics.torrent) Progress.set({ Torrent: true })
 
     globalThis.headless = true
 }

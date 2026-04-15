@@ -5,9 +5,11 @@ export const styles = css`
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
         svg {
             width: 100%;
             height: 100%;
+            display: block;
         }
     }
 `
