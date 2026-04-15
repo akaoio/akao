@@ -8,7 +8,7 @@ export { encodeQuery, spintax, schemaToDisplay, objectToArray, arrayToString, fi
 
 export { parse as parseCSV, stringify as stringifyCSV } from "./CSV.js"
 
-export { BigNumber, toDecimal, toBigNumber, formatNumber, beautifyNumber, shorten } from "./Utils/number.js"
+export { BigNumber, toDecimal, toBigNumber, formatNumber, beautifyNumber, formatBalance, shorten } from "./Utils/number.js"
 
 export { randomInt, randomText, randomKey, randomItem, sortStrings } from "./Utils/random.js"
 

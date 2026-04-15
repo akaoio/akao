@@ -6,7 +6,7 @@ import { Chains, Lives, Wallets } from "/core/Stores.js"
 import States from "/core/States.js"
 import { Context } from "/core/Context.js"
 import SELECT from "/UI/components/select/index.js"
-import { notify } from "/core/Utils.js"
+import { notify, formatBalance } from "/core/Utils.js"
 import { sha256 } from "/core/Utils/crypto.js"
 import logic from "./logic.js"
 
@@ -64,6 +64,7 @@ export class WALLETS extends HTMLElement {
         this.$address = this.shadowRoot.querySelector("#address")
         this.$copyBtn = this.shadowRoot.querySelector("#copy-btn")
         this.$balance = this.shadowRoot.querySelector("#balance")
+        this.$balanceSymbol = this.shadowRoot.querySelector("#balance-symbol")
         this.$walletNum = this.shadowRoot.querySelector("#wallet-num")
         this.$labelWrap = this.shadowRoot.querySelector("#label-wrap")
         this.$labelInput = this.shadowRoot.querySelector("#label-input")
@@ -251,16 +252,28 @@ export class WALLETS extends HTMLElement {
         this.$address.title = address || ""
         this.$copyBtn.disabled = !address
 
-        if (this.dataset.currency === "false") return
+        if (this.dataset.currency === "false") {
+            // Swap route: show native chain balance
+            const chainObj = Chains[chain]
+            if (chainObj && address) {
+                const raw = await chainObj.balance({ address, currency: null })
+                if (raw != null) {
+                    const locale = Context.get("locale")?.code || "en"
+                    this.$balance.textContent = formatBalance(raw, locale)
+                    this.$balanceSymbol.textContent = chainObj.currencies?.native?.name || ""
+                }
+            }
+            return
+        }
 
         if (chain && this.states.get("currency")) {
             const currency = logic.currency(wallet, this.states.get("currency"))
             const fiat = Context.get("fiat")?.code || "USD"
-            const { raw, amount } = await logic.balance({ wallet, currency, fiat, forex: Lives.forex, address })
+            const { raw } = await logic.balance({ wallet, currency, fiat, forex: Lives.forex, address })
             if (raw !== null) {
                 const locale = Context.get("locale")?.code || "en"
-                const fiatstr = amount > 0 ? " ≈ " + new Intl.NumberFormat(locale, { style: "currency", currency: fiat, notation: "compact" }).format(amount) : ""
-                this.$balance.textContent = `${raw}${fiatstr}`
+                this.$balance.textContent = formatBalance(raw, locale)
+                this.$balanceSymbol.textContent = currency.symbol || ""
             }
         }
     }
@@ -305,6 +318,7 @@ export class WALLETS extends HTMLElement {
         this.$labelInput.disabled = true
         this.$address.textContent = ""
         this.$balance.textContent = ""
+        this.$balanceSymbol.textContent = ""
         this.change()
     }
 
@@ -321,6 +335,7 @@ export class WALLETS extends HTMLElement {
         this.$labelInput.disabled = false
         this.$address.textContent = ""
         this.$balance.textContent = ""
+        this.$balanceSymbol.textContent = ""
         this.change()
     }
 

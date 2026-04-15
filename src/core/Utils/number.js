@@ -35,6 +35,21 @@ export function beautifyNumber(number) {
     return number.toString()
 }
 
+/**
+ * Format a token/crypto balance for display.
+ * - >= 1000: compact suffix (1.2K, 4.5M, 1.2B) via beautifyNumber
+ * - < 1000:  locale-aware decimal, max 4 fraction digits, trailing zeros stripped
+ * @param {number} num
+ * @param {string} [locale="en"]
+ * @returns {string}
+ */
+export function formatBalance(num, locale = "en") {
+    num = Number(num)
+    if (isNaN(num)) return "—"
+    if (num >= 1000) return beautifyNumber(num)
+    return new Intl.NumberFormat(locale, { maximumFractionDigits: 4, minimumFractionDigits: 0 }).format(num)
+}
+
 // Shorten a string, output "asdf...zxcv"
 export function shorten(str, start = 4, end = 4) {
     if (str.length <= start + end) return str
