@@ -1,6 +1,5 @@
 import { Statics } from "./Stores.js"
 
-let GUN
 let ZENRuntime
 let zen = null
 let load = null
@@ -15,9 +14,10 @@ const root = typeof window !== "undefined"
 let init = null
 
 function patchChainOnce() {
-    if (chainOncePatched || !GUN?.chain?.once) return
-    const nativeOnce = GUN.chain.once
-    GUN.chain.once = function (cb, opt) {
+    const chain = ZENRuntime?.graph?.chain
+    if (chainOncePatched || !chain?.once) return
+    const nativeOnce = chain.once
+    chain.once = function (cb, opt) {
         if (typeof cb === "function") return nativeOnce.call(this, cb, opt)
         const timeoutMs = typeof cb === "number"
             ? cb
@@ -48,23 +48,20 @@ function patchChainOnce() {
             }, onceOpt)
         })
     }
-    GUN.chain.once.native = nativeOnce
+    chain.once.native = nativeOnce
     chainOncePatched = true
 }
 
 async function loadZEN() {
-    if (zen && GUN && ZENRuntime) return true
+    if (zen && ZENRuntime) return true
     if (!load)
         load = (async () => {
-            ;({ default: GUN } = await import("@akaoio/zen/gun.js"))
-            await import("@akaoio/zen/sea.js")
-            await import("@akaoio/zen/lib/radix.js")
-            await import("@akaoio/zen/lib/radisk.js")
-            await import("@akaoio/zen/lib/opfs.js")
-            await import("@akaoio/zen/lib/rindexed.js")
-            await import("@akaoio/zen/lib/store.js")
-            await import("@akaoio/zen/src/pen.js")
-            ;({ default: ZENRuntime } = await import("@akaoio/zen/zen.js"))
+            ;({ default: ZENRuntime } = await import("/core/ZEN/zen.js"))
+            await import("/core/ZEN/lib/radix.js")
+            await import("/core/ZEN/lib/radisk.js")
+            await import("/core/ZEN/lib/opfs.js")
+            await import("/core/ZEN/lib/rindexed.js")
+            await import("/core/ZEN/lib/store.js")
             patchChainOnce()
             zen = new ZENRuntime()
             return true
@@ -96,7 +93,7 @@ export async function initZEN() {
     if (!init)
         init = Promise.resolve()
             .then(() => {
-                runtime.use(GUN(options()))
+                runtime.use(ZENRuntime.graph.create(options()))
                 return true
             })
             .catch((error) => {

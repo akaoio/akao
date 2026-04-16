@@ -358,17 +358,14 @@ log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite
 
 // Copy zen runtime files to ZEN folder
 log.info("Copying zen library to ZEN...")
-const gunFiles = ["gun.js", "sea.js", "zen.js", "pen.wasm", "lib/"]
-for (const filePath of gunFiles) {
+const zenFiles = ["zen.js", "pen.wasm", "lib/"]
+for (const filePath of zenFiles) {
     const segments = filePath.split("/").filter(Boolean)
     const src = ["node_modules", "@akaoio", "zen", ...segments]
     const dest = [...paths.build.core, "ZEN", ...segments]
     await FS.copy(src, dest)
 }
 await FS.copy(["node_modules", "@akaoio", "zen", "lib", "opfs.js"], [...paths.build.core, "ZEN", "lib", "opfs.js"])
-await FS.copy(["node_modules", "@akaoio", "zen", "src", "pen.js"], [...paths.build.core, "ZEN", "src", "pen.js"])
-await FS.copy(["node_modules", "@akaoio", "zen", "src", "pen.wasm"], [...paths.build.core, "ZEN", "src", "pen.wasm"])
-await FS.copy(["node_modules", "@akaoio", "zen", "src", "zen", "security.js"], [...paths.build.core, "ZEN", "src", "zen", "security.js"])
 log.ok(`Copied zen files to ZEN`)
 
 // Build routes list using regex pattern and post-process
@@ -430,7 +427,7 @@ console.log(`${icons.done} ${color.ok("Game Namespaces")}: ${Object.keys(gameIte
 console.log(`${icons.done} ${color.ok("Items (Total)")}: ${totalItemCount}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
-console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)
+console.log(`${icons.done} ${color.ok("Zen Files")}: ${zenFiles.length}`)
 if (await FS.exist(geoPath)) console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
 
 log.section("========================================")
