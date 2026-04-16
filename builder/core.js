@@ -358,15 +358,19 @@ log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite
 
 // Copy zen runtime files to ZEN folder
 log.info("Copying zen library to ZEN...")
-const zenFiles = ["zen.js", "pen.wasm", "lib/"]
+const zenFiles = [
+    "zen.js",
+    "zen.min.js",
+    "pen.wasm",
+    "lib/"
+]
 for (const filePath of zenFiles) {
     const segments = filePath.split("/").filter(Boolean)
     const src = ["node_modules", "@akaoio", "zen", ...segments]
     const dest = [...paths.build.core, "ZEN", ...segments]
     await FS.copy(src, dest)
 }
-await FS.copy(["node_modules", "@akaoio", "zen", "lib", "opfs.js"], [...paths.build.core, "ZEN", "lib", "opfs.js"])
-log.ok(`Copied zen files to ZEN`)
+log.ok("Copied zen.min.js + required browser ZEN libs")
 
 // Build routes list using regex pattern and post-process
 log.info("Building routes list...")

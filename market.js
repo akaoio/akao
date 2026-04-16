@@ -1,5 +1,4 @@
-import Gun from "@akaoio/zen"
-import "@akaoio/zen/sea.js"
+import ZEN from "@akaoio/zen"
 import { FS } from "./src/core/FS.js"
 import http from "http"
 
@@ -19,8 +18,8 @@ if (!marketPub) {
     throw new Error("Missing market pub key. Provide pairs.market.pub or site.market.pub.")
 }
 
-const PORT = process.env.GUN_PORT || 8765
-const RELAY_URL = `http://127.0.0.1:${PORT}/gun`
+const PORT = process.env.ZEN_PORT || 8765
+const RELAY_URL = `http://127.0.0.1:${PORT}/zen`
 
 async function alive(url) {
     try {
@@ -32,14 +31,14 @@ async function alive(url) {
 }
 
 if (await alive(RELAY_URL)) {
-    console.log(`Gun relay already running at ${RELAY_URL}`)
+    console.log(`ZEN relay already running at ${RELAY_URL}`)
     process.exit(0)
 }
 
-const server = http.createServer(Gun.serve("./build"))
-server.listen(PORT, () => console.log(`Gun relay: http://localhost:${PORT}/gun`))
+const server = http.createServer(ZEN.serve("./build"))
+server.listen(PORT, () => console.log(`ZEN relay: http://localhost:${PORT}/zen`))
 
-export const db = Gun({ web: server, peers })
+export const db = new ZEN({ web: server, peers })
 
 const fiats = await FS.load(["src", "statics", "fiats.yaml"])
 
