@@ -1,24 +1,17 @@
-let NODE = false
-let BROWSER = false
-let WIN = false
+export function detectEnvironment(scope = globalThis) {
+    const NODE = !!scope?.process?.versions?.node
+    const BROWSER = !NODE && !!scope?.location?.origin
+    const WIN = scope?.process?.platform === "win32"
+    const DEV = BROWSER && (
+        scope?._dev === true
+        || scope?._dev?.enabled === true
+        || scope?.location?.hostname === "localhost"
+        || scope?.location?.hostname === "127.0.0.1"
+    )
 
-if (globalThis?.process?.versions?.node) {
-    NODE = true
-    BROWSER = !NODE
+    return { NODE, BROWSER, WIN, DEV }
 }
 
-if (globalThis?.location?.origin) {
-    BROWSER = true
-    NODE = !BROWSER
-}
-
-if (globalThis?.process?.platform === "win32") WIN = true
-
-const DEV = BROWSER && (
-    globalThis?._dev === true
-    || globalThis?._dev?.enabled === true
-    || globalThis?.location?.hostname === "localhost"
-    || globalThis?.location?.hostname === "127.0.0.1"
-)
+const { NODE, BROWSER, WIN, DEV } = detectEnvironment()
 
 export { NODE, BROWSER, WIN, DEV }

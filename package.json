@@ -57,7 +57,7 @@
     "lint:fix": "eslint \"src/**/*.js\" --fix"
   },
   "devDependencies": {
-    "@akaoio/zen": "github:akaoio/zen#20ffeab",
+    "@akaoio/zen": "github:akaoio/zen#8ea3d75",
     "@sqlite.org/sqlite-wasm": "^3.51.2-build8",
     "adm-zip": "^0.5.16",
     "bootstrap-icons": "^1.13.1",

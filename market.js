@@ -10,7 +10,6 @@ const preferredDomain = process.env.SITE || (env === "production" ? "mimiza.com"
 const siteName = domains?.[preferredDomain] || "localhost"
 const site = await FS.load(["src", "statics", "sites", siteName, "configs.yaml"])
 
-const peers = Array.isArray(site?.peers) ? site.peers : []
 const marketPair = pairs?.market
 const marketPub = marketPair?.pub || site?.market?.pub
 
@@ -20,6 +19,20 @@ if (!marketPub) {
 
 const PORT = process.env.ZEN_PORT || 8765
 const RELAY_URL = `http://127.0.0.1:${PORT}/zen`
+const RELAY_URL_LOCALHOST = `http://localhost:${PORT}/zen`
+
+function normalizePeer(url = "") {
+    return String(url || "")
+        .trim()
+        .replace(/^ws/i, "http")
+        .replace(/\/+$/, "")
+}
+
+const peers = (Array.isArray(site?.peers) ? site.peers : [])
+    .filter((peer) => {
+        const value = normalizePeer(peer)
+        return value && value !== normalizePeer(RELAY_URL) && value !== normalizePeer(RELAY_URL_LOCALHOST)
+    })
 
 async function alive(url) {
     try {

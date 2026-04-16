@@ -9,6 +9,18 @@ let init = null
 
 const chainWrappers = new WeakMap()
 
+function isBrowserRuntime() {
+    return !!globalThis.window
+        && !!globalThis.document
+        && !globalThis?.process?.versions?.node
+}
+
+function asset(specifier) {
+    return isBrowserRuntime()
+        ? `/core/ZEN/${specifier}`
+        : new URL(`./ZEN/${specifier}`, import.meta.url).href
+}
+
 function isChainLike(value) {
     return !!value && typeof value === "object" && typeof value.get === "function" && typeof value.once === "function"
 }
@@ -81,12 +93,12 @@ async function loadZEN() {
     if (zen && ZENRuntime) return true
     if (!load)
         load = (async () => {
-            ;({ default: BaseZENRuntime } = await import("/core/ZEN/zen.min.js"))
-            await import("/core/ZEN/lib/radix.js")
-            await import("/core/ZEN/lib/radisk.js")
-            await import("/core/ZEN/lib/opfs.js")
-            await import("/core/ZEN/lib/rindexed.js")
-            await import("/core/ZEN/lib/store.js")
+            ;({ default: BaseZENRuntime } = await import(asset("zen.min.js")))
+            await import(asset("lib/radix.js"))
+            await import(asset("lib/radisk.js"))
+            await import(asset("lib/opfs.js"))
+            await import(asset("lib/rindexed.js"))
+            await import(asset("lib/store.js"))
             ZENRuntime = createRuntimeClass(BaseZENRuntime)
             zen = new ZENRuntime()
             return true
