@@ -24,7 +24,7 @@ thread.forex = async () => {
         .on((quotes, base) => {
             forex[base] = {}
             for (const [quote, value] of Object.entries(quotes)) {
-                if (quote == "_") continue // Ignore gun metadata
+                if (quote == "_") continue // skip ZEN metadata key
                 forex[base][quote] = value
                 // Save forex rates to IndexedDB
                 Indexes.Lives.get("forex").get(base).get(quote).put(value)

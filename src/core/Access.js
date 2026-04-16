@@ -171,15 +171,12 @@ async function save(credential) {
     if (!pair) return { error: "No pair found" }
     const encrypted = await zen.encrypt(credential.pub, pair)
     zen.get("~" + pair.pub).get("@").put(encrypted, null, { opt: { authenticator: pair } })
-    // Register pub in the ~ shard network so it can be discovered by prefix traversal
-    // Break the pub into smaller chunks to avoid hitting Gun's node size limits
+    // Register pub in the ~ shard network so it can be discovered by prefix traversal.
+    // Build soul = "~/" + all-but-last chunks, key = last chunk, value = link to ~pub.
     const chunks = pair.pub.match(/.{1,2}/g) || []
-    let node = zen.get("~")
-    // Traverse or create nodes for each chunk of the pub key
-    // It now looks like this: gun.get("~").get("ab").get("cd").get("ef")... and so on until the full pub is traversed
-    for (const chunk of chunks) node = node.get(chunk)
-    // Finally, store a reference to the encrypted pub at the end of the traversal
-    node.put({ "#": "~" + pair.pub }, null, { opt: { authenticator: pair } })
+    const key = chunks.pop()
+    const soul = chunks.length ? "~/" + chunks.join("/") : "~"
+    zen.get(soul).get(key).put({ "#": "~" + pair.pub }, null, { opt: { authenticator: pair } })
     return encrypted
 }
 
