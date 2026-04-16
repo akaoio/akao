@@ -27,8 +27,8 @@ export class Logic {
     static async identiconseedfor(avatarId) {
         const seed = Access.get("seed")
         if (!seed) return null
-        const hashed = await zen.work(seed, "avatar")
-        const idSeed = await zen.work(hashed, avatarId)
+        const hashed = await zen.hash(seed, "avatar")
+        const idSeed = await zen.hash(hashed, avatarId)
         const h1 = Logic.hashcode(idSeed) % 360
         const h2 = (h1 + 150) % 360
         return { idSeed, h1, h2 }

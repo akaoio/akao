@@ -45,7 +45,7 @@ export class Logic {
         const rawSeed = Access.get("seed")
         if (!rawSeed) return null
         if (!zen) return null
-        return zen.work(rawSeed, "wallet")
+        return zen.hash(rawSeed, "wallet")
     }
 
     static writeLabel(pair, id, label) { return writeLabel(pair, id, label) }

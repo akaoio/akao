@@ -56,27 +56,15 @@ async function loadZEN() {
     if (zen && GUN && ZENRuntime) return true
     if (!load)
         load = (async () => {
-            try {
-                ;({ default: GUN } = await import("./ZEN/gun.js"))
-                await import("./ZEN/sea.js")
-                await import("./ZEN/lib/radix.js")
-                await import("./ZEN/lib/radisk.js")
-                await import("./ZEN/lib/opfs.js")
-                await import("./ZEN/lib/rindexed.js")
-                await import("./ZEN/lib/store.js")
-                await import("./ZEN/src/pen.js")
-                ;({ default: ZENRuntime } = await import("./ZEN/zen.js"))
-            } catch {
-                ;({ default: GUN } = await import("@akaoio/zen/gun.js"))
-                await import("@akaoio/zen/sea.js")
-                await import("@akaoio/zen/lib/radix.js")
-                await import("@akaoio/zen/lib/radisk.js")
-                await import("@akaoio/zen/lib/opfs.js")
-                await import("@akaoio/zen/lib/rindexed.js")
-                await import("@akaoio/zen/lib/store.js")
-                await import("@akaoio/zen/src/pen.js")
-                ;({ default: ZENRuntime } = await import("@akaoio/zen/zen.js"))
-            }
+            ;({ default: GUN } = await import("@akaoio/zen/gun.js"))
+            await import("@akaoio/zen/sea.js")
+            await import("@akaoio/zen/lib/radix.js")
+            await import("@akaoio/zen/lib/radisk.js")
+            await import("@akaoio/zen/lib/opfs.js")
+            await import("@akaoio/zen/lib/rindexed.js")
+            await import("@akaoio/zen/lib/store.js")
+            await import("@akaoio/zen/src/pen.js")
+            ;({ default: ZENRuntime } = await import("@akaoio/zen/zen.js"))
             patchChainOnce()
             zen = new ZENRuntime()
             return true

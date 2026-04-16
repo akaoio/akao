@@ -19,7 +19,7 @@ function hashHue(str) {
 export async function cachedWork(data, salt) {
     const key = `${data}:${salt}`
     if (_workCache.has(key)) return _workCache.get(key)
-    const result = await zen.work(data, salt)
+    const result = await zen.hash(data, salt)
     _workCache.set(key, result)
     return result
 }

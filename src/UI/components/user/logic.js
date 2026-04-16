@@ -7,8 +7,8 @@ export class Logic {
         const id = Access.get("avatar")?.id
         if (!rawSeed || id == null) return null
         if (!zen) return null
-        const namespaced = await zen.work(rawSeed, "avatar")
-        return zen.work(namespaced, id)
+        const namespaced = await zen.hash(rawSeed, "avatar")
+        return zen.hash(namespaced, id)
     }
 }
 

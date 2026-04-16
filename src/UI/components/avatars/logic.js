@@ -5,7 +5,7 @@ export class Logic {
     static async seed() {
         const rawSeed = Access.get("seed")
         if (!rawSeed) return null
-        return zen.work(rawSeed, "avatar")
+        return zen.hash(rawSeed, "avatar")
     }
 
     static id() {
