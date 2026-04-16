@@ -48,7 +48,7 @@ export async function putTradeRecord({ runtime = zen, gun, pub, tradeId, fields,
             if (ack?.err) return reject(new Error(ack.err))
             resolve({ tradeId, ...fields })
         }
-        if (pair) node.put(fields, callback, { opt: { authenticator: pair } })
+        if (pair) node.put(fields, callback, { authenticator: pair })
         else node.put(fields, callback)
     })
 }
@@ -126,6 +126,6 @@ async function ensureUserNamespace({ runtime = zen, gun, pub, pair } = {}) {
         runtime.get("~" + pub).get("pub").put(pub, (ack) => {
             if (ack?.err) return reject(new Error(ack.err))
             resolve()
-        }, { opt: { authenticator: pair } })
+        }, { authenticator: pair })
     })
 }

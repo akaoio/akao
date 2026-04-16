@@ -13,6 +13,6 @@ export async function create() {
     const s = soul.call(this, { candle: meta.candle })
     const data = payload(this, { orderId, status: "open" })
     const value = await zen.sign(JSON.stringify(data), this.pair)
-    await new Promise(r => zen.get(s).get(k).put(value, r, { opt: { authenticator: this.pair } }))
+    await new Promise(r => zen.get(s).get(k).put(value, r, { authenticator: this.pair }))
     return { orderId, key: k }
 }

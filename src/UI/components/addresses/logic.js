@@ -61,15 +61,15 @@ export class Logic {
         const encrypted = await zen.encrypt(address, pair)
         const root = zen.get("~" + pair.pub)
         const scope = root.get("addresses").get(address.id)
-        scope.put(encrypted, null, { opt: { authenticator: pair } })
-        if (billing) root.get("billing").put(scope, null, { opt: { authenticator: pair } })
-        if (shipping) root.get("shipping").put(scope, null, { opt: { authenticator: pair } })
+        scope.put(encrypted, null, { authenticator: pair })
+        if (billing) root.get("billing").put(scope, null, { authenticator: pair })
+        if (shipping) root.get("shipping").put(scope, null, { authenticator: pair })
     }
 
     static remove(id) {
         const pair = Access.get("pair")
         if (!pair) return
-        zen.get("~" + pair.pub).get("addresses").get(id).put(null, null, { opt: { authenticator: pair } })
+        zen.get("~" + pair.pub).get("addresses").get(id).put(null, null, { authenticator: pair })
     }
 }
 

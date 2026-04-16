@@ -16,7 +16,7 @@ export async function match({ orderId, makerpub, key }) {
         if (!meta) return { error: "invalidKey" }
         const data = JSON.stringify({ tradeId, taker: this.pair.pub, status: "matched" })
         const value = await zen.sign(data, this.pair)
-        await new Promise(r => zen.get(soul.call(this, { candle: meta.candle })).get(key).put(value, r, { opt: { authenticator: this.pair } }))
+        await new Promise(r => zen.get(soul.call(this, { candle: meta.candle })).get(key).put(value, r, { authenticator: this.pair }))
     }
     return { tradeId }
 }

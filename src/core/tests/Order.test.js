@@ -153,7 +153,7 @@ async function publishOrder({ pair = PAIR_MAKER, baseId = ITEM, side = "buy", st
         status: "open"
     }
     const value = await _SEA.sign(JSON.stringify(record), pair)
-    await new Promise((resolve) => state.zen.get(soulFn({ baseId, side, candle })).get(key).put(value, resolve, { opt: { authenticator: pair } }))
+    await new Promise((resolve) => state.zen.get(soulFn({ baseId, side, candle })).get(key).put(value, resolve, { authenticator: pair }))
     return { key, candle, value }
 }
 

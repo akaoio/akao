@@ -49,7 +49,7 @@ export class Logic {
         value = value.trim()
         const pair = Access.get("pair")
         if (!pair || !value) return null
-        zen.get("~" + pair.pub).get("name").put(value, null, { opt: { authenticator: pair } })
+        zen.get("~" + pair.pub).get("name").put(value, null, { authenticator: pair })
         return value
     }
 
@@ -64,7 +64,7 @@ export class Logic {
         value = value.trim().slice(0, 360)
         const pair = Access.get("pair")
         if (!pair) return null
-        zen.get("~" + pair.pub).get("bio").put(value, null, { opt: { authenticator: pair } })
+        zen.get("~" + pair.pub).get("bio").put(value, null, { authenticator: pair })
         return value
     }
 
@@ -88,7 +88,7 @@ export class Logic {
                 .filter(([k, v]) => allowed.includes(k) && typeof v === "string" && v.trim() && /^[a-zA-Z0-9._-]{1,64}$/.test(v.trim()))
                 .map(([k, v]) => [k, v.trim()])
         )
-        zen.get("~" + pair.pub).get("links").put(JSON.stringify(clean), null, { opt: { authenticator: pair } })
+        zen.get("~" + pair.pub).get("links").put(JSON.stringify(clean), null, { authenticator: pair })
         return clean
     }
 
@@ -107,14 +107,14 @@ export class Logic {
         if (list.some((f) => f.pub === pub)) return null
         const pair = Access.get("pair")
         if (!pair) return null
-        zen.get("~" + pair.pub).get("following").get(pub).put({ name, at: Date.now() }, null, { opt: { authenticator: pair } })
+        zen.get("~" + pair.pub).get("following").get(pub).put({ name, at: Date.now() }, null, { authenticator: pair })
         return { pub, name }
     }
 
     static removefollow(pub) {
         const pair = Access.get("pair")
         if (!pair) return
-        zen.get("~" + pair.pub).get("following").get(pub).put(null, null, { opt: { authenticator: pair } })
+        zen.get("~" + pair.pub).get("following").get(pub).put(null, null, { authenticator: pair })
     }
 }
 

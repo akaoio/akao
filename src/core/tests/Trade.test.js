@@ -38,7 +38,7 @@ function makeGun() {
 
 async function put(gun, pub, pair, key, value) {
     await new Promise((resolve) => {
-        gun.get("~" + pub).get(key).put(value, resolve, { opt: { authenticator: pair } })
+        gun.get("~" + pub).get(key).put(value, resolve, { authenticator: pair })
     })
 }
 

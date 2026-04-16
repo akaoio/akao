@@ -106,7 +106,7 @@ const loop = async () => {
         data = await erapi()
         if (data) update(data)
         const node = db.get(`~${marketPub}`).get("forex")
-        if (marketPair) node.put(rates, null, { opt: { authenticator: marketPair } })
+        if (marketPair) node.put(rates, null, { authenticator: marketPair })
         else node.put(rates)
     } catch (error) {
         console.error(error)

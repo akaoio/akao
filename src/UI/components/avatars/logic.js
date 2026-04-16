@@ -21,7 +21,7 @@ export class Logic {
         const total = value >= current ? Math.ceil((value + 1) / step) * step : current
         setAvatar({ id: value, total: total !== current ? total : undefined })
         const pair = Access.get("pair")
-        if (pair) zen.get("~" + pair.pub).get("avatar").put(value, null, { opt: { authenticator: pair } })
+        if (pair) zen.get("~" + pair.pub).get("avatar").put(value, null, { authenticator: pair })
         return value
     }
 

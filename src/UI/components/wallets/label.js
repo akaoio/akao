@@ -14,7 +14,7 @@ export async function writeLabel(pair, id, label) {
         zen.get(`~${pair.pub}`).get("wallets").put(
             { [id]: String(label) },
             (ack) => { if (ack?.err) reject(new Error(ack.err)); else resolve() },
-            { opt: { authenticator: pair } }
+            { authenticator: pair }
         )
     })
 }

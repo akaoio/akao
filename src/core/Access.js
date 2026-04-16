@@ -170,13 +170,13 @@ async function save(credential) {
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
     const encrypted = await zen.encrypt(credential.pub, pair)
-    zen.get("~" + pair.pub).get("@").put(encrypted, null, { opt: { authenticator: pair } })
+    zen.get("~" + pair.pub).get("@").put(encrypted, null, { authenticator: pair })
     // Register pub in the ~ shard network so it can be discovered by prefix traversal.
     // Build soul = "~/" + all-but-last chunks, key = last chunk, value = link to ~pub.
     const chunks = pair.pub.match(/.{1,2}/g) || []
     const key = chunks.pop()
     const soul = chunks.length ? "~/" + chunks.join("/") : "~"
-    zen.get(soul).get(key).put({ "#": "~" + pair.pub }, null, { opt: { authenticator: pair } })
+    zen.get(soul).get(key).put({ "#": "~" + pair.pub }, null, { authenticator: pair })
     return encrypted
 }
 
