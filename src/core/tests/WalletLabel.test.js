@@ -1,10 +1,12 @@
 import Test from "../Test.js"
 import { launch } from "../Launcher.js"
+import zen, { initZEN } from "../ZEN.js"
 import { writeLabel, readLabel } from "../../UI/components/wallets/label.js"
 
 await launch({ mode: "headless" })
+await initZEN()
 
-const PAIR = await globalThis.sea.pair()
+const PAIR = await zen.pair()
 
 let _nextId = 0
 const nextId = () => _nextId++
@@ -31,7 +33,7 @@ Test.describe("WalletLabel", () => {
     })
 
     Test.it("rejects when pair is unavailable", async () => {
-        await Test.assert.rejects(writeLabel(null, nextId(), "x"), "No gun/pair")
+        await Test.assert.rejects(writeLabel(null, nextId(), "x"), "No zen/pair")
     })
 
 })

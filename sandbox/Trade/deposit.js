@@ -21,14 +21,14 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
     if (!payerEntity?.pair) throw new Error("payerPairRequired")
     if (!recipientEntity?.pub && !xpub) throw new Error("recipientRequired")
 
-    // TODO(debt): this only verifies "xpub exists in gun.user(pub)".
+    // TODO(debt): this only verifies "xpub exists in zen.user(pub)".
     // release()/refund() additionally require platform-derived xpub validation via platpair.
     // Until deposit() enforces the same invariant, a crafted published xpub can pass deposit
     // but fail later in platform-mediated unhappy paths.
-    const recipientXpub = xpub || await resolvePublishedXpub({ gun: this.gun, party: recipientEntity })
+    const recipientXpub = xpub || await resolvePublishedXpub({ zen: this.zen, party: recipientEntity })
     const affiliateXpub = xpubAffiliate || (
         affiliateEntity?.pub
-            ? await resolvePublishedXpub({ gun: this.gun, party: affiliateEntity })
+            ? await resolvePublishedXpub({ zen: this.zen, party: affiliateEntity })
             : null
     )
 
@@ -78,7 +78,7 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
             txs: JSON.stringify(txs)
         }
         await putTradeRecord({
-            gun: this.gun,
+            zen: this.zen,
             pub: payerEntity.pub,
             tradeId: resolvedTradeId,
             fields: partial,
@@ -89,7 +89,7 @@ export async function deposit({ tradeId, payer, recipient, affiliate = null, xpu
 
     if (txs.length) {
         await putTradeRecord({
-            gun: this.gun,
+            zen: this.zen,
             pub: payerEntity.pub,
             tradeId: resolvedTradeId,
             fields: {

@@ -1,6 +1,6 @@
 # P2P Trading Platform Protocol
 
-**Version** 2.0 · **Status** Production · **Date** 2026-04-06
+**Version** 2.1 · **Status** Production · **Date** 2026-04-15
 
 > **Supersedes**: v1.0 eCommerce model (deprecated - see `white-paper-v1-ecommerce-deprecated.md`)
 >
@@ -12,7 +12,7 @@
 
 This document specifies a **trustless, serverless platform protocol for peer-to-peer trading** of digital assets (game items, NFTs, digital goods). The protocol enables a platform operator to mediate trades between two traders (maker and taker) using deterministic cryptographic key derivation — eliminating the need for smart contracts, custodial accounts, or trusted third-party oracles.
 
-All platform wallet addresses are derived client-side from **Diffie-Hellman shared secrets** and **BIP-32 hierarchical deterministic key derivation**, ensuring that each party holds exactly the access rights the protocol intends, and no more.
+All platform wallet addresses are derived client-side from **Diffie-Hellman shared secrets** and **ZEN deterministic secp256k1 derivation**. AKAO no longer depends on GunDB cryptography or `ethers.js` HD-wallet primitives for offline key computation. **ZEN** owns offline cryptographic derivation; **Ethers.js** is retained only for RPC communication, transaction serialization, and chain transport.
 
 ### Think DEX, Not Marketplace
 
@@ -26,7 +26,7 @@ All platform wallet addresses are derived client-side from **Diffie-Hellman shar
 - ✅ **Symmetric roles**: Anyone can create buy OR sell orders
 - ✅ **Trader-centric**: Maker/Taker like Uniswap, dYdX, Binance
 - ✅ **Bi-directional**: Orders are just intentions (buy intention = sell intention from other side)
-- ✅ **Order book**: Decentralized discovery via Gun + Pen validation, partitioned by item soul and order-side soul
+- ✅ **Order book**: Decentralized discovery via ZEN + Pen validation, partitioned by item soul and order-side soul
 - ✅ **Affiliate economy**: Built-in referral commissions
 - ✅ **Non-custodial (happy path)**: Platform arbitrates disputes/refunds, not involved in normal trades
 
@@ -49,12 +49,10 @@ All platform wallet addresses are derived client-side from **Diffie-Hellman shar
 | **FP** | Fund Proof | Pre-deposit wallet for buy orders (proof of funds) |
 | **TL** | Transaction Lock | Platform wallet holding trade payment |
 | **CL** | Commission Lock | Platform wallet holding affiliate commission |
-| **SEA** | Security, Encryption, Authorization | GunDB's cryptography library (Curve25519) |
-| **BIP-32** | Bitcoin Improvement Proposal 32 | Hierarchical deterministic wallet standard |
+| **ZEN** | ZEN Runtime | AKAO's offline cryptography and deterministic secp256k1 derivation runtime |
 | **ECDH** | Elliptic Curve Diffie-Hellman | Shared secret key exchange protocol |
-| **HD** | Hierarchical Deterministic | Wallet derivation system (BIP-32) |
-| **xpub** | Extended Public Key | Watch-only public key for address derivation |
-| **xprv** | Extended Private Key | Root private key for spending |
+| **Public pair** | Public Pair | The `pub/epub` half of a ZEN pair, sufficient for deterministic watch-only lock derivation |
+| **Root pair** | Root Full Pair | Full private/public root pair used to derive spending keys |
 | **DSL** | Domain-Specific Language | Pen validation language for order keys |
 
 ---
@@ -76,57 +74,76 @@ All platform wallet addresses are derived client-side from **Diffie-Hellman shar
 
 | Wallet | Symbol | Full Name | Purpose | Derived From |
 |--------|--------|-----------|---------|--------------|
-| Fund Proof | **FP** | Fund Proof | Pre-deposit for buy orders (proof of funds) | `root_M` (Maker's own root) |
-| Payment platform | **TL** | Transaction Lock | Holds trade payment (payer → recipient) | `root_MP` or `root_TP` (recipient's root) |
-| Commission platform | **CL** | Commission Lock | Holds affiliate commission (payer → affiliate) | `root_AP` (affiliate's root) |
+| Fund Proof | **FP** | Fund Proof | Pre-deposit for buy orders (proof of funds) | Maker root pair |
+| Payment platform | **TL** | Transaction Lock | Holds trade payment (payer → recipient) | Recipient public pair (`pub/epub`) + payer unlock seed |
+| Commission platform | **CL** | Commission Lock | Holds affiliate commission (payer → affiliate) | Affiliate public pair (`pub/epub`) + payer unlock seed |
 
 **Notes:** 
 - **FP** (buy orders only): Maker deposits before posting order → Taker verifies on-chain → funds transfer to TL/CL after matching
 - Each trade creates exactly 2 lock wallets: 1 TL (payment) + 1 CL (commission, if affiliate exists)
-- FP uses **maker's own root** (maker controls funds), TL/CL use **recipient's root** (trustless platform)
+- FP uses **maker's own root pair** (maker controls funds), TL/CL use the **recipient/affiliate public pair (`pub/epub`)** for watch-only derivation and the corresponding **root pair** for spending derivation later
 
 ### Trust Assumptions
 
 - **P is trusted** to act honestly as arbiter (semi-centralized model)
 - **No party other than P** can unilaterally move funds from platform before trade resolution
 - **Both traders trust P** to resolve disputes fairly
-- All parties have valid **SEA key pairs** registered via WebAuthn
+- All parties have valid **ZEN key pairs** registered via WebAuthn
 
 ---
 
 ## 2. Cryptographic Primitives
 
-Same as v1.0 (no changes):
+Core primitives remain deterministic, but the implementation is now ZEN-native:
 
-### 2.1 ECDH Shared Secret — `sea.secret`
+### 2.1 ECDH Shared Secret — `zen.secret`
 
-`sea.secret(theirPublicKey, myKeyPair)` over Curve25519 (GunDB SEA library).
+`zen.secret(theirPublicKey, myKeyPair)` via ZEN.
 
 **Properties:**
-- **Symmetric:** `sea.secret(P.epub, M.pair) === sea.secret(M.epub, P.pair)`
+- **Symmetric:** `zen.secret(P.epub, M.pair) === zen.secret(M.epub, P.pair)`
 - **Deterministic:** Same inputs → same output
 - **Pair-scoped:** `secret_MP ≠ secret_TP`
 
 ```javascript
-const secret_MP = await sea.secret(P.epub, M.pair)  // M computes
-const secret_MP = await sea.secret(M.epub, P.pair)  // P computes (same result)
+const secret_MP = await zen.secret(P.epub, M.pair)  // M computes
+const secret_MP = await zen.secret(M.epub, P.pair)  // P computes (same result)
 ```
 
-### 2.2 BIP-32 Hierarchical Deterministic Wallets
+### 2.2 ZEN Deterministic secp256k1 Derivation
 
-From `ethers.js`:
+From `ZEN`:
 
 ```javascript
-import { HDNodeWallet, getBytes } from "/core/Ethers.js"
+const root = await zen.pair(null, { seed: seedHex }) // full pair
 
-const root = HDNodeWallet.fromSeed(getBytes("0x" + seedHex))
-const xpub = root.neuter().extendedKey     // watch-only
-const child = root.deriveChild(index)       // non-hardened derivation
+const lockPub = await zen.pair(null, {
+    pub: root.pub,
+    epub: root.epub,
+    seed: unlockSeed
+}) // watch-only child public key
+
+const lockPair = await zen.pair(null, {
+    priv: root.priv,
+    epriv: root.epriv,
+    seed: unlockSeed
+}) // full child pair
 ```
 
-**Critical property:** Anyone with `xpub` can derive child addresses, but only the holder of `xprv` can spend.
+**Critical property:** Anyone with the published **public pair** (`pub/epub`) plus `unlockSeed` can derive the lock public key/address, but only the holder of the matching **root pair** can derive the lock private key and spend.
 
-### 2.3 SHA-256 — `sha256`
+### 2.3 Ethers.js Transport Role
+
+`ethers.js` remains in the stack only for:
+
+- RPC providers
+- chain reads (`getBalance`, `call`, `estimateGas`)
+- transaction serialization/sign/send once a private key is already known
+- address formatting / EVM transport adapters
+
+`ethers.js` is **not** the source of AKAO's offline deterministic wallet derivation anymore.
+
+### 2.4 SHA-256 — `sha256`
 
 From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 
@@ -142,8 +159,7 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
     side: "buy",
     maker: {
         pub: "maker_pub_key",
-        epub: "maker_epub_key",
-        xpub: "maker_root_xpub"
+        epub: "maker_epub_key"
     },
     base: {
         type: "item",
@@ -166,8 +182,7 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
     side: "sell",
     maker: {
         pub: "maker_pub_key",
-        epub: "maker_epub_key",
-        xpub: "maker_root_xpub"
+        epub: "maker_epub_key"
     },
     base: {
         type: "item",
@@ -191,18 +206,18 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 2. Taker discovers order → compiles the current and previous `(baseId, side, candle)` souls, then scans both
 3. Taker accepts order → trade status: "open" → "matched" (both parties known)
 4. Payer deposits to platform (Maker for buy, Taker for sell):
-   - Computes TL/CL from recipient's xpub + payer's index
+   - Computes TL/CL from recipient's public pair (`pub/epub`) + payer's unlock seed
    - Deposits within 10-min timeout or trade auto-cancels
 5. In-game item delivery (trade/mail/drop)
-6. Buyer confirms → reveals index to seller/affiliate
-7. Recipients withdraw using own root + revealed index
+6. Buyer confirms → reveals unlock seed to seller/affiliate
+7. Recipients withdraw using own root pair + revealed unlock seed
 8. Trade status: "matched" → "deposited" → "delivered" → "completed"
 ```
 
 ### 3.3 Key Derivation Strategy
 
 **Changes from v1.0:**
-- **No per-item platform roots** (items don't need separate xpub trees for settlement)
+- **No per-item platform roots** (items don't need separate published derivation trees for settlement)
 - **Per-item, per-type, per-candle Pen souls** for discovery (`item + side + time window` define the soul identity)
 - **One root per trader-platform pair**
 - **Two platform wallets per trade:**
@@ -219,35 +234,39 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
 |---|---|
 | `⊕` | String concatenation with `":"` separator |
 | `sha256(x)` | SHA-256 hex (64 chars) |
-| `fromSeed(h)` | `HDNodeWallet.fromSeed(getBytes("0x" + h))` |
-| `index(h)` | `parseInt(h.substring(0, 8), 16) & 0x7fffffff` (31-bit non-hardened) |
+| `rootPair(h)` | `await zen.pair(null, { seed: h })` |
+| `lockPub(pair, s)` | `await zen.pair(null, { pub: pair.pub, epub: pair.epub, seed: s })` |
+| `lockPair(pair, s)` | `await zen.pair(null, { priv: pair.priv, epriv: pair.epriv, seed: s })` |
+| `unlockSeed(x)` | deterministic hex/base62 seed derived from `sha256(...)` |
 
 ### 4.2 Root Key for Each Trader/Affiliate
 
-Each party derives a single root HD key with Platform:
+Each party derives a single root ZEN pair with Platform:
 
 ```javascript
-secret_MP  =  sea.secret(P.epub, M.pair)
-secret_TP  =  sea.secret(P.epub, T.pair)
-secret_AP  =  sea.secret(P.epub, A.pair)
+secret_MP  =  zen.secret(P.epub, M.pair)
+secret_TP  =  zen.secret(P.epub, T.pair)
+secret_AP  =  zen.secret(P.epub, A.pair)
 
 seed_MP    =  sha256(secret_MP)
 seed_TP    =  sha256(secret_TP)
 seed_AP    =  sha256(secret_AP)
 
-root_MP    =  fromSeed(seed_MP)    // full node — known to M and P
-root_TP    =  fromSeed(seed_TP)    // full node — known to T and P
-root_AP    =  fromSeed(seed_AP)    // full node — known to A and P
+root_MP    =  rootPair(seed_MP)    // full pair — known to M and P
+root_TP    =  rootPair(seed_TP)    // full pair — known to T and P
+root_AP    =  rootPair(seed_AP)    // full pair — known to A and P
 ```
 
-**Each party publishes their xpub:**
-- Maker: `xpub_MP = root_MP.neuter().extendedKey` (in user profile on Gun)
-- Taker: `xpub_TP = root_TP.neuter().extendedKey`
-- Affiliate: `xpub_AP = root_AP.neuter().extendedKey` (in referral link)
+**Each party exposes the public half of that root pair when needed:**
+- Maker: `{ pub_MP, epub_MP } = { root_MP.pub, root_MP.epub }`
+- Taker: `{ pub_TP, epub_TP } = { root_TP.pub, root_TP.epub }`
+- Affiliate: `{ pub_AP, epub_AP } = { root_AP.pub, root_AP.epub }`
+
+No separate `rootPub` field is required; `pub/epub` are enough.
 
 ### 4.3 Per-Transaction Lock Wallets (Dual Platform)
 
-**Key principle from original design**: Platform wallet = **RECIPIENT's root xpub** + **INDEX from PAYER's secret**
+**Key principle in the ZEN design**: Platform lock wallet = **RECIPIENT's public pair (`pub/epub`)** + **UNLOCK SEED from PAYER's secret**
 
 **Critical design decision**: Both buy and sell orders deposit **AFTER matching** to preserve pure P2P architecture (Platform not involved in happy path).
 
@@ -255,32 +274,33 @@ For each trade, derive **two platform wallets**:
 
 #### 4.3.1 Transaction Lock (TL)
 
-**Symmetric flow for both order types** (Maker always uses Taker's xpub after match):
+**Symmetric flow for both order types** (Maker always uses Taker's public pair after match):
 
 ```javascript
 // AFTER MATCHING (both parties known)
 // "TR:" domain separator + ":" field separators prevent hash space collision with orderId ("OR:")
 tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
 
-// Step 1: Recipient (Taker for buy order, Maker for sell order) publishes xpub
-secret_recipient = sea.secret(P.epub, recipient.pair)
-root_recipient = fromSeed(sha256(secret_recipient))
-xpub_recipient = root_recipient.neuter().extendedKey  // Public
+// Step 1: Recipient (Taker for buy order, Maker for sell order) exposes public pair
+secret_recipient = zen.secret(P.epub, recipient.pair)
+root_recipient = await zen.pair(null, { seed: sha256(secret_recipient) })
+recipientPublic = { pub: root_recipient.pub, epub: root_recipient.epub }
 
-// Step 2: Payer (Maker for buy order, Taker for sell order) computes index
-// Domain separator ":TL:" isolates TL index from CL index — prevents cross-lock correlation
-secret_payer = sea.secret(P.epub, payer.pair)
-seed_index = sha256(secret_payer + ":TL:" + tradeId)
-index_TL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
+// Step 2: Payer (Maker for buy order, Taker for sell order) computes unlock seed
+// Domain separator ":TL:" isolates TL seed from CL seed — prevents cross-lock correlation
+secret_payer = zen.secret(P.epub, payer.pair)
+unlockSeed_TL = sha256(secret_payer + ":TL:" + tradeId)
 
-// Step 3: Payer derives platform from RECIPIENT's xpub + PAYER's index
-TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
-//   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Recipient's root (watch-only)
-//                                               ^^^^^^^^^ Payer's index
+// Step 3: Payer derives platform from RECIPIENT's public pair + PAYER's unlock seed
+TL = await zen.pair(null, {
+    pub: recipientPublic.pub,
+    epub: recipientPublic.epub,
+    seed: unlockSeed_TL
+})
 
-// TL.address — Payer deposits HERE (after matching)
-// TL.privateKey — Payer doesn't have (only has xpub, not xprv)
-// Recipient needs index_TL revealed to derive spending key
+// TL.address — derived from TL.pub, payer deposits HERE (after matching)
+// TL.privateKey — Payer doesn't have (only public pair, not root pair)
+// Recipient needs unlockSeed_TL revealed to derive matching spending key
 ```
 
 **Who is payer/recipient?**
@@ -289,52 +309,55 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
 
 #### 4.3.2 Commission Lock (CL)
 
-**Same pattern - payer uses affiliate's xpub + payer's index:**
+**Same pattern - payer uses affiliate's public pair + payer's unlock seed:**
 
 ```javascript
 // AFTER MATCHING (payer known)
 tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
 
-// Affiliate publishes xpub
-secret_AP = sea.secret(P.epub, A.pair)
-root_AP = fromSeed(sha256(secret_AP))
-xpub_AP = root_AP.neuter().extendedKey
+// Affiliate exposes public pair
+secret_AP = zen.secret(P.epub, A.pair)
+root_AP = await zen.pair(null, { seed: sha256(secret_AP) })
+affiliatePublic = { pub: root_AP.pub, epub: root_AP.epub }
 
-// Payer computes index from own secret
-// Domain separator ":CL:" isolates CL index from TL index — prevents cross-lock correlation
-secret_payer = sea.secret(P.epub, payer.pair)
-seed_index = sha256(secret_payer + ":CL:" + tradeId)
-index_CL = parseInt(seed_index.slice(0,8), 16) & 0x7fffffff
+// Payer computes unlock seed from own secret
+// Domain separator ":CL:" isolates CL seed from TL seed — prevents cross-lock correlation
+secret_payer = zen.secret(P.epub, payer.pair)
+unlockSeed_CL = sha256(secret_payer + ":CL:" + tradeId)
 
-// Payer derives from AFFILIATE's xpub + PAYER's index
-CL = HDNodeWallet.fromExtendedKey(xpub_AP).deriveChild(index_CL)
+// Payer derives from AFFILIATE's public pair + PAYER's unlock seed
+CL = await zen.pair(null, {
+    pub: affiliatePublic.pub,
+    epub: affiliatePublic.epub,
+    seed: unlockSeed_CL
+})
 
 // CL.address — payer deposits commission here (after matching)
-// CL.privateKey — Affiliate needs index revealed to spend
+// CL.privateKey — Affiliate needs unlockSeed_CL revealed to spend
 ```
 
 **Security properties**:
-- Payer derives platform address from **recipient's xpub** (watch-only)
-- Payer uses index from **own secret** (knows index)
-- Payer **cannot spend** (doesn't have recipient's xprv, only xpub)
-- Recipient **cannot spend yet** (doesn't know index)
-- Platform **can always spend** (knows all secrets → can compute all indexes + has all xprvs)
+- Payer derives platform address from **recipient's public pair** (watch-only)
+- Payer uses unlock seed from **own secret**
+- Payer **cannot spend** (doesn't have recipient's root pair, only the public pair)
+- Recipient **cannot spend yet** (doesn't know unlock seed)
+- Platform **can always spend** (knows all secrets → can compute all unlock seeds + reconstruct all root pairs)
 
 **Who pays (AFTER matching):**
-- **Buy order:** Maker deposits to `TL` + `CL` (both use Taker's/Affiliate's xpub + Maker's index)
-- **Sell order:** Taker deposits to `TL` + `CL` (both use Maker's/Affiliate's xpub + Taker's index)
+- **Buy order:** Maker deposits to `TL` + `CL` (both use Taker's/Affiliate's public pair + Maker's unlock seed)
+- **Sell order:** Taker deposits to `TL` + `CL` (both use Maker's/Affiliate's public pair + Taker's unlock seed)
 
 **When deposit happens:**
 - **Both order types**: Deposit occurs AFTER matching (when both parties known)
 - No pre-deposit required → Platform not involved in happy path → pure P2P
 
 **Access control:**
-- **Payer (M or T):** Computes platform addresses from recipient's xpub + own index. **Cannot spend** (has xpub only, not xprv).
+- **Payer (M or T):** Computes platform addresses from recipient's public pair + own unlock seed. **Cannot spend** (has `pub/epub` only, not the root pair).
 - **Recipient (seller):** 
-  - Buy order: Taker receives `index_TL` from Maker → derives spending key from own `root_TP`
-  - Sell order: Maker receives `index_TL` from Taker → derives spending key from own `root_MP`
-- **Affiliate (A):** Receives `index_CL` from payer (or Platform) → derives spending key from own `root_AP`
-- **Platform (P):** Knows all secrets → can compute all indexes + derive all spending keys (arbitration power)
+  - Buy order: Taker receives `unlockSeed_TL` from Maker → derives spending key from own `root_TP`
+  - Sell order: Maker receives `unlockSeed_TL` from Taker → derives spending key from own `root_MP`
+- **Affiliate (A):** Receives `unlockSeed_CL` from payer (or Platform) → derives spending key from own `root_AP`
+- **Platform (P):** Knows all secrets → can compute all unlock seeds + derive all spending keys (arbitration power)
 
 **Unlock mechanism**:
 ```
@@ -342,25 +365,25 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 
 1. Maker posts order (no deposit)
 2. Taker accepts → tradeId created
-3. Payer computes TL/CL from Recipient's xpub + Payer's index
+3. Payer computes TL/CL from Recipient's public pair + Payer's unlock seed
 4. Payer deposits to TL.address + CL.address (within deposit timeout)
 5. Seller delivers item
-6. Buyer confirms receipt → reveals index_TL and index_CL
-7. Recipient uses own root + revealed index → derives spending key → withdraws
+6. Buyer confirms receipt → reveals `unlockSeed_TL` and `unlockSeed_CL`
+7. Recipient uses own root pair + revealed unlock seed → derives spending key → withdraws
 ```
 
 **Why payer cannot withdraw**:
-- Payer only has recipient's **xpub** (public extended key, watch-only)
-- Even though payer knows the **index**, cannot derive private key without xprv
-- BIP-32 non-hardened derivation: `xpub + index → child address` ✅ (watch-only)
-- But: `xpub + index → child private key` ❌ (impossible, needs xprv)
+- Payer only has recipient's **public pair** (`pub/epub`, watch-only)
+- Even though payer knows the **unlock seed**, cannot derive private key without the root pair
+- ZEN public derivation: `pub/epub + unlockSeed → lock pub/address` ✅
+- But: `pub/epub + unlockSeed → lock private key` ❌ (impossible without root pair)
 
 **Why recipient cannot withdraw early**:
-- Recipient has **root xprv** (own wallet)
-- But doesn't know which **index** was used (payer's secret + entropy)
-- Without index, 2^31 possible child keys to try (infeasible)
+- Recipient has **root pair** (own wallet)
+- But doesn't know which **unlock seed** was used (payer's secret + domain separator + tradeId)
+- Without unlock seed, recipient cannot derive the matching lock pair
 
-**Original security mindset preserved**: Platform wallet = recipient's root + payer's index
+**Security mindset preserved**: Platform wallet = recipient's public pair + payer's unlock seed
 
 ---
 
@@ -396,16 +419,19 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
 **Order Wallet Derivation** (buy orders only):
 
 ```javascript
-// Maker derives order wallet from own xpub + orderId
-const secret_M = await sea.secret(P.epub, M.pair)
-const root_M = HDNodeWallet.fromSeed(sha256(secret_M))
-const xpub_M = root_M.neuter().extendedKey
+// Maker derives order wallet from own root pair + orderId
+const secret_M = await zen.secret(P.epub, M.pair)
+const root_M = await zen.pair(null, { seed: sha256(secret_M) })
 
-// Order-specific index — "FP:" domain separator isolates FP address space from TL/CL on same root
-const index_order = parseInt(sha256("FP:" + orderId).slice(0,8), 16) & 0x7fffffff
+// Order-specific unlock seed — "FP:" domain separator isolates FP address space from TL/CL
+const unlockSeed_FP = sha256("FP:" + orderId)
 
-// Fund Proof (Maker controls private key)
-const orderWallet = root_M.deriveChild(index_order)
+// Fund Proof (Maker controls full pair)
+const orderWallet = await zen.pair(null, {
+    priv: root_M.priv,
+    epriv: root_M.epriv,
+    seed: unlockSeed_FP
+})
 
 // Maker deposits BEFORE posting order
 await M.wallet.sendTransaction({
@@ -415,9 +441,9 @@ await M.wallet.sendTransaction({
 ```
 
 **Order creation flow (buy orders)**:
-1. Maker computes `orderWallet.address` from `xpub_M + orderId`
+1. Maker computes `orderWallet.address` from own root pair + `unlockSeed_FP`
 2. Maker deposits full amount to `orderWallet.address`
-3. Maker posts order to Gun with `orderWallet: orderWallet.address`
+3. Maker posts order to ZEN with `orderWallet: orderWallet.address`
 4. Taker verifies on-chain balance before accepting: `chain.getBalance(orderWallet.address) >= requiredAmount`
 
 **After matching** (Taker accepts):
@@ -441,15 +467,15 @@ await M.wallet.sendTransaction({
 
 ### Step 2 — Taker Discovers and Accepts Order
 
-1. T compiles the exact market-window souls in Gun:
+1. T compiles the exact market-window souls in ZEN:
     ```javascript
     const current = Order.soul({ baseId: "penitent-greaves", side: "buy", candle })
     const previous = Order.soul({ baseId: "penitent-greaves", side: "buy", candle: candle - 1 })
     ```
 2. T scans both souls:
     ```javascript
-    gun.get(current).map()
-    gun.get(previous).map()
+    zen.get(current).map()
+    zen.get(previous).map()
     ```
 3. T sees M's order
     - **For buy orders**: T verifies on-chain balance of `orderWallet.address` before accepting
@@ -464,7 +490,7 @@ await M.wallet.sendTransaction({
 4. T clicks "Accept"
 5. **Trade matching** (creates `tradeId`):
    ```javascript
-   // tradeId computed once at match time, stored in Gun trade record — never recomputed
+   // tradeId computed once at match time, stored in ZEN trade record — never recomputed
    // "TR:" domain separator prevents hash space collision with orderId ("OR:")
    tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
    ```
@@ -479,25 +505,33 @@ await M.wallet.sendTransaction({
 const payer = (orderType === 'buy') ? Maker : Taker
 const recipient = (orderType === 'buy') ? Taker : Maker
 
-// Get recipient's xpub (published in their profile)
-const xpub_recipient = await gun.user(recipient.pub).get('xpub')
+// Recipient public pair is already known at match time
+const recipientPublic = { pub: recipient.pub, epub: recipient.epub }
 
-// Get affiliate's xpub from signed user namespace — MUST use gun.user(affiliate.pub)
-// Never fetch xpub from an arbitrary path — a tampered xpub would redirect funds to attacker's tree
+// Resolve affiliate public pair from signed profile data
+// Never fetch public derivation material from an arbitrary path — tampering would redirect funds
 const referrer = payer.getReferrer()  // returns affiliate's pub key
-const xpub_affiliate = referrer ? await gun.user(referrer).get('xpub') : null
+const affiliatePublic = referrer ? await Profile.publicPair(referrer) : null
 
-// Compute payer's index — separate domain separators prevent TL/CL address correlation
-const secret_payer = await sea.secret(P.epub, payer.pair)
-const index_TL = parseInt(sha256(secret_payer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
-const index_CL = parseInt(sha256(secret_payer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
+// Compute payer's unlock seeds — separate domain separators prevent TL/CL address correlation
+const secret_payer = await zen.secret(P.epub, payer.pair)
+const unlockSeed_TL = sha256(secret_payer + ":TL:" + tradeId)
+const unlockSeed_CL = sha256(secret_payer + ":CL:" + tradeId)
 
-// Derive Transaction Lock from recipient's xpub + payer's TL index
-const TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_TL)
+// Derive Transaction Lock from recipient's public pair + payer's TL unlock seed
+const TL = await zen.pair(null, {
+    pub: recipientPublic.pub,
+    epub: recipientPublic.epub,
+    seed: unlockSeed_TL
+})
 
 // Derive Commission Lock (if affiliate exists)
-const CL = referrer ? 
-    HDNodeWallet.fromExtendedKey(xpub_affiliate).deriveChild(index_CL) : 
+const CL = referrer ?
+    await zen.pair(null, {
+        pub: affiliatePublic.pub,
+        epub: affiliatePublic.epub,
+        seed: unlockSeed_CL
+    }) :
     null
 
 // Payer deposits to platform locks
@@ -506,7 +540,11 @@ const CL = referrer ?
 
 if (orderType === 'buy') {
     // Maker transfers from order wallet to platform locks
-    const orderWallet = M.root.deriveChild(index_order)  // Maker has private key
+    const orderWallet = await zen.pair(null, {
+        priv: M.root.priv,
+        epriv: M.root.epriv,
+        seed: unlockSeed_FP
+    })  // Maker has full pair
     
     await orderWallet.sendTransaction({ to: TL.address, value: paymentAmount })
     if (CL) {
@@ -540,32 +578,36 @@ if (orderType === 'buy') {
 - In-game mail system
 - Drop/pickup coordination
 
-**Seller marks:** "Delivered" in UI → updates Gun trade record → status: `"delivered"`
+**Seller marks:** "Delivered" in UI → updates ZEN trade record → status: `"delivered"`
 
 ### Step 5 — Buyer Confirms Receipt and Unlocks Payment
 
 **Buyer** (Maker for buy order, Taker for sell order) marks "Received" in UI
 
-**Buyer reveals index to seller** (symmetric for both order types):
+**Buyer reveals unlock seed to seller** (symmetric for both order types):
 
 ```javascript
-// Buyer computes TL and CL indexes from own secret — domain separators match deposit step
-const secret_buyer = await sea.secret(P.epub, buyer.pair)
-const index_TL = parseInt(sha256(secret_buyer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
-const index_CL = parseInt(sha256(secret_buyer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
+// Buyer computes TL and CL unlock seeds from own secret — domain separators match deposit step
+const secret_buyer = await zen.secret(P.epub, buyer.pair)
+const unlockSeed_TL = sha256(secret_buyer + ":TL:" + tradeId)
+const unlockSeed_CL = sha256(secret_buyer + ":CL:" + tradeId)
 
-// Buyer writes to OWN Gun user namespace — Gun SEA enforces only buyer can write here
-// Seller subscribes to gun.user(buyer.pub).get("trades").get(tradeId)
-gun.user().get("trades").get(tradeId).put({
-    unlock_index_TL: index_TL,
-    unlock_index_CL: index_CL,
+// Buyer writes to OWN signed ZEN user namespace
+// Seller subscribes to zen.user(buyer.pub).get("trades").get(tradeId)
+zen.user().get("trades").get(tradeId).put({
+    unlock_seed_TL: unlockSeed_TL,
+    unlock_seed_CL: unlockSeed_CL,
     confirmed: true
 })
 
-// Seller receives index and unlocks using OWN root
-const secret_seller = await sea.secret(P.epub, seller.pair)
-const root_seller = HDNodeWallet.fromSeed(sha256(secret_seller))
-const TL = root_seller.deriveChild(index_TL)  // Now has private key!
+// Seller receives unlock seed and unlocks using OWN root
+const secret_seller = await zen.secret(P.epub, seller.pair)
+const root_seller = await zen.pair(null, { seed: sha256(secret_seller) })
+const TL = await zen.pair(null, {
+    priv: root_seller.priv,
+    epriv: root_seller.epriv,
+    seed: unlockSeed_TL
+})  // Now has private key!
 
 // Seller self-releases payment
 await TL.sendTransaction({
@@ -573,11 +615,15 @@ await TL.sendTransaction({
     value: paymentAmount
 })
 
-// Affiliate (if exists) self-releases commission using CL index (not TL index)
+// Affiliate (if exists) self-releases commission using CL unlock seed (not TL unlock seed)
 if (affiliate) {
-    const secret_affiliate = await sea.secret(P.epub, affiliate.pair)
-    const root_affiliate = HDNodeWallet.fromSeed(sha256(secret_affiliate))
-    const CL = root_affiliate.deriveChild(index_CL)
+    const secret_affiliate = await zen.secret(P.epub, affiliate.pair)
+    const root_affiliate = await zen.pair(null, { seed: sha256(secret_affiliate) })
+    const CL = await zen.pair(null, {
+        priv: root_affiliate.priv,
+        epriv: root_affiliate.epriv,
+        seed: unlockSeed_CL
+    })
     
     await CL.sendTransaction({
         to: affiliate.wallet,
@@ -589,7 +635,7 @@ if (affiliate) {
 Trade status → `"completed"`
 
 **OR via Platform auto-release:**
-- If buyer doesn't confirm within 24h → P computes indexes and releases to seller + affiliate
+- If buyer doesn't confirm within 24h → P computes unlock seeds and releases to seller + affiliate
 
 ### Step 6 — Dispute Resolution and Refunds by P
 
@@ -597,15 +643,19 @@ Trade status → `"completed"`
 
 **Why payer cannot self-refund:**
 ```javascript
-// Platform = Recipient's xpub + Payer's index
-TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
+// Platform = Recipient's public pair + Payer's unlock seed
+TL = await zen.pair(null, {
+    pub: recipientPublic.pub,
+    epub: recipientPublic.epub,
+    seed: unlockSeed_TL
+})
 
 // Payer has:
-// - Recipient's xpub (watch-only, public)
-// - Own index (secret)
-// BUT: Cannot derive private key from xpub alone!
+// - Recipient's public pair (watch-only, public)
+// - Own unlock seed (secret)
+// BUT: Cannot derive private key from public data alone!
 
-// Only recipient has xprv → only recipient can spend
+// Only recipient has root pair → only recipient can spend
 // Payer is cryptographically locked out (by design)
 ```
 
@@ -619,23 +669,31 @@ TL = HDNodeWallet.fromExtendedKey(xpub_recipient).deriveChild(index_payer)
 P can always recompute both platform spending keys:
 
 ```javascript
-// P knows all parties' epub keys (Curve25519) — never .pub (Ed25519)
-const secret_recipient = await sea.secret(recipient.epub, P.pair)
-const root_recipient = fromSeed(sha256(secret_recipient))
+// P knows all parties' epub keys and can reconstruct their root pairs
+const secret_recipient = await zen.secret(recipient.epub, P.pair)
+const root_recipient = await zen.pair(null, { seed: sha256(secret_recipient) })
 
-// P recomputes payer's TL and CL indexes using domain separators
-const secret_payer = await sea.secret(payer.epub, P.pair)
-const index_TL = parseInt(sha256(secret_payer + ":TL:" + tradeId).slice(0,8), 16) & 0x7fffffff
-const index_CL = parseInt(sha256(secret_payer + ":CL:" + tradeId).slice(0,8), 16) & 0x7fffffff
+// P recomputes payer's TL and CL unlock seeds using domain separators
+const secret_payer = await zen.secret(payer.epub, P.pair)
+const unlockSeed_TL = sha256(secret_payer + ":TL:" + tradeId)
+const unlockSeed_CL = sha256(secret_payer + ":CL:" + tradeId)
 
 // P derives both platform spending keys
-const TL = root_recipient.deriveChild(index_TL)
+const TL = await zen.pair(null, {
+    priv: root_recipient.priv,
+    epriv: root_recipient.epriv,
+    seed: unlockSeed_TL
+})
 // TL.privateKey → P can release to seller OR refund to payer
 
 // Same for affiliate lock
-const secret_affiliate = await sea.secret(affiliate.epub, P.pair)
-const root_affiliate = fromSeed(sha256(secret_affiliate))
-const CL = root_affiliate.deriveChild(index_CL)
+const secret_affiliate = await zen.secret(affiliate.epub, P.pair)
+const root_affiliate = await zen.pair(null, { seed: sha256(secret_affiliate) })
+const CL = await zen.pair(null, {
+    priv: root_affiliate.priv,
+    epriv: root_affiliate.epriv,
+    seed: unlockSeed_CL
+})
 // CL.privateKey → P can release to affiliate OR refund to payer
 ```
 
@@ -660,14 +718,14 @@ const CL = root_affiliate.deriveChild(index_CL)
 
 | Scenario | TL (Payment) Action | CL (Commission) Action |
 |---|---|---|
-| Trade completed successfully | Buyer reveals index → Seller withdraws | Buyer reveals index → Affiliate withdraws |
+| Trade completed successfully | Buyer reveals unlock seed → Seller withdraws | Buyer reveals unlock seed → Affiliate withdraws |
 | Buyer disputes, seller proven wrong | Platform refunds to payer (transfers) | Platform refunds to payer (transfers) |
-| Buyer disputes, seller proven right | Platform reveals index to seller → Seller withdraws | Platform reveals index to affiliate → Affiliate withdraws |
+| Buyer disputes, seller proven right | Platform reveals unlock seed to seller → Seller withdraws | Platform reveals unlock seed to affiliate → Affiliate withdraws |
 | Both parties inactive 7+ days | Platform refunds to payer (transfers) | Platform refunds to payer (transfers) |
-| Auto-release (24h no confirmation) | Platform reveals index to seller → Seller withdraws | Platform reveals index to affiliate → Affiliate withdraws |
+| Auto-release (24h no confirmation) | Platform reveals unlock seed to seller → Seller withdraws | Platform reveals unlock seed to affiliate → Affiliate withdraws |
 
 **Note**: Platform can either:
-- **Reveal index** (seller/affiliate self-withdraws) — preferred for transparency
+- **Reveal unlock seed** (seller/affiliate self-withdraws) — preferred for transparency
 - **Transfer directly** (Platform executes withdrawal) — faster but less transparent
 
 ---
@@ -679,7 +737,7 @@ const CL = root_affiliate.deriveChild(index_CL)
 Orders use **parameterized Pen souls** and **timestamp keys**:
 
 ```javascript
-const orderSoul = SEA.pen({
+const orderSoul = ZEN.pen({
     key: { and: [
         // seg 0: timestamp_ms whose derived candle must equal the soul candle
         {
@@ -724,7 +782,7 @@ Example key:    1744440123456:maker_full_pub:x8k2m1
 
 | Segment | Content | Validated by |
 |---|---|---|
-| soul | `params = { baseId, side, candle }` | Compile-time soul identity via `SEA.pen({ params })` |
+| soul | `params = { baseId, side, candle }` | Compile-time soul identity via `ZEN.pen({ params })` |
 | seg 0 | `timestamp_ms = Date.now()` | `floor(timestamp_ms / 300000) === candle` |
 | seg 1 | `pub = M.pub` | Dynamic equality with writer register `R[5]` |
 | seg 2 | `nonce` — client iterates until PoW passes | PoW `difficulty: 3` |
@@ -756,16 +814,16 @@ const key = `${timestamp}:${pub}:${nonce}`
 
 ### 6.3 Trade Record Soul
 
-Trade records contain sensitive data (`unlock_index_TL`, `unlock_index_CL`). No shared Pen soul is appropriate. Each party writes to their **own Gun user namespace**, keyed by `tradeId`.
+Trade records contain sensitive data (`unlock_seed_TL`, `unlock_seed_CL`). No shared Pen soul is appropriate. Each party writes to their **own signed ZEN user namespace**, keyed by `tradeId`.
 
 **Two write targets per trade:**
 
 ```javascript
-gun.user(M.pub).get("trades").get(tradeId)   // Maker writes here — Gun rejects other writers
-gun.user(T.pub).get("trades").get(tradeId)   // Taker writes here — Gun rejects other writers
+zen.user(M.pub).get("trades").get(tradeId)   // Maker writes here — authenticated namespace rejects other writers
+zen.user(T.pub).get("trades").get(tradeId)   // Taker writes here — authenticated namespace rejects other writers
 ```
 
-Gun SEA enforces write restriction via signature — **no Pen needed**.
+ZEN signatures enforce write restriction — **no Pen needed**.
 
 **Who writes what:**
 
@@ -774,36 +832,36 @@ Gun SEA enforces write restriction via signature — **no Pen needed**.
 | `matched` (timestamp) | Taker | Taker's | Step 2 — at accept |
 | `deposited` (txHash) | Payer (M or T) | Own | Step 3 — after deposit confirmed |
 | `delivered` (true) | Seller (M or T) | Own | Step 4 — item delivered |
-| `unlock_index_TL` (number) | Buyer (M or T) | Own | Step 5 — at confirmation |
-| `unlock_index_CL` (number) | Buyer (M or T) | Own | Step 5 — at confirmation |
+| `unlock_seed_TL` (string) | Buyer (M or T) | Own | Step 5 — at confirmation |
+| `unlock_seed_CL` (string) | Buyer (M or T) | Own | Step 5 — at confirmation |
 | `confirmed` (true) | Buyer (M or T) | Own | Step 5 — receipt confirmed |
 | `disputed` (object) | Either party | Own | Step 6 — if dispute filed |
 | `release_ready` / `refund_ready` | Platform | Platform's | Step 6 — platform has resolved deterministic spend paths but has not settled on-chain yet |
 
-**Key security property**: `unlock_index_TL` and `unlock_index_CL` live in the **buyer's own namespace**. Seller must actively read buyer's namespace to obtain the index. Buyer controls when seller can withdraw — no premature self-release is possible.
+**Key security property**: `unlock_seed_TL` and `unlock_seed_CL` live in the **buyer's own namespace**. Seller must actively read buyer's namespace to obtain the unlock seed. Buyer controls when seller can withdraw — no premature self-release is possible.
 
 **Read pattern — both parties subscribe to both namespaces:**
 
 ```javascript
-gun.user(M.pub).get("trades").get(tradeId).on(makerData => merge(makerData))
-gun.user(T.pub).get("trades").get(tradeId).on(takerData => merge(takerData))
+zen.user(M.pub).get("trades").get(tradeId).on(makerData => merge(makerData))
+zen.user(T.pub).get("trades").get(tradeId).on(takerData => merge(takerData))
 ```
 
 **`Trade.js` soul mapping:**
 
 ```javascript
 trade.id()     →  tradeId                               // content hash — used in crypto derivation
-trade.soul()   →  { maker: M.pub, taker: T.pub }        // keys to compose Gun paths
+trade.soul()   →  { maker: M.pub, taker: T.pub }        // keys to compose ZEN paths
 
 // Write to own namespace (caller authenticated as writer)
-gun.user().get("trades").get(tradeId).put(fields)
+zen.user().get("trades").get(tradeId).put(fields)
 
 // Read from both namespaces
-gun.user(M.pub).get("trades").get(tradeId)              // Maker's side
-gun.user(T.pub).get("trades").get(tradeId)              // Taker's side
+zen.user(M.pub).get("trades").get(tradeId)              // Maker's side
+zen.user(T.pub).get("trades").get(tradeId)              // Taker's side
 ```
 
-**Platform access**: Platform can read both namespaces (they're public Gun user data). Platform writes to trade records via the trade participant's shared secret — Platform knows all parties' epub keys and can compute all secrets.
+**Platform access**: Platform can read both namespaces (they're public signed ZEN user data). Platform writes to trade records via the trade participant's shared secret — Platform knows all parties' epub keys and can compute all secrets.
 
 ---
 
@@ -817,29 +875,29 @@ gun.user(T.pub).get("trades").get(tradeId)              // Taker's side
 
 The platform security relies on **asymmetric key access**:
 ```
-Platform = Recipient's xpub (watch-only) + Payer's index (secret)
+Platform = Recipient's public pair (`pub/epub`, watch-only) + Payer's unlock seed (secret)
 
 Payer has:
-├─ Recipient's xpub (public extended key)
-└─ Own index (secret)
+├─ Recipient's public pair (`pub/epub`)
+└─ Own unlock seed (secret)
 
 Recipient has:
-├─ Own xprv (private extended key)
-└─ Unknown index (until reveal)
+├─ Own root pair
+└─ Unknown unlock seed (until reveal)
 
 Platform has:
-├─ Recipient's xprv (via shared secret)
-└─ Payer's index (via shared secret)
+├─ Recipient's root pair (via shared secret)
+└─ Payer's unlock seed (via shared secret)
 ```
 
-**BIP-32 cryptographic property**:
-- `xpub + index → child address` ✅ (anyone can compute)
-- `xprv + index → child private key` ✅ (only xprv holder can derive)
-- `xpub + index → child private key` ❌ **IMPOSSIBLE** (by design)
+**ZEN cryptographic property**:
+- `pub/epub + unlockSeed → child public key/address` ✅ (anyone can compute)
+- `rootPair + unlockSeed → child full spending pair` ✅ (only root-pair holder can derive)
+- `pub/epub + unlockSeed → child private key` ❌ **IMPOSSIBLE** (by design)
 
 **This means:**
-- ✅ **Happy path**: Payer deposits → Recipient delivers → Payer reveals index → Recipient withdraws (pure P2P, Platform not involved)
-- ⚠️ **Unhappy path**: Payer deposits → Recipient ghosts → Payer wants refund → **Platform MUST intervene** (Payer cannot derive private key from xpub alone)
+- ✅ **Happy path**: Payer deposits → Recipient delivers → Payer reveals unlock seed → Recipient withdraws (pure P2P, Platform not involved)
+- ⚠️ **Unhappy path**: Payer deposits → Recipient ghosts → Payer wants refund → **Platform MUST intervene** (Payer cannot derive private key from `pub/epub` alone)
 
 **Trade-off accepted:**
 - Security against payer withdrawal (prevents rug pulls)
@@ -855,17 +913,17 @@ Platform has:
 
 | Property | Mechanism |
 |---|---|
-| P holds full platform authority | P knows all **epub** keys (Curve25519) → recomputes all DH secrets via `sea.secret(party.epub, P.pair)` → derives all root xprv and child spending keys for both TL and CL |
-| Payer cannot withdraw (even for refund) | Payer has recipient's xpub only (watch-only). Cannot derive private key from xpub. **Refunds require Platform intervention.** |
-| Recipient cannot claim early | Recipient has xprv but doesn't know index until payer reveals it |
-| Affiliate cannot claim prematurely | A has xpub_AP but not `index_CL`; receives index only after successful trade completion |
+| P holds full platform authority | P knows all **epub** keys → recomputes all DH secrets via `zen.secret(party.epub, P.pair)` → derives all root pairs and child spending keys for both TL and CL |
+| Payer cannot withdraw (even for refund) | Payer has recipient's `pub/epub` only (watch-only). Cannot derive private key from public data. **Refunds require Platform intervention.** |
+| Recipient cannot claim early | Recipient has root pair but doesn't know unlock seed until payer reveals it |
+| Affiliate cannot claim prematurely | A has affiliate `pub/epub` but not `unlockSeed_CL`; receives unlock seed only after successful trade completion |
 | No third-party involvement (happy path) | All derivations local and deterministic. Platform only involved for disputes/refunds. |
 
 ### 7.3 Per-Trade Address Isolation
 
-Each `tradeId` is unique → `index_TL` and `index_CL` unique → platform addresses never collide across trades.
+Each `tradeId` is unique → `unlockSeed_TL` and `unlockSeed_CL` unique → platform addresses never collide across trades.
 
-Even if same affiliate refers multiple trades, each trade gets unique CL wallet (different `tradeId` → different `index_CL`).
+Even if same affiliate refers multiple trades, each trade gets unique CL wallet (different `tradeId` → different `unlockSeed_CL`).
 
 ### 7.4 Order Book Spam Prevention
 
@@ -874,7 +932,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 - **PoW (difficulty 2)** → CPU cost to create order
 - **Temporal window** → old orders auto-expire
 
-**Gun layer enforces:**
+**ZEN graph layer enforces:**
 - **LEX prefix matching** → efficient discovery queries
 - **P2P sync** → distributed order book
 
@@ -884,24 +942,24 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 
 | Risk | Severity | Mitigation |
 |---|---|---|
-| `sea.secret` non-determinism | Critical | Test suite verification |
-| SEA not initialized | High | Guard all operations; wait for `Construct.GDB()` |
-| BIP-32 index overflow | Low | Masked to 31 bits via `& 0x7fffffff` |
-| xpub tampering in Gun | Medium | xpub stored in `gun.user(pub)` — only owner can write (SEA-signed). Platform must validate xpub matches expected derivation before allowing deposit phase. |
-| Crafted/wrong xpub by recipient | **High** | Recipient could write xpub for which they (and Platform) have no xprv → funds permanently locked in TL. **Platform MUST verify `xpub_MP` is derived from `sha256(sea.secret(P.epub, M.pair))`** before trade proceeds to deposit. |
+| `zen.secret` non-determinism | Critical | Test suite verification |
+| ZEN not initialized | High | Guard all operations; wait for `Construct.ZEN()` / `Construct.GDB()` |
+| Unlock-seed collision | Low | Domain separators (`FP`, `TL`, `CL`) + `tradeId` / `orderId` hashing |
+| Public-pair tampering in ZEN profile | Medium | `pub/epub` must come from the signed user identity/profile. Platform must validate the resolved public pair matches the intended recipient before allowing deposit phase. |
+| Crafted/wrong public pair by recipient | **High** | Recipient could present `pub/epub` that do not correspond to the spending pair expected by the protocol → funds permanently locked in TL. Platform and clients must verify the resolved public pair belongs to the intended identity before deposit. |
 | Order ID collision | Very low | `sha256(orderId ":" M.pub ":" T.pub ":" timestamp)` |
-| Order overwrite attack | High | Pen `sign:true` allows any authenticated user to overwrite order keys at PoW cost ~256 attempts. Mitigate: embed maker pub prefix in key and validate `EQ(SEGR(0,':',4), R[5])` in Pen — or move orders to `gun.user()` namespace. |
+| Order overwrite attack | High | Pen `sign:true` allows any authenticated user to overwrite order keys at PoW cost ~256 attempts. Mitigate: embed maker pub prefix in key and validate `EQ(SEGR(0,':',4), R[5])` in Pen — or move orders to `zen.user()` namespace. |
 | FP race condition | High | Maker can drain FP wallet between Taker accepting and payer depositing to TL/CL. Design limitation of non-smart-contract platform. Taker should re-verify FP balance at matching time, not just at discovery time. |
 | Partial FP→TL/CL transfer | High | Sequential EVM transactions mean TL could be funded but CL fails. Trade contract must check all receipts; implementation needs a recovery path (refund from partial TL if CL fails). |
 | Commission fate with no affiliate | Medium | When referrer is null, `commissionAmount` is unaccounted for in current protocol. Must define: goes to platform fee, added to payment, or simply not charged. |
-| Child key leakage in BIP-32 | Medium | Non-hardened derivation: `child_priv + xpub → parent_priv`. Spending keys (TL, CL) must be wiped from memory immediately after `sendTransaction()`. Never log or store them. |
+| Child key leakage | Medium | Spending keys (TL, CL) must be wiped from memory immediately after `sendTransaction()`. Never log or store them. |
 | P key compromise | Critical | Operational security (outside protocol scope) |
-| Payer cannot self-refund | **Design limitation** | **Platform MUST intervene for refunds.** Payer only has recipient's xpub (watch-only), cannot derive private key. This is by design — same mechanism that prevents payer from withdrawing prevents self-refund. |
+| Payer cannot self-refund | **Design limitation** | **Platform MUST intervene for refunds.** Payer only has recipient's `pub/epub` (watch-only), cannot derive private key. This is by design — same mechanism that prevents payer from withdrawing prevents self-refund. |
 | Platform unavailable (refunds blocked) | Medium | Multi-sig Platform keys, backup arbitrators, or smart contract fallback (future) |
 | In-game item delivery fraud | Medium | Dispute resolution by P with proof requirements |
 | Candle drift (client time skew) | Low | Accept ±2 candles forward, ±100 backward |
-| Trade record soul | ✅ Resolved | Dual user-namespace model (Section 6.3). Each party writes to `gun.user(own.pub).get("trades").get(tradeId)`. Gun SEA enforces authorship. No Pen needed. |
-| Order soul overwrite | ✅ Resolved in direction | Full writer pub now lives in key seg 1, and soul identity is parameterized by `{ baseId, side, candle }` via `SEA.pen({ params })` (Section 6.1). |
+| Trade record soul | ✅ Resolved | Dual user-namespace model (Section 6.3). Each party writes to `zen.user(own.pub).get("trades").get(tradeId)`. ZEN signatures enforce authorship. No Pen needed. |
+| Order soul overwrite | ✅ Resolved in direction | Full writer pub now lives in key seg 1, and soul identity is parameterized by `{ baseId, side, candle }` via `ZEN.pen({ params })` (Section 6.1). |
 
 ---
 
@@ -917,17 +975,17 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 
 ## 10. Implementation Checklist
 
-- [ ] `src/core/Lock.js` — platform key derivation primitives (TL + CL, `index()`, `address()`, `unlock()`)
-- [ ] `src/core/Order.js` — Gun order CRUD helpers
+- [ ] `src/core/Lock.js` — platform key derivation primitives (TL + CL, `unlockSeed()`, `address()`, `unlock()`)
+- [ ] `src/core/Order.js` — ZEN order CRUD helpers
 - [ ] `src/core/Affiliate.js` — referral tracking + commission calculation
 - [ ] `src/UI/routes/order/` — order book UI + trade flow
 - [ ] Pen soul definition for orders
-- [ ] Per-baseId + per-side Gun discovery queries with candle range scanning
+- [ ] Per-baseId + per-side ZEN discovery queries with candle range scanning
 - [ ] Auto-release 24h timer (both TL and CL)
-- [ ] Affiliate index release mechanism (via Gun)
+- [ ] Affiliate unlock-seed release mechanism (via ZEN)
 - [ ] Dispute UI at `/dispute`
 - [ ] Test suite: dual platform address derivation consistency
-- [ ] Test suite: `sea.secret` determinism
+- [ ] Test suite: `zen.secret` determinism
 - [ ] Test suite: candle window validation
 - [ ] Test suite: affiliate commission calculation
 
@@ -935,4 +993,5 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 
 *2026-04-04 — Revised for P2P trading model*  
 *2026-04-06 — Resolved: No pre-deposit for buy orders (pure P2P, symmetric design)*  
-*2026-04-08 — Security audit: epub/pub fix, TL/CL domain separators, tradeId separators, FP domain separator, atomic transition caveat, order overwrite risk, crafted xpub risk, child key leakage note, commission gap, trade record soul gap*
+*2026-04-08 — Security audit: epub/pub fix, TL/CL domain separators, tradeId separators, FP domain separator, atomic transition caveat, order overwrite risk, crafted public-pair risk, child key leakage note, commission gap, trade record soul gap*  
+*2026-04-15 — ZEN rewrite: offline crypto/computing moved fully to ZEN; Gun/SEA and Ethers HD-wallet assumptions removed; fake/crafted `xpub` concern eliminated because `pub/epub` are sufficient; Ethers.js retained only for RPC transport*

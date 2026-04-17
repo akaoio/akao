@@ -1,4 +1,4 @@
-import { sha256 } from "../Utils/crypto.js"
+import { sha256 } from "../../src/core/Utils/crypto.js"
 import { resolveOrderId } from "./helpers.js"
 
 // tradeId must match Order.match():

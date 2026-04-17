@@ -551,10 +551,10 @@ async function createorder({ baseId, side, baseQuantity, quoteQuantity }) {
   const key = `${Date.now()}:${Access.states.pub}:${nonce}`
 
   gun.get(soul).get(key).put({
+    // No xpub field: pub/epub are sufficient in the ZEN model.
     maker: {
       pub: Access.states.pub,
-      epub: Access.states.epub,
-      xpub: Access.states.xpub
+      epub: Access.states.epub
     },
     side,
     base: { type: 'item', id: baseId, quantity: baseQuantity },

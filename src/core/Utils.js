@@ -15,3 +15,5 @@ export { randomInt, randomText, randomKey, randomItem, sortStrings } from "./Uti
 export { loop, tick } from "./Utils/loop.js"
 
 export { reset } from "./Utils/reset.js"
+
+export { now } from "./Utils/time.js"

@@ -1,5 +1,6 @@
 import { Access, setWallet } from "/core/Access.js"
 import { fiatValue } from "/core/Utils/contracts.js"
+import zen from "/core/ZEN.js"
 import { writeLabel, readLabel, subscribeLabel } from "./label.js"
 
 export class Logic {
@@ -43,9 +44,8 @@ export class Logic {
     static async seed() {
         const rawSeed = Access.get("seed")
         if (!rawSeed) return null
-        const { sea } = globalThis
-        if (!sea) return null
-        return sea.work(rawSeed, "wallet")
+        if (!zen) return null
+        return zen.hash(rawSeed, "wallet")
     }
 
     static writeLabel(pair, id, label) { return writeLabel(pair, id, label) }

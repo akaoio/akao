@@ -114,13 +114,13 @@ export const styles = css`
             cursor: default;
         }
 
-        /* Dim while the Gun write is in-flight */
+        /* Dim while the Zen write is in-flight */
         &.saving {
             border-bottom-color: color-mix(in hsl, var(--accent-action) 40%, transparent);
             opacity: 0.6;
         }
 
-        /* Brief green glow after a successful Gun ack */
+        /* Brief green glow after a successful Zen ack */
         &.saved {
             border-bottom-color: var(--neon-g);
             box-shadow: 0 1px 0 0 color-mix(in hsl, var(--neon-g) 40%, transparent);

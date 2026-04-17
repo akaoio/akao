@@ -12,7 +12,7 @@ Test.describe("Launcher — isomorphic boot", () => {
         Test.assert.equal(state.mode, "headless")
         Test.assert.truthy(state.main?.initialized)
         Test.assert.equal(Progress.get("Site"), true)
-        Test.assert.equal(Progress.get("GDB"), true)
+        Test.assert.equal(Progress.get("ZEN"), true)
         Test.assert.equal(Progress.get("Context"), true)
         Test.assert.truthy(!!Statics.site, "site configs must be loaded")
         Test.assert.truthy(Array.isArray(Statics.locales) && Statics.locales.length > 0, "locales must be loaded")

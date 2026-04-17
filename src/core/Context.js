@@ -1,6 +1,7 @@
 import { BROWSER } from "./Utils/environment.js"
 import States from "./States.js"
 import { Statics } from "./Stores.js"
+import zen from "./ZEN.js"
 
 export const Context = new States({
     theme: getTheme(),
@@ -50,10 +51,9 @@ export function getReferrer() {
     if (memory) return memory
     if (!globalThis.location) return
     const code = new URLSearchParams(globalThis.location.search).get("r")
-    const { gun } = globalThis
     return new Promise((resolve) => {
         if (!code) return resolve()
-        const scope = gun.get("#link").get(code)
+        const scope = zen.get("#link").get(code)
         scope.on((referrer) => {
             // Only the first referrer is saved
             // This is to prevent the user from having more than 1 referrer

@@ -1,6 +1,7 @@
 import { Elements } from "/core/Stores.js"
 import { Access } from "/core/Access.js"
 import { render } from "/core/UI.js"
+import zen from "/core/ZEN.js"
 import template from "./template.js"
 import Component from "/core/UI/Component.js"
 import Logic from "/UI/components/user/logic.js"
@@ -60,7 +61,7 @@ export class PROFILE extends Component {
 
         const pair = Access.get("pair")
         if (pair && $name) {
-            const raw = await globalThis.gun.get(`~${pair.pub}`).get("name")
+            const raw = await zen.get("~" + pair.pub).get("name").once()
             $name.textContent = typeof raw === "string" && raw ? raw : "Anonymous"
         }
     }

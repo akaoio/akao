@@ -1,12 +1,17 @@
-import { DEV } from "./Utils/environment.js"
+import { BROWSER, DEV } from "./Utils/environment.js"
 import { sha256 } from "./Utils/crypto.js"
 import { HDNodeWallet, getBytes } from "./Ethers.js"
+import zen, { initZEN } from "./ZEN.js"
 
 export const DEV_PLATFORM_SEED = "seed"
 
-export async function devplatform({ seed = DEV_PLATFORM_SEED, sea = null } = {}) {
-    const runtimeSEA = await resolveSEA(sea)
-    const pair = await runtimeSEA.pair(null, { seed })
+export function canDeriveDevPlatform({ browser = BROWSER, scope = globalThis } = {}) {
+    return !browser || !!scope?.crypto?.subtle
+}
+
+export async function devplatform({ seed = DEV_PLATFORM_SEED, runtime = null } = {}) {
+    const z = runtime?.pair ? runtime : (await initZEN(), zen)
+    const pair = await z.pair(null, { seed })
     const root = HDNodeWallet.fromSeed(getBytes("0x" + sha256(seed)))
 
     return {
@@ -18,14 +23,18 @@ export async function devplatform({ seed = DEV_PLATFORM_SEED, sea = null } = {})
     }
 }
 
-export async function siteplatform(site, { dev = DEV, seed = DEV_PLATFORM_SEED, sea = null } = {}) {
+export async function siteplatform(site, { dev = DEV, seed = DEV_PLATFORM_SEED, runtime = null, browser = BROWSER, scope = globalThis } = {}) {
     if (!site || typeof site !== "object") throw new Error("siteRequired")
 
     const platform = { ...(site.platform || {}) }
     if (platform.pub && platform.epub && platform.xpub) return platform
     if (!dev) return platform
+    if (!canDeriveDevPlatform({ browser, scope })) {
+        console.warn("Skipping dev platform fallback: WebCrypto is unavailable in this context")
+        return platform
+    }
 
-    const fallback = await devplatform({ seed, sea })
+    const fallback = await devplatform({ seed, runtime })
     return {
         ...fallback,
         ...platform,
@@ -41,17 +50,4 @@ export async function patchsiteplatform(site, options = {}) {
     if (!site || typeof site !== "object") throw new Error("siteRequired")
     site.platform = platform
     return platform
-}
-
-async function resolveSEA(sea = null) {
-    if (sea?.pair) return sea
-
-    const runtimeSEA = globalThis.sea || globalThis.SEA || globalThis.Gun?.SEA
-    if (runtimeSEA?.pair) return runtimeSEA
-
-    await import("./GDB.js")
-    const loadedSEA = globalThis.sea || globalThis.SEA || globalThis.Gun?.SEA
-    if (loadedSEA?.pair) return loadedSEA
-
-    throw new Error("SEAUnavailable")
 }

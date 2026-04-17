@@ -1,6 +1,6 @@
 import { putTradeRecord, resolveRoles, resolveTradeId } from "./helpers.js"
 
-// Seller marks item as delivered — writes to own Gun namespace
+// Seller marks item as delivered — writes to own Zen namespace
 export async function deliver({ tradeId, seller = null } = {}) {
     const resolvedTradeId = await resolveTradeId(this, tradeId)
     const sellerEntity = seller || resolveRoles(this).seller
@@ -9,7 +9,7 @@ export async function deliver({ tradeId, seller = null } = {}) {
 
     const fields = { delivered: true, deliveredAt: Date.now(), status: "delivered" }
     await putTradeRecord({
-        gun: this.gun,
+        zen: this.zen,
         pub: sellerEntity.pub,
         tradeId: resolvedTradeId,
         fields,

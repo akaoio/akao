@@ -51,37 +51,15 @@ export const Construct = {
         console.log("Constructed: Site")
         return !!Statics.site
     },
-    GDB: async function () {
+    ZEN: async function () {
         if (!Statics.site) return
         if (BROWSER && !globalThis.crypto?.subtle) {
-            globalThis.gun = null
-            globalThis.Gun = null
-            globalThis.SEA = null
-            globalThis.sea = null
-            console.warn("Skipping GDB: WebCrypto is unavailable in this context")
+            console.warn("Skipping ZEN: WebCrypto is unavailable in this context")
             return false
         }
-        let GUN
-        let SEA
-
-        await import("./GDB.js")
-        GUN = globalThis.GUN || globalThis.Gun
-        SEA = globalThis.SEA || globalThis.Gun?.SEA
-        const file = "GDB"
-        const opfs = globalThis.ROPFS
-        const gunOptions = {
-            peers: Statics.site?.peers || [],
-            localStorage: false,
-            radisk: true,
-            file
-        }
-        if (opfs?.supported?.({ file })) gunOptions.store = opfs({ file })
-
-        globalThis.gun = GUN(gunOptions)
-        globalThis.Gun = GUN
-        globalThis.SEA = SEA
-        globalThis.sea = SEA
-        console.log("Constructed: GDB")
+        const { initZEN } = await import("./ZEN.js")
+        await initZEN()
+        console.log("Constructed: ZEN")
         return true
     },
     Chain: async function ({ id } = {}) {

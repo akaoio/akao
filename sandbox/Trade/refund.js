@@ -6,6 +6,7 @@ import {
     resolvePublishedXpub,
     rootFromSecret
 } from "./helpers.js"
+import zen from "../../src/core/ZEN.js"
 
 // Platform refunds payer — requires platform authority pair
 // Platform recomputes all spending keys via DH shared secrets
@@ -18,12 +19,12 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
     const affiliateEntity = roles.affiliate
     if (!platformPair) throw new Error("platpairRequired")
     const recipientXpub = await resolvePublishedXpub({
-        gun: this.gun,
+        runtime: this.zen,
         party: recipientEntity,
         platpair: platformPair
     })
 
-    const recipientRoot = await rootFromSecret(await globalThis.sea.secret(recipientEntity.epub, platformPair))
+    const recipientRoot = await rootFromSecret(await zen.secret(recipientEntity.epub, platformPair))
     const tl = new Lock({
         payer: payerEntity.pair,
         platform: this.platform,
@@ -37,11 +38,11 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
     let unlockIndexCL = null
     if (affiliateEntity?.pub && affiliateEntity?.epub) {
         const affiliateXpub = await resolvePublishedXpub({
-            gun: this.gun,
+            runtime: this.zen,
             party: affiliateEntity,
             platpair: platformPair
         })
-        const affiliateRoot = await rootFromSecret(await globalThis.sea.secret(affiliateEntity.epub, platformPair))
+        const affiliateRoot = await rootFromSecret(await zen.secret(affiliateEntity.epub, platformPair))
         const cl = new Lock({
             payer: payerEntity.pair,
             platform: this.platform,
@@ -66,7 +67,7 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
 
     if (this.platform?.pub)
         await putTradeRecord({
-            gun: this.gun,
+            runtime: this.zen,
             pub: this.platform.pub,
             tradeId: resolvedTradeId,
             fields,

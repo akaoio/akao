@@ -1,5 +1,6 @@
 import DB from "/core/DB.js"
 import { Access } from "/core/Access.js"
+import zen from "/core/ZEN.js"
 
 export class Logic {
     static pair() { return Access.get("pair") }
@@ -13,11 +14,10 @@ export class Logic {
     static watch(callback) {
         const pair = Access.get("pair")
         if (!pair) return null
-        const { gun, sea } = globalThis
-        const scope = gun.get(`~${pair.pub}`).get("addresses").map()
+        const scope = zen.get("~" + pair.pub).get("addresses").map()
         scope.on(async (data, key) => {
             if (!data) return
-            const address = await sea.decrypt(data, pair)
+            const address = await zen.decrypt(data, pair)
             callback(key, address)
         })
         return scope
@@ -26,10 +26,10 @@ export class Logic {
     static async defaults(id) {
         const pair = Access.get("pair")
         if (!pair) return {}
-        const { gun } = globalThis
-        const billing = await gun.get(`~${pair.pub}`).get("billing")
-        const shipping = await gun.get(`~${pair.pub}`).get("shipping")
-        const encrypted = await gun.get(`~${pair.pub}`).get("addresses").get(id)
+        const root = zen.get("~" + pair.pub)
+        const billing = await root.get("billing").once()
+        const shipping = await root.get("shipping").once()
+        const encrypted = await root.get("addresses").get(id).once()
         return { billing, shipping, encrypted }
     }
 
@@ -51,27 +51,25 @@ export class Logic {
     static async read(id) {
         const pair = Access.get("pair")
         if (!pair) return {}
-        const { gun, sea } = globalThis
-        const encrypted = await gun.get(`~${pair.pub}`).get("addresses").get(id)
-        return sea.decrypt(encrypted, pair)
+        const encrypted = await zen.get("~" + pair.pub).get("addresses").get(id).once()
+        return zen.decrypt(encrypted, pair)
     }
 
     static async write(address, { billing, shipping } = {}) {
         const pair = Access.get("pair")
         if (!pair) return
-        const { gun, sea } = globalThis
-        const encrypted = await sea.encrypt(address, pair)
-        const scope = gun.get(`~${pair.pub}`).get("addresses").get(address.id)
-        scope.put(encrypted, null, { opt: { authenticator: pair } })
-        if (billing) gun.get(`~${pair.pub}`).get("billing").put(scope, null, { opt: { authenticator: pair } })
-        if (shipping) gun.get(`~${pair.pub}`).get("shipping").put(scope, null, { opt: { authenticator: pair } })
+        const encrypted = await zen.encrypt(address, pair)
+        const root = zen.get("~" + pair.pub)
+        const scope = root.get("addresses").get(address.id)
+        scope.put(encrypted, null, { authenticator: pair })
+        if (billing) root.get("billing").put(scope, null, { authenticator: pair })
+        if (shipping) root.get("shipping").put(scope, null, { authenticator: pair })
     }
 
     static remove(id) {
         const pair = Access.get("pair")
         if (!pair) return
-        const { gun } = globalThis
-        gun.get(`~${pair.pub}`).get("addresses").get(id).put(null, null, { opt: { authenticator: pair } })
+        zen.get("~" + pair.pub).get("addresses").get(id).put(null, null, { authenticator: pair })
     }
 }
 

@@ -10,8 +10,11 @@ if (NODE) {
 
 let opfs = null
 if (BROWSER) {
-    const { OPFS } = await import("../OPFS.js")
-    opfs = new OPFS()
+    const [{ OPFS }, { supportsOPFS }] = await Promise.all([
+        import("../OPFS.js"),
+        import("../OPFS/root.js")
+    ])
+    if (supportsOPFS()) opfs = new OPFS()
 }
 
 // File extensions treated as UTF-8 text — everything else is binary

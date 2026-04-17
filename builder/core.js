@@ -356,17 +356,22 @@ await FS.copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3.wa
 await FS.copy(["node_modules", "@sqlite.org", "sqlite-wasm", "dist", "sqlite3-opfs-async-proxy.js"], [...paths.build.core, "SQL", "sqlite3-opfs-async-proxy.js"])
 log.ok("Copied sqlite-wasm → build/core/SQL/sqlite3.js + sqlite3.wasm + sqlite3-opfs-async-proxy.js")
 
-// Copy gun library files to GDB folder
-log.info("Copying gun library to GDB...")
-const gunFiles = ["gun.js", "sea.js", "lib/"]
-for (const filePath of gunFiles) {
+// Copy zen runtime files to ZEN folder
+log.info("Copying zen library to ZEN...")
+const zenFiles = [
+    "zen.js",
+    "zen.min.js",
+    "pen.wasm",
+    "crypto.wasm",
+    "lib/"
+]
+for (const filePath of zenFiles) {
     const segments = filePath.split("/").filter(Boolean)
-    const src = ["node_modules", "@akaoio", "gun", ...segments]
-    const dest = [...paths.build.core, "GDB", ...segments]
+    const src = ["node_modules", "@akaoio", "zen", ...segments]
+    const dest = [...paths.build.core, "ZEN", ...segments]
     await FS.copy(src, dest)
 }
-await FS.copy(["node_modules", "@akaoio", "gun", "lib", "opfs.js"], [...paths.build.core, "GDB", "lib", "opfs.js"])
-log.ok(`Copied gun files to GDB`)
+log.ok("Copied zen.js, zen.min.js, pen.wasm, crypto.wasm, and ZEN lib/")
 
 // Build routes list using regex pattern and post-process
 log.info("Building routes list...")
@@ -427,7 +432,7 @@ console.log(`${icons.done} ${color.ok("Game Namespaces")}: ${Object.keys(gameIte
 console.log(`${icons.done} ${color.ok("Items (Total)")}: ${totalItemCount}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
-console.log(`${icons.done} ${color.ok("Gun Files")}: ${gunFiles.length}`)
+console.log(`${icons.done} ${color.ok("Zen Files")}: ${zenFiles.length}`)
 if (await FS.exist(geoPath)) console.log(`${icons.done} ${color.ok("Geo Data")}: ✓ cached`)
 
 log.section("========================================")

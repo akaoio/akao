@@ -1,6 +1,6 @@
 import { putTradeRecord, resolveTradeId } from "./helpers.js"
 
-// Either party files a dispute — writes to own Gun namespace
+// Either party files a dispute — writes to own Zen namespace
 export async function dispute({ tradeId, reason, evidence = null, party } = {}) {
     const resolvedTradeId = await resolveTradeId(this, tradeId)
     if (!party?.pub || !party?.pair) throw new Error("disputePartyRequired")
@@ -14,7 +14,7 @@ export async function dispute({ tradeId, reason, evidence = null, party } = {}) 
     }
 
     await putTradeRecord({
-        gun: this.gun,
+        zen: this.zen,
         pub: party.pub,
         tradeId: resolvedTradeId,
         fields,

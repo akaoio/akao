@@ -1,4 +1,4 @@
-import { HDNodeWallet } from "../Ethers.js"
+import { HDNodeWallet } from "../../src/core/Ethers.js"
 
 // Derives watch-only platform lock address from recipient's xpub + payer's index
 // Payer can verify on-chain but cannot spend (no xprv)

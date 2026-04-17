@@ -1,8 +1,0 @@
-import "./GDB/gun.js"
-import "./GDB/sea.js"
-import "./GDB/lib/radix.js"
-import "./GDB/lib/radisk.js"
-import "./GDB/lib/opfs.js"
-import "./GDB/lib/rindexed.js"
-import "./GDB/lib/store.js"
-import "./GDB/lib/pen.js"

@@ -1,11 +1,30 @@
 import Test from "../Test.js"
 import OPFS from "../OPFS.js"
+import { supportsOPFS } from "../OPFS/root.js"
 
 let _counter = 0
 function fsRoot() { return `__test_opfs_${_counter++}` }
 
 function enc(str) { return new TextEncoder().encode(str) }
 function dec(buf) { return new TextDecoder().decode(buf) }
+
+Test.describe("OPFS — support detection", () => {
+
+    Test.it("returns false when navigator.storage.getDirectory is unavailable", () => {
+        Test.assert.equal(
+            supportsOPFS({ navigator: {} }),
+            false
+        )
+    })
+
+    Test.it("returns true when navigator.storage.getDirectory exists", () => {
+        Test.assert.equal(
+            supportsOPFS({ navigator: { storage: { getDirectory() {} } } }),
+            true
+        )
+    })
+
+})
 
 // ─── write + load ─────────────────────────────────────────────────────────────
 

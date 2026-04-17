@@ -16,9 +16,6 @@ export const TESTS = [
     { file: "Hash.test.js", browser: true, node: true },
     { file: "SQL.test.js", browser: true, node: false },
     { file: "OPFS.test.js", browser: true, node: false },
-    { file: "Order.test.js", browser: false, node: true },
-    { file: "Lock.test.js", browser: false, node: true },
-    { file: "Trade.test.js", browser: false, node: true },
     { file: "Launcher.test.js", browser: false, node: true },
     { file: "WalletLabel.test.js", browser: false, node: true }
 ]

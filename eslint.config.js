@@ -1,6 +1,6 @@
 export default [
     {
-        ignores: ["src/core/GDB/**", "build/core/GDB/**"]
+        ignores: ["src/core/ZEN/**", "build/core/ZEN/**"]
     },
     {
         rules: {

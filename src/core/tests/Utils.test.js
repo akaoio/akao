@@ -8,6 +8,7 @@ import {
     evaluate,
     NODE, BROWSER
 } from "../Utils.js"
+import { detectEnvironment } from "../Utils/environment.js"
 
 Test.describe("Utils — Environment", () => {
 
@@ -16,6 +17,15 @@ Test.describe("Utils — Environment", () => {
             (NODE && !BROWSER) || (!NODE && BROWSER),
             "exactly one of NODE or BROWSER must be true"
         )
+    })
+
+    Test.it("keeps Node mode even when headless code injects location", () => {
+        const env = detectEnvironment({
+            process: { versions: { node: "24.12.0" }, platform: "linux" },
+            location: { origin: "http://localhost", hostname: "localhost" }
+        })
+        Test.assert.equal(env.NODE, true)
+        Test.assert.equal(env.BROWSER, false)
     })
 
 })
