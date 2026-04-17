@@ -8,7 +8,7 @@ export async function create({ tradeId, matchedAt = Date.now(), taker = null } =
     if (!actor?.pub || !actor?.pair) throw new Error("takerPairRequired")
     const record = { tradeId: resolvedTradeId, status: "matched", matched: true, matchedAt }
     await putTradeRecord({
-        gun: this.gun,
+        zen: this.zen,
         pub: actor.pub,
         tradeId: resolvedTradeId,
         fields: record,

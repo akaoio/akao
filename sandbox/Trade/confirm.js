@@ -3,7 +3,7 @@ import { putTradeRecord, resolveRoles, resolveTradeId } from "./helpers.js"
 import zen from "../../src/core/ZEN.js"
 
 // Buyer confirms receipt and reveals unlock indexes to seller and affiliate
-// Writes to buyer's own Gun namespace — seller subscribes to read indexes
+// Writes to buyer's own Zen namespace — seller subscribes to read indexes
 export async function confirm({ tradeId, buyerpair = null, buyer = null } = {}) {
     const resolvedTradeId = await resolveTradeId(this, tradeId)
     const roles = resolveRoles(this, { buyer })
@@ -25,7 +25,7 @@ export async function confirm({ tradeId, buyerpair = null, buyer = null } = {}) 
     }
 
     await putTradeRecord({
-        runtime: this.gun,
+        runtime: this.zen,
         pub: buyerEntity.pub,
         tradeId: resolvedTradeId,
         fields,

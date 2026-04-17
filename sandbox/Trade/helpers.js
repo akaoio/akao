@@ -35,8 +35,8 @@ export async function resolveOrderId(order, orderId = null) {
     throw new Error("orderIdRequired")
 }
 
-export async function putTradeRecord({ runtime = zen, gun, pub, tradeId, fields, pair } = {}) {
-    runtime = runtime || gun
+export async function putTradeRecord({ runtime = zen, zen, pub, tradeId, fields, pair } = {}) {
+    runtime = runtime || zen
     if (!runtime || !tradeId || !fields) throw new Error("invalidTradeWrite")
     if (pub && pair) await ensureUserNamespace({ runtime, pub, pair })
 
@@ -53,14 +53,14 @@ export async function putTradeRecord({ runtime = zen, gun, pub, tradeId, fields,
     })
 }
 
-export async function readTradeRecord({ runtime = zen, gun, pub, tradeId, timeoutMs = 800 } = {}) {
-    runtime = runtime || gun
+export async function readTradeRecord({ runtime = zen, zen, pub, tradeId, timeoutMs = 800 } = {}) {
+    runtime = runtime || zen
     if (!runtime || !pub || !tradeId) throw new Error("invalidTradeRead")
     return cleanRecord(await runtime.get("~" + pub).get("trades").get(tradeId).once(timeoutMs))
 }
 
-export async function readPublishedValue({ runtime = zen, gun, pub, field, timeoutMs = 800 } = {}) {
-    runtime = runtime || gun
+export async function readPublishedValue({ runtime = zen, zen, pub, field, timeoutMs = 800 } = {}) {
+    runtime = runtime || zen
     if (!runtime || !pub || !field) throw new Error("invalidPublishedRead")
     return await runtime.get("~" + pub).get(field).once(timeoutMs)
 }
@@ -76,9 +76,9 @@ export async function expectedXpub({ epub, platpair } = {}) {
     return (await rootFromSecret(secret)).neuter().extendedKey
 }
 
-export async function resolvePublishedXpub({ runtime = zen, gun, party, field = "xpub", platpair = null } = {}) {
+export async function resolvePublishedXpub({ runtime = zen, zen, party, field = "xpub", platpair = null } = {}) {
     if (!party?.pub) throw new Error("partyPubRequired")
-    runtime = runtime || gun
+    runtime = runtime || zen
     const xpub = await readPublishedValue({ runtime, pub: party.pub, field })
     if (!xpub) throw new Error("xpubNotFound")
     if (platpair && party.epub) {
@@ -120,8 +120,8 @@ function cleanRecord(data) {
     return record
 }
 
-async function ensureUserNamespace({ runtime = zen, gun, pub, pair } = {}) {
-    runtime = runtime || gun
+async function ensureUserNamespace({ runtime = zen, zen, pub, pair } = {}) {
+    runtime = runtime || zen
     await new Promise((resolve, reject) => {
         runtime.get("~" + pub).get("pub").put(pub, (ack) => {
             if (ack?.err) return reject(new Error(ack.err))

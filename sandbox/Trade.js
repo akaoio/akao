@@ -14,10 +14,10 @@ export class Trade {
     // maker   — { pub, epub, pair? } maker's identity
     // taker   — { pub, epub, pair? } taker's identity
     // platform — { epub } platform identity (for DH shared secret)
-    constructor({ gun, runtime, order, maker, taker, platform } = {}) {
-        const db = runtime || gun
+    constructor({ zen, runtime, order, maker, taker, platform } = {}) {
+        const db = runtime || zen
         if (!db || !order || !maker || !taker || !platform) throw new Error("invalidInput")
-        this.gun = db
+        this.zen = db
         this.order = order
         this.maker = maker
         this.taker = taker

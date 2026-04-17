@@ -9,7 +9,7 @@
 import zen from "/core/ZEN.js"
 
 export async function writeLabel(pair, id, label) {
-    if (!zen || !pair) throw new Error("No gun/pair")
+    if (!zen || !pair) throw new Error("No zen/pair")
     return new Promise((resolve, reject) => {
         zen.get(`~${pair.pub}`).get("wallets").put(
             { [id]: String(label) },

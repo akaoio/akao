@@ -19,7 +19,7 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
     const affiliateEntity = roles.affiliate
     if (!platformPair) throw new Error("platpairRequired")
     const recipientXpub = await resolvePublishedXpub({
-        runtime: this.gun,
+        runtime: this.zen,
         party: recipientEntity,
         platpair: platformPair
     })
@@ -38,7 +38,7 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
     let unlockIndexCL = null
     if (affiliateEntity?.pub && affiliateEntity?.epub) {
         const affiliateXpub = await resolvePublishedXpub({
-            runtime: this.gun,
+            runtime: this.zen,
             party: affiliateEntity,
             platpair: platformPair
         })
@@ -67,7 +67,7 @@ export async function refund({ tradeId, payer, recipient, affiliate = null, plat
 
     if (this.platform?.pub)
         await putTradeRecord({
-            runtime: this.gun,
+            runtime: this.zen,
             pub: this.platform.pub,
             tradeId: resolvedTradeId,
             fields,

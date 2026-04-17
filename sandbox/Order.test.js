@@ -5,7 +5,7 @@
  * identity spoofing, replay, side confusion, BigInt traps, and cryptographic
  * invariants (domain separation, determinism, entropy adequacy).
  *
- * All dependencies are real: real Gun (in-memory), real SEA, real EVM (Ganache).
+ * All dependencies are real: real Zen (in-memory), real SEA, real EVM (Ganache).
  * No mocks. No fake data. Seeds are deterministic and human-readable.
  */
 
@@ -92,12 +92,12 @@ console.log("═".repeat(W) + "\n")
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Create a real in-memory Gun node (no persistence, no peers). */
+/** Create a real in-memory Zen node (no persistence, no peers). */
 function makeGun() {
     return new zen.constructor({ localStorage: false, radisk: false, peers: [] })
 }
 
-/** Read a Gun node once, with timeout. Resolves undefined on timeout. */
+/** Read a Zen node once, with timeout. Resolves undefined on timeout. */
 function gunOnce(node, timeoutMs = 800) {
     return new Promise((resolve) => {
         const t = setTimeout(() => resolve(undefined), timeoutMs)
@@ -468,7 +468,7 @@ Test.describe("Order — cancel: ownership enforcement", () => {
         Test.assert.deepEqual(result, { error: "notOwner" })
     })
 
-    Test.it("cancel clears entry in Gun when full pub matches owner", async () => {
+    Test.it("cancel clears entry in Zen when full pub matches owner", async () => {
         state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
@@ -477,7 +477,7 @@ Test.describe("Order — cancel: ownership enforcement", () => {
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
         const stored = await gunOnce(state.zen.get(s).get(key))
         Test.assert.falsy(stored && stored !== null && typeof stored === "object" && stored.quote,
-            "Gun entry must be cleared after cancel")
+            "Zen entry must be cleared after cancel")
     })
 
     Test.it("cancel with correct full pub does not return notOwner", async () => {
@@ -545,7 +545,7 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
         Test.assert.notEqual(fpHash, orHash)
     })
 
-    Test.it("match writes trade record to Gun when key is provided", async () => {
+    Test.it("match writes trade record to Zen when key is provided", async () => {
         state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key, orderId } = await o.create()
@@ -553,7 +553,7 @@ Test.describe("Order — match: tradeId determinism + domain isolation", () => {
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
         const stored = await gunOnce(state.zen.get(s).get(key))
-        Test.assert.truthy(stored, "trade record must be written to Gun")
+        Test.assert.truthy(stored, "trade record must be written to Zen")
         Test.assert.truthy(typeof stored === "string", "stored value is a signed string")
     })
 
@@ -731,14 +731,14 @@ Test.describe("Order — fetch: dual candle discovery", () => {
 
 Test.describe("Order — create: authenticator + payload integrity", () => {
 
-    Test.it("create writes signed entry to Gun and it is readable back", async () => {
+    Test.it("create writes signed entry to Zen and it is readable back", async () => {
         state.zen = makeGun()
         const o = new Order(orderInput({ pair: PAIR_MAKER, side: "sell", quoteQuantity: 95 }))
         const { key } = await o.create()
         const stamp = Number(key.split(":")[0])
         const s = soulFn({ baseId: ITEM, side: "sell", candle: Math.floor(stamp / 300000) })
         const stored = await gunOnce(state.zen.get(s).get(key))
-        Test.assert.truthy(stored, "entry must exist in Gun after create")
+        Test.assert.truthy(stored, "entry must exist in Zen after create")
         Test.assert.truthy(typeof stored === "string", "stored value must be a signed string")
     })
 
@@ -788,7 +788,7 @@ Test.describe("Order — create: authenticator + payload integrity", () => {
 
 Test.describe("Order — attacker: adversarial inputs", () => {
 
-    Test.it("quote.quantity=0 is rejected before any Gun write can occur", () => {
+    Test.it("quote.quantity=0 is rejected before any Zen write can occur", () => {
         Test.assert.throws(
             () => new Order(orderInput({ pair: PAIR_A, side: "sell", quoteQuantity: 0 })),
             "invalidQuoteQuantity"

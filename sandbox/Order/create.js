@@ -3,7 +3,7 @@ import { parts } from "./parts.js"
 import { payload } from "./schema.js"
 import zen from "../../src/core/ZEN.js"
 
-// Write order to Gun under the Pen-validated market-window soul.
+// Write order to Zen under the Pen-validated market-window soul.
 // The raw order value is a normalized signed intent with maker/base/quote objects.
 export async function create() {
     const orderId = await this.id()

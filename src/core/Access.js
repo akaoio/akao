@@ -1,7 +1,7 @@
 /**
  * Access control and authentication module using WebAuthn passkeys.
  * Manages user authentication state, wallet information, and key pair generation.
- * Integrates with SEA (Simple End-to-End Cryptography) for encryption and Gun database.
+ * Integrates with SEA (Simple End-to-End Cryptography) for encryption and Zen database.
  */
 
 import WebAuthn from "./WebAuthn.js"
@@ -23,7 +23,7 @@ function b64ToUint8(str) {
  * Reactive state store for user authentication and access information.
  * @property {boolean} authenticated - Whether user is currently authenticated
  * @property {ArrayBuffer} id - Passkey credential ID (not user ID)
- * @property {string} pub - Public key of the passkey (stored encrypted in Gun)
+ * @property {string} pub - Public key of the passkey (stored encrypted in Zen)
  * @property {Object} pair - SEA key pair generated from user ID (used for encryption)
  * @property {Object} wallet - Current wallet information { id, total }
  */
@@ -159,7 +159,7 @@ async function next(credential) {
 }
 
 /**
- * Encrypt and save the passkey public key to Gun database.
+ * Encrypt and save the passkey public key to Zen database.
  * Stores encrypted public key under user's key pair pub.
  * Called after successful signup to save the passkey pub for later recovery.
  * @param {Object} credential - WebAuthn credential containing pub
@@ -181,7 +181,7 @@ async function save(credential) {
 }
 
 /**
- * Restore the encrypted passkey public key from Gun database.
+ * Restore the encrypted passkey public key from Zen database.
  * Decrypts and loads the previously saved public key into Access state.
  * Called after signin to recover the passkey pub.
  * @returns {Object} Decrypted public key or error
@@ -230,7 +230,7 @@ export async function wave({ seed, id } = {}) {
 
 /**
  * Sign in an existing user with WebAuthn passkey.
- * Authenticates with existing passkey and restores the public key from Gun.
+ * Authenticates with existing passkey and restores the public key from Zen.
  * @param {Object} data - WebAuthn authentication options
  * @returns {Promise<Object>} Credential object or error
  */

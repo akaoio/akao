@@ -33,7 +33,7 @@ Test.describe("WalletLabel", () => {
     })
 
     Test.it("rejects when pair is unavailable", async () => {
-        await Test.assert.rejects(writeLabel(null, nextId(), "x"), "No gun/pair")
+        await Test.assert.rejects(writeLabel(null, nextId(), "x"), "No zen/pair")
     })
 
 })

@@ -31,7 +31,7 @@ export class WALLETS extends HTMLElement {
         this._chainOptions = []
         // Wallet being previewed (selected but not yet committed); null = resting
         this._previewId = null
-        // Unsubscribe fn for the active Gun wallet-label subscription
+        // Unsubscribe fn for the active Zen wallet-label subscription
         this._labelUnsub = null
         // Last persisted label value — used to revert the input on blur/Escape
         this._labelSaved = ""
@@ -376,10 +376,10 @@ export class WALLETS extends HTMLElement {
         }
     }
 
-    // ── Wallet label persistence (Gun-backed) ────────────────────
+    // ── Wallet label persistence (Zen-backed) ────────────────────
 
     /**
-     * Subscribe to live Gun updates for the given wallet index.
+     * Subscribe to live Zen updates for the given wallet index.
      * Tears down any prior subscription first so only one is ever active.
      * Does not update the input while the user is actively typing.
      */
