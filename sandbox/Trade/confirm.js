@@ -1,6 +1,6 @@
-import { sha256 } from "../Utils/crypto.js"
+import { sha256 } from "../../src/core/Utils/crypto.js"
 import { putTradeRecord, resolveRoles, resolveTradeId } from "./helpers.js"
-import zen from "../ZEN.js"
+import zen from "../../src/core/ZEN.js"
 
 // Buyer confirms receipt and reveals unlock indexes to seller and affiliate
 // Writes to buyer's own Gun namespace — seller subscribes to read indexes

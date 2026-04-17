@@ -1,6 +1,6 @@
 import { soul } from "./soul.js"
 import { parts } from "./parts.js"
-import zen from "../ZEN.js"
+import zen from "../../src/core/ZEN.js"
 
 // Remove order from Gun — maker withdraws listing.
 // For buy orders: maker should also withdraw FP wallet funds back to main wallet.

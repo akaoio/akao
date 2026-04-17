@@ -1,4 +1,4 @@
-import { sha256 } from "../Utils/crypto.js"
+import { sha256 } from "../../src/core/Utils/crypto.js"
 
 // Pen key format: <timestamp>:<pub>:<nonce>
 // timestamp is Date.now() in milliseconds; candle is derived from it in the soul.

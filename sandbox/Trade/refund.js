@@ -6,7 +6,7 @@ import {
     resolvePublishedXpub,
     rootFromSecret
 } from "./helpers.js"
-import zen from "../ZEN.js"
+import zen from "../../src/core/ZEN.js"
 
 // Platform refunds payer — requires platform authority pair
 // Platform recomputes all spending keys via DH shared secrets

@@ -6,7 +6,7 @@ import {
     resolvePublishedXpub,
     rootFromSecret
 } from "./helpers.js"
-import zen from "../ZEN.js"
+import zen from "../../src/core/ZEN.js"
 
 // Platform releases funds to seller + affiliate (auto-release or dispute resolution)
 // Platform recomputes indexes from payer's secret, derives recipient spending keys

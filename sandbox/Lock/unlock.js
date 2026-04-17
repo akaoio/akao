@@ -1,4 +1,4 @@
-import { HDNodeWallet } from "../Ethers.js"
+import { HDNodeWallet } from "../../src/core/Ethers.js"
 
 // Derives spending key from recipient's xprv + payer's index
 // Caller must wipe the returned wallet from memory immediately after sendTransaction()

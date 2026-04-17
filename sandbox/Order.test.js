@@ -9,17 +9,17 @@
  * No mocks. No fake data. Seeds are deterministic and human-readable.
  */
 
-import Test from "../Test.js"
+import Test from "../src/core/Test.js"
 import { createRequire } from "module"
-import { sha256 } from "../Utils/crypto.js"
-import { Order } from "../Order.js"
-import { cancel as cancelFn } from "../Order/cancel.js"
-import { match  as matchFn  } from "../Order/match.js"
-import { proof  as proofFn  } from "../Order/proof.js"
-import { fetch  as fetchFn  } from "../Order/fetch.js"
-import { soul   as soulFn   } from "../Order/soul.js"
-import zen, { initZEN } from "../ZEN.js"
-import { ethers, HDNodeWallet, getBytes } from "../Ethers.js"
+import { sha256 } from "../src/core/Utils/crypto.js"
+import { Order } from "./Order.js"
+import { cancel as cancelFn } from "./Order/cancel.js"
+import { match  as matchFn  } from "./Order/match.js"
+import { proof  as proofFn  } from "./Order/proof.js"
+import { fetch  as fetchFn  } from "./Order/fetch.js"
+import { soul   as soulFn   } from "./Order/soul.js"
+import zen, { initZEN } from "../src/core/ZEN.js"
+import { ethers, HDNodeWallet, getBytes } from "../src/core/Ethers.js"
 
 // ─── Bootstrap: real headless runtime + EVM ───────────────────────────────────
 

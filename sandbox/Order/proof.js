@@ -1,5 +1,5 @@
-import { sha256 } from "../Utils/crypto.js"
-import { HDNodeWallet } from "../Ethers.js"
+import { sha256 } from "../../src/core/Utils/crypto.js"
+import { HDNodeWallet } from "../../src/core/Ethers.js"
 
 // Verify Fund Proof wallet has sufficient balance (buy orders only).
 // Must be called by Taker at match time — not just at discovery time.

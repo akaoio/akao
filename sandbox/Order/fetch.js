@@ -1,5 +1,5 @@
 import { soul } from "./soul.js"
-import zen from "../ZEN.js"
+import zen from "../../src/core/ZEN.js"
 
 // Query order book for a given base item and side.
 // Returns an array of two Gun observable maps: [current candle soul, previous candle soul].

@@ -1,11 +1,11 @@
-import Test from "../Test.js"
+import Test from "../src/core/Test.js"
 import { createRequire } from "module"
-import { sha256 } from "../Utils/crypto.js"
-import { Trade } from "../Trade.js"
-import { Lock } from "../Lock.js"
-import { devplatform } from "../Platform.js"
-import zen, { initZEN } from "../ZEN.js"
-import { ethers, HDNodeWallet, getBytes } from "../Ethers.js"
+import { sha256 } from "../src/core/Utils/crypto.js"
+import { Trade } from "./Trade.js"
+import { Lock } from "./Lock.js"
+import { devplatform } from "../src/core/Platform.js"
+import zen, { initZEN } from "../src/core/ZEN.js"
+import { ethers, HDNodeWallet, getBytes } from "../src/core/Ethers.js"
 
 const _req = createRequire(import.meta.url)
 const Ganache = _req("ganache")

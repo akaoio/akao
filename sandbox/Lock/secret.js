@@ -1,4 +1,4 @@
-import zen from "../ZEN.js"
+import zen from "../../src/core/ZEN.js"
 
 // All inputs must be ASCII-safe strings (base64 SEA secrets, hex hashes)
 export async function secret() {

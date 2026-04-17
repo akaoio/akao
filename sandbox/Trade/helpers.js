@@ -1,6 +1,6 @@
-import { sha256 } from "../Utils/crypto.js"
-import { HDNodeWallet, getBytes } from "../Ethers.js"
-import zen from "../ZEN.js"
+import { sha256 } from "../../src/core/Utils/crypto.js"
+import { HDNodeWallet, getBytes } from "../../src/core/Ethers.js"
+import zen from "../../src/core/ZEN.js"
 
 export function resolveRoles(trade, overrides = {}) {
     const maker = overrides.maker || trade.maker

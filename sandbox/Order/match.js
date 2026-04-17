@@ -1,7 +1,7 @@
-import { sha256 } from "../Utils/crypto.js"
+import { sha256 } from "../../src/core/Utils/crypto.js"
 import { soul } from "./soul.js"
 import { parts } from "./parts.js"
-import zen from "../ZEN.js"
+import zen from "../../src/core/ZEN.js"
 
 // Taker accepts order — computes deterministic tradeId and writes matched status.
 // tradeId = sha256("TR:" + orderId + ":" + makerpub + ":" + takerpub)
