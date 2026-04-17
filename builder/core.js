@@ -362,6 +362,7 @@ const zenFiles = [
     "zen.js",
     "zen.min.js",
     "pen.wasm",
+    "crypto.wasm",
     "lib/"
 ]
 for (const filePath of zenFiles) {
@@ -370,7 +371,7 @@ for (const filePath of zenFiles) {
     const dest = [...paths.build.core, "ZEN", ...segments]
     await FS.copy(src, dest)
 }
-log.ok("Copied zen.js, zen.min.js, pen.wasm, and ZEN lib/")
+log.ok("Copied zen.js, zen.min.js, pen.wasm, crypto.wasm, and ZEN lib/")
 
 // Build routes list using regex pattern and post-process
 log.info("Building routes list...")
