@@ -17,7 +17,7 @@ if (!marketPub) {
     throw new Error("Missing market pub key. Provide pairs.market.pub or site.market.pub.")
 }
 
-const PORT = process.env.ZEN_PORT || 8765
+const PORT = process.env.ZEN_PORT || 8420
 const RELAY_URL = `http://127.0.0.1:${PORT}/zen`
 const RELAY_URL_LOCALHOST = `http://localhost:${PORT}/zen`
 
