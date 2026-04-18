@@ -15,7 +15,9 @@ export function soul({ base, quote, side, candle } = {}) {
     const key = { reg: 0 }
     const sep = ":"
     const timestamp = { tonum: { seg: { sep, idx: 0, of: key } } }
-    const writer = { seg: { sep, idx: 1, of: key } }
+    const $base = { seg: { sep, idx: 1, of: key } }
+    const $side = { seg: { sep, idx: 2, of: key } }
+    const writer = { seg: { sep, idx: 3, of: key } }
     return ZEN.pen({
         key: {
             and: [
@@ -31,13 +33,15 @@ export function soul({ base, quote, side, candle } = {}) {
                         }
                     }
                 },
+                { eq: [$base, base] },
+                { eq: [$side, side] },
                 { eq: [writer, { reg: 5 }] },
-                { seg: { sep, idx: 2, of: key, match: { length: [1, 64] } } }
+                // segment 4 must exists and be between 1 and 8 characters (inclusive) to prevent collisions and ensure discoverability.
+                { seg: { sep, idx: 4, of: key, match: { length: [1, 8] } } }
             ]
         },
         val:  { type: "string" },
         sign: true,
-        pow:  { field: 0, difficulty: 3 },
-        params: { base, side }
+        pow:  { field: 0, difficulty: 3 }
     })
 }
