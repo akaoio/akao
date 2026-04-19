@@ -24,6 +24,8 @@ export const styles = css`
         --identicons-pad-v: var(--space-4);
         /* Hide the #N number indicator — wallet names replace it */
         --identicons-status-left-display: none;
+        /* Allow the status-right (which holds the actions slot) to stretch full width */
+        --identicons-status-right-flex: 1;
     }
 
     /* ── Wallet actions slot ─────────────────────────────────────────────────────
@@ -79,13 +81,13 @@ export const styles = css`
         font-size: var(--text-sm);
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--accent-action);
+        color: var(--accent-info);
         background: transparent;
         border: none;
         border-bottom: 1px solid transparent;
         outline: none;
         padding: 0 0 1px;
-        caret-color: var(--accent-action);
+        caret-color: var(--accent-info);
         pointer-events: all;
         transition:
             border-bottom-color var(--speed),
@@ -100,12 +102,12 @@ export const styles = css`
         }
 
         &:hover {
-            border-bottom-color: color-mix(in hsl, var(--accent-action) 30%, transparent);
+            border-bottom-color: color-mix(in hsl, var(--accent-info) 30%, transparent);
         }
 
         &:focus {
-            border-bottom-color: var(--accent-action);
-            box-shadow: 0 1px 0 0 color-mix(in hsl, var(--accent-action) 40%, transparent);
+            border-bottom-color: var(--accent-info);
+            box-shadow: 0 1px 0 0 color-mix(in hsl, var(--accent-info) 40%, transparent);
         }
 
         &:disabled {
@@ -176,6 +178,42 @@ export const styles = css`
         align-items: center;
         flex-shrink: 0;
         margin-left: auto;
+    }
+
+    #label-edit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: right;
+        flex-shrink: 0;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+        padding: 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        pointer-events: all;
+        outline: none;
+        color: var(--neon-g);
+        opacity: 0.35;
+        transition:
+            opacity var(--speed),
+            filter var(--speed);
+
+        ui-svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+            pointer-events: none;
+            --svg-color: currentColor;
+        }
+
+        &:hover {
+            opacity: 1;
+            filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-g) 60%, transparent));
+        }
+
+        &:active {
+            opacity: 0.5;
+        }
 
         &[hidden] {
             display: none;
@@ -285,21 +323,45 @@ export const styles = css`
         }
     }
 
-    /* ── Merged wallet info row ─────────────────────────────────────────────────
-       Two stacked lines: address row on top, chain selector below.
-       Splitting avoids the chain pill squeezing out the address when the
-       chain name is long (e.g. "Binance Smart Chain Testnet").
-       ────────────────────────────────────────────────────────────────────────── */
+    /* ── Selector rows — label above, trigger below at 80% width ───────────────── */
+    #currency-row,
+    #chain-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-1);
+        padding: 0 var(--space);
+        margin-bottom: var(--space-3);
+    }
+
+    #currency-label,
+    #chain-label {
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color);
+        opacity: 0.4;
+        white-space: nowrap;
+    }
+
+    /* ── Address/balance card ────────────────────────────────────────────────── */
     #wallet-row {
         display: flex;
         flex-direction: column;
         gap: 0;
         padding: 0;
         background: var(--field-bg);
-        transition: background var(--speed);
+        box-shadow: 0 0 8px var(--accent-info-glow);
+        transition:
+            background var(--speed),
+            border-color var(--speed),
+            box-shadow var(--speed);
 
         &:focus-within {
             background: var(--field-bg-focus);
+            border-color: var(--accent-info);
+            box-shadow: 0 0 16px var(--accent-info-border);
         }
     }
 
@@ -308,7 +370,7 @@ export const styles = css`
        Grid guarantees an exact midpoint regardless of content length.
        ────────────────────────────────────────────────────────────────────────── */
     #address-wrap {
-        display: grid;
+        display: var(--wallet-address-wrap-display, grid);
         grid-template-columns: 1fr 1px 1fr;
         align-items: center;
         width: 100%;
@@ -424,11 +486,7 @@ export const styles = css`
         }
     }
 
-    /* ── Chain trigger pill ─────────────────────────────────────────────────────
-       Full-width row below the address — always has room for any chain name.
-       Resting border glows cyan at low opacity to signal it is the primary
-       selector; hover steps the glow up.
-       ────────────────────────────────────────────────────────────────────────── */
+    /* ── Chain trigger rows ──────────────────────────────────────────────────── */
     .chain-trigger {
         position: relative;
         display: flex;
@@ -437,9 +495,7 @@ export const styles = css`
         width: 100%;
         padding: var(--space-sm) var(--space);
         background: transparent;
-        /* Resting glow: signals this is a clickable selector */
-        border: 1px solid color-mix(in hsl, var(--accent-info) 35%, transparent);
-        box-shadow: 0 0 8px color-mix(in hsl, var(--accent-info) 12%, transparent);
+        border: none;
         box-sizing: border-box;
         color: var(--color);
         font-family: var(--header-font);
@@ -449,9 +505,8 @@ export const styles = css`
         cursor: pointer;
         outline: none;
         transition:
-            border-color var(--speed),
             color var(--speed),
-            box-shadow var(--speed);
+            background var(--speed);
 
         /* Chevron — pushed to the right end */
         &::after {
@@ -468,32 +523,42 @@ export const styles = css`
             mask-size: 10px 6px;
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
-            opacity: 0.45;
+            opacity: 0.35;
             transition: opacity var(--speed);
         }
 
-        /* Hover: full cyan border + stronger glow */
         &:hover {
-            border-color: var(--accent-info);
             color: var(--accent-info);
-            box-shadow: 0 0 16px color-mix(in hsl, var(--accent-info) 35%, transparent);
+            background: color-mix(in hsl, var(--accent-info) 5%, transparent);
             &::after {
                 opacity: 1;
+            }
+            &::before {
+                opacity: 0.6;
             }
         }
 
         &:focus-visible {
-            border-color: var(--accent-info);
             color: var(--accent-info);
-            box-shadow: 0 0 16px color-mix(in hsl, var(--accent-info) 35%, transparent);
+            background: color-mix(in hsl, var(--accent-info) 5%, transparent);
         }
 
-        /* Active: collapse back to resting glow */
         &:active {
-            box-shadow: 0 0 8px color-mix(in hsl, var(--accent-info) 12%, transparent);
+            background: color-mix(in hsl, var(--accent-info) 8%, transparent);
         }
 
-        /* Chain icon — same sizing as swap-form trigger-icon */
+        /* Content area — fills remaining space, never wraps */
+        .trigger-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        /* Chain icon */
         .trigger-icon {
             width: var(--icon-sm);
             height: var(--icon-sm);
@@ -501,19 +566,110 @@ export const styles = css`
             flex-shrink: 0;
         }
 
+        /* Selected value — accent color so it reads distinct from the dim prefix */
+        .trigger-value {
+            text-shadow: var(--glow-info);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .trigger-placeholder {
             opacity: 0.45;
         }
 
-        /* Hide placeholder once a chain is selected */
+        /* Hide placeholder once a value is selected */
         &[data-has-value] .trigger-placeholder {
             display: none;
         }
 
         /* Hide icon + name until a value is set */
         &:not([data-has-value]) .trigger-icon,
-        &:not([data-has-value]) #chain-name {
+        &:not([data-has-value]) #chain-name,
+        &:not([data-has-value]) #currency-name {
             display: none;
+        }
+    }
+
+    /* ── Currency trigger — only shown in deposit/withdraw mode ────────────────
+       Hidden by default; JS shows it when dataset.currency !== "false".
+       ────────────────────────────────────────────────────────────────────────── */
+    #currency-trigger {
+        display: none;
+        border: 1px solid var(--accent-info-border);
+        box-shadow: 0 0 8px var(--accent-info-glow);
+
+        &[data-visible] {
+            display: flex;
+        }
+
+        &:hover {
+            border-color: var(--accent-info);
+            box-shadow: 0 0 16px var(--accent-info-border);
+        }
+    }
+
+    #chain-trigger {
+        align-items: center;
+        border: 1px solid var(--accent-info-border);
+        box-shadow: 0 0 8px var(--accent-info-glow);
+
+        &:hover {
+            border-color: var(--accent-info);
+            box-shadow: 0 0 16px var(--accent-info-border);
+        }
+
+        .trigger-icon {
+            align-self: center;
+        }
+    }
+
+    /* ── Currency picker modal list ─────────────────────────────────────────────
+       Mirrors #chain-list exactly.
+       ────────────────────────────────────────────────────────────────────────── */
+    #currency-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        min-width: 14rem;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space);
+            cursor: pointer;
+            font-family: var(--header-font);
+            font-size: var(--text-sm);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color);
+            border-bottom: 1px solid color-mix(in hsl, var(--color) 8%, transparent);
+            transition:
+                background var(--speed),
+                color var(--speed);
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &:hover {
+                background: var(--accent-info-surface);
+                color: var(--accent-info);
+            }
+
+            &[data-selected="true"] {
+                color: var(--accent-action);
+                background: color-mix(in hsl, var(--accent-action) 6%, transparent);
+                text-shadow: var(--glow-action);
+            }
+
+            ui-svg {
+                width: var(--icon-sm);
+                height: var(--icon-sm);
+                flex-shrink: 0;
+            }
         }
     }
 
@@ -572,30 +728,6 @@ export const styles = css`
         }
     }
 
-    /* ── Currency selector (deposit/withdraw routes only) ───────────────────────
-       Wrapped in field-bg when populated; ui-select stays borderless via
-       CSS custom property overrides.
-       ────────────────────────────────────────────────────────────────────────── */
-    #currencies {
-        &:empty {
-            display: none;
-        }
-
-        &:not(:empty) {
-            background: var(--field-bg);
-        }
-
-        ui-select {
-            --select-width: stretch;
-            --select-radius: 0;
-            --select-border: none;
-            --select-bg: transparent;
-            --select-bg-hover: color-mix(in hsl, var(--neon-g) 6%, transparent);
-            --select-border-hover: none;
-            --select-border-focus: none;
-        }
-    }
-
     /* ── Chain picker modal list ────────────────────────────────────────────────
        Flat rows: icon + chain name. Active chain highlighted green;
        hover previews in cyan — consistent with the rest of the UI.
@@ -627,7 +759,7 @@ export const styles = css`
             }
 
             &:hover {
-                background: color-mix(in hsl, var(--accent-info) 8%, transparent);
+                background: var(--accent-info-surface);
                 color: var(--accent-info);
             }
 
@@ -641,6 +773,14 @@ export const styles = css`
             ui-svg {
                 width: var(--icon-sm);
                 height: var(--icon-sm);
+                flex-shrink: 0;
+            }
+
+            .chain-standard {
+                margin-left: auto;
+                font-size: var(--text-xs);
+                letter-spacing: 0.08em;
+                opacity: 0.5;
                 flex-shrink: 0;
             }
         }
