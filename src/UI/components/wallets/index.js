@@ -1,14 +1,20 @@
 /* eslint-disable curly */
 import template from "./template.js"
 import { Access } from "/core/Access.js"
-import { html, render } from "/core/UI.js"
+import { render } from "/core/UI.js"
 import { Chains, Lives, Wallets } from "/core/Stores.js"
 import States from "/core/States.js"
 import { Context } from "/core/Context.js"
-import SELECT from "/UI/components/select/index.js"
 import { notify, formatBalance } from "/core/Utils.js"
 import { sha256 } from "/core/Utils/crypto.js"
 import logic from "./logic.js"
+
+const TOKEN_STANDARD = {
+    1: "ERC20",       // Ethereum
+    11155111: "ERC20", // Sepolia
+    56: "BEP20",      // BSC
+    97: "BEP20"       // BSC Testnet
+}
 
 export class WALLETS extends HTMLElement {
     static module = import.meta.url
@@ -19,7 +25,8 @@ export class WALLETS extends HTMLElement {
         this.states = new States({
             chain: Context.get("params")?.chain || null,
             currency: Context.get("params")?.currency || null,
-            address: null
+            address: null,
+            balance: null
         })
         this.attachShadow({ mode: "open" })
         render(template, this.shadowRoot)
@@ -27,7 +34,8 @@ export class WALLETS extends HTMLElement {
         this.step = 5
         this.change = this.change.bind(this)
 
-        // Holds the current chain options array so trigger/modal can look up names
+        // Holds the current currency/chain options arrays so triggers can look up names
+        this._currencyOptions = []
         this._chainOptions = []
         // Wallet being previewed (selected but not yet committed); null = resting
         this._previewId = null
@@ -56,6 +64,11 @@ export class WALLETS extends HTMLElement {
     async connectedCallback() {
         // ── DOM refs ──────────────────────────────────────────────
         this.$identicons = this.shadowRoot.querySelector("ui-identicons")
+        this.$currencyTrigger = this.shadowRoot.querySelector("#currency-trigger")
+        this.$currencyIcon = this.shadowRoot.querySelector("#currency-icon")
+        this.$currencyName = this.shadowRoot.querySelector("#currency-name")
+        this.$currencyModal = this.shadowRoot.querySelector("#currency-modal")
+        this.$currencyList = this.shadowRoot.querySelector("#currency-list")
         this.$chainTrigger = this.shadowRoot.querySelector("#chain-trigger")
         this.$chainIcon = this.shadowRoot.querySelector("#chain-icon")
         this.$chainName = this.shadowRoot.querySelector("#chain-name")
@@ -69,6 +82,7 @@ export class WALLETS extends HTMLElement {
         this.$labelWrap = this.shadowRoot.querySelector("#label-wrap")
         this.$labelInput = this.shadowRoot.querySelector("#label-input")
         this.$labelConfirm = this.shadowRoot.querySelector("#label-confirm")
+        this.$labelEdit = this.shadowRoot.querySelector("#label-edit")
         this.$walletPreviewActions = this.shadowRoot.querySelector("#wallet-preview-actions")
         this.$walletRemove = this.shadowRoot.querySelector("#wallet-remove")
         this.$walletSwitch = this.shadowRoot.querySelector("#wallet-switch")
@@ -127,12 +141,16 @@ export class WALLETS extends HTMLElement {
         // ── Preview action buttons ────────────────────────────────
         this.$walletSwitch.addEventListener("click", () => this._commitWallet(this._previewId))
         this.$walletRemove.addEventListener("click", () => this._promptDeleteWallet())
+        this.$labelEdit.addEventListener("click", () => this.$labelInput.focus())
 
         // ── Delete confirm modal ──────────────────────────────────
         this.$deleteConfirm.addEventListener("click", () => {
             this.$deleteModal.close()
             this._removeWallet()
         })
+
+        // ── Currency trigger opens the modal ──────────────────────
+        this.$currencyTrigger.addEventListener("click", () => this.$currencyModal.showModal())
 
         // ── Chain trigger opens the modal ─────────────────────────
         this.$chainTrigger.addEventListener("click", () => this.$chainModal.showModal())
@@ -163,37 +181,28 @@ export class WALLETS extends HTMLElement {
         if (this.dataset.currency === "false") {
             // Swap route: show all chains, no currency selector
             chains = Object.values(Chains).map((c) => ({
-                label: html`
-                    <ui-svg class="icon" data-src="/images/cryptos/${c.configs?.symbol || ""}" />
-                    ${c.configs?.name || c.id}
-                `,
                 value: c.id,
                 _name: c.configs?.name || c.id,
-                _symbol: c.configs?.symbol || ""
+                _symbol: c.configs?.symbol || "",
+                _standard: TOKEN_STANDARD[Number(c.id)] || null
             }))
-            chain = this.states.get("chain") || chains[0]?.value || null
+            chain = this.states.get("chain") || null
             this.states.set({ chain })
         } else {
-            // Deposit/withdraw: currency selector + filtered chains
-            currency = this.states.get("currency") || this.currencies[0]?.value || null
+            // Deposit/withdraw: no default — user must select coin and network
+            currency = this.states.get("currency") || null
             chains = this.chains(currency)
-            chain = chains.some((o) => o.value === this.states.get("chain")) ? this.states.get("chain") : chains[0]?.value || null
-            this.states.set({ currency: currency, chain: chain })
+            chain = chains.some((o) => o.value === this.states.get("chain")) ? this.states.get("chain") : null
+            this.states.set({ currency, chain })
         }
 
         // ── Build chain modal list and sync the trigger button ─────
         this._buildChainModal(chains)
 
-        // ── Currency select (deposit/withdraw only) ────────────────
+        // ── Currency modal (deposit/withdraw only) ────────────────
         if (this.dataset.currency !== "false") {
-            this.$currencies = new SELECT({
-                name: "currency",
-                options: this.currencies,
-                placeholder: "dictionary.currency",
-                selected: currency,
-                change: this.change
-            })
-            render(this.$currencies, this.shadowRoot.querySelector("#currencies"), { append: true })
+            this.$currencyTrigger.setAttribute("data-visible", "")
+            this._buildCurrencyModal(this.currencies, currency)
         }
 
         this.$identicons.addDisabled = this.total >= 20
@@ -219,6 +228,8 @@ export class WALLETS extends HTMLElement {
                 const options = this.chains(value)
                 const chain = options.some((o) => o.value === this.states.get("chain")) ? this.states.get("chain") : options[0]?.value || null
                 this._buildChainModal(options)
+                this._updateCurrencyTrigger(value)
+                this._updateCurrencyListSelection(value)
                 this.states.set({ currency: value, chain })
             } else {
                 this.states.set({ [name]: value })
@@ -272,8 +283,12 @@ export class WALLETS extends HTMLElement {
             const { raw } = await logic.balance({ wallet, currency, fiat, forex: Lives.forex, address })
             if (raw !== null) {
                 const locale = Context.get("locale")?.code || "en"
-                this.$balance.textContent = formatBalance(raw, locale)
+                const formatted = formatBalance(raw, locale)
+                this.$balance.textContent = formatted
                 this.$balanceSymbol.textContent = currency.symbol || ""
+                this.states.set({ balance: formatted })
+            } else {
+                this.states.set({ balance: null })
             }
         }
     }
@@ -282,10 +297,6 @@ export class WALLETS extends HTMLElement {
 
     get currencies() {
         return logic.currencies(Chains).map((c) => ({
-            label: html`
-                <ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" />
-                ${c.name}
-            `,
             value: c.name,
             _name: c.name,
             _symbol: c.symbol
@@ -294,13 +305,10 @@ export class WALLETS extends HTMLElement {
 
     chains(currency = null) {
         return logic.chains(Chains, currency).map((c) => ({
-            label: html`
-                <ui-svg class="icon" data-src="/images/cryptos/${c.symbol}" />
-                ${c.name}
-            `,
             value: c.id,
             _name: c.name,
-            _symbol: c.symbol
+            _symbol: c.symbol,
+            _standard: TOKEN_STANDARD[Number(c.id)] || null
         }))
     }
 
@@ -313,6 +321,7 @@ export class WALLETS extends HTMLElement {
         this.$identicons.id = id
         this.$identicons.previewId = id
         this.$walletPreviewActions.hidden = false
+        this.$labelEdit.hidden = true
         this.$walletSwitch.hidden = editing
         this.$walletRemove.hidden = id !== this.total - 1
         this.$labelInput.disabled = true
@@ -329,7 +338,8 @@ export class WALLETS extends HTMLElement {
         this._previewId = null
         this.$identicons.id = this.id
         this.$identicons.previewId = null
-        this.$walletPreviewActions.hidden = !editing
+        this.$walletPreviewActions.hidden = false
+        this.$labelEdit.hidden = editing
         this.$walletRemove.hidden = true
         this.$walletSwitch.hidden = true
         this.$labelInput.disabled = false
@@ -346,9 +356,10 @@ export class WALLETS extends HTMLElement {
         this.$identicons.savedId = id
         this._previewId = null
         this.$identicons.previewId = null
-        this.$walletPreviewActions.hidden = true
+        this.$walletPreviewActions.hidden = false
+        this.$labelEdit.hidden = false
         this.$walletRemove.hidden = true
-        this.$walletSwitch.hidden = false
+        this.$walletSwitch.hidden = true
         this.$labelInput.disabled = false
         this.$identicons.flashSelected()
         this.change()
@@ -425,6 +436,7 @@ export class WALLETS extends HTMLElement {
         this.$labelInput.placeholder = Context.get(["dictionary", "walletName"]) || "Name this wallet"
 
         const showConfirm = () => {
+            this.$labelEdit.hidden = true
             this.$walletSwitch.hidden = true
             this.$labelConfirm.hidden = false
             this.$walletPreviewActions.hidden = false
@@ -435,11 +447,13 @@ export class WALLETS extends HTMLElement {
             this.$labelWrap.classList.remove("editing")
             // Restore preview-actions visibility to match current preview state
             if (this._previewId !== null) {
+                this.$labelEdit.hidden = true
                 this.$walletSwitch.hidden = false
                 this.$walletRemove.hidden = this._previewId !== this.total - 1
                 this.$walletPreviewActions.hidden = false
             } else {
-                this.$walletPreviewActions.hidden = true
+                this.$labelEdit.hidden = false
+                this.$walletPreviewActions.hidden = false
             }
         }
 
@@ -521,6 +535,13 @@ export class WALLETS extends HTMLElement {
 
             li.append(icon, name)
 
+            if (opt._standard) {
+                const std = document.createElement("span")
+                std.className = "chain-standard"
+                std.textContent = opt._standard
+                li.append(std)
+            }
+
             // Clicking a row selects the chain and closes the modal
             li.addEventListener("click", () => {
                 this.$chainModal.close()
@@ -542,7 +563,10 @@ export class WALLETS extends HTMLElement {
     _updateChainTrigger(chainId) {
         const opt = this._chainOptions?.find((o) => o.value === chainId)
         if (this.$chainIcon) this.$chainIcon.dataset.src = opt?._symbol ? `/images/cryptos/${opt._symbol}` : ""
-        if (this.$chainName) this.$chainName.textContent = opt?._name || opt?.value || ""
+        if (this.$chainName) {
+            const std = opt?._standard ? ` (${opt._standard})` : ""
+            this.$chainName.textContent = opt ? `${opt._name || opt.value}${std}` : ""
+        }
         this.$chainTrigger?.toggleAttribute("data-has-value", !!opt)
     }
 
@@ -553,6 +577,53 @@ export class WALLETS extends HTMLElement {
     _updateChainListSelection(chainId) {
         this.$chainList?.querySelectorAll("li").forEach((li) => {
             li.dataset.selected = li.dataset.value === chainId ? "true" : "false"
+        })
+    }
+
+    // ── Currency modal helpers ────────────────────────────────────
+
+    /**
+     * Populate the currency picker modal and sync the trigger button.
+     * Mirrors _buildChainModal exactly.
+     */
+    _buildCurrencyModal(options, selectedValue) {
+        this._currencyOptions = options
+        this.$currencyList.innerHTML = ""
+
+        for (const opt of options) {
+            const li = document.createElement("li")
+            li.dataset.value = opt.value
+
+            const icon = document.createElement("ui-svg")
+            if (opt._symbol) icon.dataset.src = `/images/cryptos/${opt._symbol}`
+
+            const name = document.createElement("span")
+            name.textContent = opt._name || opt.value
+
+            li.append(icon, name)
+
+            li.addEventListener("click", () => {
+                this.$currencyModal.close()
+                this.change({ target: { name: "currency", value: opt.value } })
+            })
+
+            this.$currencyList.append(li)
+        }
+
+        this._updateCurrencyTrigger(selectedValue)
+        this._updateCurrencyListSelection(selectedValue)
+    }
+
+    _updateCurrencyTrigger(currencyName) {
+        const opt = this._currencyOptions?.find((o) => o.value === currencyName)
+        if (this.$currencyIcon) this.$currencyIcon.dataset.src = opt?._symbol ? `/images/cryptos/${opt._symbol}` : ""
+        if (this.$currencyName) this.$currencyName.textContent = opt?._name || opt?.value || ""
+        this.$currencyTrigger?.toggleAttribute("data-has-value", !!opt)
+    }
+
+    _updateCurrencyListSelection(currencyName) {
+        this.$currencyList?.querySelectorAll("li").forEach((li) => {
+            li.dataset.selected = li.dataset.value === currencyName ? "true" : "false"
         })
     }
 

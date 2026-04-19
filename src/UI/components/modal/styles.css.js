@@ -27,6 +27,8 @@ export const styles = css`
             background: none;
             border: none;
             overflow: hidden;
+            user-select: none;
+            outline: none;
             animation: in var(--speed) ease-in-out none;
 
             &::backdrop {
@@ -91,6 +93,7 @@ export const styles = css`
                     }
                 }
             }
+
 
             section {
                 display: block;

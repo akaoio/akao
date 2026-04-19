@@ -28,11 +28,14 @@ export const template = html`
                  • Preview:  DELETE + SWAP
                  • Editing:  DELETE (if preview) + SAVE (replaces SWAP position)
             -->
-            <span id="wallet-preview-actions" hidden>
+            <span id="wallet-preview-actions">
                 <button id="wallet-remove" aria-label="Delete wallet" hidden>
                     <ui-svg data-src="/images/icons/trash.svg" />
                 </button>
-                <button id="wallet-switch" aria-label="Switch to wallet">
+                <button id="label-edit" aria-label="Edit wallet name">
+                    <ui-svg data-src="/images/icons/pencil.svg" />
+                </button>
+                <button id="wallet-switch" aria-label="Switch to wallet" hidden>
                     <ui-svg data-src="/images/icons/arrow-left-right.svg" />
                 </button>
                 <button id="label-confirm" aria-label="Save wallet name" hidden>
@@ -41,6 +44,28 @@ export const template = html`
             </span>
         </span>
     </ui-identicons>
+
+    <div id="currency-row">
+        <span id="currency-label"><ui-context data-key="dictionary.coin" /></span>
+        <button class="chain-trigger" id="currency-trigger">
+            <span class="trigger-body">
+                <ui-svg class="trigger-icon" id="currency-icon"></ui-svg>
+                <span class="trigger-placeholder"><ui-context data-key="dictionary.selectCoin" /></span>
+                <span class="trigger-value" id="currency-name"></span>
+            </span>
+        </button>
+    </div>
+
+    <div id="chain-row">
+        <span id="chain-label"><ui-context data-key="dictionary.network" /></span>
+        <button class="chain-trigger" id="chain-trigger">
+            <span class="trigger-body">
+                <ui-svg class="trigger-icon" id="chain-icon"></ui-svg>
+                <span class="trigger-placeholder"><ui-context data-key="dictionary.selectNetwork" /></span>
+                <span class="trigger-value" id="chain-name"></span>
+            </span>
+        </button>
+    </div>
 
     <div id="wallet-row">
         <div id="address-wrap">
@@ -57,15 +82,12 @@ export const template = html`
                 <span id="balance-symbol" class="balance-symbol"></span>
             </span>
         </div>
-        <button class="chain-trigger" id="chain-trigger">
-            <ui-svg class="trigger-icon" id="chain-icon"></ui-svg>
-            <span class="trigger-placeholder"><ui-context data-key="dictionary.chain" /></span>
-            <span class="trigger-value" id="chain-name"></span>
-        </button>
     </div>
 
-    <!-- ── Currency selector (deposit/withdraw routes only) ── -->
-    <div id="currencies"></div>
+    <!-- ── Currency picker modal (deposit/withdraw routes only) ── -->
+    <ui-modal id="currency-modal" data-header="currency">
+        <ul id="currency-list"></ul>
+    </ui-modal>
 
     <!-- ── Chain picker modal ── -->
     <ui-modal id="chain-modal" data-header="chain">

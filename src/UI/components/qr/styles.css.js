@@ -15,7 +15,7 @@ export const styles = css`
 
         #qr {
             display: flex;
-            background: var(--color-accent);
+            background: #ffffff;
             padding: var(--space);
             svg {
                 width: 100%;

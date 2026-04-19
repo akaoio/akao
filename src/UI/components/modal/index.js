@@ -27,15 +27,28 @@ export class MODAL extends HTMLElement {
     connectedCallback() {
         this.dialog = this.shadowRoot.querySelector("dialog")
         this.shadowRoot.querySelectorAll("dialog, .close, footer").forEach((el) => el.addEventListener("click", this.click))
+        this.dialog.addEventListener("cancel", this.cancel)
         this.shadowRoot.querySelector("#header").dataset.key = `dictionary.${this.dataset.header}`
     }
 
     disconnectedCallback() {
         this.shadowRoot.querySelectorAll("dialog, .close, footer").forEach((el) => el.removeEventListener("click", this.click))
+        this.dialog.removeEventListener("cancel", this.cancel)
     }
 
     click = (event) => {
+        if (this._required) return
         if ([...this.shadowRoot.querySelectorAll("dialog, .close, footer")].includes(event.composedPath?.()?.[0])) this.dialog.close()
+    }
+
+    cancel = (event) => {
+        if (this._required) event.preventDefault()
+    }
+
+    setRequired(required) {
+        this._required = required
+        const footer = this.shadowRoot.querySelector("footer")
+        if (footer) footer.style.visibility = required ? "hidden" : ""
     }
 
     show() {
