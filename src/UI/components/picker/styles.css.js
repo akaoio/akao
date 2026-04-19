@@ -15,8 +15,8 @@ export const styles = css`
 
             section {
                 padding: 0;
-                border-color: color-mix(in hsl, var(--accent-info) 35%, transparent);
-                box-shadow: 0 0 32px color-mix(in hsl, var(--accent-info) 12%, transparent);
+                border-color: var(--accent-info-border);
+                box-shadow: 0 0 32px var(--accent-info-glow);
                 overflow-y: auto;
             }
         }
@@ -72,7 +72,7 @@ export const styles = css`
             transition: background var(--speed), color var(--speed);
             &:last-of-type { border-bottom: none; }
             &:hover {
-                background: color-mix(in hsl, var(--accent-info) 8%, transparent);
+                background: var(--accent-info-surface);
                 color: var(--accent-info);
             }
         }

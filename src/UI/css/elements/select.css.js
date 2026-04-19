@@ -86,8 +86,8 @@ export const styles = css`
                 color: var(--color);
             }
             option:checked {
-                background: color-mix(in srgb, var(--color-accent) 12%, transparent);
-                color: var(--color-accent);
+                background: var(--select-option-checked-bg, color-mix(in srgb, var(--color-accent) 12%, transparent));
+                color: var(--select-option-checked-color, var(--color-accent));
             }
             selectedcontent {
                 padding: 0;

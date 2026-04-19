@@ -141,6 +141,7 @@ export const styles = css`
         --glow-c: 0 0 8px #00e5ff88, 0 0 24px #00e5ff33;
         --glow-m: 0 0 8px #ff2d7888, 0 0 24px #ff2d7833;
         --glow-y: 0 0 8px #f5e64288, 0 0 24px #f5e64233;
+        --glow-y: 0 0 8px #f5e64288, 0 0 24px #f5e64233;
 
         /* Layout hooks */
         --header-backdrop: blur(12px);
@@ -181,10 +182,31 @@ export const styles = css`
         /* Semantic interactive accents */
         --accent-info: var(--neon-c);       /* filters, search, links, info states */
         --accent-action: var(--neon-g);     /* confirm, submit, price, positive */
-        --accent-danger: var(--neon-m);     /* error, destructive, warning */
+        --accent-success: var(--neon-g);    /* success states, completed actions */
+        --accent-warning: var(--neon-y);    /* caution, irreversible actions, pre-error */
+        --accent-danger: var(--neon-m);     /* error, destructive, blocked */
         --glow-info: var(--glow-c);
         --glow-action: var(--glow-g);
+        --glow-success: var(--glow-g);
+        --glow-warning: var(--glow-y);
         --glow-danger: var(--glow-m);
+
+        /* Interactive surface tokens — resting border, glow shadow, hover/selected fill */
+        --accent-info-border:       color-mix(in hsl, var(--accent-info)    35%, transparent);
+        --accent-info-glow:         color-mix(in hsl, var(--accent-info)    12%, transparent);
+        --accent-info-surface:      color-mix(in hsl, var(--accent-info)     8%, transparent);
+        --accent-action-border:     color-mix(in hsl, var(--accent-action)  50%, transparent);
+        --accent-action-glow:       color-mix(in hsl, var(--accent-action)  20%, transparent);
+        --accent-action-surface:    color-mix(in hsl, var(--accent-action)  12%, transparent);
+        --accent-success-border:    color-mix(in hsl, var(--accent-success) 50%, transparent);
+        --accent-success-glow:      color-mix(in hsl, var(--accent-success) 20%, transparent);
+        --accent-success-surface:   color-mix(in hsl, var(--accent-success) 12%, transparent);
+        --accent-warning-border:    color-mix(in hsl, var(--accent-warning) 40%, transparent);
+        --accent-warning-glow:      color-mix(in hsl, var(--accent-warning) 15%, transparent);
+        --accent-warning-surface:   color-mix(in hsl, var(--accent-warning) 10%, transparent);
+        --accent-danger-border:     color-mix(in hsl, var(--accent-danger)  35%, transparent);
+        --accent-danger-glow:       color-mix(in hsl, var(--accent-danger)  12%, transparent);
+        --accent-danger-surface:    color-mix(in hsl, var(--accent-danger)   8%, transparent);
 
         /* Item cards */
         --item-border-left: 3px solid var(--neon-c);
