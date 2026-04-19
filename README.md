@@ -49,7 +49,7 @@ npm install
 npm start
 ```
 
-The default dev surface is `http://localhost:8080`. If a hostname is mapped to the same site in `src/statics/domains.yaml` and resolves to this machine (for example `peer0.akao.io`), the same dev server can also be reached through that host. `npm start` restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8765` before starting a fresh stack.
+The default dev surface is `http://localhost:8080`. If a hostname is mapped to the same site in `src/statics/domains.yaml` and resolves to this machine (for example `peer0.akao.io`), the same dev server can also be reached through that host. `npm start` restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8420` before starting a fresh stack.
 
 In DEV, `Construct.Site()` patches `Statics.site.platform` with a deterministic fallback identity when `platform.pub`, `platform.epub`, or `platform.xpub` is missing. The fallback is derived from the shared seed `"seed"` via `SEA.pair(null, { seed: "seed" })` plus the matching HD root `xpub`, so local development and tests do not need a separately stored platform keypair.
 

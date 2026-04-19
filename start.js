@@ -98,13 +98,13 @@ async function waitForPortsToClose(ports, timeout = 10000) {
 
 async function restartDevStack() {
     const devPids = await killMatchingPortProcesses(8080, /(?:^|\s)(?:node|bun)\s+.*\bdev\.js(?:\s|$)/)
-    const marketPids = await killMatchingPortProcesses(8765, /(?:^|\s)(?:node|bun)\s+.*\bmarket\.js(?:\s|$)/)
+    const marketPids = await killMatchingPortProcesses(8420, /(?:^|\s)(?:node|bun)\s+.*\bmarket\.js(?:\s|$)/)
 
     const stopped = [...new Set([...devPids, ...marketPids])]
     if (!stopped.length) return
 
     console.log(`Stopped existing dev processes: ${stopped.join(", ")}`)
-    await waitForPortsToClose([8080, 8765])
+    await waitForPortsToClose([8080, 8420])
 }
 
 function hold() {

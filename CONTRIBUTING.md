@@ -64,7 +64,7 @@ npm install
 npm start
 ```
 
-The default dev surface is `http://localhost:8080`. If a hostname is mapped in `src/statics/domains.yaml` and resolves to this machine, the same dev server can be reached through that alias as well. `npm start` also restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8765` before starting a fresh stack.
+The default dev surface is `http://localhost:8080`. If a hostname is mapped in `src/statics/domains.yaml` and resolves to this machine, the same dev server can be reached through that alias as well. `npm start` also restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8420` before starting a fresh stack.
 
 ### Build Commands
 
