@@ -15,13 +15,16 @@ export const template = html`
             <ui-card data-title="wallet">
                 <ui-wallets id="wallets"></ui-wallets>
             </ui-card>
-            <ui-card data-title="withdraw">
+            <ui-card id="withdraw-card" data-title="withdraw">
                 <!-- ── Send form ── -->
-                <form id="form" hidden>
+                <form id="form">
                     <div class="field-wrap">
                         <label class="field-label">
                             <span class="field-label-text"><ui-context data-key="dictionary.address" /></span>
-                            <input type="text" name="address" required />
+                            <div class="address-input-wrap">
+                                <div class="address-display" id="address-display" contenteditable="plaintext-only" spellcheck="false" autocomplete="off" role="textbox" aria-label="address"></div>
+                                <input type="hidden" name="address" id="address-hidden" required />
+                            </div>
                         </label>
                         <p id="address-error">
                             <ui-context data-key="dictionary.addressRequired" />

@@ -26,6 +26,7 @@ export class WITHDRAW extends Route {
     async onconnect() {
         // ── DOM refs ──────────────────────────────────────────────
         this.$wallets = this.shadowRoot.querySelector("#wallets")
+        this.$withdrawCard = this.shadowRoot.querySelector("#withdraw-card")
         this.$form = this.shadowRoot.querySelector("#form")
         this.$gas = this.shadowRoot.querySelector("#gas")
         this.$submit = this.shadowRoot.querySelector("#submit")
@@ -37,16 +38,31 @@ export class WITHDRAW extends Route {
         this.$infoAddress = this.shadowRoot.querySelector("#info-address-value")
 
         // ── Form inputs ───────────────────────────────────────────
-        const $address = this.$form.querySelector("input[name='address']")
+        this.$addressDisplay = this.$form.querySelector("#address-display")
+        this.$addressHidden = this.$form.querySelector("#address-hidden")
         const $amount = this.$form.querySelector("input[name='amount']")
 
-        this.listen($address, "input", () => {
+        this.listen(this.$addressDisplay, "input", () => {
+            this._syncAddressValue()
             this._syncSubmit()
             this.estimateGas()
         })
-        this.listen($address, "blur", () => this._syncAddressError())
-        this.listen($address, "input", () => {
-            if (!$address.value.trim()) this._syncAddressError()
+        this.listen(this.$addressDisplay, "paste", (e) => {
+            e.preventDefault()
+            const text = (e.clipboardData || window.clipboardData).getData("text/plain").trim()
+            const sel = this.shadowRoot.getSelection?.() ?? window.getSelection()
+            if (sel && sel.rangeCount) {
+                sel.deleteFromDocument()
+                sel.getRangeAt(0).insertNode(document.createTextNode(text))
+                sel.collapseToEnd()
+            } else {
+                this.$addressDisplay.textContent += text
+            }
+            this.$addressDisplay.dispatchEvent(new Event("input", { bubbles: true }))
+        })
+        this.listen(this.$addressDisplay, "blur", () => this._syncAddressError())
+        this.listen(this.$addressDisplay, "keydown", (e) => {
+            if (e.key === "Enter") e.preventDefault()
         })
 
         this.listen($amount, "input", () => {
@@ -109,9 +125,10 @@ export class WITHDRAW extends Route {
 
     _syncFormVisibility() {
         const ready = !!(this.$wallets.states.get("currency") && this.$wallets.states.get("chain"))
-        this.$form.hidden = !ready
+        this.$withdrawCard.toggleAttribute("visible", ready)
         if (!ready) {
             this.$form.reset()
+            if (this.$addressDisplay) this.$addressDisplay.textContent = ""
             this.$gas.removeAttribute("visible")
             this.$gas.textContent = ""
             if (this.$addressError) this.$addressError.removeAttribute("visible")
@@ -165,9 +182,60 @@ export class WITHDRAW extends Route {
         }
     }
 
+    _syncAddressValue() {
+        const raw = this.$addressDisplay.textContent
+        this.$addressHidden.value = raw.trim()
+        this._renderAddressHighlight(raw)
+    }
+
+    _renderAddressHighlight(raw) {
+        if (!raw) return
+        const n = raw.length
+
+        // Save caret offset before DOM rewrite
+        const sel = window.getSelection()
+        let caretOffset = n
+        if (sel && sel.rangeCount) {
+            const r = sel.getRangeAt(0)
+            if (this.$addressDisplay.contains(r.startContainer)) {
+                // walk text nodes to accumulate offset
+                let offset = 0
+                const walker = document.createTreeWalker(this.$addressDisplay, NodeFilter.SHOW_TEXT)
+                let node
+                while ((node = walker.nextNode())) {
+                    if (node === r.startContainer) { caretOffset = offset + r.startOffset; break }
+                    offset += node.length
+                }
+            }
+        }
+
+        if (n <= 12) {
+            this.$addressDisplay.innerHTML = `<span class="addr-hi">${raw}</span>`
+        } else {
+            const head = raw.slice(0, 6)
+            const mid = raw.slice(6, n - 6)
+            const tail = raw.slice(n - 6)
+            this.$addressDisplay.innerHTML =
+                `<span class="addr-hi">${head}</span>${mid}<span class="addr-hi">${tail}</span>`
+        }
+
+        // Restore caret at saved offset
+        const range = document.createRange()
+        let remaining = caretOffset
+        const walker = document.createTreeWalker(this.$addressDisplay, NodeFilter.SHOW_TEXT)
+        let node
+        while ((node = walker.nextNode())) {
+            if (remaining <= node.length) { range.setStart(node, remaining); break }
+            remaining -= node.length
+        }
+        range.collapse(true)
+        sel?.removeAllRanges()
+        sel?.addRange(range)
+    }
+
     _syncSubmit() {
         const amount = Number(this.$form?.querySelector("input[name='amount']")?.value)
-        const address = this.$form?.querySelector("input[name='address']")?.value?.trim()
+        const address = this.$addressHidden?.value?.trim()
         const currency = this.$wallets.states.get("currency")
         const chain = this.$wallets.states.get("chain")
         const balance = this.$wallets.states.get("balance")
@@ -177,7 +245,7 @@ export class WITHDRAW extends Route {
     }
 
     _syncAddressError() {
-        const empty = !this.$form.querySelector("input[name='address']")?.value?.trim()
+        const empty = !this.$addressHidden?.value?.trim()
         if (this.$addressError) this.$addressError.toggleAttribute("visible", empty)
     }
 
@@ -191,7 +259,7 @@ export class WITHDRAW extends Route {
             const fee = await SendLogic.gas({
                 wallet: Wallets[chain],
                 name: currency,
-                to: this.$form.querySelector("input[name='address']").value,
+                to: this.$addressHidden.value,
                 amount: this.$form.querySelector("input[name='amount']").value
             })
             if (!fee) {
@@ -230,6 +298,7 @@ export class WITHDRAW extends Route {
         if (result.success) {
             notify({ content: Context.get(["dictionary", "transactionSent"]), autoClose: true })
             this.$form.reset()
+            this.$addressDisplay.textContent = ""
             this.$gas.removeAttribute("visible")
             this.$gas.textContent = ""
         } else notify({ content: Context.get(["dictionary", result.error || "transactionError"]), autoClose: true })

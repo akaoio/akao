@@ -30,6 +30,19 @@ export const styles = css`
             flex-direction: column;
         }
 
+        #withdraw-card {
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+
+            &[visible] {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+        }
+
         @media (max-width: ${bp.sm}px) {
             main {
                 padding: var(--space-sm) 0;
@@ -57,14 +70,60 @@ export const styles = css`
         padding: var(--space-4) var(--space-4) 0;
         box-sizing: border-box;
 
-        &[hidden] {
-            display: none;
-        }
-
         input {
             outline: none;
             font-family: var(--content-font);
+            border: 1px solid var(--accent-info-border);
+            box-shadow: 0 0 8px var(--accent-info-glow);
+
+            &:hover, &:focus {
+                border-color: var(--accent-info);
+                box-shadow: 0 0 16px var(--accent-info-border);
+            }
         }
+    }
+
+    /* ── Address display ── */
+    .address-input-wrap {
+        position: relative;
+    }
+
+    .address-display {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: var(--content-font);
+        font-size: var(--text-sm);
+        color: var(--color);
+        background: transparent;
+        border: 1px solid var(--accent-info-border);
+        box-shadow: 0 0 8px var(--accent-info-glow);
+        border-radius: var(--radius);
+        padding: var(--space-2) var(--space-3);
+        outline: none;
+        white-space: nowrap;
+        overflow: hidden;
+        cursor: text;
+        min-height: 2.6em;
+        line-height: 1.6;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+        &:hover, &:focus {
+            border-color: var(--accent-info);
+            box-shadow: 0 0 16px var(--accent-info-border);
+        }
+
+        &:empty::before {
+            content: attr(data-placeholder);
+            color: color-mix(in hsl, var(--color) 30%, transparent);
+            pointer-events: none;
+        }
+    }
+
+    .addr-hi {
+        color: var(--neon-c);
+        text-shadow: 0 0 8px color-mix(in hsl, var(--neon-c) 70%, transparent), 0 0 20px color-mix(in hsl, var(--neon-c) 35%, transparent);
+        font-weight: 500;
     }
 
     /* ── Field layout ── */
