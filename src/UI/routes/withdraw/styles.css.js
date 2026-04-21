@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { mq } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 import form from "/css/elements/form.css.js"
 import input from "/css/elements/input.css.js"
 

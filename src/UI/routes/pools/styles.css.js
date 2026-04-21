@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { mq } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 
 export const styles = css`
     /* ── Keyframes at top level (never nest @keyframes inside a selector) ── */

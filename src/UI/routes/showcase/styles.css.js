@@ -1,15 +1,25 @@
 import { css } from "/core/UI.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 import typographyStyles from "./stories/typography.css.js"
-import grid from "/UI/css/elements/grid.css.js"
+import grid from "/UI/css/layout/grid.css.js"
 
 export const styles = css`
     ${grid}
     :host {
+        --content-width: 100%;
+
         .showcase {
-            --sidebar-width: 14rem;
+            --sidebar-width: 16rem;
             height: calc(100vh - var(--header-height) - var(--footer-height) - var(--space-6));
             overflow: hidden;
             border: var(--border);
+
+            /* stack sidebar above canvas below lg */
+            @media ${mq.lgDown} {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                height: calc(100vh - var(--header-height) - var(--footer-height) - var(--space-6));
+            }
         }
 
         #sidebar {
@@ -18,6 +28,21 @@ export const styles = css`
             padding: var(--space-2) 0;
             display: flex;
             flex-direction: column;
+
+            /* compact horizontal pill bar below lg */
+            @media ${mq.lgDown} {
+                flex-direction: row;
+                align-items: center;
+                overflow-x: auto;
+                overflow-y: hidden;
+                border-right: none;
+                border-bottom: var(--border);
+                padding: var(--space-1) var(--space-2);
+                gap: var(--space-1);
+                scrollbar-width: none;
+
+                &::-webkit-scrollbar { display: none; }
+            }
 
             .nav-group {
                 padding: var(--space) var(--space-3) var(--space-1);
@@ -28,6 +53,8 @@ export const styles = css`
                 text-shadow: 0 0 8px color-mix(in srgb, var(--neon-c) 60%, transparent);
                 opacity: 0.85;
                 font-family: var(--header-font);
+
+                @media ${mq.lgDown} { display: none; }
             }
 
             .nav-item {
@@ -44,17 +71,35 @@ export const styles = css`
                 transition:
                     opacity var(--speed) ease-in-out,
                     color var(--speed) ease-in-out,
-                    border-color var(--speed) ease-in-out;
+                    border-color var(--speed) ease-in-out,
+                    background var(--speed) ease-in-out;
 
-                &:hover {
-                    opacity: 0.8;
-                }
+                &:hover { opacity: 0.8; }
 
                 &.active {
                     opacity: 1;
                     border-left-color: var(--color-accent);
                     color: var(--color-accent);
                     text-shadow: var(--section-label-shadow, none);
+                }
+
+                /* pill style when horizontal */
+                @media ${mq.lgDown} {
+                    flex-shrink: 0;
+                    border-left: none;
+                    border: var(--border-width) solid transparent;
+                    padding: var(--space-1) var(--space-2);
+                    opacity: 0.55;
+                    white-space: nowrap;
+
+                    &:hover { opacity: 1; }
+
+                    &.active {
+                        opacity: 1;
+                        background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+                        border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+                        text-shadow: none;
+                    }
                 }
             }
         }
@@ -257,6 +302,150 @@ export const styles = css`
                 }
             }
         }
+    }
+
+    /* ── Grid story helpers ──────────────────────────────────────────────── */
+    .sg-grid        { display: grid; grid-template-columns: repeat(var(--grid-cols, 3), 1fr); gap: var(--grid-gap, var(--space-3)); width: 100%; }
+    .sg-grid--fluid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--grid-min, 16rem), 1fr)); gap: var(--grid-gap, var(--space-3)); width: 100%; }
+    .sg-grid--sidebar { display: grid; grid-template-columns: var(--sidebar-width, 15rem) 1fr; gap: var(--grid-gap, var(--space-3)); width: 100%; }
+    .sg-grid--table { display: grid; grid-template-columns: var(--table-cols); align-items: center; width: 100%; }
+
+    /* arbitrary template-columns — for unequal / two-column demos */
+    .sg-grid-custom { display: grid; gap: var(--grid-gap, var(--space-3)); width: 100%; }
+
+    /* responsive tier demos — stacked by default, switch to 3-col at each breakpoint */
+    .sg-tiers { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; }
+
+    .sg-tier {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+        width: 100%;
+    }
+    .sg-tier--xs                          { grid-template-columns: repeat(3, 1fr); }
+    @media ${mq.smUp}  { .sg-tier--sm  { grid-template-columns: repeat(3, 1fr); } }
+    @media ${mq.mdUp}  { .sg-tier--md  { grid-template-columns: repeat(3, 1fr); } }
+    @media ${mq.lgUp}  { .sg-tier--lg  { grid-template-columns: repeat(3, 1fr); } }
+    @media ${mq.xlUp}  { .sg-tier--xl  { grid-template-columns: repeat(3, 1fr); } }
+    @media ${mq.xxlUp} { .sg-tier--xxl { grid-template-columns: repeat(3, 1fr); } }
+
+    .sg-col {
+        background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+        border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+        color: var(--color-accent);
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: var(--space-2) var(--space-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 3rem;
+    }
+
+    .sg-col--sidebar { background: color-mix(in srgb, var(--neon-c) 12%, transparent); border-color: color-mix(in srgb, var(--neon-c) 35%, transparent); color: var(--neon-c); }
+    .sg-col--main   { background: color-mix(in srgb, var(--neon-g) 10%, transparent); border-color: color-mix(in srgb, var(--neon-g) 30%, transparent); color: var(--neon-g); justify-content: flex-start; }
+
+    .sg-table-wrap { display: flex; flex-direction: column; gap: 0; border: var(--border); width: 100%; }
+
+    .sg-table-header {
+        padding: var(--space) var(--space-2);
+        background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-accent);
+        gap: var(--space-2);
+    }
+
+    .sg-table-row {
+        padding: var(--space) var(--space-2);
+        font-size: var(--text-sm);
+        border-top: var(--border);
+        color: var(--color);
+        gap: var(--space-2);
+
+        &:hover { background: color-mix(in srgb, var(--color) 4%, transparent); }
+    }
+
+    .sg-bp-table { display: flex; flex-direction: column; gap: 0; border: var(--border); font-size: var(--text-sm); }
+
+    .sg-bp-row {
+        display: grid;
+        grid-template-columns: 4rem 4rem 1fr 1fr 1fr;
+        gap: var(--space-2);
+        padding: var(--space) var(--space-3);
+        border-top: var(--border);
+        color: var(--color);
+
+        &:first-child { border-top: none; }
+
+        span:first-child {
+            font-family: var(--header-font);
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+    }
+
+    /* ── Container story helpers ─────────────────────────────────────────── */
+    .story-preview:has(.sc-row) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-3);
+    }
+
+    .sc-row {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+    }
+
+    .sc-bar {
+        width: 100%;
+        margin-inline: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+        background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+        border-left: 3px solid var(--color-accent);
+        min-height: 2.75rem;
+        box-sizing: border-box;
+    }
+
+    .sc-label {
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-accent);
+        white-space: nowrap;
+    }
+
+    .sc-meta {
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.06em;
+        color: var(--color);
+        opacity: 0.45;
+        white-space: nowrap;
+    }
+
+    /* ── Breakpoint reference table ──────────────────────────────────────── */
+    .sg-bp-row--header {
+        background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-accent);
+
+        span:first-child { color: var(--color-accent); }
     }
 
     @keyframes glitch-text {

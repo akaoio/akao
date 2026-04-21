@@ -11,7 +11,7 @@
  *   mq.mdOnly — md tier only   (between md and lg)
  *
  * Usage:
- *   import { mq } from "/UI/css/breakpoints.js"
+ *   import { mq } from "/UI/css/layout/breakpoints.js"
  *
  *   const styles = css`
  *     .foo { display: block; }

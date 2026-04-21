@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import template from "./template.js"
 import Route from "/core/UI/Route.js"
 import stories from "./stories/index.js"
@@ -13,6 +14,7 @@ export class SHOWCASE extends Route {
     onconnect() {
         this._renderSidebar()
         this._renderCanvas()
+        this._updateSidebarActive()
         this.listen(globalThis, "hashchange", this._onHashChange)
     }
 
@@ -47,7 +49,14 @@ export class SHOWCASE extends Route {
     }
 
     _updateSidebarActive(current = this._currentGroup()) {
-        for (const item of this.shadowRoot.querySelectorAll(".nav-item")) item.classList.toggle("active", item.textContent === current.name)
+        const sidebar = this.shadowRoot.getElementById("sidebar")
+        for (const item of sidebar.querySelectorAll(".nav-item")) {
+            const isActive = item.textContent === current.name
+            item.classList.toggle("active", isActive)
+            if (isActive && sidebar.scrollWidth > sidebar.clientWidth) {
+                item.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" })
+            }
+        }
     }
 
     _renderCanvas(group = this._currentGroup()) {

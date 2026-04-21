@@ -2,8 +2,8 @@ import fieldset from "/UI/css/elements/fieldset.css.js"
 import input from "/UI/css/elements/input.css.js"
 import radioItem from "/UI/css/elements/radio-item.css.js"
 import { css } from "/core/UI.js"
-import { mq } from "/UI/css/breakpoints.js"
-import grid from "/UI/css/elements/grid.css.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
+import grid from "/UI/css/layout/grid.css.js"
 
 export const styles = css`
     ${grid}

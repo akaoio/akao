@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp, mq } from "/UI/css/breakpoints.js"
+import { bp, mq } from "/UI/css/layout/breakpoints.js"
 
 /**
  * Shared grid patterns. Import and apply the class to any container.
@@ -51,7 +51,7 @@ export const grid = css`
         column-gap: var(--grid-gap-x, var(--grid-gap, var(--space-3)));
         row-gap: var(--grid-gap-y, var(--grid-gap, var(--space-3)));
 
-        @media ${mq.sm} {
+        @media ${mq.smDown} {
             grid-template-columns: 1fr;
         }
     }

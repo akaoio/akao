@@ -1,4 +1,4 @@
-import container from "/css/elements/container.css.js"
+import container from "/UI/css/layout/container.css.js"
 import scrollbar from "/css/elements/scrollbar.css.js"
 import close from "/css/elements/close.css.js"
 import inAnimation from "/css/animations/in.css.js"

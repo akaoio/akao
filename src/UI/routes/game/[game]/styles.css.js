@@ -1,6 +1,6 @@
 import { css } from "/core/UI.js"
-import { mq } from "/UI/css/breakpoints.js"
-import grid from "/UI/css/elements/grid.css.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
+import grid from "/UI/css/layout/grid.css.js"
 
 const gameColor = `var(--game-text-color, var(--game-primary, var(--neon-c)))`
 const gamePrimary = `var(--game-primary, var(--neon-c))`
