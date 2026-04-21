@@ -212,14 +212,14 @@ export const styles = css`
         align-items: center;
         justify-content: space-between;
         gap: var(--space-2);
-        min-width: 9.5rem;
-        min-height: 2.75rem;
-        padding: var(--space-2) var(--space-4);
+        min-width: 8rem;
+        min-height: 2.25rem;
+        padding: var(--space-1) var(--space-3);
         background: transparent;
         border: 1px solid color-mix(in hsl, var(--color) 25%, transparent);
         color: var(--color);
         font-family: var(--header-font);
-        font-size: var(--text-md);
+        font-size: var(--text-sm);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         cursor: pointer;
@@ -267,9 +267,9 @@ export const styles = css`
         }
 
         .trigger-icon {
-            width: 1.25rem;
-            height: 1.25rem;
-            min-width: 1.25rem;
+            width: 1rem;
+            height: 1rem;
+            min-width: 1rem;
             flex-shrink: 0;
         }
 
@@ -401,8 +401,8 @@ export const styles = css`
     }
 
     #submit {
-        --btn-bg: color-mix(in hsl, var(--accent-action) 12%, transparent);
-        --btn-border: var(--border-width) solid color-mix(in hsl, var(--accent-action) 50%, transparent);
+        --btn-bg: var(--accent-action-surface);
+        --btn-border: var(--border-width) solid var(--accent-action-border);
         --btn-radius: 0;
         --btn-padding: var(--space-sm) var(--space);
         --btn-color: var(--accent-action);
@@ -415,7 +415,7 @@ export const styles = css`
         --btn-color-hover: var(--accent-action);
         --btn-border-color-hover: var(--accent-action);
         --btn-glow-hover: var(--glow-action);
-        box-shadow: 0 0 10px color-mix(in hsl, var(--accent-action) 20%, transparent);
+        box-shadow: 0 0 10px var(--accent-action-glow);
         &[disabled] {
             opacity: 0.35;
             cursor: not-allowed;

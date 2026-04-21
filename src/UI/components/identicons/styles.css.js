@@ -11,9 +11,10 @@ export const styles = css`
 
     #scroll-wrap {
         flex: 1;
-        min-height: 0;
+        min-height: var(--icon-lg);
         position: relative;
         overflow: hidden;
+        padding-block: var(--space-3);
     }
 
     #container {
@@ -32,19 +33,28 @@ export const styles = css`
 
         /* hide scrollbar on touch devices */
         scrollbar-width: none;
-        &::-webkit-scrollbar { display: none; }
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
         @media (min-width: ${bp.sm + 1}px) {
             scrollbar-width: thin;
             scrollbar-color: color-mix(in hsl, var(--color) 25%, transparent) transparent;
             padding-bottom: var(--space-3);
 
-            &::-webkit-scrollbar { display: block; height: 3px; }
-            &::-webkit-scrollbar-track { background: transparent; }
+            &::-webkit-scrollbar {
+                display: block;
+                height: 3px;
+            }
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
             &::-webkit-scrollbar-thumb {
                 background: color-mix(in hsl, var(--color) 25%, transparent);
                 border-radius: 99px;
-                &:hover { background: color-mix(in hsl, var(--color) 50%, transparent); }
+                &:hover {
+                    background: color-mix(in hsl, var(--color) 50%, transparent);
+                }
             }
         }
 
@@ -154,9 +164,24 @@ export const styles = css`
     }
 
     @keyframes identicons-switch-splash {
-        0%   { outline-offset: var(--space-1); box-shadow: 0 0 8px hsl(var(--item-hue) 100% 65% / 53%), 0 0 24px hsl(var(--item-hue) 100% 65% / 20%); }
-        40%  { outline-offset: 10px;           box-shadow: 0 0 18px hsl(var(--item-hue) 100% 65% / 70%), 0 0 48px hsl(var(--item-hue) 100% 65% / 35%); }
-        100% { outline-offset: var(--space-1); box-shadow: 0 0 8px hsl(var(--item-hue) 100% 65% / 53%), 0 0 24px hsl(var(--item-hue) 100% 65% / 20%); }
+        0% {
+            outline-offset: var(--space-1);
+            box-shadow:
+                0 0 8px hsl(var(--item-hue) 100% 65% / 53%),
+                0 0 24px hsl(var(--item-hue) 100% 65% / 20%);
+        }
+        40% {
+            outline-offset: 10px;
+            box-shadow:
+                0 0 18px hsl(var(--item-hue) 100% 65% / 70%),
+                0 0 48px hsl(var(--item-hue) 100% 65% / 35%);
+        }
+        100% {
+            outline-offset: var(--space-1);
+            box-shadow:
+                0 0 8px hsl(var(--item-hue) 100% 65% / 53%),
+                0 0 24px hsl(var(--item-hue) 100% 65% / 20%);
+        }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -184,7 +209,6 @@ export const styles = css`
         user-select: none;
         pointer-events: none;
         flex-shrink: 0;
-        min-height: 2.75rem;
         border-bottom: var(--border-width) solid color-mix(in hsl, var(--color) 10%, transparent);
     }
 
@@ -201,7 +225,7 @@ export const styles = css`
     .status-right {
         display: flex;
         align-items: center;
-        flex: 1;
+        flex: var(--identicons-status-right-flex, 0 0 auto);
         min-width: 0;
         gap: var(--space-1);
 
@@ -215,16 +239,22 @@ export const styles = css`
 
     /* ── Mode visibility ── */
     /* carousel controls visible by default; hidden in picker mode */
-    :host([data-mode="picker"]) .status-nav-btn--carousel { display: none; }
+    :host([data-mode="picker"]) .status-nav-btn--carousel {
+        display: none;
+    }
     /* add button hidden by default; visible only in picker mode */
-    .status-nav-btn--picker { display: none; }
+    .status-nav-btn--picker {
+        display: none;
+    }
     :host([data-mode="picker"]) .status-nav-btn--picker {
         display: inline-flex;
         justify-content: flex-start;
     }
 
     .status-item {
-        &[hidden] { display: none; }
+        &[hidden] {
+            display: none;
+        }
         display: flex;
         align-items: center;
         gap: var(--space-1);
@@ -254,6 +284,11 @@ export const styles = css`
         font-size: 0.85em;
     }
 
+    #status-add {
+        min-width: unset;
+        padding-right: var(--space-3);
+    }
+
     .status-sep {
         opacity: 0.25;
         margin: 0 var(--space-1);
@@ -276,7 +311,9 @@ export const styles = css`
         cursor: pointer;
         pointer-events: all;
         color: var(--neon-g);
-        transition: opacity var(--speed), filter var(--speed);
+        transition:
+            opacity var(--speed),
+            filter var(--speed);
 
         ui-svg {
             width: var(--icon-sm);

@@ -92,7 +92,7 @@ export const styles = css`
 
         &:hover,
         &.highlighted {
-            background: color-mix(in hsl, var(--accent-info) 8%, transparent);
+            background: var(--accent-info-surface);
         }
     }
 

@@ -19,11 +19,9 @@ export class Component extends HTMLElement {
     async render() {
         if (!this.template || !this.shadowRoot) return
         render(this.template, this.shadowRoot)
-        
+
         // Re-run onconnect after re-render to reinitialize component state
-        if (typeof this.onconnect === 'function') {
-            this.onconnect()
-        }
+        if (typeof this.onconnect === "function") this.onconnect()
     }
 
     /**
@@ -101,7 +99,7 @@ export class Component extends HTMLElement {
      */
     disconnectedCallback() {
         this.ondisconnect()
-        this.subs.forEach(off => off())
+        this.subs.forEach((off) => off())
         this.subs.length = 0
     }
 }
