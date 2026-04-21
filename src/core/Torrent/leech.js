@@ -25,17 +25,18 @@ export async function leech(torrentInstance, path, timeoutMs = 10000) {
     torrentPath[torrentPath.length - 1] = last.replace(/\.\w+$/, ".torrent")
 
     let torrentBytes
-    try { torrentBytes = await driver.readBytes(torrentPath) } catch {}
+    try {
+        torrentBytes = await driver.readBytes(torrentPath)
+    } catch {}
 
     // Browser: fall back to HTTP fetch if .torrent not in OPFS yet
     // .torrent metadata is generated at build time and served via HTTP
-    if (!torrentBytes && BROWSER) {
+    if (!torrentBytes && BROWSER)
         try {
             const url = join(torrentPath)
             const res = await fetch(url)
             if (res.ok) torrentBytes = new Uint8Array(await res.arrayBuffer())
         } catch {}
-    }
 
     if (!torrentBytes) return null
 
@@ -44,25 +45,25 @@ export async function leech(torrentInstance, path, timeoutMs = 10000) {
     //   v1: "Cannot add duplicate torrent <hex40>"
     //   v2: "A torrent with the same id is already being seeded"
     // In that case, look up the existing torrent.
-    let t
-    try {
-        t = await torrentInstance.add(torrentBytes)
-    } catch (e) {
-        const hash = e?.message?.match(/([0-9a-f]{40})/)?.[1]
-        if (hash) {
-            t = torrentInstance.get(hash)
-        } else {
-            // Fallback: find existing torrent by file name
-            const client = torrentInstance.client
-            t = client?.torrents?.find(tr => tr.name === last)
+    let t = torrentInstance.get(torrentBytes) // .get() works with .torrent metadata bytes
+    if (!t)
+        try {
+            t = await torrentInstance.add(torrentBytes)
+        } catch (e) {
+            const hash = e?.message?.match(/([0-9a-f]{40})/)?.[1]
+            if (hash) t = torrentInstance.get(hash)
+            else {
+                // Fallback: find existing torrent by file name
+                const client = torrentInstance.client
+                t = client?.torrents?.find((tr) => tr.name === last)
+            }
+            if (!t) return null
         }
-        if (!t) return null
-    }
 
-    return _extract(t, path, last, timeoutMs)
+    return _extract(t, path, last, timeoutMs, torrentInstance)
 }
 
-async function _extract(t, path, fileName, timeoutMs) {
+async function _extract(t, path, fileName, timeoutMs, torrentInstance) {
     return new Promise((resolve) => {
         let settled = false
         const cleanup = () => {
@@ -81,12 +82,20 @@ async function _extract(t, path, fileName, timeoutMs) {
         const onDone = async () => {
             if (settled) return
             try {
-                const file = t.files?.find(f => f.name === fileName) || t.files?.[0]
-                if (!file) { finish(null); return }
+                const file = t.files?.find((f) => f.name === fileName) || t.files?.[0]
+                if (!file) {
+                    finish(null)
+                    return
+                }
                 const blob = await (file.blob?.() || file.getBlob?.())
-                if (!blob) { finish(null); return }
+                if (!blob) {
+                    finish(null)
+                    return
+                }
                 const bytes = new Uint8Array(await blob.arrayBuffer())
-                try { await driver.writeBytes(path, bytes) } catch {}
+                try {
+                    await driver.writeBytes(path, bytes)
+                } catch {}
                 // Remove torrent after extraction to prevent unbounded growth
                 if (torrentInstance.remove && t.infoHash) torrentInstance.remove(t.infoHash).catch(() => {})
                 finish(bytes)
@@ -101,7 +110,10 @@ async function _extract(t, path, fileName, timeoutMs) {
             finish(null)
         }
 
-        if (t.done) { onDone(); return }
+        if (t.done) {
+            onDone()
+            return
+        }
         t.once("done", onDone)
         t.once("error", onError)
     })
