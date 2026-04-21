@@ -9,8 +9,8 @@ export class Order {
         this.platform = platform
         this.affiliate = affiliate
         this.side = side // "buy" or "sell"
-        this.base = base // { type: "item", id: "game-item-id" }
-        this.quote = quote // { type: "currency", id: "currency-id" }
+        this.base = base // { type: "item", id: "game-item-id", quantity: 1 }
+        this.quote = quote // { type: "currency", id: "currency-id", quantity: 100 }
         if (!this.maker || !this.platform || !this.base || !this.quote) throw new Error("invalidInput")
     }
 

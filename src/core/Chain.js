@@ -1,5 +1,5 @@
 import { Statics, Wallets } from "./Stores.js"
-import { NODE, merge } from "./Utils.js"
+import { merge } from "./Utils.js"
 import { loadContract } from "./Utils/contracts.js"
 import { EVM } from "./Chains/EVM.js"
 import DB from "./DB.js"

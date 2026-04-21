@@ -4,11 +4,10 @@
  *
  * Storage path: zen.get(`~${pair.pub}`).get("wallets").put({ [id]: name })
  * Uses the same authenticated write pattern as Access.js.
+ * zen is passed as the first argument to each function.
  */
 
-import zen from "/core/ZEN.js"
-
-export async function writeLabel(pair, id, label) {
+export async function writeLabel(zen, pair, id, label) {
     if (!zen || !pair) throw new Error("No zen/pair")
     return new Promise((resolve, reject) => {
         zen.get(`~${pair.pub}`).get("wallets").put(
@@ -19,7 +18,7 @@ export async function writeLabel(pair, id, label) {
     })
 }
 
-export async function readLabel(pub, id) {
+export async function readLabel(zen, pub, id) {
     if (!zen) return ""
     return new Promise((resolve) => {
         let done = false
@@ -32,7 +31,7 @@ export async function readLabel(pub, id) {
     })
 }
 
-export function subscribeLabel(pub, id, cb) {
+export function subscribeLabel(zen, pub, id, cb) {
     if (!zen) return () => {}
     const node = zen.get(`~${pub}`).get("wallets")
     let active = true

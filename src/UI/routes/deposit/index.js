@@ -9,13 +9,6 @@ import { notify } from "/core/Utils.js"
 import { sha256 } from "/core/Utils/crypto.js"
 import Logic from "/UI/components/wallets/logic.js"
 
-const TOKEN_STANDARD = {
-    1: "ERC20", // Ethereum
-    11155111: "ERC20", // Sepolia
-    56: "BEP20", // BSC
-    97: "BEP20" // BSC Testnet
-}
-
 export class DEPOSIT extends Route {
     static module = import.meta.url
 
@@ -164,7 +157,7 @@ export class DEPOSIT extends Route {
             value: c.id,
             _name: c.name,
             _symbol: c.symbol,
-            _standard: TOKEN_STANDARD[c.id] || null
+            _standard: c.standard || null
         }))
     }
 

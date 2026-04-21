@@ -15,25 +15,25 @@ Test.describe("WalletLabel", () => {
 
     Test.it("saves and retrieves a label", async () => {
         const id = nextId()
-        await writeLabel(PAIR, id, "Main Wallet")
-        Test.assert.equal(await readLabel(PAIR.pub, id), "Main Wallet")
+        await writeLabel(zen, PAIR, id, "Main Wallet")
+        Test.assert.equal(await readLabel(zen, PAIR.pub, id), "Main Wallet")
     })
 
     Test.it("overwrites a previous label", async () => {
         const id = nextId()
-        await writeLabel(PAIR, id, "Old")
-        await writeLabel(PAIR, id, "New")
-        Test.assert.equal(await readLabel(PAIR.pub, id), "New")
+        await writeLabel(zen, PAIR, id, "Old")
+        await writeLabel(zen, PAIR, id, "New")
+        Test.assert.equal(await readLabel(zen, PAIR.pub, id), "New")
     })
 
     Test.it("coerces non-string to string", async () => {
         const id = nextId()
-        await writeLabel(PAIR, id, 42)
-        Test.assert.equal(await readLabel(PAIR.pub, id), "42")
+        await writeLabel(zen, PAIR, id, 42)
+        Test.assert.equal(await readLabel(zen, PAIR.pub, id), "42")
     })
 
     Test.it("rejects when pair is unavailable", async () => {
-        await Test.assert.rejects(writeLabel(null, nextId(), "x"), "No zen/pair")
+        await Test.assert.rejects(writeLabel(zen, null, nextId(), "x"), "No zen/pair")
     })
 
 })

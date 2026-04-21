@@ -99,7 +99,7 @@ export const template = html`
                     <h2 class="profile-section__heading">Following</h2>
                     <div class="profile-following" id="profile-following-list"></div>
                     <form class="profile-following__add" id="profile-follow-form" autocomplete="off">
-                        <input type="text" id="profile-follow-pub" placeholder="Paste 88-char public key" required />
+                        <input type="text" id="profile-follow-pub" placeholder="Paste 45-char public key" required />
                         <input type="text" id="profile-follow-name" placeholder="Display name" />
                         <button type="submit" class="profile-following__add-btn">Follow</button>
                     </form>

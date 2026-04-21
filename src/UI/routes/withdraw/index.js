@@ -3,13 +3,6 @@ import template from "./template.js"
 import Route from "/core/UI/Route.js"
 import { Access } from "/core/Access.js"
 import { Wallets, Chains } from "/core/Stores.js"
-
-const TOKEN_STANDARD = {
-    1: "ERC20", // Ethereum
-    11155111: "ERC20", // Sepolia
-    56: "BEP20", // BSC
-    97: "BEP20" // BSC Testnet
-}
 import { Context } from "/core/Context.js"
 import { notify } from "/core/Utils.js"
 import SendLogic from "./logic.js"
@@ -156,7 +149,8 @@ export class WITHDRAW extends Route {
         const chain = Chains[chainId]
         if (this.$infoNetwork) {
             if (chain) {
-                const std = TOKEN_STANDARD[Number(chainId)]
+                const currency = this.$wallets.states.get("currency")
+                const std = currency ? Object.values(chain.currencies).find(c => c.name === currency)?.ABI : null
                 this.$infoNetwork.textContent = std ? `${chain.configs?.name || chainId} (${std})` : chain.configs?.name || chainId
             } else {
                 this.$infoNetwork.textContent = "—"

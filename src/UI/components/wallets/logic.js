@@ -20,7 +20,10 @@ export class Logic {
             .map(chain => ({
                 id: String(chain.id),
                 name: chain.configs.name || String(chain.id),
-                symbol: chain.configs.symbol
+                symbol: chain.configs.symbol,
+                standard: (currency
+                    ? Object.values(chain.currencies).find(c => c.name === currency)?.ABI
+                    : Object.values(chain.currencies).find(c => c.ABI)?.ABI) || null
             }))
     }
 
@@ -48,9 +51,9 @@ export class Logic {
         return zen.hash(rawSeed, "wallet")
     }
 
-    static writeLabel(pair, id, label) { return writeLabel(pair, id, label) }
-    static readLabel(pub, id) { return readLabel(pub, id) }
-    static subscribeLabel(pub, id, cb) { return subscribeLabel(pub, id, cb) }
+    static writeLabel(pair, id, label) { return writeLabel(zen, pair, id, label) }
+    static readLabel(pub, id) { return readLabel(zen, pub, id) }
+    static subscribeLabel(pub, id, cb) { return subscribeLabel(zen, pub, id, cb) }
 
     static id() {
         return Number(Access.get("wallet")?.id || 0)

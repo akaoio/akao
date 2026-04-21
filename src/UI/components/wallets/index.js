@@ -9,13 +9,6 @@ import { notify, formatBalance } from "/core/Utils.js"
 import { sha256 } from "/core/Utils/crypto.js"
 import logic from "./logic.js"
 
-const TOKEN_STANDARD = {
-    1: "ERC20",       // Ethereum
-    11155111: "ERC20", // Sepolia
-    56: "BEP20",      // BSC
-    97: "BEP20"       // BSC Testnet
-}
-
 export class WALLETS extends HTMLElement {
     static module = import.meta.url
 
@@ -184,7 +177,7 @@ export class WALLETS extends HTMLElement {
                 value: c.id,
                 _name: c.configs?.name || c.id,
                 _symbol: c.configs?.symbol || "",
-                _standard: TOKEN_STANDARD[Number(c.id)] || null
+                _standard: Object.values(c.currencies).find(x => x.ABI)?.ABI || null
             }))
             chain = this.states.get("chain") || null
             this.states.set({ chain })
@@ -308,7 +301,7 @@ export class WALLETS extends HTMLElement {
             value: c.id,
             _name: c.name,
             _symbol: c.symbol,
-            _standard: TOKEN_STANDARD[Number(c.id)] || null
+            _standard: c.standard || null
         }))
     }
 
