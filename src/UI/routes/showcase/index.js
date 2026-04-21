@@ -60,7 +60,7 @@ export class SHOWCASE extends Route {
         canvas.appendChild(title)
 
         const grid = document.createElement("div")
-        grid.className = "stories-grid"
+        grid.className = "stories-grid grid--fluid"
 
         for (const story of group.stories) {
             const card = document.createElement("div")

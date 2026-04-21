@@ -24,14 +24,17 @@ export const template = html`
                 <span class="pill__divider"></span>
                 <span class="pill__rarity-dot" id="pill-rarity-dot"></span>
                 <span class="pill__divider"></span>
-                <span class="pill__count" id="pill-count"><span class="count__num" id="pill-count-num"></span><span class="count__label"> Items</span></span>
+                <span class="pill__count" id="pill-count">
+                    <span class="count__num" id="pill-count-num"></span>
+                    <span class="count__label">Items</span>
+                </span>
                 <span class="pill__divider"></span>
                 <span class="pill__sort" id="pill-sort"></span>
                 <span class="pill__divider"></span>
                 <span class="pill__search" id="pill-search" aria-label="Search">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
-                        <line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5" />
+                        <line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                     </svg>
                 </span>
             </div>
@@ -45,7 +48,10 @@ export const template = html`
             </nav>
 
             <div class="catalog-toolbar" id="toolbar">
-                <span class="catalog-count" id="count"><span class="count__num" id="count-num"></span><span class="count__label"> Items</span></span>
+                <span class="catalog-count" id="count">
+                    <span class="count__num" id="count-num"></span>
+                    <span class="count__label">Items</span>
+                </span>
                 <ui-search id="search" placeholder="Search items…"></ui-search>
                 <div class="sort-bar" id="sort"></div>
                 <button class="catalog-collapse-btn" id="catalog-collapse" aria-label="Collapse filters"></button>
@@ -53,7 +59,7 @@ export const template = html`
         </div>
 
         <div class="catalog-grid-wrap" id="items-wrap">
-            <div class="catalog-grid" id="items"></div>
+            <div class="catalog-grid grid" id="items"></div>
             <ui-loader aria-live="polite" aria-label="Loading items">Loading…</ui-loader>
         </div>
 

@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -33,7 +33,7 @@ export const styles = css`
                 justify-content: space-between;
                 padding: var(--space);
                 position: relative;
-                z-index: 1;
+                z-index: var(--z-base);
 
                 & a,
                 & div {
@@ -51,7 +51,7 @@ export const styles = css`
 
             .games {
                 display: none;
-                @media (max-width: ${bp.sm}px) {
+                @media ${mq.sm} {
                     display: flex;
                 }
             }

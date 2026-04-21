@@ -1,7 +1,13 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/breakpoints.js"
+import grid from "/UI/css/elements/grid.css.js"
+
+const gameColor = `var(--game-text-color, var(--game-primary, var(--neon-c)))`
+const gamePrimary = `var(--game-primary, var(--neon-c))`
+const labelFont = `font-family: var(--header-font); font-size: var(--text-xs); letter-spacing: 0.06em; text-transform: uppercase;`
 
 export const styles = css`
+    ${grid}
     :host {
         display: block;
         overflow-x: clip;
@@ -42,10 +48,8 @@ export const styles = css`
             }
 
             .game-hero__pill {
-                font-size: var(--text-xs);
-                font-family: var(--header-font);
+                ${labelFont}
                 letter-spacing: 0.1em;
-                text-transform: uppercase;
                 padding: 2px var(--space-2);
                 border: 1px solid var(--neon-g);
                 color: var(--neon-g);
@@ -96,14 +100,14 @@ export const styles = css`
         .catalog-sticky {
             position: sticky;
             top: calc(var(--header-height) * 2);
-            z-index: 20;
+            z-index: var(--z-sticky);
             background: color-mix(in hsl, var(--background) 94%, transparent);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid color-mix(in hsl, var(--game-primary, var(--neon-c)) 40%, transparent);
+            border-bottom: 1px solid color-mix(in hsl, ${gamePrimary} 40%, transparent);
             box-shadow:
-                0 1px 0 color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
-                0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent),
+                0 1px 0 color-mix(in hsl, ${gamePrimary} 25%, transparent),
+                0 6px 32px color-mix(in hsl, ${gamePrimary} 16%, transparent),
                 0 20px 60px color-mix(in hsl, var(--background) 55%, transparent);
             transition:
                 width var(--speed-3) cubic-bezier(0.22, 1, 0.36, 1),
@@ -177,16 +181,15 @@ export const styles = css`
         }
 
         .count__label {
+            padding-left: var(--space-1);
             color: var(--color);
             opacity: 0.4;
         }
 
         .catalog-count {
             flex-shrink: 0;
-            font-family: var(--header-font);
-            font-size: var(--text-xs);
+            ${labelFont}
             letter-spacing: 0.08em;
-            text-transform: uppercase;
             white-space: nowrap;
             padding-left: var(--space-2);
         }
@@ -240,7 +243,7 @@ export const styles = css`
             top: calc(100% + 4px);
             left: 0;
             right: 0;
-            z-index: 50;
+            z-index: var(--z-sticky);
             list-style: none;
             background: color-mix(in hsl, var(--background) 96%, var(--neon-c));
             border: 1px solid color-mix(in hsl, var(--neon-c) 40%, transparent);
@@ -314,10 +317,7 @@ export const styles = css`
             display: inline-flex;
             align-items: center;
             gap: 0.3em;
-            font-family: var(--header-font);
-            font-size: var(--text-xs);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
+            ${labelFont}
             padding: var(--space-1) var(--space-2);
             border: 1px solid var(--border);
             background: transparent;
@@ -369,9 +369,7 @@ export const styles = css`
         }
 
         .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-3);
+            --grid-cols: 3;
             padding: var(--space-4) 0 var(--space-3);
         }
 
@@ -386,14 +384,14 @@ export const styles = css`
         /* ── Responsive Breakpoints ── */
 
         /* md: Tablets (768–1023px) */
-        @media (max-width: ${bp.md}px) {
+        @media ${mq.mdDown} {
             .game-hero {
                 padding-bottom: var(--space-5);
             }
         }
 
         /* sm: Large phones / small tablets (541–767px) */
-        @media (max-width: ${bp.sm}px) {
+        @media ${mq.smDown} {
             .game-hero {
                 padding-bottom: var(--space-4);
             }
@@ -408,22 +406,8 @@ export const styles = css`
             }
         }
 
-        /* 2-col: narrow tablets / large phones (≤849px) */
-        @media (max-width: ${bp.grid2}px) {
-            .catalog-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* 1-col: phones (≤540px) */
-        @media (max-width: ${bp.grid1}px) {
-            .catalog-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         /* xs: Mobile phones (≤480px) */
-        @media (max-width: ${bp.xs}px) {
+        @media ${mq.xsDown} {
             .game-hero {
                 padding-bottom: var(--space-3);
                 gap: var(--space-1);
@@ -445,17 +429,16 @@ export const styles = css`
 
             .catalog-count {
                 order: 1;
-                flex: 1;
+            }
+
+            ui-search {
+                order: 2;
             }
 
             .sort-bar {
                 order: 3;
-                flex-wrap: nowrap;
-            }
-
-            .catalog-search-wrap {
-                order: 2;
                 flex-basis: 100%;
+                flex-wrap: nowrap;
             }
 
             .filter-group__label {
@@ -464,7 +447,7 @@ export const styles = css`
         }
 
         /* ── Collapsed pill — tablet + mobile only ── */
-        @media (max-width: ${bp.md}px) {
+        @media ${mq.mdDown} {
             /* Collapsed: pill only — width is set via JS inline style (pixel value)
                so the width → 100% transition has two concrete lengths to interpolate */
             .catalog-sticky.is-stuck:not(.is-expanded) {
@@ -537,18 +520,16 @@ export const styles = css`
 
             /* Pill hover glow */
             .catalog-sticky.is-stuck:not(.is-expanded):hover {
-                border-color: color-mix(in hsl, var(--game-primary, var(--neon-c)) 60%, transparent);
+                border-color: color-mix(in hsl, ${gamePrimary} 60%, transparent);
                 box-shadow:
-                    0 0 12px color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
-                    0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent);
+                    0 0 12px color-mix(in hsl, ${gamePrimary} 25%, transparent),
+                    0 6px 32px color-mix(in hsl, ${gamePrimary} 16%, transparent);
             }
 
             /* ── Pill internals ── */
             .pill__type {
-                font-family: var(--header-font);
-                font-size: var(--text-xs);
+                ${labelFont}
                 letter-spacing: 0.08em;
-                text-transform: uppercase;
                 color: var(--color);
                 opacity: 0.4;
                 white-space: nowrap;
@@ -580,18 +561,12 @@ export const styles = css`
             }
 
             .pill__count {
-                font-family: var(--header-font);
-                font-size: var(--text-xs);
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
+                ${labelFont}
                 white-space: nowrap;
             }
 
             .pill__sort {
-                font-family: var(--header-font);
-                font-size: var(--text-xs);
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
+                ${labelFont}
                 color: var(--neon-g);
                 text-shadow: var(--glow-g);
                 white-space: nowrap;
@@ -629,28 +604,26 @@ export const styles = css`
         }
 
         .load-more-btn {
-            font-family: var(--header-font);
-            font-size: var(--text-xs);
+            ${labelFont}
             letter-spacing: 0.12em;
-            text-transform: uppercase;
             padding: var(--space-2) var(--space-6);
-            border: 1px solid var(--game-text-color, var(--game-primary, var(--neon-c)));
+            border: 1px solid ${gameColor};
             background: transparent;
-            color: var(--game-text-color, var(--game-primary, var(--neon-c)));
+            color: ${gameColor};
             cursor: pointer;
             box-shadow:
-                0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 30%, transparent),
-                0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 12%, transparent);
+                0 0 8px color-mix(in hsl, ${gameColor} 30%, transparent),
+                0 0 24px color-mix(in hsl, ${gameColor} 12%, transparent);
             transition:
                 box-shadow var(--speed),
                 background var(--speed);
 
             &:hover {
-                background: color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 8%, transparent);
+                background: color-mix(in hsl, ${gameColor} 8%, transparent);
                 box-shadow:
-                    0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 53%, transparent),
-                    0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 20%, transparent),
-                    0 0 48px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 10%, transparent);
+                    0 0 8px color-mix(in hsl, ${gameColor} 53%, transparent),
+                    0 0 24px color-mix(in hsl, ${gameColor} 20%, transparent),
+                    0 0 48px color-mix(in hsl, ${gameColor} 10%, transparent);
             }
 
             &:disabled {

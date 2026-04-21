@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -203,7 +203,7 @@ export const styles = css`
         }
     }
 
-    @media (max-width: ${bp.sm}px) {
+    @media ${mq.sm} {
         .filter-tabs {
             display: none;
         }

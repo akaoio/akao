@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -51,7 +51,7 @@ export const styles = css`
     }
 
     /* ── Mobile: hide fixed toggle (button moves to header) ── */
-    @media (max-width: ${bp.sm}px) {
+    @media ${mq.sm} {
         .game-nav__toggle {
             display: none;
         }

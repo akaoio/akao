@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -141,14 +141,14 @@ export const styles = css`
     }
 
     /* ── Responsive: md (≤1023px) — hide rate column ── */
-    @media (max-width: ${bp.md}px) {
+    @media ${mq.mdDown} {
         .col-rate {
             display: none;
         }
     }
 
     /* ── Responsive: sm (≤767px) — 3-col card: pair | rate | badges ── */
-    @media (max-width: ${bp.sm}px) {
+    @media ${mq.smDown} {
         :host {
             grid-template-columns: 1fr auto auto;
             grid-template-rows: auto auto;

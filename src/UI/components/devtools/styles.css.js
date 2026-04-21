@@ -5,7 +5,7 @@ export const styles = css`
         position: fixed;
         bottom: var(--space-4, 16px);
         right: var(--space-4, 16px);
-        z-index: 9999;
+        z-index: var(--z-devtools);
     }
 
     button {

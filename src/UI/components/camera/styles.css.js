@@ -21,7 +21,7 @@ const styles = css`
             transform: translateX(-50%);
             width: max-content;
             max-width: calc(100% - (var(--space) * 2));
-            z-index: 2;
+            z-index: var(--z-base);
             text-align: center;
             white-space: normal;
             overflow-wrap: anywhere;

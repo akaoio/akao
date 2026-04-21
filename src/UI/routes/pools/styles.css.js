@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     /* ── Keyframes at top level (never nest @keyframes inside a selector) ── */
@@ -427,7 +427,7 @@ export const styles = css`
         }
 
         /* ── Responsive: md (≤1023px) ── */
-        @media (max-width: ${bp.md}px) {
+        @media ${mq.mdDown} {
             --col-rate: 0px;
 
             .th-rate {
@@ -442,7 +442,7 @@ export const styles = css`
         }
 
         /* ── Responsive: sm (≤767px) ── */
-        @media (max-width: ${bp.sm}px) {
+        @media ${mq.smDown} {
             .table-header {
                 display: none;
             }

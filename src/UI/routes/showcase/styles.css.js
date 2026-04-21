@@ -1,11 +1,12 @@
 import { css } from "/core/UI.js"
 import typographyStyles from "./stories/typography.css.js"
+import grid from "/UI/css/elements/grid.css.js"
 
 export const styles = css`
+    ${grid}
     :host {
         .showcase {
-            display: grid;
-            grid-template-columns: 14rem 1fr;
+            --sidebar-width: 14rem;
             height: calc(100vh - var(--header-height) - var(--footer-height) - var(--space-6));
             overflow: hidden;
             border: var(--border);
@@ -97,9 +98,7 @@ export const styles = css`
             }
 
             .stories-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-                gap: var(--space-3);
+                --grid-min: 16rem;
             }
 
             .story-card {

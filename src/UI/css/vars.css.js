@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/breakpoints.js"
 
 export const styles = css`
     :root {
@@ -36,11 +36,11 @@ export const styles = css`
         /* Typography — fluid via clamp(min, viewport, max).
            Max values match the previous fixed sizes (0.125rem × multiplier).
            Min values keep text legible on small phones. */
-        --text-xs: clamp(0.65rem,  1.5vw, 0.75rem);
-        --text-sm: clamp(0.75rem,  1.8vw, 0.875rem);
-        --text-md: clamp(0.875rem, 2vw,   1rem);
-        --text-lg: clamp(1rem,     2.5vw, 1.25rem);
-        --text-xl: clamp(1.25rem,  3vw,   1.5rem);
+        --text-xs: clamp(0.65rem, 1.5vw, 0.75rem);
+        --text-sm: clamp(0.75rem, 1.8vw, 0.875rem);
+        --text-md: clamp(0.875rem, 2vw, 1rem);
+        --text-lg: clamp(1rem, 2.5vw, 1.25rem);
+        --text-xl: clamp(1.25rem, 3vw, 1.5rem);
         --text: var(--text-md);
 
         /* Animation */
@@ -114,7 +114,7 @@ export const styles = css`
         --icon-md: var(--unit-6);
         --icon-lg: var(--unit-7);
         --icon-xlg: var(--unit-10);
-        --icon-2xl: var(--unit-9);   /* 6rem = 96px */
+        --icon-2xl: var(--unit-9); /* 6rem = 96px */
         --icon: var(--icon-md);
 
         /* Icon Masks — square viewBox, default direction left; rotate() to repoint */
@@ -124,6 +124,13 @@ export const styles = css`
         --max-width: 80rem;
         --content-width: min(100% - var(--space-4), var(--max-width));
         --box-width: calc((min(100vw, 100vh) - var(--space-4)) * 0.75);
+
+        --container-sm: 33.75rem; /* 540px  — phone landscape cap */
+        --container-md: 45rem; /* 720px  — tablet cap          */
+        --container-lg: 60rem; /* 960px  — desktop cap         */
+        --container-xl: 71.25rem; /* 1140px — wide desktop cap    */
+        --container-xxl: 82.5rem; /* 1320px — ultra-wide cap      */
+        --container-form: 30rem; /* 480px  — narrow form/card    */
 
         /* Font */
         --header-font: "Orbitron", system-ui, sans-serif;
@@ -140,7 +147,6 @@ export const styles = css`
         --glow-g: 0 0 8px #00ff9d88, 0 0 24px #00ff9d33;
         --glow-c: 0 0 8px #00e5ff88, 0 0 24px #00e5ff33;
         --glow-m: 0 0 8px #ff2d7888, 0 0 24px #ff2d7833;
-        --glow-y: 0 0 8px #f5e64288, 0 0 24px #f5e64233;
         --glow-y: 0 0 8px #f5e64288, 0 0 24px #f5e64233;
 
         /* Layout hooks */
@@ -180,11 +186,11 @@ export const styles = css`
         --field-inset-border: color-mix(in hsl, var(--navy-700) 60%, transparent);
 
         /* Semantic interactive accents */
-        --accent-info: var(--neon-c);       /* filters, search, links, info states */
-        --accent-action: var(--neon-g);     /* confirm, submit, price, positive */
-        --accent-success: var(--neon-g);    /* success states, completed actions */
-        --accent-warning: var(--neon-y);    /* caution, irreversible actions, pre-error */
-        --accent-danger: var(--neon-m);     /* error, destructive, blocked */
+        --accent-info: var(--neon-c); /* filters, search, links, info states */
+        --accent-action: var(--neon-g); /* confirm, submit, price, positive */
+        --accent-success: var(--neon-g); /* success states, completed actions */
+        --accent-warning: var(--neon-y); /* caution, irreversible actions, pre-error */
+        --accent-danger: var(--neon-m); /* error, destructive, blocked */
         --glow-info: var(--glow-c);
         --glow-action: var(--glow-g);
         --glow-success: var(--glow-g);
@@ -192,21 +198,21 @@ export const styles = css`
         --glow-danger: var(--glow-m);
 
         /* Interactive surface tokens — resting border, glow shadow, hover/selected fill */
-        --accent-info-border:       color-mix(in hsl, var(--accent-info)    35%, transparent);
-        --accent-info-glow:         color-mix(in hsl, var(--accent-info)    12%, transparent);
-        --accent-info-surface:      color-mix(in hsl, var(--accent-info)     8%, transparent);
-        --accent-action-border:     color-mix(in hsl, var(--accent-action)  50%, transparent);
-        --accent-action-glow:       color-mix(in hsl, var(--accent-action)  20%, transparent);
-        --accent-action-surface:    color-mix(in hsl, var(--accent-action)  12%, transparent);
-        --accent-success-border:    color-mix(in hsl, var(--accent-success) 50%, transparent);
-        --accent-success-glow:      color-mix(in hsl, var(--accent-success) 20%, transparent);
-        --accent-success-surface:   color-mix(in hsl, var(--accent-success) 12%, transparent);
-        --accent-warning-border:    color-mix(in hsl, var(--accent-warning) 40%, transparent);
-        --accent-warning-glow:      color-mix(in hsl, var(--accent-warning) 15%, transparent);
-        --accent-warning-surface:   color-mix(in hsl, var(--accent-warning) 10%, transparent);
-        --accent-danger-border:     color-mix(in hsl, var(--accent-danger)  35%, transparent);
-        --accent-danger-glow:       color-mix(in hsl, var(--accent-danger)  12%, transparent);
-        --accent-danger-surface:    color-mix(in hsl, var(--accent-danger)   8%, transparent);
+        --accent-info-border: color-mix(in hsl, var(--accent-info) 35%, transparent);
+        --accent-info-glow: color-mix(in hsl, var(--accent-info) 12%, transparent);
+        --accent-info-surface: color-mix(in hsl, var(--accent-info) 8%, transparent);
+        --accent-action-border: color-mix(in hsl, var(--accent-action) 50%, transparent);
+        --accent-action-glow: color-mix(in hsl, var(--accent-action) 20%, transparent);
+        --accent-action-surface: color-mix(in hsl, var(--accent-action) 12%, transparent);
+        --accent-success-border: color-mix(in hsl, var(--accent-success) 50%, transparent);
+        --accent-success-glow: color-mix(in hsl, var(--accent-success) 20%, transparent);
+        --accent-success-surface: color-mix(in hsl, var(--accent-success) 12%, transparent);
+        --accent-warning-border: color-mix(in hsl, var(--accent-warning) 40%, transparent);
+        --accent-warning-glow: color-mix(in hsl, var(--accent-warning) 15%, transparent);
+        --accent-warning-surface: color-mix(in hsl, var(--accent-warning) 10%, transparent);
+        --accent-danger-border: color-mix(in hsl, var(--accent-danger) 35%, transparent);
+        --accent-danger-glow: color-mix(in hsl, var(--accent-danger) 12%, transparent);
+        --accent-danger-surface: color-mix(in hsl, var(--accent-danger) 8%, transparent);
 
         /* Item cards */
         --item-border-left: 3px solid var(--neon-c);
@@ -238,14 +244,18 @@ export const styles = css`
 
         /* Z-index Layers */
         --z-base: 0;
-        --z-sticky: 50;
-        --z-dropdown: 100;
+        --z-sticky: 50; /* sticky catalog bands             */
+        --z-dropdown: 100; /* dropdowns, navigator             */
         --z-panel-toggle: 200;
         --z-panel-backdrop: 210;
         --z-panel: 220;
+        --z-modal-backdrop: 290; /* sits just below modal            */
         --z-modal: 300;
         --z-overlay: 400;
         --z-toast: 500;
+        --z-picker-backdrop: 590; /* sits just below picker           */
+        --z-picker: 600; /* avatar picker, floating pickers  */
+        --z-devtools: 999; /* internal dev tooling only        */
 
         /* Blur Scale */
         --blur-xs: 2px;
@@ -269,21 +279,25 @@ export const styles = css`
 
         /* Hero layout */
         --hero-pad-top: clamp(5rem, 13vw, 9rem);
-        --avatar-size:  clamp(5rem, 12vw, 8rem);
+        --avatar-size: clamp(5rem, 12vw, 8rem);
     }
 
-    @media (max-width: ${bp.md}px) {
-        :root { --hero-pad-top: clamp(4rem, 11vw, 7rem); }
+    @media ${mq.mdDown} {
+        :root {
+            --hero-pad-top: clamp(4rem, 11vw, 7rem);
+        }
     }
 
-    @media (max-width: ${bp.sm}px) {
-        :root { --hero-pad-top: clamp(3.5rem, 10vw, 6rem); }
+    @media ${mq.smDown} {
+        :root {
+            --hero-pad-top: clamp(3.5rem, 10vw, 6rem);
+        }
     }
 
-    @media (max-width: ${bp.xs}px) {
+    @media ${mq.xsDown} {
         :root {
             --hero-pad-top: clamp(3rem, 9vw, 4.5rem);
-            --avatar-size:  clamp(4rem, 10vw, 5.5rem);
+            --avatar-size: clamp(4rem, 10vw, 5.5rem);
         }
     }
 
