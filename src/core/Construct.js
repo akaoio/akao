@@ -53,10 +53,6 @@ export const Construct = {
     },
     ZEN: async function () {
         if (!Statics.site) return
-        if (BROWSER && !globalThis.crypto?.subtle) {
-            console.warn("Skipping ZEN: WebCrypto is unavailable in this context")
-            return false
-        }
         const { initZEN } = await import("./ZEN.js")
         await initZEN()
         console.log("Constructed: ZEN")

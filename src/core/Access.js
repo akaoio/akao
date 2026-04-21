@@ -190,7 +190,7 @@ async function restore() {
     await initZEN()
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
-    const encrypted = await zen.get("~" + pair.pub).get("@").once()
+    const encrypted = await zen.get("~" + pair.pub).get("@")
     if (!encrypted) return { error: "No encrypted public key found" }
     const decrypted = await zen.decrypt(encrypted, pair)
     if (!decrypted) return { error: "Unable to decrypt data" }

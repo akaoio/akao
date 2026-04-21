@@ -51,7 +51,7 @@ export class Logic {
     static async read(id) {
         const pair = Access.get("pair")
         if (!pair) return {}
-        const encrypted = await zen.get("~" + pair.pub).get("addresses").get(id).once()
+        const encrypted = await zen.get("~" + pair.pub).get("addresses").get(id)
         return zen.decrypt(encrypted, pair)
     }
 

@@ -41,7 +41,7 @@ export class Logic {
     static async loadname() {
         const pair = Access.get("pair")
         if (!pair) return null
-        const raw = await zen.get("~" + pair.pub).get("name").once()
+        const raw = await zen.get("~" + pair.pub).get("name")
         return typeof raw === "string" ? raw : ""
     }
 
@@ -56,7 +56,7 @@ export class Logic {
     static async loadbio() {
         const pair = Access.get("pair")
         if (!pair) return null
-        const raw = await zen.get("~" + pair.pub).get("bio").once()
+        const raw = await zen.get("~" + pair.pub).get("bio")
         return typeof raw === "string" ? raw : ""
     }
 
@@ -71,7 +71,7 @@ export class Logic {
     static async loadlinks() {
         const pair = Access.get("pair")
         if (!pair) return null
-        const raw = await zen.get("~" + pair.pub).get("links").once()
+        const raw = await zen.get("~" + pair.pub).get("links")
         let links = {}
         if (typeof raw === "string")
             try { links = JSON.parse(raw) } catch { links = {} }
