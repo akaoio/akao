@@ -63,6 +63,7 @@ export class FILTER_GROUP extends Component {
     onconnect() {
         this.$tabs = this.shadowRoot.querySelector("#tabs")
         this.$select = this.shadowRoot.querySelector("#select")
+        this.$choices = this.shadowRoot.querySelector("#choices")
         this._build()
     }
 
@@ -134,11 +135,10 @@ export class FILTER_GROUP extends Component {
         this.$select.value = current ?? ""
         this.$select.classList.toggle("active", !!current)
 
-        // Propagate accent color for rarity selects
+        // Propagate accent color to both tabs and select
         const active = this._options.find((o) => o.value === current)
-        const wrap = this.$select.parentElement
-        if (active?.color) wrap.style.setProperty("--filter-accent", active.color)
-        else wrap.style.removeProperty("--filter-accent")
+        if (active?.color) this.$choices.style.setProperty("--filter-accent", active.color)
+        else this.$choices.style.removeProperty("--filter-accent")
     }
 }
 
