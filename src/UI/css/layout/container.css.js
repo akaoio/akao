@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -12,11 +12,11 @@ export const styles = css`
             flex-direction: column;
             justify-content: center;
 
-            @media (max-width: ${bp.sm}px) {
+            @media ${mq.smDown} {
                 width: 75%;
             }
 
-            @media (max-width: ${bp.xs}px) {
+            @media ${mq.xsDown} {
                 width: 100%;
             }
         }

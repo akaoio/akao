@@ -1,7 +1,13 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
+import grid from "/UI/css/layout/grid.css.js"
+
+const gameColor = `var(--game-text-color, var(--game-primary, var(--neon-c)))`
+const gamePrimary = `var(--game-primary, var(--neon-c))`
+const labelFont = `font-family: var(--header-font); font-size: var(--text-xs); letter-spacing: 0.06em; text-transform: uppercase;`
 
 export const styles = css`
+    ${grid}
     :host {
         display: block;
         overflow-x: clip;
@@ -42,14 +48,15 @@ export const styles = css`
             }
 
             .game-hero__pill {
-                font-size: var(--text-xs);
-                font-family: var(--header-font);
+                ${labelFont}
                 letter-spacing: 0.1em;
-                text-transform: uppercase;
                 padding: 2px var(--space-2);
                 border: 1px solid var(--neon-g);
                 color: var(--neon-g);
                 text-shadow: var(--glow-g);
+                background: color-mix(in hsl, var(--neon-g) 10%, transparent);
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
             }
 
             h1 {
@@ -95,15 +102,15 @@ export const styles = css`
         /* ── Sticky band (filters + toolbar) ── */
         .catalog-sticky {
             position: sticky;
-            top: calc(var(--header-height) * 2);
-            z-index: 20;
+            top: calc(var(--header-height) + var(--space) * 2);
+            z-index: var(--z-sticky);
             background: color-mix(in hsl, var(--background) 94%, transparent);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid color-mix(in hsl, var(--game-primary, var(--neon-c)) 40%, transparent);
+            border-bottom: 1px solid color-mix(in hsl, ${gamePrimary} 40%, transparent);
             box-shadow:
-                0 1px 0 color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
-                0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent),
+                0 1px 0 color-mix(in hsl, ${gamePrimary} 25%, transparent),
+                0 6px 32px color-mix(in hsl, ${gamePrimary} 16%, transparent),
                 0 20px 60px color-mix(in hsl, var(--background) 55%, transparent);
             transition:
                 width var(--speed-3) cubic-bezier(0.22, 1, 0.36, 1),
@@ -129,12 +136,6 @@ export const styles = css`
             border: 1px solid transparent;
         }
 
-        /* Size the search component to fill the flex row like the old input did */
-        ui-search {
-            flex: 1;
-            min-width: 0;
-        }
-
         /* ── Toolbar ── */
         @keyframes toolbar-pulse {
             0% {
@@ -151,12 +152,13 @@ export const styles = css`
         }
 
         #toolbar {
-            display: flex;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            grid-template-areas: "count search sort";
             align-items: center;
             gap: var(--space-3);
             padding: var(--space-3) var(--space-4) var(--space-4);
             margin: 0;
-            border: 1px solid color-mix(in hsl, var(--color) 12%, transparent);
             background: color-mix(in hsl, var(--color) 3%, transparent);
             transition:
                 border-color var(--speed-2),
@@ -164,9 +166,23 @@ export const styles = css`
                 box-shadow var(--speed-2);
 
             &:focus-within {
-                border-color: color-mix(in hsl, var(--neon-c) 45%, transparent);
                 background: color-mix(in hsl, var(--neon-c) 3%, transparent);
                 animation: toolbar-pulse var(--speed-2) ease forwards;
+            }
+
+            .catalog-count {
+                grid-area: count;
+                line-height: normal;
+            }
+            ui-search {
+                grid-area: search;
+                min-width: 0;
+            }
+            .sort-bar {
+                grid-area: sort;
+            }
+            .catalog-collapse-btn {
+                grid-area: collapse;
             }
         }
 
@@ -177,18 +193,17 @@ export const styles = css`
         }
 
         .count__label {
+            padding-left: var(--space-1);
             color: var(--color);
             opacity: 0.4;
         }
 
         .catalog-count {
             flex-shrink: 0;
-            font-family: var(--header-font);
-            font-size: var(--text-xs);
+            align-self: center;
+            ${labelFont}
             letter-spacing: 0.08em;
-            text-transform: uppercase;
             white-space: nowrap;
-            padding-left: var(--space-2);
         }
 
         /* ── Search wrap + autocomplete ── */
@@ -240,7 +255,7 @@ export const styles = css`
             top: calc(100% + 4px);
             left: 0;
             right: 0;
-            z-index: 50;
+            z-index: var(--z-sticky);
             list-style: none;
             background: color-mix(in hsl, var(--background) 96%, var(--neon-c));
             border: 1px solid color-mix(in hsl, var(--neon-c) 40%, transparent);
@@ -306,28 +321,46 @@ export const styles = css`
 
         .sort-bar {
             display: flex;
+            justify-content: flex-end;
             flex-wrap: wrap;
             gap: var(--space-1);
         }
 
-        .sort-bar button {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3em;
+        .sort-bar__label {
+            padding-inline: var(--space-1) var(--space-2);
+            color: var(--color);
+            opacity: 0.4;
             font-family: var(--header-font);
             font-size: var(--text-xs);
-            letter-spacing: 0.06em;
             text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            align-self: center;
+            line-height: normal;
+
+            @media ${mq.xsDown} {
+                display: none;
+            }
+        }
+
+        .sort-bar button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            ${labelFont}
             padding: var(--space-1) var(--space-2);
             border: 1px solid var(--border);
-            background: transparent;
+            text-shadow: var(--glow-g);
+            box-shadow: 0 0 12px color-mix(in hsl, var(--neon-g) 20%, transparent);
+            background: color-mix(in hsl, var(--neon-g) 5%, transparent);
+            padding: var(--space-1) var(--space-2);
             color: var(--color);
             cursor: pointer;
             transition:
                 border-color var(--speed),
                 color var(--speed);
 
-            &:hover {
+            &:hover:not(:disabled) {
                 border-color: var(--neon-g);
                 color: var(--neon-g);
             }
@@ -336,18 +369,21 @@ export const styles = css`
                 border-color: var(--neon-g);
                 color: var(--neon-g);
             }
+
+            &:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+                border-color: var(--border);
+                color: var(--color);
+            }
         }
 
-        /* fixed-width direction slot — always occupies space, visible only when active */
+        /* direction indicator — hidden when button is inactive */
         .sort-dir {
-            display: inline-block;
-            min-width: 3ch;
-            text-align: center;
-            opacity: 0;
-            transition: opacity var(--speed);
-
+            display: none;
+            font-size: var(--text-sm);
             .sort-bar button.active & {
-                opacity: 1;
+                display: inline-block;
             }
         }
 
@@ -356,7 +392,7 @@ export const styles = css`
             position: relative;
 
             &.is-loading-all {
-                min-height: 320px;
+                min-height: 80vh;
 
                 .catalog-grid {
                     display: none;
@@ -369,9 +405,7 @@ export const styles = css`
         }
 
         .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-3);
+            --grid-cols: 3;
             padding: var(--space-4) 0 var(--space-3);
         }
 
@@ -385,45 +419,22 @@ export const styles = css`
 
         /* ── Responsive Breakpoints ── */
 
-        /* md: Tablets (768–1023px) */
-        @media (max-width: ${bp.md}px) {
+        /* mdDown: tablet and below (<768px) */
+        @media ${mq.mdDown} {
             .game-hero {
                 padding-bottom: var(--space-5);
             }
         }
 
-        /* sm: Large phones / small tablets (541–767px) */
-        @media (max-width: ${bp.sm}px) {
+        /* smDown: small phones and below (<576px) */
+        @media ${mq.smDown} {
             .game-hero {
                 padding-bottom: var(--space-4);
             }
-
-            #toolbar {
-                flex-wrap: wrap;
-                padding: var(--space-3);
-            }
-
-            .sort-bar {
-                flex-basis: 100%;
-            }
         }
 
-        /* 2-col: narrow tablets / large phones (≤849px) */
-        @media (max-width: ${bp.grid2}px) {
-            .catalog-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* 1-col: phones (≤540px) */
-        @media (max-width: ${bp.grid1}px) {
-            .catalog-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* xs: Mobile phones (≤480px) */
-        @media (max-width: ${bp.xs}px) {
+        /* xsDown: extra small phones (<480px) */
+        @media ${mq.xsDown} {
             .game-hero {
                 padding-bottom: var(--space-3);
                 gap: var(--space-1);
@@ -437,40 +448,31 @@ export const styles = css`
                 }
             }
 
-            #toolbar {
-                flex-wrap: wrap;
-                gap: var(--space-2);
-                padding: var(--space-3);
-            }
-
-            .catalog-count {
-                order: 1;
-                flex: 1;
-            }
-
-            .sort-bar {
-                order: 3;
-                flex-wrap: nowrap;
-            }
-
-            .catalog-search-wrap {
-                order: 2;
-                flex-basis: 100%;
-            }
-
             .filter-group__label {
                 width: 3rem;
             }
         }
 
-        /* ── Collapsed pill — tablet + mobile only ── */
-        @media (max-width: ${bp.md}px) {
+        /* mdDown: toolbar switches to 2-row grid — search full-width on row 1 */
+        @media ${mq.mdDown} {
+            #toolbar {
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
+                grid-template-areas:
+                    "search  search"
+                    "count   sort";
+                padding: var(--space-3);
+            }
+        }
+
+        /* ── Collapsed pill — mdDown only (<768px) ── */
+        @media ${mq.mdDown} {
             /* Collapsed: pill only — width is set via JS inline style (pixel value)
                so the width → 100% transition has two concrete lengths to interpolate */
             .catalog-sticky.is-stuck:not(.is-expanded) {
+                top: calc(var(--header-height) * 2);
                 border-radius: 0 0 8px 0;
                 cursor: pointer;
-
                 .marketplace-nav,
                 #toolbar {
                     display: none;
@@ -500,6 +502,18 @@ export const styles = css`
                     display: none;
                 }
 
+                #toolbar {
+                    grid-template-columns: auto 1fr auto auto;
+                    grid-template-areas: "count search sort collapse";
+
+                    @media ${mq.mdDown} {
+                        grid-template-columns: auto 1fr auto;
+                        grid-template-areas:
+                            "search  search   search"
+                            "count   sort     collapse";
+                    }
+                }
+
                 .catalog-collapse-btn {
                     display: flex;
                     align-items: center;
@@ -511,53 +525,55 @@ export const styles = css`
                     border: none;
                     background: transparent;
                     cursor: pointer;
+                    color: var(--neon-g);
+                    transition: color var(--speed);
 
-                    &::before {
-                        content: "";
-                        display: block;
+                    ui-svg {
                         width: 100%;
                         height: 100%;
-                        background-color: var(--neon-g);
-                        -webkit-mask-image: var(--icon-chevron-double);
-                        mask-image: var(--icon-chevron-double);
-                        -webkit-mask-size: contain;
-                        mask-size: contain;
-                        -webkit-mask-repeat: no-repeat;
-                        mask-repeat: no-repeat;
-                        -webkit-mask-position: center;
-                        mask-position: center;
-                        transition: background-color var(--speed);
+                        pointer-events: none;
                     }
 
-                    &:hover::before {
-                        background-color: var(--game-primary, var(--neon-c));
+                    &:hover {
+                        color: var(--game-primary, var(--neon-c));
                     }
                 }
             }
 
             /* Pill hover glow */
             .catalog-sticky.is-stuck:not(.is-expanded):hover {
-                border-color: color-mix(in hsl, var(--game-primary, var(--neon-c)) 60%, transparent);
+                border-color: color-mix(in hsl, ${gamePrimary} 60%, transparent);
                 box-shadow:
-                    0 0 12px color-mix(in hsl, var(--game-primary, var(--neon-c)) 25%, transparent),
-                    0 6px 32px color-mix(in hsl, var(--game-primary, var(--neon-c)) 16%, transparent);
+                    0 0 12px color-mix(in hsl, ${gamePrimary} 25%, transparent),
+                    0 6px 32px color-mix(in hsl, ${gamePrimary} 16%, transparent);
             }
 
             /* ── Pill internals ── */
             .pill__type {
-                font-family: var(--header-font);
-                font-size: var(--text-xs);
+                ${labelFont}
                 letter-spacing: 0.08em;
-                text-transform: uppercase;
-                color: var(--color);
-                opacity: 0.4;
                 white-space: nowrap;
                 flex-shrink: 0;
-                transition: opacity var(--speed);
+                border: none;
+                padding: var(--space-1) var(--space-2);
+                background: transparent;
+                color: color-mix(in hsl, var(--color) 50%, transparent);
+                cursor: pointer;
+                transition:
+                    border-color var(--speed),
+                    color var(--speed),
+                    background var(--speed),
+                    box-shadow var(--speed);
+
+                &:hover {
+                    border-color: var(--neon-c);
+                    color: var(--neon-c);
+                }
 
                 &.active {
-                    opacity: 1;
-                    color: var(--neon-c);
+                    color: var(--filter-accent, var(--accent-info));
+                    background: color-mix(in hsl, var(--filter-accent, var(--accent-info)) 6%, transparent);
+                    box-shadow: 0 0 12px color-mix(in hsl, var(--filter-accent, var(--accent-info)) 25%, transparent);
                 }
             }
 
@@ -569,9 +585,14 @@ export const styles = css`
                 background: var(--pill-rarity-color, var(--color));
                 box-shadow: none;
                 opacity: 0.2;
+                cursor: pointer;
                 transition:
                     box-shadow var(--speed),
                     opacity var(--speed);
+
+                &:hover {
+                    opacity: 0.6;
+                }
 
                 &.active {
                     opacity: 1;
@@ -580,35 +601,63 @@ export const styles = css`
             }
 
             .pill__count {
-                font-family: var(--header-font);
-                font-size: var(--text-xs);
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
+                ${labelFont}
                 white-space: nowrap;
             }
 
             .pill__sort {
-                font-family: var(--header-font);
-                font-size: var(--text-xs);
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
+                ${labelFont}
                 color: var(--neon-g);
                 text-shadow: var(--glow-g);
                 white-space: nowrap;
+                box-shadow: 0 0 12px color-mix(in hsl, var(--filter-accent, var(--accent-info)) 25%, transparent);
+                background: color-mix(in hsl, var(--filter-accent, var(--accent-info)) 6%, transparent);
+                padding: var(--space-1);
             }
 
             .pill__search {
                 flex-shrink: 0;
-                color: var(--color);
-                opacity: 0.4;
+                color: var(--neon-g);
+                opacity: 0.6;
                 line-height: 0;
+                cursor: pointer;
                 transition:
                     color var(--speed),
                     opacity var(--speed);
+                padding: var(--space-1);
+                border: none;
+                border-radius: 999px;
+                background: color-mix(in hsl, var(--filter-accent, var(--accent-info)) 6%, transparent);
+                box-shadow: 0 0 12px color-mix(in hsl, var(--filter-accent, var(--accent-info)) 25%, transparent);
+
+                ui-svg {
+                    width: 16px;
+                    height: 16px;
+                    pointer-events: none;
+                    filter: none;
+                    transition: filter var(--speed);
+                }
+
+                &:hover {
+                    color: var(--neon-c);
+                    opacity: 0.8;
+
+                    ui-svg {
+                        filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-c) 60%, transparent));
+                    }
+                }
+
+                &:active {
+                    opacity: 0.5;
+                }
 
                 &.active {
                     color: var(--neon-c);
                     opacity: 1;
+
+                    ui-svg {
+                        filter: drop-shadow(0 0 4px color-mix(in hsl, var(--neon-c) 80%, transparent)) drop-shadow(0 0 10px color-mix(in hsl, var(--neon-c) 40%, transparent));
+                    }
                 }
             }
 
@@ -621,6 +670,20 @@ export const styles = css`
             }
         }
 
+        /* ── Empty state ── */
+        .catalog-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 160px;
+            font-family: var(--header-font);
+            font-size: var(--text-sm);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color);
+            opacity: 0.35;
+        }
+
         /* ── Load More ── */
         .load-more-wrap {
             display: flex;
@@ -629,28 +692,26 @@ export const styles = css`
         }
 
         .load-more-btn {
-            font-family: var(--header-font);
-            font-size: var(--text-xs);
+            ${labelFont}
             letter-spacing: 0.12em;
-            text-transform: uppercase;
             padding: var(--space-2) var(--space-6);
-            border: 1px solid var(--game-text-color, var(--game-primary, var(--neon-c)));
+            border: 1px solid ${gameColor};
             background: transparent;
-            color: var(--game-text-color, var(--game-primary, var(--neon-c)));
+            color: ${gameColor};
             cursor: pointer;
             box-shadow:
-                0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 30%, transparent),
-                0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 12%, transparent);
+                0 0 8px color-mix(in hsl, ${gameColor} 30%, transparent),
+                0 0 24px color-mix(in hsl, ${gameColor} 12%, transparent);
             transition:
                 box-shadow var(--speed),
                 background var(--speed);
 
             &:hover {
-                background: color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 8%, transparent);
+                background: color-mix(in hsl, ${gameColor} 8%, transparent);
                 box-shadow:
-                    0 0 8px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 53%, transparent),
-                    0 0 24px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 20%, transparent),
-                    0 0 48px color-mix(in hsl, var(--game-text-color, var(--game-primary, var(--neon-c))) 10%, transparent);
+                    0 0 8px color-mix(in hsl, ${gameColor} 53%, transparent),
+                    0 0 24px color-mix(in hsl, ${gameColor} 20%, transparent),
+                    0 0 48px color-mix(in hsl, ${gameColor} 10%, transparent);
             }
 
             &:disabled {

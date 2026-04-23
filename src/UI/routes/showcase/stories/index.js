@@ -1,3 +1,5 @@
+import grid from "./grid.js"
+import container from "./container.js"
 import logo from "./logo.js"
 import button from "./button.js"
 import loader from "./loader.js"
@@ -17,4 +19,4 @@ import items from "./items.js"
 import cameraQR from "./camera-qr.js"
 import wave from "./wave.js"
 
-export default [logo, button, loader, icon, identicon, fiat, svg, modal, select, picker, a, locales, typography, themes, notifications, items, cameraQR, wave]
+export default [logo, button, loader, icon, identicon, fiat, svg, modal, select, picker, a, locales, typography, themes, notifications, items, cameraQR, wave, grid, container]

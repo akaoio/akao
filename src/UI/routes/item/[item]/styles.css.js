@@ -2,9 +2,11 @@ import fieldset from "/UI/css/elements/fieldset.css.js"
 import input from "/UI/css/elements/input.css.js"
 import radioItem from "/UI/css/elements/radio-item.css.js"
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
+import grid from "/UI/css/layout/grid.css.js"
 
 export const styles = css`
+    ${grid}
     ${fieldset}
     ${input}
     ${radioItem}
@@ -12,17 +14,14 @@ export const styles = css`
         --item-rarity-color: var(--color-accent, #888);
 
         #item {
-            display: grid;
-            grid-template-columns: 260px 1fr;
+            --sidebar-width: 260px;
             grid-template-areas:
                 "breadcrumb breadcrumb"
                 "image header"
                 "image main"
                 "footer footer";
-            gap: var(--space-3);
 
-            @media (max-width: ${bp.sm}px) {
-                grid-template-columns: 1fr;
+            @media ${mq.sm} {
                 grid-template-areas:
                     "breadcrumb"
                     "image"

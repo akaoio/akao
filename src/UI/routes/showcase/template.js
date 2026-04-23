@@ -5,7 +5,7 @@ import { html } from "/core/UI.js"
 export const template = html`
     ${styles}
     <layout-main>
-        <div class="showcase">
+        <div class="showcase grid--sidebar">
             <aside id="sidebar"></aside>
             <section id="canvas"></section>
         </div>

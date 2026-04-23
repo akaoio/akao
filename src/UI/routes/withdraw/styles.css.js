@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 import form from "/css/elements/form.css.js"
 import input from "/css/elements/input.css.js"
 
@@ -20,7 +20,7 @@ export const styles = css`
 
         ui-card {
             width: 100%;
-            max-width: 480px;
+            max-width: var(--container-form);
         }
 
         /* Withdraw card grows to fill remaining vertical space */
@@ -43,7 +43,7 @@ export const styles = css`
             }
         }
 
-        @media (max-width: ${bp.sm}px) {
+        @media ${mq.smDown} {
             main {
                 padding: var(--space-sm) 0;
             }

@@ -10,7 +10,7 @@ import styles from "./styles.css.js"
 export const template = html`
     ${styles}
     <layout-main>
-        <form id="item">
+        <form id="item" class="grid--sidebar">
             <nav id="breadcrumb" style="grid-area: breadcrumb;">
                 <a is="ui-a" id="back-link"></a>
                 <span id="breadcrumb-sep"> › </span>

@@ -179,7 +179,7 @@ export const styles = css`
         display: flex;
         justify-content: center;
         position: relative;
-        z-index: 1;
+        z-index: var(--z-base);
         margin: calc(var(--space-sm) * -1) 0;
     }
 

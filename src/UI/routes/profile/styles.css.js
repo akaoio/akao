@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -107,7 +107,7 @@ export const styles = css`
             bottom: 0;
             left: var(--page-pad);
             transform: translateY(50%);
-            z-index: 1;
+            z-index: var(--z-base);
 
             ui-identicon {
                 display: block;
@@ -149,7 +149,7 @@ export const styles = css`
             display: none;
             position: fixed;
             inset: 0;
-            z-index: 1100;
+            z-index: var(--z-picker-backdrop);
             background: color-mix(in hsl, var(--background) 40%, transparent);
             backdrop-filter: blur(var(--blur-md));
             -webkit-backdrop-filter: blur(var(--blur-md));
@@ -167,7 +167,7 @@ export const styles = css`
             left: 0;
             right: 0;
             height: calc(var(--avatar-size) * 2 + var(--space-9) + var(--space-6));
-            z-index: 1200;
+            z-index: var(--z-picker);
             flex-direction: column;
             overflow: hidden;
             border-top: var(--border-width) solid color-mix(in hsl, var(--neon-c) 25%, transparent);
@@ -792,7 +792,7 @@ export const styles = css`
         }
 
         /* ── Responsive — mirrors game-hero breakpoints ── */
-        @media (max-width: ${bp.md}px) {
+        @media ${mq.mdDown} {
             .profile-hero {
                 padding-bottom: calc(var(--space-5) + clamp(4rem, 9vw, 7rem));
             }
@@ -800,7 +800,7 @@ export const styles = css`
             .profile-hero__gradient { --grid-v: 5.5%; }
         }
 
-        @media (max-width: ${bp.sm}px) {
+        @media ${mq.smDown} {
             .profile-hero {
                 padding-bottom: calc(var(--space-4) + clamp(3.5rem, 8vw, 6rem));
             }
@@ -817,7 +817,7 @@ export const styles = css`
             .profile-hero__gradient { --grid-v: 7.5%; }
         }
 
-        @media (max-width: ${bp.xs}px) {
+        @media ${mq.xsDown} {
             .profile-hero {
                 padding-bottom: calc(var(--space-3) + clamp(3rem, 7vw, 4.5rem));
             }

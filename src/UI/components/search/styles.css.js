@@ -13,7 +13,7 @@ export const styles = css`
     .search-input {
         width: 100%;
         background: transparent;
-        border: 1px solid color-mix(in hsl, var(--color) 18%, transparent);
+        border: 1px solid color-mix(in hsl, var(--color) 35%, transparent);
         color: var(--color);
         font-family: var(--header-font);
         font-size: var(--text-sm);

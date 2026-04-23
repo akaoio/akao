@@ -24,8 +24,8 @@ async function loadItemsBatched(ids, gameId, locale) {
 
 const SORT_OPTIONS = [
     { key: "name", label: "Name", asc: "name", desc: "name-desc", indAsc: "↑", indDesc: "↓" },
-    { key: "rarity", label: "Rarity", asc: "rarity-asc", desc: "rarity-desc", indAsc: "↑", indDesc: "↓" },
-    { key: "price", label: "Price", asc: "value-asc", desc: "value-desc", indAsc: "↑", indDesc: "↓" }
+    { key: "price", label: "Price", asc: "value-asc", desc: "value-desc", indAsc: "↑", indDesc: "↓" },
+    { key: "rarity", label: "Rarity", asc: "rarity-asc", desc: "rarity-desc", indAsc: "↑", indDesc: "↓" }
 ]
 
 export class GAME extends HTMLElement {
@@ -60,147 +60,166 @@ export class GAME extends HTMLElement {
     async connectedCallback() {
         this.subs.push(Context.on("locale", this.render))
         await this.render()
+        this._setupStickyPill()
+    }
 
-        // ── Sticky sentinel — detect when .catalog-sticky has stuck ──
+    _setupStickyPill() {
         const sticky = this.shadowRoot.querySelector(".catalog-sticky")
         const sentinel = this.shadowRoot.querySelector(".sticky-sentinel")
         const pill = this.shadowRoot.querySelector("#catalog-pill")
-        if (sticky && sentinel) {
-            const stickyTopPx = parseInt(getComputedStyle(sticky).top) || 0
+        if (!sticky || !sentinel) return
 
-            // Sets the inline pixel width that acts as the "from" value for transitions.
-            // Called after any change that may resize the pill (stuck, filter change).
-            const syncPillWidth = () => {
+        const stickyTopPx = parseInt(getComputedStyle(sticky).top) || 0
+
+        // Sets the inline pixel width that acts as the "from" value for transitions.
+        // Called after any change that may resize the pill (stuck, filter change).
+        const syncPillWidth = () => {
+            if (!pill) return
+            if (window.matchMedia("(min-width: 768px)").matches) return
+            this._pillWidth = pill.getBoundingClientRect().width
+            sticky.style.width = this._pillWidth + "px"
+        }
+
+        // Collapses to pill with an animated transition (used for explicit user actions).
+        // Two-frame technique to get a CSS width transition from full-width → pill-width:
+        //   Frame 1: pin the current px width as inline style (gives transition a "from"),
+        //            remove is-expanded so CSS rules for the collapsed state apply.
+        //   Between frames: browser resolves layout with fit-content on the pill.
+        //   Frame 2: measure the natural pill width and write it as inline style ("to").
+        //            The transition on .catalog-sticky then animates between the two.
+        const animateCollapse = () => {
+            // Frame 1 — lock in current rendered width and drop is-expanded.
+            sticky.style.width = sticky.getBoundingClientRect().width + "px"
+            sticky.classList.remove("is-expanded")
+            // Frame 2 — measure the pill's natural fit-content width and set as target.
+            requestAnimationFrame(() => {
                 if (!pill) return
-                if (window.matchMedia("(min-width: 1024px)").matches) return
                 this._pillWidth = pill.getBoundingClientRect().width
                 sticky.style.width = this._pillWidth + "px"
-            }
-
-            // Collapses to pill with an animated transition (used for explicit user actions).
-            const animateCollapse = () => {
-                // Set the numeric target width + remove .is-expanded in one style flush.
-                // Browser sees: from 100% (CSS .is-stuck.is-expanded) → to _pillWidth px (inline).
-                if (this._pillWidth) sticky.style.width = this._pillWidth + "px"
-                sticky.classList.remove("is-expanded")
-            }
-
-            this._stickyObserver = new IntersectionObserver(
-                ([entry]) => {
-                    if (!entry.isIntersecting) {
-                        // Scroll-triggered stick: instant snap.
-                        // Add class first, then measure synchronously — getBoundingClientRect()
-                        // forces a style recalculation so .is-stuck CSS (including
-                        // width: fit-content on .catalog-pill) is applied before we measure.
-                        sticky.classList.add("is-stuck")
-                        syncPillWidth()
-                    } else {
-                        // Scroll-triggered unstick: instant snap back to full bar.
-                        sticky.style.width = ""
-                        sticky.classList.remove("is-stuck", "is-expanded")
-                    }
-                },
-                { rootMargin: `-${stickyTopPx}px 0px 0px 0px`, threshold: 0 }
-            )
-            this._stickyObserver.observe(sentinel)
-            this.subs.push(() => this._stickyObserver.disconnect())
-
-            // Pill click → expand (animated).
-            // Clear inline px width + add .is-expanded in one flush.
-            // Browser sees: from _pillWidth px (inline) → to 100% (CSS .is-stuck.is-expanded).
-            const expandSticky = () => {
-                sticky.style.width = ""
-                sticky.classList.add("is-expanded")
-            }
-
-            if (pill) {
-                pill.addEventListener("click", expandSticky)
-                this.subs.push(() => pill.removeEventListener("click", expandSticky))
-            }
-
-            // Individual pill segment actions — each stops propagation so the
-            // general pill-expand doesn't also fire, then handles its own action.
-
-            const pillSortEl = this.shadowRoot.querySelector("#pill-sort")
-            if (pillSortEl) {
-                const onPillSort = (e) => {
-                    e.stopPropagation()
-                    const sortCycle = SORT_OPTIONS.flatMap((o) => [o.asc, o.desc])
-                    const current = this.states.get("sort")
-                    const idx = sortCycle.indexOf(current)
-                    const next = sortCycle[(idx + 1) % sortCycle.length]
-                    this.states.set({ sort: next })
-                    this._displayPage = 1
-                    this.applyFilters()
-                }
-                pillSortEl.addEventListener("click", onPillSort)
-                this.subs.push(() => pillSortEl.removeEventListener("click", onPillSort))
-            }
-
-            const pillTypeEl = this.shadowRoot.querySelector("#pill-type")
-            if (pillTypeEl) {
-                const onPillType = (e) => {
-                    e.stopPropagation()
-                    expandSticky()
-                    requestAnimationFrame(() => {
-                        const selectWrap = this.shadowRoot.querySelector("#type-select")?.closest(".filter-select-wrap")
-                        if (selectWrap && getComputedStyle(selectWrap).display !== "none") this.shadowRoot.querySelector("#type-select").focus()
-                        else this.shadowRoot.querySelector("#type-tabs button")?.focus()
-                    })
-                }
-                pillTypeEl.addEventListener("click", onPillType)
-                this.subs.push(() => pillTypeEl.removeEventListener("click", onPillType))
-            }
-
-            const pillRarityDotEl = this.shadowRoot.querySelector("#pill-rarity-dot")
-            if (pillRarityDotEl) {
-                const onPillRarityDot = (e) => {
-                    e.stopPropagation()
-                    expandSticky()
-                    requestAnimationFrame(() => {
-                        const selectWrap = this.shadowRoot.querySelector("#rarity-select")?.closest(".filter-select-wrap")
-                        if (selectWrap && getComputedStyle(selectWrap).display !== "none") this.shadowRoot.querySelector("#rarity-select").focus()
-                        else this.shadowRoot.querySelector(".rarity-pills button")?.focus()
-                    })
-                }
-                pillRarityDotEl.addEventListener("click", onPillRarityDot)
-                this.subs.push(() => pillRarityDotEl.removeEventListener("click", onPillRarityDot))
-            }
-
-            const pillSearchEl = this.shadowRoot.querySelector("#pill-search")
-            if (pillSearchEl) {
-                const onPillSearch = (e) => {
-                    e.stopPropagation()
-                    expandSticky()
-                    requestAnimationFrame(() => this.shadowRoot.querySelector("#search")?.focus())
-                }
-                pillSearchEl.addEventListener("click", onPillSearch)
-                this.subs.push(() => pillSearchEl.removeEventListener("click", onPillSearch))
-            }
-            // ui-search exposes focus() which delegates to its inner input
-
-            // Collapse button → collapse (animated).
-            const collapseBtn = this.shadowRoot.querySelector("#catalog-collapse")
-            if (collapseBtn) {
-                const onCollapse = (e) => {
-                    e.stopPropagation()
-                    animateCollapse()
-                }
-                collapseBtn.addEventListener("click", onCollapse)
-                this.subs.push(() => collapseBtn.removeEventListener("click", onCollapse))
-            }
-
-            // Pointer outside → collapse (animated).
-            this._onPointerDown = (e) => {
-                if (!sticky.classList.contains("is-expanded")) return
-                if (!e.composedPath().includes(sticky)) animateCollapse()
-            }
-            document.addEventListener("pointerdown", this._onPointerDown)
-            this.subs.push(() => document.removeEventListener("pointerdown", this._onPointerDown))
-
-            // Store syncPillWidth so applyFilters can update the width when pill content changes.
-            this._syncPillWidth = syncPillWidth
+            })
         }
+
+        // Expands to full bar with an animated transition.
+        // Browser sees: from _pillWidth px (inline) → to 100% (CSS .is-stuck.is-expanded).
+        const expandSticky = () => {
+            sticky.style.width = ""
+            sticky.classList.add("is-expanded")
+        }
+
+        this._setupStickyObserver(sticky, sentinel, stickyTopPx, syncPillWidth)
+        this._setupPillExpand(pill, expandSticky)
+        this._setupPillSegments(expandSticky)
+        this._setupCollapseControls(sticky, animateCollapse)
+
+        // Store syncPillWidth so applyFilters can update the width when pill content changes.
+        this._syncPillWidth = syncPillWidth
+    }
+
+    _setupStickyObserver(sticky, sentinel, stickyTopPx, syncPillWidth) {
+        this._stickyObserver = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry.isIntersecting) {
+                    // Scroll-triggered stick: instant snap.
+                    // Add class first, then measure synchronously — getBoundingClientRect()
+                    // forces a style recalculation so .is-stuck CSS (including
+                    // width: fit-content on .catalog-pill) is applied before we measure.
+                    sticky.classList.add("is-stuck")
+                    syncPillWidth()
+                } else {
+                    // Scroll-triggered unstick: instant snap back to full bar.
+                    sticky.style.width = ""
+                    sticky.classList.remove("is-stuck", "is-expanded")
+                }
+            },
+            { rootMargin: `-${stickyTopPx}px 0px 0px 0px`, threshold: 0 }
+        )
+        this._stickyObserver.observe(sentinel)
+        this.subs.push(() => this._stickyObserver.disconnect())
+    }
+
+    _setupPillExpand(pill, expandSticky) {
+        if (!pill) return
+        pill.addEventListener("click", expandSticky)
+        this.subs.push(() => pill.removeEventListener("click", expandSticky))
+    }
+
+    // Individual pill segment actions — each stops propagation so the
+    // general pill-expand doesn't also fire, then handles its own action.
+    _setupPillSegments(expandSticky) {
+        const pillSortEl = this.shadowRoot.querySelector("#pill-sort")
+        if (pillSortEl) {
+            const onPillSort = (e) => {
+                e.stopPropagation()
+                const sortCycle = SORT_OPTIONS.flatMap((o) => [o.asc, o.desc])
+                const current = this.states.get("sort")
+                const idx = sortCycle.indexOf(current)
+                const next = sortCycle[(idx + 1) % sortCycle.length]
+                this.states.set({ sort: next })
+                this._displayPage = 1
+                this.applyFilters()
+            }
+            pillSortEl.addEventListener("click", onPillSort)
+            this.subs.push(() => pillSortEl.removeEventListener("click", onPillSort))
+        }
+
+        const pillTypeEl = this.shadowRoot.querySelector("#pill-type")
+        if (pillTypeEl) {
+            const onPillType = (e) => {
+                e.stopPropagation()
+                expandSticky()
+                requestAnimationFrame(() => this.shadowRoot.querySelector("#type-filter")?.shadowRoot?.querySelector("#select")?.focus())
+            }
+            pillTypeEl.addEventListener("click", onPillType)
+            this.subs.push(() => pillTypeEl.removeEventListener("click", onPillType))
+        }
+
+        const pillRarityDotEl = this.shadowRoot.querySelector("#pill-rarity-dot")
+        if (pillRarityDotEl) {
+            const onPillRarityDot = (e) => {
+                e.stopPropagation()
+                expandSticky()
+                requestAnimationFrame(() => this.shadowRoot.querySelector("#rarity-filter")?.shadowRoot?.querySelector("#select")?.focus())
+            }
+            pillRarityDotEl.addEventListener("click", onPillRarityDot)
+            pillRarityDotEl.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    onPillRarityDot(e)
+                }
+            })
+            this.subs.push(() => pillRarityDotEl.removeEventListener("click", onPillRarityDot))
+        }
+
+        const pillSearchEl = this.shadowRoot.querySelector("#pill-search")
+        if (pillSearchEl) {
+            const onPillSearch = (e) => {
+                e.stopPropagation()
+                expandSticky()
+                requestAnimationFrame(() => this.shadowRoot.querySelector("#search")?.focus())
+            }
+            pillSearchEl.addEventListener("click", onPillSearch)
+            this.subs.push(() => pillSearchEl.removeEventListener("click", onPillSearch))
+        }
+    }
+
+    _setupCollapseControls(sticky, animateCollapse) {
+        const collapseBtn = this.shadowRoot.querySelector("#catalog-collapse")
+        if (collapseBtn) {
+            const onCollapse = (e) => {
+                e.stopPropagation()
+                animateCollapse()
+            }
+            collapseBtn.addEventListener("click", onCollapse)
+            this.subs.push(() => collapseBtn.removeEventListener("click", onCollapse))
+        }
+
+        // Pointer outside → collapse (animated).
+        this._onPointerDown = (e) => {
+            if (!sticky.classList.contains("is-expanded")) return
+            if (!e.composedPath().includes(sticky)) animateCollapse()
+        }
+        document.addEventListener("pointerdown", this._onPointerDown)
+        this.subs.push(() => document.removeEventListener("pointerdown", this._onPointerDown))
     }
 
     disconnectedCallback() {
@@ -268,14 +287,10 @@ export class GAME extends HTMLElement {
         const pillSort = this.shadowRoot.querySelector("#pill-sort")
         const pillSearch = this.shadowRoot.querySelector("#pill-search")
 
-        if (pillType)
-            if (activeType) {
-                pillType.textContent = activeType
-                pillType.classList.add("active")
-            } else {
-                pillType.textContent = "All"
-                pillType.classList.remove("active")
-            }
+        if (pillType) {
+            pillType.textContent = activeType || "All"
+            pillType.classList.add("active")
+        }
 
         if (pillRarityDot)
             if (activeRarity) {
@@ -311,6 +326,17 @@ export class GAME extends HTMLElement {
         })
         grid.replaceChildren(...elements)
 
+        // Empty state — only show when background loading is done and nothing matched
+        const emptyEl = this.shadowRoot.querySelector("#items-empty")
+        if (emptyEl) {
+            const isEmpty = !this._readyPromise && filtered.length === 0
+            emptyEl.hidden = !isEmpty
+            if (isEmpty) {
+                const dict = Context.get("dictionary") || {}
+                emptyEl.textContent = dict.noItemsFound || "No items found"
+            }
+        }
+
         // Load More — client-side only, advances the display window over in-memory data
         const loadMoreBtn = this.shadowRoot.querySelector("#load-more")
         if (loadMoreBtn) {
@@ -334,6 +360,7 @@ export class GAME extends HTMLElement {
             btn.classList.toggle("active", isAsc || isDesc)
             const dirEl = btn.querySelector(".sort-dir")
             if (dirEl) dirEl.textContent = isAsc ? btn.dataset.indAsc : isDesc ? btn.dataset.indDesc : ""
+            if (btn.dataset.sortKey === "rarity") btn.disabled = !!activeRarity
         })
     }
 
@@ -440,7 +467,7 @@ export class GAME extends HTMLElement {
 
         // Build type filter
         const typeFilter = this.shadowRoot.querySelector("#type-filter")
-        typeFilter.allLabel = "All Types"
+        typeFilter.allLabel = dict.all || "All"
         typeFilter.options = types.map((t) => ({ label: t, value: t }))
         typeFilter.value = this.states.get("activeType")
         typeFilter.addEventListener("filter", (e) => {
@@ -450,14 +477,21 @@ export class GAME extends HTMLElement {
 
         // Build rarity filter
         const rarityFilter = this.shadowRoot.querySelector("#rarity-filter")
-        rarityFilter.allLabel = "All Rarities"
+        rarityFilter.allLabel = dict.all || "All"
+        rarityFilter.maxVisible = rarities.length
         rarityFilter.options = rarities.map((r) => {
             const key = r.toLowerCase().replace(/\s+/g, "-")
             return { label: r, value: r, color: `var(--rarity-${key}, var(--color-accent))` }
         })
         rarityFilter.value = this.states.get("activeRarity")
         rarityFilter.addEventListener("filter", (e) => {
-            this.states.set({ activeRarity: e.detail.value })
+            const updates = { activeRarity: e.detail.value }
+            if (e.detail.value) {
+                const sort = this.states.get("sort")
+                const rarityOpt = SORT_OPTIONS.find((o) => o.key === "rarity")
+                if (sort === rarityOpt.asc || sort === rarityOpt.desc) updates.sort = "name"
+            }
+            this.states.set(updates)
             this._handleFilterChange()
         })
 
@@ -502,20 +536,30 @@ export class GAME extends HTMLElement {
             })
             return btn
         })
-        sortBar.replaceChildren(...sortButtons)
+        const sortLabel = document.createElement("span")
+        sortLabel.className = "sort-bar__label"
+        sortLabel.textContent = "SORT BY "
+        sortBar.replaceChildren(sortLabel, ...sortButtons)
 
         // Lock every sort button to the same width so switching active option
         // never shifts the search input. Measure at the widest possible indicator
         // text ("A→Z"), then restore empty dir slots and pin min-width.
-        const allDirs = [...sortBar.querySelectorAll(".sort-dir")]
+        // Measure the widest button label, then add the arrow glyph + gap on top.
+        // We can't rely on toggling .active + offsetWidth because the nested CSS selector
+        // (.sort-bar button.active .sort-dir) may not reflow in time. Instead:
+        //   1. Force all dirs to display:inline-block via inline style so they're measurable.
+        //   2. Set arrow text and read the widest button.
+        //   3. Restore dirs and pin min-width on all buttons.
+        const buttons = [...sortBar.querySelectorAll("button")]
+        const allDirs = buttons.map((b) => b.querySelector(".sort-dir"))
         allDirs.forEach((d) => {
-            d.textContent = "↑"
+            if (d) { d.style.display = "inline-block"; d.textContent = "↑" }
         })
-        const maxBtnW = Math.max(...[...sortBar.children].map((b) => b.offsetWidth))
+        const maxBtnW = Math.max(...buttons.map((b) => b.offsetWidth))
         allDirs.forEach((d) => {
-            d.textContent = ""
+            if (d) { d.style.display = ""; d.textContent = "" }
         })
-        sortBar.querySelectorAll("button").forEach((b) => {
+        buttons.forEach((b) => {
             b.style.minWidth = `${maxBtnW}px`
         })
 
@@ -528,7 +572,6 @@ export class GAME extends HTMLElement {
 
         this.applyFilters()
     }
-
 }
 
 customElements.define("route-game", GAME)

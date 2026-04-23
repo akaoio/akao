@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -54,7 +54,7 @@ export const styles = css`
         letter-spacing: 0.08em;
         text-transform: uppercase;
         padding: var(--space-1) var(--space-3);
-        border: 1px solid var(--border);
+        border: none;
         background: transparent;
         color: var(--color);
         cursor: pointer;
@@ -64,13 +64,11 @@ export const styles = css`
             background var(--speed),
             box-shadow var(--speed);
 
-        &:hover {
-            border-color: var(--filter-accent, var(--accent-info));
-            color: var(--filter-accent, var(--accent-info));
+        &:hover:not([data-color-key]) {
+            color: var(--accent-info);
         }
 
         &.active {
-            border-color: var(--filter-accent, var(--accent-info));
             color: var(--filter-accent, var(--accent-info));
             background: color-mix(in hsl, var(--filter-accent, var(--accent-info)) 6%, transparent);
             box-shadow: 0 0 12px color-mix(in hsl, var(--filter-accent, var(--accent-info)) 25%, transparent);
@@ -79,11 +77,8 @@ export const styles = css`
 
     /* Pill shape variant — applied when host has data-pill attribute */
     :host([data-pill]) .filter-tabs button {
-        border-radius: 999px;
-        padding: var(--space-1) var(--space-2);
-
         /* color swatch dot */
-        &[data-color-key]::before {
+        &[data-color-key]::after {
             content: "";
             display: inline-block;
             flex-shrink: 0;
@@ -92,18 +87,29 @@ export const styles = css`
             border-radius: 50%;
             background: var(--filter-item-color, var(--color));
             opacity: 0.7;
-            margin-right: 0.3em;
+            margin-left: 0.3em;
             vertical-align: middle;
             transition: opacity var(--speed);
         }
 
-        &:hover[data-color-key]::before,
-        &.active[data-color-key]::before {
+        &:hover[data-color-key] {
+            border-color: var(--filter-item-color, var(--accent-info));
+            color: var(--filter-item-color, var(--accent-info));
+        }
+
+        &:hover[data-color-key]::after,
+        &.active[data-color-key]::after {
             opacity: 1;
         }
 
         &.active {
             box-shadow: 0 0 16px color-mix(in hsl, var(--filter-item-color, var(--filter-accent, var(--accent-info))) 40%, transparent);
+        }
+
+        &.active[data-color-key] {
+            border-color: var(--filter-item-color, var(--accent-info));
+            color: var(--filter-item-color, var(--accent-info));
+            background: color-mix(in hsl, var(--filter-item-color, var(--accent-info)) 10%, transparent);
         }
     }
 
@@ -203,7 +209,7 @@ export const styles = css`
         }
     }
 
-    @media (max-width: ${bp.sm}px) {
+    @media ${mq.mdDown} {
         .filter-tabs {
             display: none;
         }

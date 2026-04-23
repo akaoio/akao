@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp } from "/UI/css/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 
 export const styles = css`
     :host {
@@ -37,7 +37,7 @@ export const styles = css`
             display: none;
         }
 
-        @media (min-width: ${bp.sm + 1}px) {
+        @media ${mq.smUp} {
             scrollbar-width: thin;
             scrollbar-color: color-mix(in hsl, var(--color) 25%, transparent) transparent;
             padding-bottom: var(--space-3);

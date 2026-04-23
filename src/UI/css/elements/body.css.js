@@ -25,7 +25,7 @@ export const styles = css`
             rgba(0, 0, 0, 0.07) 4px
         );
         pointer-events: none;
-        z-index: 9999;
+        z-index: var(--z-devtools);
     }
 `
 

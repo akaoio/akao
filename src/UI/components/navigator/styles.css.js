@@ -16,7 +16,7 @@ export const styles = css`
         width: var(--size);
         aspect-ratio: 1 / 1;
         border-radius: 50%;
-        z-index: 1000;
+        z-index: var(--z-dropdown);
 
         nav {
             display: flex;
