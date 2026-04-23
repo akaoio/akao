@@ -1,5 +1,5 @@
 import { css } from "/core/UI.js"
-import { bp, mq } from "/UI/css/layout/breakpoints.js"
+import { mq } from "/UI/css/layout/breakpoints.js"
 
 /**
  * Shared grid patterns. Import and apply the class to any container.

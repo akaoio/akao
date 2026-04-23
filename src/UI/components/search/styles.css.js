@@ -10,6 +10,33 @@ export const styles = css`
         position: relative;
     }
 
+    .search-count {
+        position: absolute;
+        right: var(--space-3);
+        top: 50%;
+        transform: translateY(-50%);
+        font-family: var(--header-font);
+        font-size: var(--text-xs);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--search-count-color, var(--neon-c));
+        text-shadow: var(--search-count-glow, var(--glow-c));
+        pointer-events: none;
+        white-space: nowrap;
+
+        &::after {
+            content: " " var(--search-count-label, "ITEMS");
+            color: var(--color);
+            text-shadow: none;
+            opacity: 0.35;
+            font-size: var(--text-2xs);
+        }
+
+        &:empty {
+            display: none;
+        }
+    }
+
     .search-input {
         width: 100%;
         background: transparent;
@@ -19,6 +46,7 @@ export const styles = css`
         font-size: var(--text-sm);
         letter-spacing: 0.06em;
         padding: var(--space-2) var(--space-3);
+        padding-right: var(--search-count-offset, var(--space-3));
         outline: none;
         transition:
             border-color var(--speed),

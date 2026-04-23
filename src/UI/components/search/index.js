@@ -31,7 +31,7 @@ export class SEARCH extends Component {
     }
 
     static get observedAttributes() {
-        return ["placeholder", "value", "min-chars"]
+        return ["placeholder", "value", "min-chars", "count"]
     }
 
     attributeChangedCallback(name, _, next) {
@@ -42,6 +42,10 @@ export class SEARCH extends Component {
         if (name === "value") {
             const input = this.shadowRoot?.querySelector(".search-input")
             if (input && input.value !== next) input.value = next || ""
+        }
+        if (name === "count") {
+            const span = this.shadowRoot?.querySelector(".search-count")
+            if (span) span.textContent = next ?? ""
         }
     }
 
@@ -57,13 +61,16 @@ export class SEARCH extends Component {
     onconnect() {
         this.$input = this.shadowRoot.querySelector(".search-input")
         this.$list = this.shadowRoot.querySelector(".search-suggestions")
+        this.$count = this.shadowRoot.querySelector(".search-count")
 
-        // Reflect placeholder attribute set before connect
         const ph = this.getAttribute("placeholder")
         if (ph) this.$input.placeholder = ph
 
         const val = this.getAttribute("value")
         if (val) this.$input.value = val
+
+        const count = this.getAttribute("count")
+        if (count) this.$count.textContent = count
 
         this.$input.addEventListener("input", this._onInput.bind(this))
         this.$input.addEventListener("focus", this._onFocus.bind(this))

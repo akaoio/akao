@@ -24,7 +24,7 @@ export const styles = css`
             margin-top: calc(-1 * var(--space-4));
             /* Inner content alignment: mirrors layout-main's centering formula */
             padding-top: calc(var(--space-4) + var(--hero-pad-top));
-            padding-bottom: var(--space-6);
+            padding-bottom: var(--space-3);
             padding-inline: max(var(--space-2), calc((100vw - var(--max-width, 80rem)) / 2));
             display: flex;
             flex-direction: column;
@@ -73,7 +73,7 @@ export const styles = css`
                 font-size: var(--text-md);
                 color: var(--color);
                 opacity: 0.6;
-                max-width: 56rem;
+                max-width: 42rem;
                 line-height: 1.6;
             }
 
@@ -95,6 +95,7 @@ export const styles = css`
         /* ── Sticky sentinel ── */
         .sticky-sentinel {
             height: 1px;
+            margin-top: calc(-1 * var(--space-6));
             margin-bottom: -1px;
             pointer-events: none;
         }
@@ -132,7 +133,6 @@ export const styles = css`
             display: flex;
             flex-direction: column;
             gap: 0;
-            padding-block: var(--space-3);
             border: 1px solid transparent;
         }
 
@@ -151,13 +151,12 @@ export const styles = css`
             }
         }
 
-        #toolbar {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            grid-template-areas: "count search sort";
+        .catalog-toolbar {
+            display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: var(--space-3);
-            padding: var(--space-3) var(--space-4) var(--space-4);
+            padding: var(--space-3);
             margin: 0;
             background: color-mix(in hsl, var(--color) 3%, transparent);
             transition:
@@ -170,19 +169,16 @@ export const styles = css`
                 animation: toolbar-pulse var(--speed-2) ease forwards;
             }
 
-            .catalog-count {
-                grid-area: count;
-                line-height: normal;
-            }
             ui-search {
-                grid-area: search;
+                flex: 1;
                 min-width: 0;
             }
             .sort-bar {
-                grid-area: sort;
+                flex-shrink: 0;
             }
             .catalog-collapse-btn {
-                grid-area: collapse;
+                flex-shrink: 0;
+                margin-left: auto;
             }
         }
 
@@ -196,14 +192,6 @@ export const styles = css`
             padding-left: var(--space-1);
             color: var(--color);
             opacity: 0.4;
-        }
-
-        .catalog-count {
-            flex-shrink: 0;
-            align-self: center;
-            ${labelFont}
-            letter-spacing: 0.08em;
-            white-space: nowrap;
         }
 
         /* ── Search wrap + autocomplete ── */
@@ -321,25 +309,29 @@ export const styles = css`
 
         .sort-bar {
             display: flex;
+            align-items: center;
             justify-content: flex-end;
             flex-wrap: wrap;
-            gap: var(--space-1);
+            gap: var(--space-3);
         }
 
         .sort-bar__label {
-            padding-inline: var(--space-1) var(--space-2);
             color: var(--color);
             opacity: 0.4;
             font-family: var(--header-font);
-            font-size: var(--text-xs);
+            font-size: var(--text-2xs);
             text-transform: uppercase;
             letter-spacing: 0.08em;
             white-space: nowrap;
             align-self: center;
             line-height: normal;
 
-            @media ${mq.xsDown} {
+            @media (max-width: 429.98px) {
                 display: none;
+            }
+
+            @media ${mq.mdDown} {
+                padding-left: 0;
             }
         }
 
@@ -406,7 +398,7 @@ export const styles = css`
 
         .catalog-grid {
             --grid-cols: 3;
-            padding: var(--space-4) 0 var(--space-3);
+            padding: var(--space-3) 0 var(--space-3);
         }
 
         ui-loader {
@@ -421,22 +413,15 @@ export const styles = css`
 
         /* mdDown: tablet and below (<768px) */
         @media ${mq.mdDown} {
-            .game-hero {
-                padding-bottom: var(--space-5);
-            }
         }
 
         /* smDown: small phones and below (<576px) */
         @media ${mq.smDown} {
-            .game-hero {
-                padding-bottom: var(--space-4);
-            }
         }
 
         /* xsDown: extra small phones (<480px) */
         @media ${mq.xsDown} {
             .game-hero {
-                padding-bottom: var(--space-3);
                 gap: var(--space-1);
 
                 h1 {
@@ -453,15 +438,21 @@ export const styles = css`
             }
         }
 
-        /* mdDown: toolbar switches to 2-row grid — search full-width on row 1 */
+        /* mdDown: search full-width on row 1, sort + collapse share row 2 */
         @media ${mq.mdDown} {
-            #toolbar {
-                grid-template-columns: auto 1fr;
-                grid-template-rows: auto auto;
-                grid-template-areas:
-                    "search  search"
-                    "count   sort";
+            .catalog-toolbar {
                 padding: var(--space-3);
+
+                ui-search {
+                    flex-basis: 100%;
+                }
+                .sort-bar {
+                    flex: 1;
+                    justify-content: flex-start;
+                }
+                .catalog-collapse-btn {
+                    margin-left: 0;
+                }
             }
         }
 
@@ -474,7 +465,7 @@ export const styles = css`
                 border-radius: 0 0 8px 0;
                 cursor: pointer;
                 .marketplace-nav,
-                #toolbar {
+                .catalog-toolbar {
                     display: none;
                 }
 
@@ -502,17 +493,7 @@ export const styles = css`
                     display: none;
                 }
 
-                #toolbar {
-                    grid-template-columns: auto 1fr auto auto;
-                    grid-template-areas: "count search sort collapse";
-
-                    @media ${mq.mdDown} {
-                        grid-template-columns: auto 1fr auto;
-                        grid-template-areas:
-                            "search  search   search"
-                            "count   sort     collapse";
-                    }
-                }
+                /* collapse button becomes visible — no layout change needed */
 
                 .catalog-collapse-btn {
                     display: flex;
@@ -676,6 +657,10 @@ export const styles = css`
             align-items: center;
             justify-content: center;
             min-height: 160px;
+
+            &[hidden] {
+                display: none;
+            }
             font-family: var(--header-font);
             font-size: var(--text-sm);
             letter-spacing: 0.08em;
@@ -688,10 +673,10 @@ export const styles = css`
         .load-more-wrap {
             display: flex;
             justify-content: center;
-            padding: var(--space-4) 0 var(--space-6);
         }
 
         .load-more-btn {
+            margin: var(--space-3) 0 var(--space-6);
             ${labelFont}
             letter-spacing: 0.12em;
             padding: var(--space-2) var(--space-6);
