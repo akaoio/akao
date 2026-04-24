@@ -36,11 +36,12 @@ export const styles = css`
         /* Typography — fluid via clamp(min, viewport, max).
            Max values match the previous fixed sizes (0.125rem × multiplier).
            Min values keep text legible on small phones. */
-        --text-xs: clamp(0.65rem, 1.5vw, 0.75rem);
-        --text-sm: clamp(0.75rem, 1.8vw, 0.875rem);
-        --text-md: clamp(0.875rem, 2vw, 1rem);
-        --text-lg: clamp(1rem, 2.5vw, 1.25rem);
-        --text-xl: clamp(1.25rem, 3vw, 1.5rem);
+        --text-2xs: clamp(0.65rem, 1vw, 0.7rem); /* Status labels/tooltips */
+        --text-xs: clamp(0.75rem, 1.2vw, 0.8rem); /* Secondary info */
+        --text-sm: clamp(0.8rem, 1.5vw, 0.9rem); /* Metadata */
+        --text-md: clamp(0.9rem, 2vw, 1rem); /* Base Body Text */
+        --text-lg: clamp(1.05rem, 2.5vw, 1.25rem); /* Item Names */
+        --text-xl: clamp(1.35rem, 3.5vw, 1.75rem); /* Titles */
         --text: var(--text-md);
 
         /* Animation */

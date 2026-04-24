@@ -94,7 +94,7 @@ export class FILTER_GROUP extends Component {
         const overflowCount = Math.max(0, this._options.length - maxV)
         if (overflowCount > 0) {
             const toggle = document.createElement("button")
-            toggle.className = "filter-tabs__toggle"
+            toggle.className = "filter-tabs__toggle btn-load-more"
             toggle.textContent = `+${overflowCount} more`
             toggle.addEventListener("click", () => {
                 const expanded = this.$tabs.classList.toggle("expanded")

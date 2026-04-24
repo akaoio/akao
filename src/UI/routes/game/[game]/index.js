@@ -277,8 +277,8 @@ export class GAME extends HTMLElement {
 
         // Count — when browsing without a filter, show the catalog total immediately
         // so the number doesn't flicker as background pages load in
-        const countEl = this.shadowRoot.querySelector("#count-num")
-        if (countEl) countEl.textContent = countValue
+        const searchEl = this.shadowRoot.querySelector("#search")
+        if (searchEl) searchEl.setAttribute("count", countValue)
 
         // ── Sync collapsed pill ──
         const pillType = this.shadowRoot.querySelector("#pill-type")

@@ -10,7 +10,7 @@ export const styles = css`
         display: flex;
         align-items: flex-start;
         gap: var(--space-3);
-        padding: var(--space-2) var(--space-3);
+        padding: var(--space-3);
     }
 
     :host([bordered]) .filter-group {
@@ -20,9 +20,9 @@ export const styles = css`
     .filter-group__label {
         flex-shrink: 0;
         width: 3.5rem;
-        padding-top: calc(var(--space-1) + 1px);
+        align-self: center;
         font-family: var(--header-font);
-        font-size: var(--text-xs);
+        font-size: var(--text-2xs);
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--color);
@@ -36,9 +36,11 @@ export const styles = css`
 
     /* ── Tabs (default pill/button style, desktop) ── */
     .filter-tabs {
+        position: relative;
         display: flex;
         flex-wrap: wrap;
         gap: var(--space-1);
+        padding-right: var(--filter-toggle-width, 6rem);
 
         /* hide overflow buttons when not expanded */
         &:not(.expanded) [data-overflow] {
@@ -82,13 +84,12 @@ export const styles = css`
             content: "";
             display: inline-block;
             flex-shrink: 0;
-            width: 0.5em;
-            height: 0.5em;
+            width: 0.7em;
+            height: 0.7em;
             border-radius: 50%;
             background: var(--filter-item-color, var(--color));
             opacity: 0.7;
             margin-left: 0.3em;
-            vertical-align: middle;
             transition: opacity var(--speed);
         }
 
@@ -113,9 +114,12 @@ export const styles = css`
         }
     }
 
-    /* Toggle "show more / less" button */
+    /* Toggle "show more / less" button — always pinned to top-right of the tabs row */
     .filter-tabs__toggle {
-        margin-left: auto;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 0;
         flex-shrink: 0;
         font-family: var(--header-font);
         font-size: var(--text-xs);
@@ -134,7 +138,9 @@ export const styles = css`
         transition:
             opacity var(--speed),
             text-decoration-color var(--speed);
-
+        &.btn-load-more {
+            padding-right: 0;
+        }
         &:hover {
             opacity: 1;
             text-decoration-color: var(--accent-action);

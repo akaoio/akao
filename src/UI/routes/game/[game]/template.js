@@ -36,6 +36,7 @@ export const template = html`
                     <ui-svg data-src="/images/icons/search.svg"></ui-svg>
                 </span>
             </div>
+
             <nav class="marketplace-nav">
                 <ui-filter-group id="type-filter">
                     <span slot="label">Type</span>
@@ -46,10 +47,6 @@ export const template = html`
             </nav>
 
             <div class="catalog-toolbar" id="toolbar">
-                <span class="catalog-count" id="count">
-                    <span class="count__num" id="count-num"></span>
-                    <span class="count__label">Items</span>
-                </span>
                 <ui-search id="search" placeholder="Search items…"></ui-search>
                 <div class="sort-bar" id="sort"></div>
                 <button class="catalog-collapse-btn" id="catalog-collapse" aria-label="Collapse filters">

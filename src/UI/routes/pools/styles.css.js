@@ -196,7 +196,7 @@ export const styles = css`
         .filter-group__label {
             flex-shrink: 0;
             font-family: var(--header-font);
-            font-size: var(--text-xs);
+            font-size: var(--text-2xs);
             letter-spacing: 0.12em;
             text-transform: uppercase;
             opacity: 0.35;
