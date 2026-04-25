@@ -8,7 +8,7 @@ export const styles = css`
         z-index: var(--z-devtools);
     }
 
-    button {
+    a {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -24,9 +24,10 @@ export const styles = css`
         box-shadow: 0 2px 12px rgba(124,58,237,0.45);
         opacity: 0.85;
         transition: opacity 0.15s, transform 0.15s;
+        text-decoration: none;
     }
 
-    button:hover {
+    a:hover {
         opacity: 1;
         transform: scale(1.05);
     }

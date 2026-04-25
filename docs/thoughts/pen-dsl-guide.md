@@ -191,7 +191,7 @@ Policy bytes được append VÀO SAU cây expression khi compile. WASM VM **kh�
 | `0xC0` | `sign` | Yêu cầu valid authenticator hoặc valid signature trong val |
 | `0xC1 [len] [bytes]` | `cert` | Yêu cầu val chứa cert JSON được ký bởi cert issuer pub |
 | `0xC3` | `open` | Không cần auth, forward trực tiếp |
-| `0xC4 [field] [diff]` | `pow` | SHA-256 hex của R[field] phải bắt đầu bằng `diff` ký tự '0' |
+| `0xC4 [field] [diff]` | `pow` | Đọc nonce từ R[field] (wire field `msg.put["^"]`), reconstruct `proof = R[0] + ":" + R[field]`, SHA-256(proof) phải bắt đầu bằng `diff` ký tự '0'. Luôn dùng `field: 7` (R[7] = nonce). |
 
 ### Constraints & Limits
 
@@ -461,7 +461,7 @@ gun.get(soul).get(`${candle}_${orderId}`).put(data, null, { authenticator: myPai
 
 ```javascript
 // Soul cho order window của item "organic-green-tea", side "buy", candle 5777152
-// Key format: <timestamp>:<pub>:<nonce>
+// Key format: <candle>:<base>:<side>:<maker_pub>  (nonce travels in msg.put["^"], NOT in key)
 const soul = SEA.pen({
   key: { and: [
     {
@@ -476,13 +476,20 @@ const soul = SEA.pen({
     },
     { eq: [
       { seg: { sep: ':', idx: 1, of: { reg: 0 } } },
+      'organic-green-tea'
+    ]},
+    { eq: [
+      { seg: { sep: ':', idx: 2, of: { reg: 0 } } },
+      'buy'
+    ]},
+    { eq: [
+      { seg: { sep: ':', idx: 3, of: { reg: 0 } } },
       { reg: 5 }
     ]},
-    { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } },
   ]},
   val: { type: 'string' },
   sign: true,
-  pow: { field: 0, difficulty: 3 },
+  pow: { field: 7, difficulty: 3 },  // field:7 = R[7] = nonce from msg.put["^"]
   params: { baseId: 'organic-green-tea', side: 'buy', candle: 5777152 }
 })
 ```
@@ -521,14 +528,12 @@ function createOrderSoul(baseId, side, candle) {
           ]}
         }
       },
-      { eq: [
-        { seg: { sep: ':', idx: 1, of: { reg: 0 } } },
-        { reg: 5 }
-      ]},
-      { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } },
+      { eq: [{ seg: { sep: ':', idx: 1, of: { reg: 0 } } }, baseId] },
+      { eq: [{ seg: { sep: ':', idx: 2, of: { reg: 0 } } }, side] },
+      { eq: [{ seg: { sep: ':', idx: 3, of: { reg: 0 } } }, { reg: 5 }] },
     ]},
     sign: true,
-    pow: { field: 0, difficulty: 3 },
+    pow: { field: 7, difficulty: 3 },  // R[7] = nonce from msg.put["^"]
     params: { baseId, side, candle }
   })
 }
@@ -545,10 +550,13 @@ import { Access } from "/core/Access.js"
 async function createorder({ baseId, side, baseQuantity, quoteQuantity }) {
   const candle = Math.floor(Date.now() / 300000)
   const soul = createOrderSoul(baseId, side, candle)
-  const nonce = String.random(6)             // gun/src/shim.js
 
-  // Key format trong soul window: <timestamp>:<pub>:<nonce>
-  const key = `${Date.now()}:${Access.states.pub}:${nonce}`
+  // Key format: <candle>:<base>:<side>:<pub>  — clean, no nonce in key
+  const key = `${candle}:${baseId}:${side}:${Access.states.pub}`
+
+  // Mine nonce bound to key: hash(key + ":" + nonce) must start with "000"
+  const { nonce } = await ZEN.hash(key, null, null,
+    { name: 'SHA-256', encode: 'hex', pow: { difficulty: 3 } })
 
   gun.get(soul).get(key).put({
     // No xpub field: pub/epub are sufficient in the ZEN model.
@@ -564,7 +572,7 @@ async function createorder({ baseId, side, baseQuantity, quoteQuantity }) {
   }, ack => {
     if (ack.err) console.error('Order rejected:', ack.err)
     else console.log('Order created:', key)
-  }, { authenticator: Access.states.pair })
+  }, { authenticator: Access.states.pair, pow: nonce })
 }
 ```
 
@@ -588,16 +596,18 @@ async function subscribeorders(baseId, callback) {
 
 ```
 soul params: { baseId, side, candle }
-key:         <timestamp>:<pub>:<nonce>
+key:         <candle>:<base>:<side>:<pub>
 
 Ví dụ:
 - params: { baseId: "organic-green-tea", side: "buy", candle: 5777152 }
-- key:    1744440123456:maker_full_pub:a3f7b2
+- key:    5777152:organic-green-tea:buy:maker_full_pub
 
 └─ params: baseId + side + candle        — compile-time soul identity
-   seg 0: 1744440123456                  — timestamp ms, floor(/300000) must equal candle
-   seg 1: maker_full_pub                 — full writer pub, matched against R[5]
-   seg 2: a3f7b2                         — nonce random, iterated cho PoW
+   seg 0: 5777152                        — candle number, floor(Date.now()/300000)
+   seg 1: organic-green-tea              — base asset id
+   seg 2: buy                            — side
+   seg 3: maker_full_pub                 — full writer pub, matched against R[5]
+   nonce: travels in msg.put["^"]       — mined as hash(key+":"+nonce), NOT in key
 ```
 
 **Vì sao timestamp ở đầu**:
@@ -649,7 +659,7 @@ pen.ready.then(() => {
 |-------|-------------|
 | `PEN: predicate failed` | Key/val không match expression trong soul |
 | `PEN: valid signature required` | sign policy nhưng không có authenticator và không có `val['*']` |
-| `PEN: PoW insufficient` | SHA-256(R[field]) không bắt đầu đủ '0' |
+| `PEN: PoW insufficient` | SHA-256(R[0] + ":" + R[7]) không bắt đầu đủ '0' — nonce trong msg.put["^"] không hợp lệ |
 | `PEN: cert required` | cert policy nhưng val không có `{ '+', '*' }` |
 
 ---

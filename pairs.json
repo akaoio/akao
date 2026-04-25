@@ -1,14 +1,16 @@
 {
     "system": {
-        "pub": "ArSykNJvsUG9FwqCdDv23vtjhXPFGwr0U-crM1tnaAI.C7YfgkDoUK3kz_GMycx78KyYwu7RANKkrhCfMsDehYI",
-        "priv": "6KK-cSgEWAntQmbmhGkCfg8-YjU5TDE7QrYA3SWlE14",
-        "epub": "nK2HMGNDBq3GMEM_moQG256TLzvVklHHrSrdsVCQCuQ.49mYdUw1AvBdBf_61iFTmVev6_yvRpENIJUe3PWCbSg",
-        "epriv": "JVOD5ofHiHQSSMt-YljiHwFZBOS4jiripY6_JT6JqeU"
+        "curve": "secp256k1",
+        "priv": "0irpJEtIdpGgRhkpqslYzEVjp4J80uQ69duaktcTKYsc",
+        "pub": "03Bi0mvVr0UX0ng6v0sSQEOJEA8H2zcQ5mVUWagW8IYL0",
+        "epriv": "0DQlix14QvyDp0oNcmC4FqwWwN7YLSeon6LbGIu1YBtW",
+        "epub": "0bgQpEtBdvw0BGrJTo6qz2OpXPiEcAS5Yv3loZsRktur1"
     },
     "market": {
-        "pub": "ArSykNJvsUG9FwqCdDv23vtjhXPFGwr0U-crM1tnaAI.C7YfgkDoUK3kz_GMycx78KyYwu7RANKkrhCfMsDehYI",
-        "priv": "6KK-cSgEWAntQmbmhGkCfg8-YjU5TDE7QrYA3SWlE14",
-        "epub": "nK2HMGNDBq3GMEM_moQG256TLzvVklHHrSrdsVCQCuQ.49mYdUw1AvBdBf_61iFTmVev6_yvRpENIJUe3PWCbSg",
-        "epriv": "JVOD5ofHiHQSSMt-YljiHwFZBOS4jiripY6_JT6JqeU"
+        "curve": "secp256k1",
+        "priv": "0irpJEtIdpGgRhkpqslYzEVjp4J80uQ69duaktcTKYsc",
+        "pub": "03Bi0mvVr0UX0ng6v0sSQEOJEA8H2zcQ5mVUWagW8IYL0",
+        "epriv": "0DQlix14QvyDp0oNcmC4FqwWwN7YLSeon6LbGIu1YBtW",
+        "epub": "0bgQpEtBdvw0BGrJTo6qz2OpXPiEcAS5Yv3loZsRktur1"
     }
 }

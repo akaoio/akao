@@ -1,47 +1,44 @@
-import { now } from "/core/Utils.js"
+﻿import { now } from "/core/Utils.js"
 import ZEN from "/core/ZEN.js"
 
-// Construct and return order
+// Construct and return order soul
 // The soul must be globally computable by everyone so that orders are discoverable.
 // It must not be unique for each order, but rather represent a "group" of orders that can be easily found and filtered by others.
-export function soul({ base, quote, side, candle } = {}) {
-    // The expected soul format:
-    // ZEN.pen() hex of: base asset (game item id), quote asset (currency id), order side,  candle number
+export function soul({ candle, side, base, quote } = {}) {
+    candle = candle || now(300000) // default to current 5-minute candle
+    side = side || this?.side
     base = base?.id || this?.base?.id
     quote = quote?.id || this?.quote?.id
-    candle = candle || now() // default to current time candle
-    side = side || this?.side
-    if (!base || !quote || !side) throw new Error("invalidInput")
-    const key = { reg: 0 }
+    if (!side || !base || !quote) throw new Error("invalidInput")
     const sep = ":"
-    const timestamp = { tonum: { seg: { sep, idx: 0, of: key } } }
-    const $base = { seg: { sep, idx: 1, of: key } }
-    const $side = { seg: { sep, idx: 2, of: key } }
-    const writer = { seg: { sep, idx: 3, of: key } }
+    // key format: timestamp:pub/epub:side:type/game_or_chain/id/qty  (see Order/id.js)
+    // seg 0: raw Date.now() timestamp — divide by 300000 to get 5-min candle number
+    const timestamp = { tonum: { seg: { sep, idx: 0 } } }
+    const key_candle = { divu: [timestamp, 300000] }
+    // seg 1: pub/epub, extract pub (idx 0 split by "/")
+    const maker_pub = { seg: { sep: "/", of: { seg: { sep, idx: 1 } }, idx: 0 } }
+    // seg 2: side
+    const $side = { seg: { sep, idx: 2 } }
+    // seg 3: type/game_or_chain/id/qty, extract id (idx 2 split by "/")
+    const $base = { seg: { sep: "/", of: { seg: { sep, idx: 3 } }, idx: 2 } }
+    // val format: type/category/id:quantity[:affiliate]
+    // seg 0 (split by ":") = type/category/id, then split by "/" idx 2 = id
+    const $quote = { seg: { sep: "/", of: { seg: { sep, of: { reg: 1 }, idx: 0 } }, idx: 2 } }
     return ZEN.pen({
         key: {
             and: [
-                {
-                    let: {
-                        bind: 0,
-                        def: { divu: [timestamp, 300000] },
-                        body: {
-                            and: [
-                                { gte: [{ reg: 128 }, candle] },
-                                { lte: [{ reg: 128 }, candle] }
-                            ]
-                        }
-                    }
-                },
-                { eq: [$base, base] },
+                { eq: [key_candle, candle] },
+                { eq: [maker_pub, { reg: 5 }] },
                 { eq: [$side, side] },
-                { eq: [writer, { reg: 5 }] },
-                // segment 4 must exists and be between 1 and 8 characters (inclusive) to prevent collisions and ensure discoverability.
-                { seg: { sep, idx: 4, of: key, match: { length: [1, 8] } } }
+                { eq: [$base, base] }
             ]
         },
-        val:  { type: "string" },
+        val: {
+            and: [
+                { eq: [$quote, quote] }
+            ]
+        },
         sign: true,
-        pow:  { field: 0, difficulty: 3 }
+        pow: this.pow
     })
 }

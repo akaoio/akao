@@ -10,13 +10,12 @@ Test.describe("Platform — dev fallback identity", () => {
         )
     })
 
-    Test.it("devplatform() is deterministic for pub, epub, and xpub", async () => {
+    Test.it("devplatform() is deterministic for pub, epub", async () => {
         const a = await devplatform()
         const b = await devplatform()
 
         Test.assert.equal(a.pub, b.pub)
         Test.assert.equal(a.epub, b.epub)
-        Test.assert.equal(a.xpub, b.xpub)
     })
 
     Test.it("patchsiteplatform() fills missing platform fields in dev mode", async () => {
@@ -27,7 +26,6 @@ Test.describe("Platform — dev fallback identity", () => {
 
         Test.assert.equal(patched.pub, expected.pub)
         Test.assert.equal(patched.epub, expected.epub)
-        Test.assert.equal(patched.xpub, expected.xpub)
         Test.assert.equal(site.platform.pub, expected.pub)
     })
 
@@ -35,8 +33,7 @@ Test.describe("Platform — dev fallback identity", () => {
         const site = {
             platform: {
                 pub: "custom-pub",
-                epub: "custom-epub",
-                xpub: "custom-xpub"
+                epub: "custom-epub"
             }
         }
 
@@ -44,7 +41,6 @@ Test.describe("Platform — dev fallback identity", () => {
 
         Test.assert.equal(patched.pub, "custom-pub")
         Test.assert.equal(patched.epub, "custom-epub")
-        Test.assert.equal(patched.xpub, "custom-xpub")
     })
 
     Test.it("siteplatform() skips dev fallback in browser contexts without WebCrypto", async () => {

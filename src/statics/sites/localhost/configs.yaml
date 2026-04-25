@@ -7,7 +7,7 @@ env: development
 locale: en
 fiat: USD
 chains: [ 1, 56, 97, 11155111 ]
-peers: [ "http://localhost:8420/zen", "https://gun.defucc.me/gun", "https://relay.peer.ooo/gun" ]
+peers: [ "http://localhost:8420/zen", "https://shogun-relay.scobrudot.dev/zen", "https://sudorecords.scobrudot.dev/zen" ]
 market:
-  pub: ArSykNJvsUG9FwqCdDv23vtjhXPFGwr0U-crM1tnaAI.C7YfgkDoUK3kz_GMycx78KyYwu7RANKkrhCfMsDehYI
-  epub: nK2HMGNDBq3GMEM_moQG256TLzvVklHHrSrdsVCQCuQ.49mYdUw1AvBdBf_61iFTmVev6_yvRpENIJUe3PWCbSg
+  pub: 03Bi0mvVr0UX0ng6v0sSQEOJEA8H2zcQ5mVUWagW8IYL0
+  epub: 0bgQpEtBdvw0BGrJTo6qz2OpXPiEcAS5Yv3loZsRktur1

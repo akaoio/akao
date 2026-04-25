@@ -171,8 +171,9 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
         quantity: 100,
         contract: "USDT",
         chain: 1
-    },
-    status: "open"
+    }
+    // No status field — status is derived from observable facts
+    // No orderWallet field — FP address is computed by anyone from maker.epub + orderId
 }
 ```
 
@@ -194,24 +195,34 @@ From `Utils/crypto.js`, returns 64-char hex (32 bytes).
         quantity: 95,
         contract: "USDT",
         chain: 1
-    },
-    status: "open"
+    }
+    // No status field — status is derived from observable facts
 }
 ```
 
 ### 3.2 Trade Execution Flow
 
+Trade state is never stored — it is always **derived** from verifiable facts in ZEN and on-chain:
+
+| Derived State | Condition |
+|---|---|
+| **order:open** | Order node exists in ZEN soul AND (buy: `FP balance ≥ required` \| sell: always) |
+| **order:expired** | Candle elapsed OR (buy: FP balance < required) |
+| **trade:matched** | Trade node exists with both `maker` and `taker` keys |
+| **trade:deposited** | `TL.address` on-chain balance ≥ paymentAmount |
+| **trade:delivered** | `zen.get("~" + seller.pub).get("trades").get(tradeId).get("delivered")` is truthy |
+| **trade:completed** | `zen.get("~" + buyer.pub).get("trades").get(tradeId).get("unlock_seed_TL")` exists |
+
 ```
 1. Maker creates order → writes to the Pen soul compiled for the exact `(baseId, side, candle)` market window (no deposit)
 2. Taker discovers order → compiles the current and previous `(baseId, side, candle)` souls, then scans both
-3. Taker accepts order → trade status: "open" → "matched" (both parties known)
+3. Taker accepts order → trade node created with { orderId, maker, taker } → derived state: matched
 4. Payer deposits to platform (Maker for buy, Taker for sell):
    - Computes TL/CL from recipient's public pair (`pub/epub`) + payer's unlock seed
-   - Deposits within 10-min timeout or trade auto-cancels
-5. In-game item delivery (trade/mail/drop)
-6. Buyer confirms → reveals unlock seed to seller/affiliate
+   - Deposits within 10-min timeout or trade auto-cancels → derived state: deposited
+5. In-game item delivery (trade/mail/drop) → seller writes delivered marker → derived state: delivered
+6. Buyer confirms → reveals unlock seed to seller/affiliate → derived state: completed
 7. Recipients withdraw using own root pair + revealed unlock seed
-8. Trade status: "matched" → "deposited" → "delivered" → "completed"
 ```
 
 ### 3.3 Key Derivation Strategy
@@ -406,7 +417,7 @@ BOTH ORDER TYPES FOLLOW SAME FLOW (symmetric):
    ```
    `pub` is the maker's full public key, not a truncated shard
 5. Order includes metadata: `{ orderId, maker, side, base, quote, affiliate }`
-6. Order status: `"open"` (no funds locked yet, waiting for Taker)
+   (no status field — open state is derived from the node's existence + FP balance for buy orders)
 
 **No pre-deposit** for either order type → pure P2P (Platform not involved)
 
@@ -441,25 +452,31 @@ await M.wallet.sendTransaction({
 ```
 
 **Order creation flow (buy orders)**:
-1. Maker computes `orderWallet.address` from own root pair + `unlockSeed_FP`
-2. Maker deposits full amount to `orderWallet.address`
-3. Maker posts order to ZEN with `orderWallet: orderWallet.address`
-4. Taker verifies on-chain balance before accepting: `chain.getBalance(orderWallet.address) >= requiredAmount`
+1. Maker computes FP address from own root pair + `unlockSeed_FP`
+2. Maker deposits full amount to FP address
+3. Maker posts order to ZEN with `{ orderId, maker, side, base, quote, affiliate }` — no address stored
+4. Taker derives FP address independently from `maker.epub + orderId`, then verifies on-chain balance:
+   ```javascript
+   const unlockSeed_FP = sha256("FP:" + order.orderId)
+   const FP = await zen.pair(null, { pub: makerPublic.pub, epub: makerPublic.epub, seed: unlockSeed_FP })
+   const balance = await chain.getBalance(FP.address)
+   if (balance < requiredAmount) { UI.error("Maker has insufficient funds"); return }
+   ```
 
 **After matching** (Taker accepts):
-- Maker transfers from `orderWallet` → Transaction Lock (TL) + Commission Lock (CL)
+- Maker re-derives FP wallet (full pair) and transfers FP → Transaction Lock (TL) + Commission Lock (CL)
 - ⚠️ **Not atomic**: these are sequential EVM transactions (TL tx, CL tx, platform fee tx). If any fails mid-way, trade is in partial state. Implementation must check each receipt and handle partial completion.
 - Gas cost: up to 3 transactions (TL + CL + platform fee)
 
 **Benefits**:
-- ✅ Taker can verify funds exist on-chain before accepting
-- ✅ Trustless proof (on-chain balance query)
-- ✅ Maker retains full control of funds in order wallet (can cancel order and withdraw anytime)
+- ✅ Taker can verify funds exist on-chain before accepting (derives FP address independently — no trust required)
+- ✅ Trustless proof (deterministic derivation + on-chain balance query)
+- ✅ Maker retains full control of funds in FP wallet (can cancel order and withdraw anytime)
 - ✅ No Platform involvement until trade is matched
 
 **Cancellation**:
-- Maker withdraws from `orderWallet` back to main wallet using own private key
-- Order auto-expires when balance drops below required amount
+- Maker withdraws from FP wallet back to main wallet using own private key
+- Order auto-expires when FP balance drops below required amount
 
 **Sell orders**: No order wallet needed (seller proves ownership by delivering item, not by depositing funds upfront)
 
@@ -478,9 +495,11 @@ await M.wallet.sendTransaction({
     zen.get(previous).map()
     ```
 3. T sees M's order
-    - **For buy orders**: T verifies on-chain balance of `orderWallet.address` before accepting
+    - **For buy orders**: T derives FP address from `maker.epub + orderId` and verifies on-chain balance:
       ```javascript
-      const balance = await chain.getBalance(order.orderWallet)
+      const unlockSeed_FP = sha256("FP:" + order.orderId)
+      const FP = await zen.pair(null, { pub: makerPublic.pub, epub: makerPublic.epub, seed: unlockSeed_FP })
+      const balance = await chain.getBalance(FP.address)
      if (balance < requiredAmount) {
          UI.error("Maker has insufficient funds")
          return
@@ -494,7 +513,8 @@ await M.wallet.sendTransaction({
    // "TR:" domain separator prevents hash space collision with orderId ("OR:")
    tradeId = sha256("TR:" + orderId + ":" + M.pub + ":" + T.pub)
    ```
-6. Trade status → `"matched"` (both parties known, waiting for deposit)
+6. Trade node written to ZEN: `{ orderId, maker: { pub, epub }, taker: { pub, epub } }` → derived state: **matched**
+   (no status field — matched state is derived from the presence of both `maker` and `taker` in the trade node)
 
 ### Step 3 — Payer Deposits to Platform
 
@@ -535,22 +555,23 @@ const CL = referrer ?
     null
 
 // Payer deposits to platform locks
-// For buy orders: Transfer from orderWallet → TL/CL (sequential, NOT atomic — check each tx receipt)
+// For buy orders: Transfer from FP wallet → TL/CL (sequential, NOT atomic — check each tx receipt)
 // For sell orders: Direct deposit from Taker's wallet → TL/CL
 
 if (orderType === 'buy') {
-    // Maker transfers from order wallet to platform locks
-    const orderWallet = await zen.pair(null, {
+    // Maker re-derives FP wallet (full pair — Maker has own root)
+    const unlockSeed_FP = sha256("FP:" + orderId)
+    const FP = await zen.pair(null, {
         priv: M.root.priv,
         epriv: M.root.epriv,
         seed: unlockSeed_FP
-    })  // Maker has full pair
+    })  // Maker has full pair — can spend
     
-    await orderWallet.sendTransaction({ to: TL.address, value: paymentAmount })
+    await FP.sendTransaction({ to: TL.address, value: paymentAmount })
     if (CL) {
-        await orderWallet.sendTransaction({ to: CL.address, value: commissionAmount })
+        await FP.sendTransaction({ to: CL.address, value: commissionAmount })
     }
-    await orderWallet.sendTransaction({ 
+    await FP.sendTransaction({ 
         to: Platform.operationalWallet, 
         value: platformFee 
     })
@@ -567,9 +588,9 @@ if (orderType === 'buy') {
 }
 ```
 
-**Deposit timeout**: If payer doesn't deposit within 10 minutes → trade auto-cancels → order returns to "open"
+**Deposit timeout**: If payer doesn't deposit within 10 minutes → trade auto-cancels → order becomes matchable again
 
-**After confirmations**: Trade status → `"deposited"` (funds locked)
+**After confirmations**: `TL.address` on-chain balance ≥ paymentAmount → derived state: **deposited**
 
 ### Step 4 — Item Delivery
 
@@ -578,7 +599,11 @@ if (orderType === 'buy') {
 - In-game mail system
 - Drop/pickup coordination
 
-**Seller marks:** "Delivered" in UI → updates ZEN trade record → status: `"delivered"`
+**Seller marks:** "Delivered" in UI → writes `delivered: true` to own ZEN namespace:
+```javascript
+zen.get("~" + seller.pub).get("trades").get(tradeId).put({ delivered: true }, null, { authenticator: seller.pair })
+// zen.get("~" + seller.pub).get("trades").get(tradeId).get("delivered") is truthy → derived state: delivered
+```
 
 ### Step 5 — Buyer Confirms Receipt and Unlocks Payment
 
@@ -593,12 +618,12 @@ const unlockSeed_TL = sha256(secret_buyer + ":TL:" + tradeId)
 const unlockSeed_CL = sha256(secret_buyer + ":CL:" + tradeId)
 
 // Buyer writes to OWN signed ZEN user namespace
-// Seller subscribes to zen.user(buyer.pub).get("trades").get(tradeId)
-zen.user().get("trades").get(tradeId).put({
+// Seller subscribes to zen.get("~" + buyer.pub).get("trades").get(tradeId)
+zen.get("~" + buyer.pub).get("trades").get(tradeId).put({
     unlock_seed_TL: unlockSeed_TL,
     unlock_seed_CL: unlockSeed_CL,
     confirmed: true
-})
+}, null, { authenticator: buyer.pair })
 
 // Seller receives unlock seed and unlocks using OWN root
 const secret_seller = await zen.secret(P.epub, seller.pair)
@@ -632,7 +657,7 @@ if (affiliate) {
 }
 ```
 
-Trade status → `"completed"`
+`zen.get("~" + buyer.pub).get("trades").get(tradeId).get("unlock_seed_TL")` exists → derived state: **completed**
 
 **OR via Platform auto-release:**
 - If buyer doesn't confirm within 24h → P computes unlock seeds and releases to seller + affiliate
@@ -706,7 +731,7 @@ const CL = await zen.pair(null, {
 
 2. **Automatic timeout** (optional - Platform worker)
    - Platform's `update.js` thread polls trades
-   - If trade >24h in "deposited" state with no delivery confirmation
+   - If trade TL balance ≥ required AND seller delivered marker absent >24h
    - Platform auto-refunds to payer
 
 3. **Dispute resolution**
@@ -755,37 +780,43 @@ const orderSoul = ZEN.pen({
             { seg: { sep: ":", idx: 1, of: { reg: 0 } } },
             { reg: 5 }
         ]},
-        // seg 2: nonce — iterated by client for PoW
-        { seg: { sep: ":", idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } }
+        // key: no nonce segment — nonce travels in msg.put["^"] (R[7])
+        { eq: [
+            { seg: { sep: ":", idx: 3, of: { reg: 0 } } },
+            { reg: 5 }
+        ]},
     ]},
     val: { type: "string" },  // JSON order metadata (orderId, maker, side, base, quote, affiliate, etc.)
     sign: true,
-    pow: { field: 0, difficulty: 3 },  // Anti-spam PoW — client iterates nonce at seg 2
+    pow: { field: 7, difficulty: 3 },  // Anti-spam PoW — nonce from msg.put["^"]
     params: { baseId, side, candle }
 })
 ```
 
 **Important partitioning rule**:
 - **Soul identity carries market window**: `params = { baseId, side, candle }`
-- **Key carries order instance identity**: `<timestamp>:<pub>:<nonce>`
+- **Key carries order instance identity**: `<candle>:<base>:<side>:<pub>` — no nonce in key
+- **Nonce** travels in `msg.put["^"]` (R[7]), bound to key via `hash(key+":"+nonce)`
 - **Read path starts from the right soul**, not from a global order bucket
 
 ### 6.2 Key Format
 
 ```text
 soul params: { baseId: <base_item_id>, side: <side>, candle: <candle> }
-key:         <timestamp_ms>:<pub>:<nonce>
+key:         <candle>:<base>:<side>:<pub>
 
 Example params: { baseId: "penitent-greaves", side: "buy", candle: 5820000 }
-Example key:    1744440123456:maker_full_pub:x8k2m1
+Example key:    5820000:penitent-greaves:buy:maker_full_pub
 ```
 
 | Segment | Content | Validated by |
 |---|---|---|
 | soul | `params = { baseId, side, candle }` | Compile-time soul identity via `ZEN.pen({ params })` |
-| seg 0 | `timestamp_ms = Date.now()` | `floor(timestamp_ms / 300000) === candle` |
-| seg 1 | `pub = M.pub` | Dynamic equality with writer register `R[5]` |
-| seg 2 | `nonce` — client iterates until PoW passes | PoW `difficulty: 3` |
+| seg 0 | `candle = floor(Date.now()/300000)` | `candle === expected candle` |
+| seg 1 | `baseId` | Static equality in soul predicate |
+| seg 2 | `side` | Static equality in soul predicate |
+| seg 3 | `pub = M.pub` | Dynamic equality with writer register `R[5]` |
+| `msg.put["^"]` | `nonce` — mined as `hash(key+":"+nonce)` starts with "000" | PoW `difficulty: 3` via R[7] |
 
 **orderId** is stored in the value (not the key), enabling:
 - Stable identity independent of timestamp/nonce
@@ -799,8 +830,10 @@ const candle = Math.floor(Date.now() / 300000)  // 5-minute candles
 // Full key construction inside soul({ baseId, side, candle }):
 const timestamp = Date.now()
 const pub = pair.pub
-const nonce = await computePowNonce(`${timestamp}:${pub}`, 3)
-const key = `${timestamp}:${pub}:${nonce}`
+const key = `${candle}:${baseId}:${side}:${pair.pub}`
+const { nonce } = await ZEN.hash(key, null, null,
+  { name: 'SHA-256', encode: 'hex', pow: { difficulty: 3 } })
+// nonce passes to pen via opt.pow — written as msg.put["^"] on the wire
 ```
 
 **Benefits:**
@@ -819,8 +852,8 @@ Trade records contain sensitive data (`unlock_seed_TL`, `unlock_seed_CL`). No sh
 **Two write targets per trade:**
 
 ```javascript
-zen.user(M.pub).get("trades").get(tradeId)   // Maker writes here — authenticated namespace rejects other writers
-zen.user(T.pub).get("trades").get(tradeId)   // Taker writes here — authenticated namespace rejects other writers
+zen.get("~" + M.pub).get("trades").get(tradeId)   // Maker writes here — authenticated namespace rejects other writers
+zen.get("~" + T.pub).get("trades").get(tradeId)   // Taker writes here — authenticated namespace rejects other writers
 ```
 
 ZEN signatures enforce write restriction — **no Pen needed**.
@@ -843,8 +876,8 @@ ZEN signatures enforce write restriction — **no Pen needed**.
 **Read pattern — both parties subscribe to both namespaces:**
 
 ```javascript
-zen.user(M.pub).get("trades").get(tradeId).on(makerData => merge(makerData))
-zen.user(T.pub).get("trades").get(tradeId).on(takerData => merge(takerData))
+zen.get("~" + M.pub).get("trades").get(tradeId).on(makerData => merge(makerData))
+zen.get("~" + T.pub).get("trades").get(tradeId).on(takerData => merge(takerData))
 ```
 
 **`Trade.js` soul mapping:**
@@ -854,11 +887,11 @@ trade.id()     →  tradeId                               // content hash — us
 trade.soul()   →  { maker: M.pub, taker: T.pub }        // keys to compose ZEN paths
 
 // Write to own namespace (caller authenticated as writer)
-zen.user().get("trades").get(tradeId).put(fields)
+zen.get("~" + own.pub).get("trades").get(tradeId).put(fields, null, { authenticator: own.pair })
 
 // Read from both namespaces
-zen.user(M.pub).get("trades").get(tradeId)              // Maker's side
-zen.user(T.pub).get("trades").get(tradeId)              // Taker's side
+zen.get("~" + M.pub).get("trades").get(tradeId)              // Maker's side
+zen.get("~" + T.pub).get("trades").get(tradeId)              // Taker's side
 ```
 
 **Platform access**: Platform can read both namespaces (they're public signed ZEN user data). Platform writes to trade records via the trade participant's shared secret — Platform knows all parties' epub keys and can compute all secrets.
@@ -948,7 +981,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 | Public-pair tampering in ZEN profile | Medium | `pub/epub` must come from the signed user identity/profile. Platform must validate the resolved public pair matches the intended recipient before allowing deposit phase. |
 | Crafted/wrong public pair by recipient | **High** | Recipient could present `pub/epub` that do not correspond to the spending pair expected by the protocol → funds permanently locked in TL. Platform and clients must verify the resolved public pair belongs to the intended identity before deposit. |
 | Order ID collision | Very low | `sha256(orderId ":" M.pub ":" T.pub ":" timestamp)` |
-| Order overwrite attack | High | Pen `sign:true` allows any authenticated user to overwrite order keys at PoW cost ~256 attempts. Mitigate: embed maker pub prefix in key and validate `EQ(SEGR(0,':',4), R[5])` in Pen — or move orders to `zen.user()` namespace. |
+| Order overwrite attack | High | Pen `sign:true` allows any authenticated user to overwrite order keys at PoW cost ~256 attempts. Mitigate: embed maker pub prefix in key and validate `EQ(SEGR(0,':',4), R[5])` in Pen — or move orders to `zen.get("~" + pub)` namespace. |
 | FP race condition | High | Maker can drain FP wallet between Taker accepting and payer depositing to TL/CL. Design limitation of non-smart-contract platform. Taker should re-verify FP balance at matching time, not just at discovery time. |
 | Partial FP→TL/CL transfer | High | Sequential EVM transactions mean TL could be funded but CL fails. Trade contract must check all receipts; implementation needs a recovery path (refund from partial TL if CL fails). |
 | Commission fate with no affiliate | Medium | When referrer is null, `commissionAmount` is unaccounted for in current protocol. Must define: goes to platform fee, added to payment, or simply not charged. |
@@ -958,7 +991,7 @@ Even if same affiliate refers multiple trades, each trade gets unique CL wallet 
 | Platform unavailable (refunds blocked) | Medium | Multi-sig Platform keys, backup arbitrators, or smart contract fallback (future) |
 | In-game item delivery fraud | Medium | Dispute resolution by P with proof requirements |
 | Candle drift (client time skew) | Low | Accept ±2 candles forward, ±100 backward |
-| Trade record soul | ✅ Resolved | Dual user-namespace model (Section 6.3). Each party writes to `zen.user(own.pub).get("trades").get(tradeId)`. ZEN signatures enforce authorship. No Pen needed. |
+| Trade record soul | ✅ Resolved | Dual user-namespace model (Section 6.3). Each party writes to `zen.get("~" + own.pub).get("trades").get(tradeId)`. ZEN signatures enforce authorship. No Pen needed. |
 | Order soul overwrite | ✅ Resolved in direction | Full writer pub now lives in key seg 1, and soul identity is parameterized by `{ baseId, side, candle }` via `ZEN.pen({ params })` (Section 6.1). |
 
 ---

@@ -143,11 +143,18 @@ var regs = [ctx.key, ctx.val, soul, ctx.state,
 ```javascript
 // Mỗi write phải:
 // 1. Ký (signature)
-// 2. Mine nonce để hash có prefix "000..." (PoW difficulty)
+// 2. Mine nonce sao cho hash(key + ":" + nonce) có prefix "000..." (PoW difficulty)
 // 3. Candle number trong window
 
-// Độ dài prefix được quy định trong soul/key
-const difficulty = 3  // Cần 3 chữ số 0 → ~8 hash attempts
+// Nonce KHÔNG nằm trong key — nó đi theo msg.put["^"] (R[7] trong pen)
+// Key sạch: ${candle}:${base}:${side}:${pub}
+const difficulty = 3  // Cần 3 chữ số 0 → ~16³ ≈ 4096 hash attempts
+
+const key = `${candle}:${baseId}:${side}:${pair.pub}`
+const { nonce } = await ZEN.hash(key, null, null,
+  { name: 'SHA-256', encode: 'hex', pow: { difficulty } })
+// Ghi với nonce qua opt.pow — pen bridge tự gán vào msg.put["^"]
+zen.get(soul).get(key).put(data, cb, { authenticator: pair, pow: nonce })
 ```
 
 **Cơ chế reject**:

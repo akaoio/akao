@@ -1,53 +1,42 @@
 import { Chains, Wallets, Dexs, Statics } from "./Stores.js"
 import { Context, getTheme, getFiat, getReferrer } from "./Context.js"
 import { BROWSER } from "./Utils.js"
-import { NODE } from "./Utils/environment.js"
 import Router from "./Router.js"
 import DB from "./DB.js"
 import { patchsiteplatform } from "./Platform.js"
-
-function isLoopbackHost(hostname = "") {
-    return hostname === "localhost"
-        || hostname === "127.0.0.1"
-        || hostname === "::1"
-        || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)
-}
-
-function domainCandidates(hostname = "") {
-    const value = String(hostname || "").toLowerCase().trim()
-    if (!value || isLoopbackHost(value)) return ["localhost"]
-
-    const labels = value.split(".").filter(Boolean)
-    if (labels.length < 2) return [value]
-
-    const candidates = []
-    for (let i = 0; i <= labels.length - 2; i++) {
-        const candidate = labels.slice(i).join(".")
-        if (!candidates.includes(candidate)) candidates.push(candidate)
-    }
-    return candidates
-}
 
 export const Construct = {
     Site: async function () {
         const hostname = BROWSER ? globalThis.location?.hostname : "localhost"
         let domain = null
 
-        for (const candidate of domainCandidates(hostname)) {
-            const next = await DB.get(["statics", "domains", `${candidate}.json`])
-            if (!next?.site) continue
-            Statics.domain = candidate
-            domain = next
-            break
+        const value = String(hostname || "").toLowerCase().trim()
+        const islocal = !value || hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1" || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)
+
+        const domains = await DB.get(["statics", "domains.json"])
+
+        if (!islocal) {
+            const labels = value.split(".").filter(Boolean)
+            for (let i = 0; i <= labels.length - 2; i++) {
+                const candidate = labels.slice(i).join(".")
+                const site = domains?.[candidate]
+                if (!site) continue
+                Statics.domain = candidate
+                domain = { site }
+                break
+            }
         }
 
         if (!domain?.site) {
             Statics.domain = "localhost"
-            domain = await DB.get(["statics", "domains", "localhost.json"])
+            domain = { site: domains?.["localhost"] }
         }
 
         Statics.site = domain?.site ? await DB.get(["statics", "sites", domain.site, "configs.json"]) : null
         if (Statics.site) await patchsiteplatform(Statics.site)
+
+        Statics.system = await DB.get(["statics", "system.json"])
+
         console.log("Constructed: Site")
         return !!Statics.site
     },

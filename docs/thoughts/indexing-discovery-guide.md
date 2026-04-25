@@ -268,12 +268,13 @@ const results = await DB.query(`
 
 **Partition rule**:
 - **Soul** identifies the market window via `params = { baseId, side, candle }`
-- **Key** identifies the write inside that soul: `<timestamp>:<pub>:<nonce>`
+- **Key** identifies the write inside that soul: `<candle>:<base>:<side>:<pub>`
+- **Nonce** travels separately in `msg.put["^"]` (R[7]) — bound to the key via `hash(key+":"+nonce)`
 
 **Examples**:
 ```
-SEA.pen({ params: { baseId: 'penitent-greaves', side: 'buy', candle: 5820000 } })  →  1744440123456:maker_full_pub:x8k2m1
-SEA.pen({ params: { baseId: 'penitent-greaves', side: 'sell', candle: 5820001 } }) →  1744440423456:maker_full_pub:p9q3r7
+SEA.pen({ params: { baseId: 'penitent-greaves', side: 'buy', candle: 5820000 } })  →  5820000:penitent-greaves:buy:maker_full_pub
+SEA.pen({ params: { baseId: 'penitent-greaves', side: 'sell', candle: 5820001 } }) →  5820001:penitent-greaves:sell:maker_full_pub
 ```
 
 **Candle Calculation**:
@@ -314,12 +315,11 @@ export function createOrderSoul({ baseId, side, candle }) {
                 { seg: { sep: ':', idx: 1, of: { reg: 0 } } },
                 { reg: 5 }
             ]},
-            { seg: { sep: ':', idx: 2, of: { reg: 0 }, match: { length: [1, 64] } } }
         ]},
         val: { type: 'string' },  // JSON-encoded order metadata
         sign: true,               // Require cryptographic signature
         pow: {                    // Proof-of-work anti-spam
-            field: 0,             // Apply PoW to key (not value)
+            field: 7,             // R[7] = nonce from msg.put["^"]
             difficulty: 3
         },
         params: { baseId, side, candle }
@@ -337,12 +337,13 @@ import { Access } from "/core/Access.js"
 export async function createOrder({ baseId, side, baseQuantity, quoteQuantity, contract, chain }) {
     const candle = Math.floor(Date.now() / 300000)
     const soul = createOrderSoul({ baseId, side, candle })
-    
-    // Generate random nonce (for PoW mining)
-    let nonce = Math.random().toString(36).slice(2, 8)
-    
-    // Key format inside soul({ baseId, side, candle }): <timestamp>:<pub>:<nonce>
-    const key = `${Date.now()}:${Access.states.pub}:${nonce}`
+
+    // Key format: <candle>:<base>:<side>:<pub>  — nonce travels in msg.put["^"], not in key
+    const key = `${candle}:${baseId}:${side}:${Access.states.pub}`
+
+    // Mine nonce bound to key: hash(key + ":" + nonce) must start with "000"
+    const { nonce } = await ZEN.hash(key, null, null,
+        { name: 'SHA-256', encode: 'hex', pow: { difficulty: 3 } })
     
     // Order metadata (stored as value, not in key)
     const orderData = JSON.stringify({
@@ -364,7 +365,7 @@ export async function createOrder({ baseId, side, baseQuantity, quoteQuantity, c
         gun.get(soul).get(key).put(orderData, ack => {
             if (ack.err) reject(new Error(ack.err))
             else resolve({ key, orderId: JSON.parse(orderData).orderId })
-        }, { authenticator: Access.states.pair })
+        }, { authenticator: Access.states.pair, pow: nonce })
     })
 }
 ```

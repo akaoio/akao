@@ -1,3 +1,7 @@
 # System-wide configuration settings
 # Number of items per page in paginated lists
 pagination: 10
+candle: 300000
+pow:
+  field: 7
+  difficulty: 3

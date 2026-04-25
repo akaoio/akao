@@ -1,6 +1,4 @@
 import { BROWSER, DEV } from "./Utils/environment.js"
-import { sha256 } from "./Utils/crypto.js"
-import { HDNodeWallet, getBytes } from "./Ethers.js"
 import zen, { initZEN } from "./ZEN.js"
 
 export const DEV_PLATFORM_SEED = "seed"
@@ -12,14 +10,12 @@ export function canDeriveDevPlatform({ browser = BROWSER, scope = globalThis } =
 export async function devplatform({ seed = DEV_PLATFORM_SEED, runtime = null } = {}) {
     const z = runtime?.pair ? runtime : (await initZEN(), zen)
     const pair = await z.pair(null, { seed })
-    const root = HDNodeWallet.fromSeed(getBytes("0x" + sha256(seed)))
 
     return {
         seed,
         pair,
         pub: pair.pub,
-        epub: pair.epub,
-        xpub: root.neuter().extendedKey
+        epub: pair.epub
     }
 }
 
@@ -27,7 +23,7 @@ export async function siteplatform(site, { dev = DEV, seed = DEV_PLATFORM_SEED, 
     if (!site || typeof site !== "object") throw new Error("siteRequired")
 
     const platform = { ...(site.platform || {}) }
-    if (platform.pub && platform.epub && platform.xpub) return platform
+    if (platform.pub && platform.epub) return platform
     if (!dev) return platform
     if (!canDeriveDevPlatform({ browser, scope })) {
         console.warn("Skipping dev platform fallback: WebCrypto is unavailable in this context")
@@ -40,8 +36,7 @@ export async function siteplatform(site, { dev = DEV, seed = DEV_PLATFORM_SEED, 
         ...platform,
         pair: platform.pair || fallback.pair,
         pub: platform.pub || fallback.pub,
-        epub: platform.epub || fallback.epub,
-        xpub: platform.xpub || fallback.xpub
+        epub: platform.epub || fallback.epub
     }
 }
 

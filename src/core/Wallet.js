@@ -48,14 +48,6 @@ export default class Wallet {
     get address() {
         return this.public
     }
-    
-    get xpub() {
-        if (!this.seed) return
-        const { HDNodeWallet, getBytes } = this.chain.connector
-        if (!HDNodeWallet) return
-        const root = HDNodeWallet.fromSeed(getBytes("0x" + this.seed))
-        return root.neuter().extendedKey
-    }
 
     async balance({ currency }) {
         return await this.chain.balance({ address: this.address, currency })
