@@ -45,34 +45,25 @@ async function alive(url) {
     }
 }
 
-async function main() {
-    await run("node", ["build.js", "crypto"])
-    await run("node", ["build.js", "core"])
+async function runBrowser(browserType, name) {
+    const browser = await browserType.launch({ headless: true })
+    const page = await browser.newPage()
+    const pageErrors = []
 
-    let server = null
-    if (!await alive(URL))
-        server = spawn("node", ["dev.js"], {
-            stdio: "inherit",
-            shell: false
-        })
+    page.on("pageerror", (error) => {
+        pageErrors.push(error?.stack || error?.message || String(error))
+    })
 
     try {
-        await wait(URL)
-
-        const { chromium } = await import("playwright")
-        const browser = await chromium.launch({ headless: true })
-        const page = await browser.newPage()
-        const pageErrors = []
-
-        page.on("pageerror", (error) => {
-            pageErrors.push(error?.stack || error?.message || String(error))
-        })
-
         await page.goto(URL, { waitUntil: "domcontentloaded" })
-        await page.waitForFunction(() => {
-            const route = document.querySelector("route-test")
-            return route?.dataset.running === "false" && Number(route?.dataset.total || 0) > 0
-        }, null, { timeout: 120000 })
+        await page.waitForFunction(
+            () => {
+                const route = document.querySelector("route-test")
+                return route?.dataset.running === "false" && Number(route?.dataset.total || 0) > 0
+            },
+            null,
+            { timeout: 120000 }
+        )
 
         const result = await page.evaluate(() => {
             const route = document.querySelector("route-test")
@@ -85,14 +76,55 @@ async function main() {
             }
         })
 
-        await browser.close()
-
         if (pageErrors.length) throw new Error(`Browser runtime errors:\n${pageErrors.join("\n\n")}`)
-        if (result.mode !== "browser") throw new Error(`Expected browser launcher mode, got ${result.mode}`)
-        if (!result.total) throw new Error("Browser test route did not report any tests")
-        if (result.failed > 0) throw new Error(`Browser test route reported ${result.failed} failed tests`)
+        if (result.mode !== "browser") throw new Error(`Expected browser mode, got ${result.mode}`)
+        if (!result.total) throw new Error("Test route reported no tests")
+        if (result.failed > 0) throw new Error(`${result.failed} test(s) failed`)
 
-        console.log(`Playwright browser runtime passed (${result.passed} passed, ${result.skipped} skipped)`)
+        console.log(`  ✓ ${name}: ${result.passed} passed, ${result.skipped} skipped`)
+        return result
+    } finally {
+        await browser.close()
+    }
+}
+
+async function main() {
+    await run("node", ["build.js", "crypto"])
+    await run("node", ["build.js", "core"])
+
+    let server = null
+    if (!(await alive(URL))) server = spawn("node", ["dev.js"], { stdio: "inherit", shell: false })
+
+    try {
+        await wait(URL)
+
+        const { chromium, firefox, webkit } = await import("playwright")
+        const browsers = [
+            [chromium, "chromium"],
+            [firefox, "firefox"],
+            [webkit, "webkit"]
+        ]
+
+        console.log("\nRunning browser suite across 3 engines:")
+        const failures = []
+        let totalPassed = 0, totalTests = 0, browsersPassed = 0
+        for (const [browserType, name] of browsers)
+            try {
+                const result = await runBrowser(browserType, name)
+                browsersPassed += 1
+                totalPassed += result.passed
+                totalTests += result.total
+            } catch (err) {
+                failures.push(`${name}: ${err.message}`)
+                console.error(`  ✗ ${name}: ${err.message}`)
+            }
+
+        const testsPct = totalTests > 0 ? Math.round((totalPassed / totalTests) * 100) : 0
+        const browsersPct = Math.round((browsersPassed / browsers.length) * 100)
+        console.log(`\nProgress (tests): ${totalPassed}/${totalTests} passed — ${testsPct}%`)
+        console.log(`Progress (browsers): ${browsersPassed}/${browsers.length} healthy — ${browsersPct}%`)
+
+        if (failures.length) throw new Error(`${failures.length} browser(s) failed:\n${failures.join("\n")}`)
     } finally {
         if (server && server.exitCode === null) server.kill("SIGTERM")
     }
