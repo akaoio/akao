@@ -28,8 +28,23 @@ const MIME = {
 
 function serve(res, filePath, status = 200) {
     const mime = MIME[extname(filePath).toLowerCase()] || "application/octet-stream"
+    const stream = createReadStream(filePath)
+
+    stream.on("error", error => {
+        const code = error?.code === "ENOENT" ? 404 : 500
+        const body = code === 404 ? "Not Found" : "Internal Server Error"
+
+        if (res.headersSent) {
+            res.destroy()
+            return
+        }
+
+        res.writeHead(code, { "Content-Type": "text/plain; charset=utf-8" })
+        res.end(body)
+    })
+
     res.writeHead(status, { "Content-Type": mime })
-    createReadStream(filePath).pipe(res)
+    stream.pipe(res)
 }
 
 const server = createServer((req, res) => {
