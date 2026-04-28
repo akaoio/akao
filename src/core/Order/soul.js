@@ -1,11 +1,12 @@
 ﻿import { now } from "/core/Utils.js"
 import ZEN from "/core/ZEN.js"
+import { Statics } from "/core/Stores.js"
 
 // Construct and return order soul
 // The soul must be globally computable by everyone so that orders are discoverable.
 // It must not be unique for each order, but rather represent a "group" of orders that can be easily found and filtered by others.
 export function soul({ candle, side, base, quote } = {}) {
-    candle = candle || now(300000) // default to current 5-minute candle
+    candle = candle || now(Statics?.system?.candle) // default to current 5-minute candle
     side = side || this?.side
     base = base?.id || this?.base?.id
     quote = quote?.id || this?.quote?.id
@@ -14,7 +15,7 @@ export function soul({ candle, side, base, quote } = {}) {
     // key format: timestamp:pub/epub:side:type/game_or_chain/id/qty  (see Order/id.js)
     // seg 0: raw Date.now() timestamp — divide by 300000 to get 5-min candle number
     const timestamp = { tonum: { seg: { sep, idx: 0 } } }
-    const key_candle = { divu: [timestamp, 300000] }
+    const key_candle = { divu: [timestamp, Statics?.system?.candle] }
     // seg 1: pub/epub, extract pub (idx 0 split by "/")
     const maker_pub = { seg: { sep: "/", of: { seg: { sep, idx: 1 } }, idx: 0 } }
     // seg 2: side
@@ -33,12 +34,8 @@ export function soul({ candle, side, base, quote } = {}) {
                 { eq: [$base, base] }
             ]
         },
-        val: {
-            and: [
-                { eq: [$quote, quote] }
-            ]
-        },
+        val: { type: "string" },
         sign: true,
-        pow: this.pow
+        pow: Statics?.system?.pow
     })
 }

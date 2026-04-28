@@ -1,5 +1,6 @@
 import zen from "/core/ZEN.js"
 import { Access } from "/core/Access.js"
+import { Statics } from "/core/Stores.js"
 
 export function create({ platform, maker, affiliate = null, side, base, quote } = {}) {
     const $platform = platform || this?.platform
@@ -7,7 +8,7 @@ export function create({ platform, maker, affiliate = null, side, base, quote } 
     const $side = side || this?.side
     const $base = base || this?.base
     let $quote = quote || this?.quote
-    const soul = this.soul({ maker, side, base, quote })
+    const soul = this.soul({ side, base, quote })
     const id = this.id({ maker, side, base })
     if (!$quote.type || !$quote.id || !$quote.quantity) {
         const category = $quote.type == "item" ? $quote.game : $quote.type == "currency" ? $quote.chain : null
@@ -15,5 +16,5 @@ export function create({ platform, maker, affiliate = null, side, base, quote } 
     }
     if (!["buy", "sell"].includes($side) || !$maker || !$base || !$quote) throw new Error("invalidInput")
     const data = `${$quote}${affiliate ? `:${affiliate}` : ""}`
-    return zen.get(soul).get(id).put(data, null, { authenticator: Access.get("pair")})
+    return zen.get(soul).get(id).put(data, null, { authenticator: Access.get("pair"), pow: Statics?.system?.pow })
 }

@@ -7,7 +7,7 @@ env: development
 locale: en
 fiat: USD
 chains: [ 1, 56, 97, 11155111 ]
-peers: [ "http://localhost:8420/zen", "https://shogun-relay.scobrudot.dev/zen", "https://sudorecords.scobrudot.dev/zen" ]
+peers: [ "https://localhost:8420/zen", "https://shogun-relay.scobrudot.dev/zen", "https://sudorecords.scobrudot.dev/zen" ]
 market:
   pub: 03Bi0mvVr0UX0ng6v0sSQEOJEA8H2zcQ5mVUWagW8IYL0
   epub: 0bgQpEtBdvw0BGrJTo6qz2OpXPiEcAS5Yv3loZsRktur1
