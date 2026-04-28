@@ -36,6 +36,7 @@ node_modules/
 /games/
 /radata/
 /.playwright-mcp/
+/playwright-report/
 
 swarm.yaml
 swarm/
@@ -49,3 +50,6 @@ _bmad/
 .cursor/
 graphify-out/
 .gitnexus
+.windsurf
+.gemini
+.agents

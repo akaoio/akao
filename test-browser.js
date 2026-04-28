@@ -17,6 +17,7 @@ const filter = args[0] || null
 const { ready } = await import("./build/core/Launcher.js")
 await ready
 const { TESTS } = await import("./build/core/tests/manifest.js")
+const { readdirSync, existsSync } = await import("node:fs")
 
 // All test files — import order determines display order.
 // The Node runner boots the real headless runtime through Launcher.js first.
@@ -25,13 +26,22 @@ const testFiles = TESTS
     .filter((test) => test.node !== false)
     .map((test) => `./build/core/tests/${test.file}`)
 
+const generatedDir = "./build/core/tests"
+const generatedFiles = existsSync(generatedDir)
+    ? readdirSync(generatedDir)
+        .filter((file) => file.endsWith(".generated.test.js"))
+        .map((file) => `./build/core/tests/${file}`)
+    : []
+
+const allTestFiles = [...new Set([...testFiles, ...generatedFiles])]
+
 console.log("\n\x1b[1m\x1b[36m══════════════════════════════════════════════════\x1b[0m")
 console.log("\x1b[1m  Browser Test Suite — Node.js runner\x1b[0m")
 if (filter) console.log(`  Filter: \x1b[33m${filter}\x1b[0m`)
 console.log("\x1b[1m\x1b[36m══════════════════════════════════════════════════\x1b[0m")
 
 // Import all test files — each one registers suites via Test.describe()
-for (const file of testFiles)
+for (const file of allTestFiles)
     try {
         await import(file)
     } catch (err) {
