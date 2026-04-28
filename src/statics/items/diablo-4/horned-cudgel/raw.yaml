@@ -1,0 +1,14 @@
+id: 1305033
+icon: 2591328075
+name: Horned Cudgel
+itemTypeName: Two-Handed Mace
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 9

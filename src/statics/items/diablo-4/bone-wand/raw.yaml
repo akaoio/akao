@@ -1,0 +1,11 @@
+id: 592006
+icon: 2266174599
+name: Bone Wand
+itemTypeName: Wand
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 10

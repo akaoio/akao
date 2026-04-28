@@ -1,0 +1,26 @@
+id: carved-glaive
+game: diablo-4
+type: Glaive
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - glaive
+rarity: Rare
+itemTypeName: Glaive
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 16
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

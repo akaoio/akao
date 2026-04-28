@@ -1,0 +1,10 @@
+id: 2428154
+icon: 121881347
+name: Decaying Corona
+itemTypeName: Staff
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 11

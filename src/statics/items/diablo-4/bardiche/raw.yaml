@@ -1,0 +1,12 @@
+id: 440997
+icon: 2665147328
+name: Bardiche
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 10

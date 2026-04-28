@@ -1,0 +1,26 @@
+id: ysevete-s-dirge
+game: diablo-4
+type: Glaive
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - glaive
+rarity: Unique
+itemTypeName: Glaive
+classes:
+  - Spiritborn
+slots:
+  - Main Hand
+value: 18
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

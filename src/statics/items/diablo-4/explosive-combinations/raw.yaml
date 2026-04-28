@@ -1,0 +1,9 @@
+id: 2354184
+icon: 3041585274
+name: Explosive Combinations
+itemTypeName: Chaos Perk
+quality: 1
+playerClassNames:
+  - Sorcerer
+slotNames: []
+popularity: 10

@@ -1,0 +1,16 @@
+id: 1267124
+icon: 1012726233
+name: Wolf's Bite
+itemTypeName: Mace
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 16

@@ -1,0 +1,39 @@
+id: stitcher-iii
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - common
+  - weapon
+rarity: Common
+subtype: null
+value: 3000
+stat_block:
+  range: 42.1
+  damage: 7
+  weight: 5
+  agility: 73.8
+  stealth: 19
+  fireRate: 45.3
+  stability: 45.3
+  magazineSize: 20
+  reducedReloadTime: 26
+loadout_slots: []
+workbench: Weapon Bench
+flavor_text: Weak against ARC armor plating
+ammo_type: light
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

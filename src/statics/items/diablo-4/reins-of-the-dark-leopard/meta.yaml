@@ -1,0 +1,24 @@
+id: reins-of-the-dark-leopard
+game: diablo-4
+type: Mount
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - mount
+rarity: Special
+itemTypeName: Mount
+classes: null
+slots: null
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

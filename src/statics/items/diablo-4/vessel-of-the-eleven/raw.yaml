@@ -1,0 +1,10 @@
+id: 1238907
+icon: 2283102589
+name: Vessel of the Eleven
+itemTypeName: Totem
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Off-Hand
+popularity: 12

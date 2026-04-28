@@ -1,0 +1,25 @@
+id: diadem-of-the-ancient
+game: diablo-4
+type: Helm
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - helm
+rarity: Special
+itemTypeName: Helm
+classes: null
+slots:
+  - Head
+value: 46
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

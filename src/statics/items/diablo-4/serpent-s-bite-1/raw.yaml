@@ -1,0 +1,17 @@
+id: 1625277
+icon: 4109992521
+name: Serpent's Bite
+itemTypeName: Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 9

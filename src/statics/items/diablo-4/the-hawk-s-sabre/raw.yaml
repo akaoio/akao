@@ -1,0 +1,17 @@
+id: 2117500
+icon: 3772429144
+name: The Hawk's Sabre
+itemTypeName: Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 9

@@ -1,0 +1,26 @@
+id: monkey-staff
+game: diablo-4
+type: Staff
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - staff
+rarity: Rare
+itemTypeName: Staff
+classes:
+  - Druid
+slots:
+  - Main Hand
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

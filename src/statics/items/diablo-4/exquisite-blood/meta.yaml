@@ -1,0 +1,24 @@
+id: exquisite-blood
+game: diablo-4
+type: Lair Boss Key
+catalog: game
+tags:
+  - diablo-4
+  - uncommon
+  - lair boss key
+rarity: Uncommon
+itemTypeName: Lair Boss Key
+classes: null
+slots: null
+value: 120
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

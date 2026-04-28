@@ -1,0 +1,10 @@
+id: 1814707
+icon: 2578341231
+name: Armored Glaive
+itemTypeName: Glaive
+quality: 5
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 14

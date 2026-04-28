@@ -1,0 +1,25 @@
+id: explosive-combinations
+game: diablo-4
+type: Chaos Perk
+catalog: game
+tags:
+  - diablo-4
+  - common
+  - chaos perk
+rarity: Common
+itemTypeName: Chaos Perk
+classes:
+  - Sorcerer
+slots: null
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

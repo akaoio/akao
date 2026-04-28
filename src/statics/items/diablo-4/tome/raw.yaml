@@ -1,0 +1,11 @@
+id: 459858
+icon: 2314865142
+name: Tome
+itemTypeName: Focus
+quality: 3
+playerClassNames:
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 15

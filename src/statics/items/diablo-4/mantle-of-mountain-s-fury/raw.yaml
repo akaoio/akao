@@ -1,0 +1,10 @@
+id: 2081131
+icon: 700667026
+name: Mantle of Mountain's Fury
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Torso
+popularity: 67

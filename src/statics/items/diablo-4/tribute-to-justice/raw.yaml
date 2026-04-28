@@ -1,0 +1,17 @@
+id: 2068077
+icon: 3772429135
+name: Tribute to Justice
+itemTypeName: Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

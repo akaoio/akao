@@ -1,0 +1,15 @@
+id: 1622749
+icon: 236735359
+name: Sanctum Labrys
+itemTypeName: Axe
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 9

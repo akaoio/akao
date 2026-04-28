@@ -1,0 +1,12 @@
+id: 2572424
+icon: 1310402153
+name: Coop de Grâce
+itemTypeName: Polearm
+quality: 6
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 13

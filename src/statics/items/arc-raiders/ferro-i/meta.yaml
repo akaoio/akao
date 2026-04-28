@@ -1,0 +1,41 @@
+id: ferro-i
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - common
+  - weapon
+rarity: Common
+subtype: Battle Rifle
+value: 475
+stat_block:
+  ammo: heavy
+  magazineSize: 1
+  firingMode: Single
+  damage: 40
+  fireRate: 6.6
+  range: 53.1
+  stability: 78.1
+  agility: 32.1
+  stealth: 8
+  weight: 8
+loadout_slots:
+  - weapon
+workbench: Weapon Bench
+flavor_text: Very effective against ARC armor plating
+ammo_type: heavy
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

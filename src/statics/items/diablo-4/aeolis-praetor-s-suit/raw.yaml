@@ -1,0 +1,10 @@
+id: 2339539
+icon: 2427327103
+name: Aeolis Praetor's Suit
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 10

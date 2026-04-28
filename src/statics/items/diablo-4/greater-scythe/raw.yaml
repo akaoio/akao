@@ -1,0 +1,10 @@
+id: 784742
+icon: 2080686884
+name: Greater Scythe
+itemTypeName: Scythe
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 10

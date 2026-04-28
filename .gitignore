@@ -30,6 +30,7 @@ node_modules/
 /geo/
 /temp/
 /.certs/
+/.acme.sh/
 /src/statics/forex.yaml
 /src/statics/trackers.yaml
 /games/

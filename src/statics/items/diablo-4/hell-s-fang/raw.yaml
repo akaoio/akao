@@ -1,0 +1,10 @@
+id: 495760
+icon: 3132332483
+name: Hell's Fang
+itemTypeName: Two-Handed Scythe
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 12

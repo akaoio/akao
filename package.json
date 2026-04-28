@@ -26,6 +26,11 @@
   "type": "module",
   "scripts": {
     "start": "node start.js",
+    "start:prod": "node prod.js",
+    "prod": "npm run build && npm run start:prod",
+    "ssl": "bash script/ssl.sh",
+    "setup:prod": "bash script/setup-prod.sh",
+    "service:install": "bash script/install-service.sh",
     "start:dev": "concurrently \"npm run market\" \"node build.js crypto && node build.js core --dev && node dev.js\"",
     "start:headless": "node start.js --headless",
     "build": "node build.js crypto && node build.js core && node build.js games && node build.js index && node build.js geo && node build.js trackers && node build.js hash",

@@ -1,0 +1,15 @@
+id: 1583372
+icon: 2153830656
+name: Vampiric Assassin's Dagger
+itemTypeName: Dagger
+quality: 3
+playerClassNames:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 11

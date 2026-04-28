@@ -1,0 +1,41 @@
+id: bobcat-i
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - epic
+  - weapon
+rarity: Epic
+subtype: SMG
+value: 13000
+stat_block:
+  ammo: light
+  magazineSize: 20
+  firingMode: Auto
+  damage: 6
+  fireRate: 66.7
+  range: 44
+  stability: 45.9
+  agility: 73.1
+  stealth: 21
+  weight: 7
+loadout_slots:
+  - weapon
+workbench: Weapon Bench 3
+flavor_text: Weak against ARC armor plating
+ammo_type: light
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

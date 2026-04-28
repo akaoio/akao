@@ -1,0 +1,12 @@
+id: 1828575
+icon: 3423790502
+name: Devil's Polearm
+itemTypeName: Polearm
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 12

@@ -1,0 +1,10 @@
+id: 2198932
+icon: 1382221633
+name: Marshal's CMC-666
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Torso
+popularity: 12

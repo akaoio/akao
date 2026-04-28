@@ -1,0 +1,9 @@
+id: 1926288
+icon: 3001443825
+name: Thorn Army
+itemTypeName: Temper Manual
+quality: 5
+playerClassNames:
+  - Necromancer
+slotNames: []
+popularity: 18

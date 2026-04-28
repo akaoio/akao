@@ -1,0 +1,10 @@
+id: 2123360
+icon: 163013610
+name: "[ph_Hope's Respite]"
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 15

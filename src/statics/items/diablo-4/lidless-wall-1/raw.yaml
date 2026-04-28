@@ -1,0 +1,10 @@
+id: 1439542
+icon: 3988898267
+name: Lidless Wall
+itemTypeName: Shield
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Off-Hand
+popularity: 40

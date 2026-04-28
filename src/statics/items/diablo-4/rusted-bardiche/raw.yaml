@@ -1,0 +1,12 @@
+id: 2024868
+icon: 2665147328
+name: Rusted Bardiche
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 27

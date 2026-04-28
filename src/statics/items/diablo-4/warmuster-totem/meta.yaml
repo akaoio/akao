@@ -1,0 +1,26 @@
+id: warmuster-totem
+game: diablo-4
+type: Totem
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - totem
+rarity: Unique
+itemTypeName: Totem
+classes:
+  - Druid
+slots:
+  - Off-Hand
+value: 25
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

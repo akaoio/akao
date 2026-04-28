@@ -1,0 +1,10 @@
+id: 2425494
+icon: 306742607
+name: Orphan Maker
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Feet
+popularity: 17

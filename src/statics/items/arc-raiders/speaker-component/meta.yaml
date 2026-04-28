@@ -1,0 +1,32 @@
+id: speaker-component
+game: arc-raiders
+type: Topside Material
+catalog: game
+tags:
+  - rare
+  - topside material
+rarity: Rare
+subtype: null
+value: 500
+stat_block:
+  weight: 0.3
+  stackSize: 5
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Commercial
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

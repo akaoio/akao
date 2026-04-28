@@ -1,0 +1,10 @@
+id: 1304490
+icon: 3328578050
+name: Tempest Roar
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Head
+popularity: 58

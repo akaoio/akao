@@ -1,0 +1,13 @@
+id: 936464
+icon: 2193423679
+name: Two-Handed Weapon
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 17

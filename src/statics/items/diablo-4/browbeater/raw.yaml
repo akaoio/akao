@@ -1,0 +1,15 @@
+id: 2454854
+icon: 487279524
+name: Browbeater
+itemTypeName: Flail
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

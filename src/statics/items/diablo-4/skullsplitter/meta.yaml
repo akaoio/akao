@@ -1,0 +1,32 @@
+id: skullsplitter
+game: diablo-4
+type: Mace
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - mace
+rarity: Unique
+itemTypeName: Mace
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slots:
+  - Main Hand
+  - Off-Hand
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

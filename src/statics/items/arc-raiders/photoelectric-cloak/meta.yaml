@@ -1,0 +1,34 @@
+id: photoelectric-cloak
+game: arc-raiders
+type: Quick Use
+catalog: game
+tags:
+  - epic
+  - quick use
+rarity: Epic
+subtype: null
+value: 5000
+stat_block:
+  weight: 1
+  stackSize: 1
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Utility Bench
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

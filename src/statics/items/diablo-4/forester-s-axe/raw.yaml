@@ -1,0 +1,14 @@
+id: 448053
+icon: 886197071
+name: Forester's Axe
+itemTypeName: Two-Handed Axe
+quality: 1
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 9

@@ -1,0 +1,10 @@
+id: 459937
+icon: 1186557371
+name: Adventurer's Helm
+itemTypeName: Helm
+quality: 3
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Head
+popularity: 21

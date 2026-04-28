@@ -1,0 +1,10 @@
+id: 1758459
+icon: 3468537848
+name: Pitfighter's Gull
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Ring
+popularity: 61

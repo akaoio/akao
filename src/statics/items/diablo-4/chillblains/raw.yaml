@@ -1,0 +1,15 @@
+id: 1993844
+icon: 3115512760
+name: Chillblains
+itemTypeName: Axe
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 11

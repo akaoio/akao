@@ -1,0 +1,12 @@
+id: 1641252
+icon: 2653628737
+name: Fabricate Focus
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 12

@@ -1,0 +1,14 @@
+id: 2011518
+icon: 399147277
+name: Hackbergen
+itemTypeName: Two-Handed Axe
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 9

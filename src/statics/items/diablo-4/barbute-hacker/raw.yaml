@@ -1,0 +1,15 @@
+id: 2049253
+icon: 3115512799
+name: Barbute Hacker
+itemTypeName: Axe
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 19

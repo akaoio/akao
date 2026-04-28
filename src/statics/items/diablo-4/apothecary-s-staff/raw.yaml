@@ -1,0 +1,10 @@
+id: 450512
+icon: 4131558173
+name: Apothecary's Staff
+itemTypeName: Staff
+quality: 3
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 10

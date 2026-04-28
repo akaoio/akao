@@ -1,0 +1,13 @@
+id: 166626
+icon: 2193423684
+name: Grimstone Sword
+itemTypeName: Two-Handed Sword
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 11

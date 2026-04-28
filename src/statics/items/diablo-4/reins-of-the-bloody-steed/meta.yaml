@@ -1,0 +1,24 @@
+id: reins-of-the-bloody-steed
+game: diablo-4
+type: Mount
+catalog: game
+tags:
+  - diablo-4
+  - normal
+  - mount
+rarity: Normal
+itemTypeName: Mount
+classes: null
+slots: null
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

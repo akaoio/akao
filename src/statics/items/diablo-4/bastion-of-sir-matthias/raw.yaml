@@ -1,0 +1,10 @@
+id: 2429482
+icon: 3988898303
+name: Bastion of Sir Matthias
+itemTypeName: Shield
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 85

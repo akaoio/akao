@@ -1,0 +1,14 @@
+id: 1267212
+icon: 2591328077
+name: Bonebreaker
+itemTypeName: Two-Handed Mace
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 25

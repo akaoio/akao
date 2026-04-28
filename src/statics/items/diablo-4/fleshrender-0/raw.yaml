@@ -1,0 +1,10 @@
+id: 2417843
+icon: 2717386881
+name: Fleshrender
+itemTypeName: Pants
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Legs
+popularity: 10

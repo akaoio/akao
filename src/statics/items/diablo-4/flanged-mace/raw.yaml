@@ -1,0 +1,16 @@
+id: 459997
+icon: 312928298
+name: Flanged Mace
+itemTypeName: Mace
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 14
