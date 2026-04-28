@@ -1,0 +1,14 @@
+id: 592018
+icon: 1644840208
+name: Parashu
+itemTypeName: Two-Handed Axe
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 9

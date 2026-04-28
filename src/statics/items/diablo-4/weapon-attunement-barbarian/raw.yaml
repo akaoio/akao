@@ -1,0 +1,9 @@
+id: 1924568
+icon: 3001443825
+name: Weapon Attunement — Barbarian
+itemTypeName: Temper Manual
+quality: 5
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 11

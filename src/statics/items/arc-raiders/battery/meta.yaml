@@ -1,0 +1,32 @@
+id: battery
+game: arc-raiders
+type: Topside Material
+catalog: game
+tags:
+  - uncommon
+  - topside material
+rarity: Uncommon
+subtype: null
+value: 250
+stat_block:
+  weight: 0.25
+  stackSize: 15
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Technological, Electrical
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

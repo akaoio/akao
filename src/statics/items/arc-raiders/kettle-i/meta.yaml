@@ -1,0 +1,41 @@
+id: kettle-i
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - common
+  - weapon
+rarity: Common
+subtype: Assault Rifle
+value: 840
+stat_block:
+  ammo: light
+  magazineSize: 20
+  firingMode: Single
+  damage: 10
+  fireRate: 28
+  range: 42.8
+  stability: 69.8
+  agility: 58.5
+  stealth: 26
+  weight: 7
+loadout_slots:
+  - weapon
+workbench: Weapon Bench
+flavor_text: Weak against ARC armor plating
+ammo_type: Light
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

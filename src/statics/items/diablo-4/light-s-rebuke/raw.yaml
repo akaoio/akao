@@ -1,0 +1,11 @@
+id: 2470102
+icon: 1245922637
+name: Light's Rebuke
+itemTypeName: Flail
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 38

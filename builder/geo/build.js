@@ -9,6 +9,43 @@ import { validateHierarchy } from "./validate.js"
 import { ADMIN_FEATURE_REGEX, COUNTRY_FEATURE_REGEX, resolveParent, normalizeAdminCodes } from "./shared.js"
 import { loadHierarchyMap, loadAdminCode5 } from "./hierarchy.js"
 
+const GEO_BUILD_CACHE_VERSION = 1
+
+function buildGeoFingerprint({ isTestMode, testCountry, outputBase }) {
+    const inputs = [
+        "./geo/countryInfo.txt",
+        "./geo/featureCodes_en.txt",
+        "./geo/allCountries.txt",
+        "./geo/hierarchy.txt",
+        "./geo/adminCode5.txt",
+    ]
+
+    return {
+        version: GEO_BUILD_CACHE_VERSION,
+        isTestMode,
+        testCountry,
+        outputBase,
+        inputs: inputs.map((filePath) => {
+            if (!existsSync(filePath)) return { filePath, exists: false }
+            const stats = statSync(filePath)
+            return {
+                filePath,
+                exists: true,
+                size: stats.size,
+                mtimeMs: stats.mtimeMs,
+            }
+        }),
+    }
+}
+
+function hasGeoOutputs(outputBase) {
+    return [
+        `./${outputBase}/geo/countries.json`,
+        `./${outputBase}/geo/features.json`,
+        `./${outputBase}/geo/_.hash`,
+    ].every((filePath) => existsSync(filePath))
+}
+
 export async function buildGeo({ isTestMode = false, testCountry = "US", outputBase = "build" }) {
     if (isTestMode) {
         console.log(`Starting GeoNames test build for country: ${testCountry}\n`)
@@ -51,6 +88,20 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
         } catch (error) {
             console.error("Error extracting zip:", error)
             process.exit(1)
+        }
+    }
+
+    const buildCachePath = `./${outputBase}/geo/.build-cache.json`
+    const currentFingerprint = buildGeoFingerprint({ isTestMode, testCountry, outputBase })
+    if (!isTestMode && existsSync(buildCachePath) && hasGeoOutputs(outputBase)) {
+        try {
+            const cachedFingerprint = JSON.parse(readFileSync(buildCachePath, "utf8"))
+            if (JSON.stringify(cachedFingerprint) === JSON.stringify(currentFingerprint)) {
+                console.log("⊘ Geo inputs unchanged; skipping rebuild.\n")
+                return
+            }
+        } catch {
+            // Ignore malformed cache and rebuild.
         }
     }
 
@@ -131,31 +182,6 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
     }
 
     let needsProcessing = true
-    const dataRootHash = `./${outputBase}/geo/_.hash`
-
-    if (!isTestMode && existsSync(dataRootHash)) {
-        const sampleIds = [1000000, 2000000, 3000000, 6295630]
-        let allSamplesExist = true
-
-        for (const sampleId of sampleIds) {
-            const pathSegments = DB.path(sampleId)
-            const filename = pathSegments[pathSegments.length - 1] + ".json"
-            const hashFilename = pathSegments[pathSegments.length - 1] + ".hash"
-            const samplePath = `./${outputBase}/geo/` + [...pathSegments.slice(0, -1), filename].join("/")
-            const sampleHashPath = `./${outputBase}/geo/` + [...pathSegments.slice(0, -1), hashFilename].join("/")
-
-            if (!existsSync(samplePath) || !existsSync(sampleHashPath)) {
-                allSamplesExist = false
-                break
-            }
-        }
-
-        if (allSamplesExist) {
-            console.log("⊘ Data already built (found _.hash and verified sample files)")
-            console.log("⊘ Skipping Pass 1/4, 2/4, and 3/4\n")
-            needsProcessing = false
-        }
-    }
 
     const hierarchyMap = loadHierarchyMap()
     const admin5Map = loadAdminCode5()
@@ -574,6 +600,7 @@ export async function buildGeo({ isTestMode = false, testCountry = "US", outputB
     if (isTestMode) {
         console.log(`\n✅ Geo test complete! Test data for ${testCountry} written to temp/geo/`)
     } else {
+        await FS.write([outputBase, "geo", ".build-cache.json"], currentFingerprint)
         console.log(`\n✅ Geo build complete! Data written to ${outputBase}/geo/`)
     }
 }

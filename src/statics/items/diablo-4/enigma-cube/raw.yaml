@@ -1,0 +1,12 @@
+id: 1266829
+icon: 3014663073
+name: Enigma Cube
+itemTypeName: Focus
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 16

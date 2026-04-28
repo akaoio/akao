@@ -1,0 +1,13 @@
+id: 1751787
+icon: 587952417
+name: Gilded Demigod Greatsword
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 9

@@ -1,0 +1,24 @@
+id: jewelry-cache
+game: diablo-4
+type: Dungeon Cache
+catalog: game
+tags:
+  - diablo-4
+  - epic
+  - dungeon cache
+rarity: Epic
+itemTypeName: Dungeon Cache
+classes: null
+slots: null
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

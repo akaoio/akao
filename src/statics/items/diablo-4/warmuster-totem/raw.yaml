@@ -1,0 +1,10 @@
+id: 1898542
+icon: 3003435038
+name: Warmuster Totem
+itemTypeName: Totem
+quality: 5
+playerClassNames:
+  - Druid
+slotNames:
+  - Off-Hand
+popularity: 25

@@ -1,0 +1,11 @@
+id: 2602291
+icon: 3772429999
+name: Supplication (Crucible)
+itemTypeName: Sword
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 35

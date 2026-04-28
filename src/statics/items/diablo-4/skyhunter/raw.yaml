@@ -1,0 +1,10 @@
+id: 359743
+icon: 3931493629
+name: Skyhunter
+itemTypeName: Bow
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+popularity: 44

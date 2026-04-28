@@ -1,0 +1,10 @@
+id: 2198926
+icon: 580157840
+name: Marshal's Visor
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Head
+popularity: 11

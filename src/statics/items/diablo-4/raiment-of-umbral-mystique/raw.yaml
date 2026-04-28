@@ -1,0 +1,10 @@
+id: 2288292
+icon: 662512527
+name: Raiment of Umbral Mystique
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 19

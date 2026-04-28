@@ -1,0 +1,10 @@
+id: 2473929
+icon: 3988898299
+name: Cathedral's Song
+itemTypeName: Shield
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 57

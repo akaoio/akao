@@ -1,0 +1,10 @@
+id: 495806
+icon: 1434622103
+name: Heavy Chestplate
+itemTypeName: Chest Armor
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Torso
+popularity: 10

@@ -1,0 +1,12 @@
+id: 1815270
+icon: 3423790470
+name: Elegant Polearm
+itemTypeName: Polearm
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 12

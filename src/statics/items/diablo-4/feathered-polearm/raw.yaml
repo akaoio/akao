@@ -1,0 +1,12 @@
+id: 1837329
+icon: 3423790474
+name: Feathered Polearm
+itemTypeName: Polearm
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 11

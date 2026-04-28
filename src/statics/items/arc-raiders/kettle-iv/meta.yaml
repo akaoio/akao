@@ -1,0 +1,40 @@
+id: kettle-iv
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - common
+  - weapon
+rarity: Common
+subtype: Assault Rifle
+value: 5000
+stat_block:
+  range: 42.8
+  damage: 10
+  weight: 7
+  agility: 58.5
+  stealth: 26
+  fireRate: 28
+  stability: 69.8
+  magazineSize: 20
+  reducedReloadTime: 40
+  increasedBulletVelocity: 75
+loadout_slots: []
+workbench: Gunsmith I
+flavor_text: Weak against ARC armor plating
+ammo_type: light
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

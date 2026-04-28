@@ -1,0 +1,72 @@
+id: equalizer-i
+name: Equalizer
+description: A high capacity experimental beam rifle.
+item_type: Weapon
+loadout_slots:
+  - weapon
+icon: https://cdn.metaforge.app/arc-raiders/icons/equalizer-i.webp
+rarity: Legendary
+value: 27500
+workbench: Weapon Bench 3
+stat_block:
+  ammo: energy
+  magazineSize: 50
+  firingMode: Auto
+  damage: 8
+  fireRate: 33.33
+  range: 0
+  stability: 84.6
+  agility: 44.6
+  stealth: 0
+  weight: 14
+  health: 0
+  radius: 0
+  shield: 0
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  useTime: 0
+  duration: 0
+  stackSize: 0
+  damageMult: 0
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  reducedNoise: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  movementPenalty: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  reducedEquipTime: 0
+  staminaPerSecond: 0
+  increasedADSSpeed: 0
+  increasedFireRate: 0
+  reducedReloadTime: 0
+  illuminationRadius: 0
+  increasedEquipTime: 0
+  reducedUnequipTime: 0
+  shieldCompatibility: ""
+  increasedUnequipTime: 0
+  reducedVerticalRecoil: 0
+  increasedBulletVelocity: 0
+  increasedVerticalRecoil: 0
+  reducedMaxShotDispersion: 0
+  reducedPerShotDispersion: 0
+  reducedDurabilityBurnRate: 0
+  reducedRecoilRecoveryTime: 0
+  increasedRecoilRecoveryTime: 0
+  reducedDispersionRecoveryTime: 0
+flavor_text: Extremely effective against ARC armor plating and limbs
+subcategory: Special
+created_at: 2025-09-23T18:21:03.51415+00:00
+updated_at: 2026-01-31T06:29:13.011643+00:00
+loot_area: null
+sources: null
+ammo_type: Energy
+locations: []
+guide_links: []

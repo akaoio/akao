@@ -1,0 +1,10 @@
+id: 2020341
+icon: 2840502422
+name: Black Masquerade Gown
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Legs
+popularity: 13

@@ -1,0 +1,10 @@
+id: 617768
+icon: 2244791868
+name: Totem
+itemTypeName: Totem
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Off-Hand
+popularity: 14

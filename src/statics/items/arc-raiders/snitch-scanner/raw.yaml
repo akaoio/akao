@@ -1,0 +1,77 @@
+id: snitch-scanner
+name: Snitch Scanner
+description: Gathered from ARC Snitches. Can be recycled into ARC Alloy.
+item_type: Recyclable
+loadout_slots:
+  - backpack
+  - safePocket
+icon: https://cdn.metaforge.app/arc-raiders/icons/snitch-scanner.webp
+rarity: Uncommon
+value: 2000
+workbench: null
+stat_block:
+  range: 0
+  damage: 0
+  health: 0
+  radius: 0
+  shield: 0
+  weight: 0.75
+  agility: 0
+  arcStun: 0
+  healing: 0
+  stamina: 0
+  stealth: 0
+  useTime: 0
+  duration: 0
+  fireRate: 0
+  stability: 0
+  stackSize: 3
+  damageMult: 0
+  raiderStun: 0
+  weightLimit: 0
+  augmentSlots: 0
+  healingSlots: 0
+  magazineSize: 0
+  reducedNoise: 0
+  shieldCharge: 0
+  backpackSlots: 0
+  quickUseSlots: 0
+  damagePerSecond: 0
+  movementPenalty: 0
+  safePocketSlots: 0
+  damageMitigation: 0
+  healingPerSecond: 0
+  reducedEquipTime: 0
+  staminaPerSecond: 0
+  increasedADSSpeed: 0
+  increasedFireRate: 0
+  reducedReloadTime: 0
+  illuminationRadius: 0
+  increasedEquipTime: 0
+  reducedUnequipTime: 0
+  shieldCompatibility: ""
+  increasedUnequipTime: 0
+  reducedVerticalRecoil: 0
+  increasedBulletVelocity: 0
+  increasedVerticalRecoil: 0
+  reducedMaxShotDispersion: 0
+  reducedPerShotDispersion: 0
+  reducedDurabilityBurnRate: 0
+  reducedRecoilRecoveryTime: 0
+  increasedRecoilRecoveryTime: 0
+  reducedDispersionRecoveryTime: 0
+flavor_text: null
+subcategory: null
+created_at: 2025-09-23T18:21:03.915759+00:00
+updated_at: 2026-03-04T17:06:51.543716+00:00
+loot_area: ARC
+sources: null
+ammo_type: null
+locations: []
+guide_links:
+  - url: https://metaforge.app/arc-raiders/damage-snitches
+    label: "Damage Snitches: Weekly Trial"
+  - url: https://metaforge.app/arc-raiders/damage-flying-arc-enemies
+    label: "Damage Flying-based ARC Enemies: Weekly Trial"
+  - url: https://metaforge.app/arc-raiders/damage-wasps
+    label: "Damage Wasps: Weekly Trial"

@@ -1,0 +1,9 @@
+id: 2053018
+icon: 3001443825
+name: Slayer's Finesse
+itemTypeName: Temper Manual
+quality: 5
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 11

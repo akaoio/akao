@@ -1,0 +1,9 @@
+id: 1868592
+icon: 3001443825
+name: Shadow Finesse
+itemTypeName: Temper Manual
+quality: 5
+playerClassNames:
+  - Necromancer
+slotNames: []
+popularity: 10

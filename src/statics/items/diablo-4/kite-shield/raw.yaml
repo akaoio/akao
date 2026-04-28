@@ -1,0 +1,11 @@
+id: 52253
+icon: 3230255128
+name: Kite Shield
+itemTypeName: Shield
+quality: 3
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 14

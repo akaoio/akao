@@ -1,0 +1,32 @@
+id: druidic-charm
+game: diablo-4
+type: Amulet
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - amulet
+rarity: Rare
+itemTypeName: Amulet
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slots:
+  - Neck
+value: 20
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

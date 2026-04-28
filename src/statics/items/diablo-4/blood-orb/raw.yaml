@@ -1,0 +1,12 @@
+id: 136409
+icon: 2256019932
+name: Blood Orb
+itemTypeName: Focus
+quality: 3
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 14

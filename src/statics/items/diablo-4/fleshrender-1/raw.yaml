@@ -1,0 +1,11 @@
+id: 397700
+icon: 1012726235
+name: Fleshrender
+itemTypeName: Mace
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 29

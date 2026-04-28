@@ -1,0 +1,11 @@
+id: 1472930
+icon: 3230255130
+name: Paladin Lord's Bulwark
+itemTypeName: Shield
+quality: null
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 33

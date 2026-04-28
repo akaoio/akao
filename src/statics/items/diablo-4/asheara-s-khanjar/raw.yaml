@@ -1,0 +1,11 @@
+id: 469648
+icon: 2853628590
+name: Asheara's Khanjar
+itemTypeName: Dagger
+quality: 6
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 29

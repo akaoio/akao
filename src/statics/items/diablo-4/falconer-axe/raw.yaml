@@ -1,0 +1,14 @@
+id: 592294
+icon: 1644840209
+name: Falconer Axe
+itemTypeName: Two-Handed Axe
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 12

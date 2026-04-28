@@ -1,0 +1,26 @@
+id: warcaster
+game: diablo-4
+type: Crossbow
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - crossbow
+rarity: Unique
+itemTypeName: Crossbow
+classes:
+  - Rogue
+slots:
+  - Main Hand
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

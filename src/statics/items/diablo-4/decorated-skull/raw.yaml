@@ -1,0 +1,12 @@
+id: 1266836
+icon: 3014663074
+name: Decorated Skull
+itemTypeName: Focus
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 14

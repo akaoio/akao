@@ -1,0 +1,31 @@
+id: rustbitten-dirk-crucible
+game: diablo-4
+type: Dagger
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - dagger
+rarity: Legendary
+itemTypeName: Dagger
+classes:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+  - Warlock
+slots:
+  - Main Hand
+  - Off-Hand
+value: 19
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

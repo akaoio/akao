@@ -1,0 +1,41 @@
+id: jupiter
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - legendary
+  - weapon
+rarity: Legendary
+subtype: Sniper Rifle
+value: 27500
+stat_block:
+  ammo: heavy
+  magazineSize: 5
+  firingMode: Single
+  damage: 60
+  fireRate: 7.67
+  range: 71.7
+  stability: 73.5
+  agility: 39.2
+  stealth: 5
+  weight: 9
+loadout_slots:
+  - weapon
+workbench: Weapon Bench 3
+flavor_text: Very effective against ARC armor plating
+ammo_type: Heavy
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

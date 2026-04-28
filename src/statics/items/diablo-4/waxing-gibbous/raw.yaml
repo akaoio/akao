@@ -1,0 +1,11 @@
+id: 1306219
+icon: 35197504
+name: Waxing Gibbous
+itemTypeName: Axe
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 34

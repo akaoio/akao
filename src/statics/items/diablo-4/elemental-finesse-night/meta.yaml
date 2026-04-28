@@ -1,0 +1,24 @@
+id: elemental-finesse-night
+game: diablo-4
+type: Temper Manual
+catalog: game
+tags:
+  - diablo-4
+  - common
+  - temper manual
+rarity: Common
+itemTypeName: Temper Manual
+classes: null
+slots: null
+value: 10
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

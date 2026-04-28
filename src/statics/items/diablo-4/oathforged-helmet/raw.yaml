@@ -1,0 +1,10 @@
+id: 2336122
+icon: 63414613
+name: Oathforged Helmet
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Paladin
+slotNames:
+  - Head
+popularity: 12

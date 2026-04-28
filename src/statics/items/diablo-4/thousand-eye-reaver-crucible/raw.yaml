@@ -1,0 +1,15 @@
+id: 2602307
+icon: 3115512833
+name: Thousand-Eye Reaver (Crucible)
+itemTypeName: Axe
+quality: 6
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 18

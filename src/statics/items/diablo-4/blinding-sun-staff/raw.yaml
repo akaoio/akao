@@ -1,0 +1,10 @@
+id: 2372953
+icon: 3782057313
+name: Blinding Sun Staff
+itemTypeName: Staff
+quality: null
+playerClassNames:
+  - Druid
+slotNames:
+  - Main Hand
+popularity: 12

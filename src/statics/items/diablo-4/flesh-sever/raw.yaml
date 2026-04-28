@@ -1,0 +1,10 @@
+id: 494016
+icon: 2080686883
+name: Flesh Sever
+itemTypeName: Scythe
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+popularity: 10

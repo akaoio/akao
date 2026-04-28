@@ -1,0 +1,27 @@
+id: devil-tooth-wand
+game: diablo-4
+type: Wand
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - wand
+rarity: Unique
+itemTypeName: Wand
+classes:
+  - Necromancer
+  - Sorcerer
+slots:
+  - Main Hand
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

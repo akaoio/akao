@@ -1,0 +1,10 @@
+id: 459487
+icon: 3547258551
+name: Adventurer's Gloves
+itemTypeName: Gloves
+quality: 3
+playerClassNames:
+  - Rogue
+slotNames:
+  - Hands
+popularity: 10

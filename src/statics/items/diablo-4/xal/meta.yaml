@@ -1,0 +1,24 @@
+id: xal
+game: diablo-4
+type: Rune of Invocation
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - rune of invocation
+rarity: Rare
+itemTypeName: Rune of Invocation
+classes: null
+slots: null
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

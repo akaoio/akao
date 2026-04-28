@@ -1,0 +1,10 @@
+id: 873651
+icon: 1997530608
+name: Insatiable Fury
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Torso
+popularity: 61

@@ -1,0 +1,10 @@
+id: 1625573
+icon: 3673560069
+name: Heart of Pestilence
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Torso
+popularity: 14

@@ -1,0 +1,42 @@
+id: vulcano-ii
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - epic
+  - weapon
+rarity: Epic
+subtype: Shotgun
+value: 13000
+stat_block:
+  damage: 49.5
+  fireRate: 26.3
+  range: 22
+  stability: 64.6
+  agility: 66.3
+  stealth: 15
+  increasedFireRate: 10
+  reducedReloadTime: 13
+  reducedDurabilityBurnRate: 46
+  weight: 8
+  magazineSize: 6
+loadout_slots:
+  - weapon
+workbench: Gunsmith III
+flavor_text: Somewhat effective against ARC armor plating
+ammo_type: shotgun
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

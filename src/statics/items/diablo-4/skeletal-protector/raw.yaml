@@ -1,0 +1,11 @@
+id: 1307045
+icon: 3988898266
+name: Skeletal Protector
+itemTypeName: Shield
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 17

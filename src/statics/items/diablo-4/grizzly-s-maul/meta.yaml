@@ -1,0 +1,29 @@
+id: grizzly-s-maul
+game: diablo-4
+type: Two-Handed Mace
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - two-handed mace
+rarity: Special
+itemTypeName: Two-Handed Mace
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slots:
+  - Main Hand
+value: 9
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

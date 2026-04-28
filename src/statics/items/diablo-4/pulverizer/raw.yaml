@@ -1,0 +1,14 @@
+id: 2414328
+icon: 1568475824
+name: Pulverizer
+itemTypeName: Two-Handed Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 12

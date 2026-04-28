@@ -1,9 +1,0 @@
-id: 2172733
-icon: 671472195
-name: Summoning Cache
-itemTypeName: Cache
-quality: 4
-playerClassNames:
-  - Necromancer
-slotNames: []
-popularity: 13

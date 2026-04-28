@@ -1,0 +1,34 @@
+id: stella-montis-archives-key
+game: arc-raiders
+type: Key
+catalog: game
+tags:
+  - epic
+  - key
+rarity: Epic
+subtype: null
+value: 100
+stat_block:
+  weight: 0.25
+  stackSize: 1
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations:
+  - id: 49d3c2d8-759b-41ec-98af-65206785ef40
+    map: dam
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

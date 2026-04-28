@@ -1,0 +1,10 @@
+id: 446362
+icon: 1664408798
+name: Wanderer's Gloves
+itemTypeName: Gloves
+quality: 1
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Hands
+popularity: 10

@@ -1,0 +1,12 @@
+id: 343369
+icon: 2665147333
+name: Hache
+itemTypeName: Polearm
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 12

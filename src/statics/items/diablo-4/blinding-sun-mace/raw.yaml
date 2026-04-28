@@ -1,0 +1,16 @@
+id: 2353991
+icon: 1014222520
+name: Blinding Sun Mace
+itemTypeName: Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 13

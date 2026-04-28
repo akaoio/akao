@@ -1,0 +1,26 @@
+id: rotting-lightbringer-0
+game: diablo-4
+type: Two-Handed Mace
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - two-handed mace
+rarity: Legendary
+itemTypeName: Two-Handed Mace
+classes:
+  - Druid
+slots:
+  - Main Hand
+value: 129
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

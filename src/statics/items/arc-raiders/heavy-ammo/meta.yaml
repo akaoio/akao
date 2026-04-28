@@ -1,0 +1,34 @@
+id: heavy-ammo
+game: arc-raiders
+type: Ammunition
+catalog: game
+tags:
+  - common
+  - ammunition
+rarity: Common
+subtype: null
+value: 12
+stat_block:
+  weight: 0.05
+  stackSize: 40
+loadout_slots:
+  - backpack
+  - safePocket
+workbench: Workbench
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

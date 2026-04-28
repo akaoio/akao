@@ -1,0 +1,10 @@
+id: 1783128
+icon: 1819698093
+name: Carved Glaive
+itemTypeName: Glaive
+quality: 3
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 16

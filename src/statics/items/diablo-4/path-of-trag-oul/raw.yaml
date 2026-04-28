@@ -1,0 +1,10 @@
+id: 1934441
+icon: 2501302948
+name: Path of Trag'Oul
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Feet
+popularity: 29

@@ -1,0 +1,11 @@
+id: 459945
+icon: 2153830656
+name: Kris
+itemTypeName: Dagger
+quality: 3
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 12

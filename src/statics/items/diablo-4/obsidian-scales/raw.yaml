@@ -1,0 +1,10 @@
+id: 1881220
+icon: 1875964332
+name: Obsidian Scales
+itemTypeName: Pants
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Legs
+popularity: 11

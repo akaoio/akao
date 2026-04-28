@@ -1,0 +1,14 @@
+id: 52197
+icon: 2562904665
+name: Cap
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Spiritborn
+  - Warlock
+slotNames:
+  - Head
+popularity: 19

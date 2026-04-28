@@ -1,0 +1,26 @@
+id: cruor-s-embrace
+game: diablo-4
+type: Gloves
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - gloves
+rarity: Legendary
+itemTypeName: Gloves
+classes:
+  - Necromancer
+slots:
+  - Hands
+value: 34
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

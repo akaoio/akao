@@ -1,0 +1,9 @@
+id: 2353998
+icon: 3041585274
+name: Deafening Chorus
+itemTypeName: Chaos Perk
+quality: 5
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 12

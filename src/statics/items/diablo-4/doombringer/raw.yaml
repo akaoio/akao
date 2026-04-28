@@ -1,0 +1,17 @@
+id: 221017
+icon: 2397813516
+name: Doombringer
+itemTypeName: Sword
+quality: 8
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 185

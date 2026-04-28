@@ -1,0 +1,24 @@
+id: bloody-charm
+game: diablo-4
+type: Horadric Spellcraft
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - horadric spellcraft
+rarity: Unique
+itemTypeName: Horadric Spellcraft
+classes: null
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

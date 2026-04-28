@@ -1,0 +1,10 @@
+id: 2120654
+icon: 1541211176
+name: Fists of War
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Hands
+popularity: 10

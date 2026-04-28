@@ -1,0 +1,12 @@
+id: 1955208
+icon: 2686474327
+name: Oblivion Skull
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 24

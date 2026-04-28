@@ -50,17 +50,114 @@ function slugify(value) {
         .toLowerCase()
 }
 
-function buildCanonicalItemId(raw, localeData) {
-    const preferredName = localeData?.name || raw?.name || raw?.id || "item"
-    const namedSlug = slugify(preferredName) || "item"
-    const stableRaw = {
-        ...raw,
-        popularity: undefined,
+function normalizeIdentityValue(value) {
+    if (value == null) return null
+    if (Array.isArray(value)) return value.map(normalizeIdentityValue)
+    if (typeof value !== "object") return value
+
+    const normalized = {}
+    for (const key of Object.keys(value).sort()) {
+        const next = normalizeIdentityValue(value[key])
+        if (next == null) continue
+        normalized[key] = next
     }
-    const rawBlock = stableStringify(stableRaw)
-    const hash = sha256(rawBlock)
-    const suffix = hash.slice(-5)
-    return `${namedSlug}-${suffix}`
+
+    return Object.keys(normalized).length > 0 ? normalized : null
+}
+
+function semanticallyEqual(left, right) {
+    return stableStringify(normalizeIdentityValue(left)) === stableStringify(normalizeIdentityValue(right))
+}
+
+function normalizeIdentityArray(values) {
+    if (!Array.isArray(values)) return null
+    const normalized = values
+        .map((value) => value == null ? null : String(value).trim())
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b))
+
+    return normalized.length > 0 ? normalized : null
+}
+
+function getPreferredItemSlug(raw, localeData) {
+    const preferredName = localeData?.name || raw?.name || raw?.id || "item"
+    return slugify(preferredName) || "item"
+}
+
+function buildStableDuplicateIdentity(gameId, raw, rawMeta, localeData) {
+    return normalizeIdentityValue({
+        gameId,
+        sourceId: raw?.id == null ? null : String(raw.id).trim() || null,
+        name: localeData?.name || raw?.name || null,
+        type: rawMeta?.type ?? raw?.itemTypeName ?? raw?.item_type ?? null,
+        subtype: rawMeta?.subtype ?? raw?.subcategory ?? raw?.subtype ?? null,
+        rarity: rawMeta?.rarity ?? raw?.rarity ?? raw?.quality ?? null,
+        slots: normalizeIdentityArray(rawMeta?.slots || rawMeta?.loadout_slots || raw?.slotNames || raw?.loadout_slots),
+        classes: normalizeIdentityArray(rawMeta?.classes || raw?.playerClassNames),
+        icon: raw?.icon ?? null,
+    })
+}
+
+function buildItemPlan(gameId, rawItems, detailMapper) {
+    const planned = rawItems.map((raw) => {
+        const { meta: rawMeta, locale: localeData } = detailMapper(raw)
+        const baseSlug = getPreferredItemSlug(raw, localeData)
+        const duplicateIdentity = buildStableDuplicateIdentity(gameId, raw, rawMeta, localeData)
+        const duplicateIdentityText = stableStringify(duplicateIdentity)
+        const duplicateHash = sha256(duplicateIdentityText)
+
+        return {
+            raw,
+            rawMeta,
+            localeData,
+            baseSlug,
+            duplicateHash,
+            duplicateIdentityText,
+            itemId: null,
+        }
+    })
+
+    const groups = new Map()
+    for (const item of planned) {
+        if (!groups.has(item.baseSlug)) groups.set(item.baseSlug, [])
+        groups.get(item.baseSlug).push(item)
+    }
+
+    const reservedIds = new Set(
+        Array.from(groups.values())
+            .filter((group) => group.length === 1)
+            .map(([item]) => item.baseSlug)
+    )
+    const assignedIds = new Set()
+
+    for (const group of groups.values()) {
+        if (group.length === 1) {
+            group[0].itemId = group[0].baseSlug
+            assignedIds.add(group[0].itemId)
+            continue
+        }
+
+        group.sort((left, right) => {
+            if (left.duplicateHash !== right.duplicateHash) return left.duplicateHash.localeCompare(right.duplicateHash)
+            if (left.duplicateIdentityText !== right.duplicateIdentityText) return left.duplicateIdentityText.localeCompare(right.duplicateIdentityText)
+            return stableStringify(normalizeIdentityValue(left.raw)).localeCompare(stableStringify(normalizeIdentityValue(right.raw)))
+        })
+
+        let nextIndex = 0
+        for (const item of group) {
+            let candidate = `${item.baseSlug}-${nextIndex}`
+            while (reservedIds.has(candidate) || assignedIds.has(candidate)) {
+                nextIndex++
+                candidate = `${item.baseSlug}-${nextIndex}`
+            }
+
+            item.itemId = candidate
+            assignedIds.add(candidate)
+            nextIndex++
+        }
+    }
+
+    return planned
 }
 
 function ensureConfigs(meta = {}) {
@@ -282,7 +379,7 @@ async function syncItem(gameId, itemId, raw, meta, localeData, localeCodes, sour
     const rawYamlPath = [...srcDir, "raw.yaml"]
     const existingRaw = (await FS.exist(rawYamlPath)) ? await FS.load(rawYamlPath) : null
     const rawToWrite = existingRaw?.popularity != null ? { ...raw, popularity: existingRaw.popularity } : raw
-    await FS.write(rawYamlPath, rawToWrite)
+    if (!semanticallyEqual(existingRaw, rawToWrite)) await FS.write(rawYamlPath, rawToWrite)
 
     // ── images: hash-based dedupe, append new, mirror to build ──
     stats.imagesSeeded += await syncItemImages(gameId, srcDir, sourceImageMap)
@@ -442,10 +539,9 @@ export async function syncGameItems(gameId, detailMapper, imageResolver = null) 
     const fallbackSourceImageMap = imageResolver ? null : await buildSourceImageMap(gameId)
     const stats = { items: 0, locales: 0, metaPatched: 0, imagesSeeded: 0 }
     const usedIds = new Set()
+    const plannedItems = buildItemPlan(gameId, rawItems, detailMapper)
 
-    for (const raw of rawItems) {
-        const { meta: rawMeta, locale: localeData } = detailMapper(raw)
-        const itemId = buildCanonicalItemId(raw, localeData)
+    for (const { raw, rawMeta, localeData, itemId } of plannedItems) {
         if (usedIds.has(itemId)) {
             throw new Error(`${gameId}: canonical item id collision detected for "${itemId}"`)
         }

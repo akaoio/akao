@@ -1,0 +1,10 @@
+id: 2453682
+icon: 1483093339
+name: Esu's Heirloom
+itemTypeName: Gloves
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Hands
+popularity: 11

@@ -1,0 +1,13 @@
+id: 2372937
+icon: 587952552
+name: Blinding Sun Claymore
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 11

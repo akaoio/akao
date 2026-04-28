@@ -1,0 +1,14 @@
+id: 1764526
+icon: 886197077
+name: Carved Maul
+itemTypeName: Two-Handed Axe
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 9

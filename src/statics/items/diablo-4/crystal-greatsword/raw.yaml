@@ -1,0 +1,13 @@
+id: 592310
+icon: 2952066819
+name: Crystal Greatsword
+itemTypeName: Two-Handed Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 10

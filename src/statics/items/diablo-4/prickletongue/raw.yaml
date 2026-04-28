@@ -1,0 +1,12 @@
+id: 2430965
+icon: 3269931149
+name: Prickletongue
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 10

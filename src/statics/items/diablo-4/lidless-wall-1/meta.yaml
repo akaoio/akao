@@ -1,0 +1,26 @@
+id: lidless-wall-1
+game: diablo-4
+type: Shield
+catalog: game
+tags:
+  - diablo-4
+  - legendary
+  - shield
+rarity: Legendary
+itemTypeName: Shield
+classes:
+  - Necromancer
+slots:
+  - Off-Hand
+value: 40
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

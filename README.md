@@ -94,6 +94,61 @@ npm run lint
 npm run lint:fix
 ```
 
+### Production
+
+`akao` is static at runtime, so production mode is just: build once, then serve `build/` over HTTPS.
+
+```bash
+# Build the production bundle
+npm run build
+
+# Start akao production server
+npm run start:prod
+```
+
+Production mode binds **443** for the app and **80** for HTTP-to-HTTPS redirects. Unlike `zen`, it does **not** fall back to `~/cert.pem` or `~/key.pem`, so it will not collide with shared home-directory certificates on the server.
+
+By default, `npm run start:prod` expects:
+
+```text
+.certs/prod-key.pem
+.certs/prod-cert.pem
+```
+
+You can override those paths explicitly:
+
+```bash
+SSL_KEY=/absolute/path/to/key.pem SSL_CERT=/absolute/path/to/cert.pem npm run start:prod
+```
+
+If you want build + boot in one step:
+
+```bash
+npm run prod
+```
+
+To issue a Let's Encrypt certificate into akao's own `.certs/` folder:
+
+```bash
+npm run ssl -- --domain akao.io --email dev@akao.io --standalone
+```
+
+If you use standalone mode directly, run it with sudo/root because Let's Encrypt must reach port 80 during validation.
+
+To install a systemd service for `prod.js`:
+
+```bash
+npm run service:install -- --service akao
+```
+
+To do the full production setup in one command:
+
+```bash
+npm run setup:prod -- --domain akao.io --email dev@akao.io
+```
+
+`setup:prod` now installs the service without starting it, launches a temporary ACME challenge server on port 80, issues the certificate in webroot mode, then starts the real production service.
+
 ## 📁 Project Structure
 
 ```

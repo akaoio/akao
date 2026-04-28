@@ -1,0 +1,10 @@
+id: 2134082
+icon: 334826742
+name: Blackguard's Penance
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 12

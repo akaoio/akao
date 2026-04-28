@@ -1,0 +1,10 @@
+id: 2472779
+icon: 3988898301
+name: Herald of Zakarum
+itemTypeName: Shield
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 135

@@ -1,0 +1,37 @@
+id: heavy-shield
+game: arc-raiders
+type: Shield
+catalog: game
+tags:
+  - epic
+  - shield
+rarity: Epic
+subtype: null
+value: 5500
+stat_block:
+  weight: 9
+  shieldCharge: 80
+  movementPenalty: 15
+  damageMitigation: 52.5
+loadout_slots:
+  - shield
+  - backpack
+  - safePocket
+workbench: Gear Bench 3
+flavor_text: null
+ammo_type: null
+shield_type: heavy
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp
