@@ -1,0 +1,10 @@
+id: 2510762
+icon: 1586130241
+name: Judgment of Auriel
+itemTypeName: Amulet
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Neck
+popularity: 29

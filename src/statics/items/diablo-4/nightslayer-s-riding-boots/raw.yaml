@@ -1,0 +1,10 @@
+id: 2149719
+icon: 3334420894
+name: Nightslayer's Riding Boots
+itemTypeName: Boots
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Feet
+popularity: 10

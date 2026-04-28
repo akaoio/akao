@@ -1,0 +1,11 @@
+id: 784846
+icon: 4190403408
+name: Archon Staff
+itemTypeName: Staff
+quality: 3
+playerClassNames:
+  - Druid
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 10

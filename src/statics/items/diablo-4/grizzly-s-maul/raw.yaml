@@ -1,0 +1,13 @@
+id: 1065354
+icon: 1832684933
+name: Grizzly's Maul
+itemTypeName: Two-Handed Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 9

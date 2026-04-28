@@ -1,0 +1,10 @@
+id: 2123366
+icon: 4212000697
+name: "[ph_Hope's Respite]"
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Head
+popularity: 10

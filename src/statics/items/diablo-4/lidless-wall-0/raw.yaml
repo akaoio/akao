@@ -1,0 +1,10 @@
+id: 2418015
+icon: 62474037
+name: Lidless Wall
+itemTypeName: Helm
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Head
+popularity: 10

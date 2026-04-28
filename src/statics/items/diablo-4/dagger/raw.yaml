@@ -1,0 +1,15 @@
+id: 464301
+icon: 2094985445
+name: Dagger
+itemTypeName: Dagger
+quality: null
+playerClassNames:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 36

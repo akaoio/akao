@@ -1,0 +1,16 @@
+id: 2049220
+icon: 1014222458
+name: Death's Head Cudgel
+itemTypeName: Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 15

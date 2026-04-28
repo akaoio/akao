@@ -1,0 +1,10 @@
+id: 2068035
+icon: 2857754151
+name: Tyraen Helm
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Head
+popularity: 13

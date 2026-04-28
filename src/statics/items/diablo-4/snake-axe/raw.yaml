@@ -1,0 +1,15 @@
+id: 1267098
+icon: 35197503
+name: Snake Axe
+itemTypeName: Axe
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 11

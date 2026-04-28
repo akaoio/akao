@@ -1,0 +1,24 @@
+id: recipe-foul-invoker-of-varshan
+game: diablo-4
+type: Crafting Recipe
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - crafting recipe
+rarity: Special
+itemTypeName: Crafting Recipe
+classes: null
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

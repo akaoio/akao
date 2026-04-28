@@ -1,0 +1,11 @@
+id: 494018
+icon: 3289100333
+name: Tower
+itemTypeName: Shield
+quality: 3
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 13

@@ -1,0 +1,28 @@
+id: runic-orb
+game: diablo-4
+type: Focus
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - focus
+rarity: Unique
+itemTypeName: Focus
+classes:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slots:
+  - Off-Hand
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

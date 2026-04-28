@@ -1,0 +1,16 @@
+id: 1089137
+icon: 254083093
+name: Carthas' Blessed Hammer
+itemTypeName: Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 23

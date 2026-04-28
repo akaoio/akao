@@ -1,0 +1,26 @@
+id: sovereign-gown
+game: diablo-4
+type: Chest Armor
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - chest armor
+rarity: Special
+itemTypeName: Chest Armor
+classes:
+  - Necromancer
+slots:
+  - Torso
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

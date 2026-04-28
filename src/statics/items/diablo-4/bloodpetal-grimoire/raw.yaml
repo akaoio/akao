@@ -1,0 +1,11 @@
+id: 1238174
+icon: 2653628672
+name: Bloodpetal Grimoire
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Off-Hand
+popularity: 12

@@ -1,0 +1,12 @@
+id: 1305069
+icon: 3014663072
+name: Runic Orb
+itemTypeName: Focus
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 12

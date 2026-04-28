@@ -1,0 +1,9 @@
+id: 1028161
+icon: null
+name: "Glyph: Revenge"
+itemTypeName: Paragon Glyph
+quality: 3
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 10

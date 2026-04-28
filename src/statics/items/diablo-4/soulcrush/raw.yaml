@@ -1,0 +1,14 @@
+id: 1429808
+icon: 1568475655
+name: Soulcrush
+itemTypeName: Two-Handed Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 12

@@ -1,0 +1,10 @@
+id: 1267261
+icon: 4079385386
+name: Buriza-Do Kyanon
+itemTypeName: Crossbow
+quality: 5
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+popularity: 11

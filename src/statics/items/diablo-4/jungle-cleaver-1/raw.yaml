@@ -1,0 +1,14 @@
+id: 1781393
+icon: 1644840215
+name: Jungle Cleaver
+itemTypeName: Two-Handed Axe
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 10

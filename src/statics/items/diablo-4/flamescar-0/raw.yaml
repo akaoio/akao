@@ -1,0 +1,10 @@
+id: 1214792
+icon: 2266174600
+name: Flamescar
+itemTypeName: Wand
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 30

@@ -1,0 +1,12 @@
+id: 589196
+icon: 2665147328
+name: Legendary Test Polearm2H
+itemTypeName: Polearm
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 13

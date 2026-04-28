@@ -1,0 +1,10 @@
+id: 1239031
+icon: 121881152
+name: Thrumming Axle
+itemTypeName: Staff
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 14

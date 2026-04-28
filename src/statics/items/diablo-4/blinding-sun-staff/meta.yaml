@@ -1,0 +1,26 @@
+id: blinding-sun-staff
+game: diablo-4
+type: Staff
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - staff
+rarity: Special
+itemTypeName: Staff
+classes:
+  - Druid
+slots:
+  - Main Hand
+value: 12
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

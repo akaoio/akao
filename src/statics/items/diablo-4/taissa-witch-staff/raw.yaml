@@ -1,0 +1,11 @@
+id: 973980
+icon: 482429796
+name: Taissa Witch Staff
+itemTypeName: Staff
+quality: null
+playerClassNames:
+  - Druid
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 9

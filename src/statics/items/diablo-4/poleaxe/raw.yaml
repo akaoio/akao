@@ -1,0 +1,12 @@
+id: 215823
+icon: 2665147331
+name: Poleaxe
+itemTypeName: Polearm
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 11

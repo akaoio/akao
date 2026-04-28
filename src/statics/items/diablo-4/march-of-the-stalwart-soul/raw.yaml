@@ -1,0 +1,10 @@
+id: 2439586
+icon: 1432825617
+name: March of the Stalwart Soul
+itemTypeName: Boots
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Feet
+popularity: 15

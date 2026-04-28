@@ -1,0 +1,10 @@
+id: 2287532
+icon: 2280359741
+name: Pauldrons of Umbral Fury
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Barbarian
+slotNames:
+  - Torso
+popularity: 12

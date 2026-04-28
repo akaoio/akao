@@ -1,0 +1,14 @@
+id: 1970954
+icon: 399147309
+name: Baalfire Axe
+itemTypeName: Two-Handed Axe
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 9

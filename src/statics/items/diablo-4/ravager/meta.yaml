@@ -1,0 +1,31 @@
+id: ravager
+game: diablo-4
+type: Axe
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - axe
+rarity: Unique
+itemTypeName: Axe
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slots:
+  - Main Hand
+  - Off-Hand
+value: 9
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

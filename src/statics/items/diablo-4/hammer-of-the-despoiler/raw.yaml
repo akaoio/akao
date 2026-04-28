@@ -1,0 +1,16 @@
+id: 1758402
+icon: 1014222420
+name: Hammer of the Despoiler
+itemTypeName: Mace
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 9

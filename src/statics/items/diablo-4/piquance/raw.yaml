@@ -1,0 +1,15 @@
+id: 2430997
+icon: 1634459044
+name: Piquance
+itemTypeName: Dagger
+quality: null
+playerClassNames:
+  - Druid
+  - Necromancer
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 16

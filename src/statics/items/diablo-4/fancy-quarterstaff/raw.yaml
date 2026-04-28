@@ -1,0 +1,10 @@
+id: 1821898
+icon: 518597452
+name: Fancy Quarterstaff
+itemTypeName: Quarterstaff
+quality: 5
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 11

@@ -1,0 +1,12 @@
+HTTP/2 200 
+server: nginx
+date: Tue, 28 Apr 2026 12:24:04 GMT
+content-type: application/pem-certificate-chain
+content-length: 2836
+cache-control: public, max-age=0, no-cache
+link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+link: <https://acme-v02.api.letsencrypt.org/acme/cert/06b6744cf6a83f85fa2081a56af76499ba23/1>;rel="alternate"
+replay-nonce: vAfF_GdtHNOR3Gi6koZcC4_0VqEZA-cB6WRuYaObUIWtSrSK1UU
+x-frame-options: DENY
+strict-transport-security: max-age=604800
+

@@ -1,0 +1,10 @@
+id: 2200857
+icon: 4074596123
+name: Bladequeen's Visage
+itemTypeName: Helm
+quality: null
+playerClassNames:
+  - Spiritborn
+slotNames:
+  - Head
+popularity: 10

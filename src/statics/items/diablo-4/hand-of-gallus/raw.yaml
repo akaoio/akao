@@ -1,0 +1,12 @@
+id: 1238894
+icon: 3269930880
+name: Hand of Gallus
+itemTypeName: Polearm
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 12

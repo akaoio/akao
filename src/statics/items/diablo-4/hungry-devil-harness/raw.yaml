@@ -1,0 +1,10 @@
+id: 1984334
+icon: 3696717588
+name: Hungry Devil Harness
+itemTypeName: Chest Armor
+quality: null
+playerClassNames:
+  - Rogue
+slotNames:
+  - Torso
+popularity: 10

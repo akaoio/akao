@@ -1,0 +1,12 @@
+id: 1815187
+icon: 3423790473
+name: Gilded Polearm
+itemTypeName: Polearm
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 14

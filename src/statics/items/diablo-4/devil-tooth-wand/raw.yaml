@@ -1,0 +1,11 @@
+id: 1784159
+icon: 2266174636
+name: Devil Tooth Wand
+itemTypeName: Wand
+quality: 5
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+slotNames:
+  - Main Hand
+popularity: 11

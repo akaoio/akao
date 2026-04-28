@@ -1,0 +1,24 @@
+id: citadel-coin
+game: diablo-4
+type: Currency
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - currency
+rarity: Special
+itemTypeName: Currency
+classes: null
+slots: null
+value: 21
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

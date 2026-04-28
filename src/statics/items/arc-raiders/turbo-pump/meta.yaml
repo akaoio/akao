@@ -1,0 +1,32 @@
+id: turbo-pump
+game: arc-raiders
+type: Recyclable
+catalog: game
+tags:
+  - rare
+  - recyclable
+rarity: Rare
+subtype: null
+value: 2000
+stat_block:
+  weight: 3
+  stackSize: 3
+loadout_slots: []
+workbench: null
+flavor_text: null
+ammo_type: null
+shield_type: null
+loot_area: Exodus
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

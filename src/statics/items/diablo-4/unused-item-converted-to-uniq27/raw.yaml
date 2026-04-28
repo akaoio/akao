@@ -1,0 +1,17 @@
+id: 1658250
+icon: 3772428877
+name: " unused item. converted to uniq27 "
+itemTypeName: Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 13

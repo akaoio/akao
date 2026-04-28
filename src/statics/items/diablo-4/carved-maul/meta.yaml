@@ -1,0 +1,30 @@
+id: carved-maul
+game: diablo-4
+type: Two-Handed Axe
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - two-handed axe
+rarity: Rare
+itemTypeName: Two-Handed Axe
+classes:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Warlock
+slots:
+  - Main Hand
+value: 9
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

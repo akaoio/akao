@@ -1,0 +1,10 @@
+id: 2445950
+icon: 2952066882
+name: Red Sermon
+itemTypeName: Two-Handed Sword
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 108

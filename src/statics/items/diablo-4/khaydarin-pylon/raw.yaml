@@ -1,0 +1,12 @@
+id: 2200116
+icon: 413333780
+name: Khaydarin Pylon
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 10

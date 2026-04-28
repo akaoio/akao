@@ -1,0 +1,17 @@
+id: 591450
+icon: 2397813484
+name: Obsidian Blade
+itemTypeName: Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 13

@@ -1,0 +1,10 @@
+id: 2458243
+icon: 289378155
+name: Esadora's Overflowing Cameo
+itemTypeName: Chest Armor
+quality: 6
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Torso
+popularity: 15

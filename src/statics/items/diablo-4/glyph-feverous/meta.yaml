@@ -1,0 +1,24 @@
+id: glyph-feverous
+game: diablo-4
+type: Paragon Glyph
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - paragon glyph
+rarity: Rare
+itemTypeName: Paragon Glyph
+classes:
+  - Paladin
+slots: null
+value: 15
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images: []

@@ -1,0 +1,12 @@
+id: 207028
+icon: 2256019932
+name: Focus
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 114

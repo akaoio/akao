@@ -1,0 +1,25 @@
+id: elemental-finesse
+game: diablo-4
+type: Temper Manual
+catalog: game
+tags:
+  - diablo-4
+  - unique
+  - temper manual
+rarity: Unique
+itemTypeName: Temper Manual
+classes:
+  - Sorcerer
+slots: null
+value: 11
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

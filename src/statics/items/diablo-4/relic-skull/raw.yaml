@@ -1,0 +1,12 @@
+id: 1324666
+icon: 2256019930
+name: Relic Skull
+itemTypeName: Focus
+quality: null
+playerClassNames:
+  - Necromancer
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Off-Hand
+popularity: 14

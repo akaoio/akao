@@ -1,0 +1,11 @@
+id: 449247
+icon: 2094985446
+name: Hunter's Knife
+itemTypeName: Dagger
+quality: 3
+playerClassNames:
+  - Rogue
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 12

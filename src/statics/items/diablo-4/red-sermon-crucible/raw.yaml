@@ -1,0 +1,10 @@
+id: 2602315
+icon: 587952553
+name: Red Sermon (Crucible)
+itemTypeName: Two-Handed Sword
+quality: 6
+playerClassNames:
+  - Paladin
+slotNames:
+  - Main Hand
+popularity: 9

@@ -1,0 +1,11 @@
+id: 2602325
+icon: 1634459017
+name: The Mortacrux (Crucible)
+itemTypeName: Dagger
+quality: 6
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 12

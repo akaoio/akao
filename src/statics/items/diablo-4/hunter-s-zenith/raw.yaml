@@ -1,0 +1,10 @@
+id: 989678
+icon: 1903997113
+name: Hunter's Zenith
+itemTypeName: Ring
+quality: 6
+playerClassNames:
+  - Druid
+slotNames:
+  - Ring
+popularity: 35

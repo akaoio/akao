@@ -1,0 +1,12 @@
+id: 592304
+icon: 3423790468
+name: Dread Poleaxe
+itemTypeName: Polearm
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Spiritborn
+slotNames:
+  - Main Hand
+popularity: 33

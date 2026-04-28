@@ -1,0 +1,11 @@
+id: 464306
+icon: 3230255124
+name: Shield
+itemTypeName: Shield
+quality: null
+playerClassNames:
+  - Necromancer
+  - Paladin
+slotNames:
+  - Off-Hand
+popularity: 28

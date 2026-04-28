@@ -1,0 +1,16 @@
+id: 591972
+icon: 1012726227
+name: Skullsplitter
+itemTypeName: Mace
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Main Hand
+  - Off-Hand
+popularity: 10

@@ -1,0 +1,25 @@
+id: eye-of-enkil
+game: diablo-4
+type: Amulet
+catalog: game
+tags:
+  - diablo-4
+  - rare
+  - amulet
+rarity: Rare
+itemTypeName: Amulet
+classes: null
+slots:
+  - Neck
+value: 13
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

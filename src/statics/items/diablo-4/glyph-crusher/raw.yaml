@@ -1,0 +1,9 @@
+id: 1028145
+icon: null
+name: "Glyph: Crusher"
+itemTypeName: Paragon Glyph
+quality: 3
+playerClassNames:
+  - Barbarian
+slotNames: []
+popularity: 16

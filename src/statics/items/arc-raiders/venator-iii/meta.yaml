@@ -1,0 +1,40 @@
+id: venator-iii
+game: arc-raiders
+type: Weapon
+catalog: game
+tags:
+  - rare
+  - weapon
+rarity: Rare
+subtype: Pistol
+value: 13000
+stat_block:
+  range: 48.4
+  damage: 18
+  weight: 5
+  agility: 76.4
+  stealth: 12
+  fireRate: 36.7
+  stability: 61.3
+  magazineSize: 10
+  increasedFireRate: 26
+  reducedReloadTime: 33
+loadout_slots: []
+workbench: Weapon Bench
+flavor_text: " Somewhat effective against ARC armor plating"
+ammo_type: medium
+shield_type: null
+loot_area: null
+sources: null
+locations: []
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

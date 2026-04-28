@@ -1,0 +1,13 @@
+id: 1951137
+icon: 587952453
+name: Frostmourne
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 20

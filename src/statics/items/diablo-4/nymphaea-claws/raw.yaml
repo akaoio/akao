@@ -1,0 +1,10 @@
+id: 1650787
+icon: 3291701922
+name: Nymphaea Claws
+itemTypeName: Gloves
+quality: null
+playerClassNames:
+  - Sorcerer
+slotNames:
+  - Hands
+popularity: 14

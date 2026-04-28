@@ -1,0 +1,25 @@
+id: leggings-of-the-khazra
+game: diablo-4
+type: Pants
+catalog: game
+tags:
+  - diablo-4
+  - special
+  - pants
+rarity: Special
+itemTypeName: Pants
+classes: null
+slots:
+  - Legs
+value: 17
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

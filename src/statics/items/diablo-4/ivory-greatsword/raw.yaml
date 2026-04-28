@@ -1,0 +1,13 @@
+id: 1883846
+icon: 587952449
+name: Ivory Greatsword
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 10

@@ -1,0 +1,13 @@
+id: 592010
+icon: 2952066817
+name: Demonblade
+itemTypeName: Two-Handed Sword
+quality: 5
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 21

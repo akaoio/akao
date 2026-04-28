@@ -1,0 +1,16 @@
+id: 1102640
+icon: 1949170973
+name: Druidic Charm
+itemTypeName: Amulet
+quality: 3
+playerClassNames:
+  - Barbarian
+  - Druid
+  - Necromancer
+  - Paladin
+  - Rogue
+  - Sorcerer
+  - Warlock
+slotNames:
+  - Neck
+popularity: 20

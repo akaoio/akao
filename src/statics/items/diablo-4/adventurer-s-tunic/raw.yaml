@@ -1,0 +1,10 @@
+id: 495805
+icon: 3492143925
+name: Adventurer's Tunic
+itemTypeName: Chest Armor
+quality: 3
+playerClassNames:
+  - Necromancer
+slotNames:
+  - Torso
+popularity: 13

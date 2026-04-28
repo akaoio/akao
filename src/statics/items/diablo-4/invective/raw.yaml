@@ -1,0 +1,13 @@
+id: 2256672
+icon: 587952548
+name: Invective
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 11

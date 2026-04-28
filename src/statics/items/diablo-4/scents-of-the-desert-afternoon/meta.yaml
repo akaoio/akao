@@ -1,0 +1,24 @@
+id: scents-of-the-desert-afternoon
+game: diablo-4
+type: Incense
+catalog: game
+tags:
+  - diablo-4
+  - common
+  - incense
+rarity: Common
+itemTypeName: Incense
+classes: null
+slots: null
+value: 15
+configs:
+  min:
+    quantity: null
+    value: null
+  max:
+    quantity: null
+    value: null
+  step: null
+  type: item
+images:
+  - 0.webp

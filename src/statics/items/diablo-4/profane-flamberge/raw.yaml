@@ -1,0 +1,13 @@
+id: 1625346
+icon: 587952380
+name: Profane Flamberge
+itemTypeName: Two-Handed Sword
+quality: null
+playerClassNames:
+  - Barbarian
+  - Necromancer
+  - Paladin
+  - Warlock
+slotNames:
+  - Main Hand
+popularity: 12
