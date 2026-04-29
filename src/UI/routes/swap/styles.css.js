@@ -10,7 +10,7 @@ export const styles = css`
             flex-direction: column;
             align-items: center;
             padding: var(--space) var(--space-sm);
-            gap: var(--space-sm);
+            gap: var(--space-4);
         }
 
         ui-card {

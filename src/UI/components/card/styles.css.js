@@ -14,7 +14,6 @@ export const styles = css`
         align-items: center;
         justify-content: space-between;
         padding: var(--space-sm) var(--space);
-        min-height: 2.5rem;
         gap: var(--space-sm);
         background: var(--card-header-bg);
         border-bottom: 1px solid var(--card-header-border);

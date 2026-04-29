@@ -1,126 +1,46 @@
 import { css } from "/core/UI.js"
 
 export const styles = css`
-    @keyframes dot-pulse {
-        0% {
-            box-shadow: 0 0 0 0 color-mix(in hsl, var(--accent-action) 70%, transparent);
-        }
-        70% {
-            box-shadow: 0 0 0 6px transparent;
-        }
-        100% {
-            box-shadow: 0 0 0 0 transparent;
-        }
-    }
-
     :host {
         display: flex;
         flex-direction: column;
         flex: 1;
     }
 
-    /* ── Toolbar ── */
-    #toolbar {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.07em;
-        text-transform: uppercase;
-        border-bottom: 1px solid var(--card-toolbar-border);
-        background: var(--card-toolbar-bg);
-        padding: var(--space-3) var(--space-4);
-    }
-
-    .toolbar-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35em;
-        white-space: nowrap;
-    }
-
-    .toolbar-label {
-        color: var(--color);
-        opacity: 0.6;
-    }
-
-    .toolbar-num {
-        color: var(--accent-info);
-        text-shadow: var(--glow-info);
-    }
-
-    .toolbar-dot {
-        width: 0.45em;
-        height: 0.45em;
-        border-radius: 50%;
-        background: color-mix(in hsl, var(--color) 30%, transparent);
-        flex-shrink: 0;
-        transition:
-            background var(--speed),
-            box-shadow var(--speed);
-
-        &[data-active="true"] {
-            background: var(--accent-action);
-            box-shadow: 0 0 6px color-mix(in hsl, var(--accent-action) 60%, transparent);
-        }
-
-        &[data-polling="true"] {
-            animation: dot-pulse 2s ease-out infinite;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            &[data-polling="true"] {
-                animation: none;
-            }
-        }
-    }
-
-    .toolbar-divider {
-        width: 1px;
-        height: 0.75em;
-        background: color-mix(in hsl, var(--color) 15%, transparent);
-        flex-shrink: 0;
-        align-self: center;
-    }
-
-    .toolbar-spacer {
-        flex: 1;
-    }
-
-    #toolbar-pools .toolbar-num {
-        color: var(--color);
-        opacity: 0.55;
-        text-shadow: none;
-    }
-
     /* ── Fields ── */
     #fields {
-        padding: var(--space-4) var(--space);
+        flex: 1;
+        min-height: 0;
+        padding: var(--space-2) var(--space);
         display: flex;
         flex-direction: column;
-        gap: var(--space);
+        gap: var(--space-sm);
     }
 
     .token-field {
+        flex: 1;
+        min-height: 0;
         background: var(--field-bg);
-        padding: var(--space) var(--space) var(--space-6);
+        padding: var(--space-3) var(--space) var(--space-4);
+        position: relative;
         display: flex;
         flex-direction: column;
+        justify-content: center;
         gap: var(--space-sm);
         transition: background var(--speed);
         &:focus-within {
             background: var(--field-bg-focus);
         }
+
+        ui-label {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space);
+        }
     }
 
-    .field-label {
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--color);
-        opacity: 0.65;
+    ui-label {
+        --label-opacity: 65%;
     }
 
     .field-row {
@@ -309,25 +229,18 @@ export const styles = css`
         display: flex;
         align-items: center;
         gap: var(--space-sm);
-        padding: var(--space-sm) var(--space);
-        background: var(--field-inset-bg);
-        border-top: 1px solid var(--field-inset-border);
+        padding: var(--space-2) var(--space);
+        border-top: 1px solid var(--card-toolbar-border);
     }
 
-    .slippage-label {
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--color);
-        opacity: 0.65;
+    #slippage-row ui-label {
         flex-shrink: 0;
     }
 
     .slippage-inputs {
         display: flex;
         align-items: center;
-        gap: var(--space-1);
+        gap: 4px;
         margin-left: auto;
     }
 
@@ -338,7 +251,7 @@ export const styles = css`
         font-family: var(--header-font);
         font-size: var(--text-xs);
         letter-spacing: 0.04em;
-        padding: var(--space-1) var(--space-sm);
+        padding: 2px var(--space-1);
         cursor: pointer;
         transition:
             border-color var(--speed),
@@ -356,14 +269,14 @@ export const styles = css`
     }
 
     .slippage-inputs input {
-        width: 44px;
+        width: 36px;
         background: transparent;
         border: var(--border-width) solid color-mix(in hsl, var(--color) 25%, transparent);
         color: var(--color);
         cursor: text;
         font-family: var(--header-font);
         font-size: var(--text-xs);
-        padding: var(--space-1) var(--space-sm);
+        padding: 2px var(--space-1);
         text-align: right;
         -moz-appearance: textfield;
         transition:
@@ -388,7 +301,6 @@ export const styles = css`
 
     /* ── Actions ── */
     .actions {
-        margin-top: auto;
         display: flex;
         flex-direction: column;
         gap: var(--space-sm);

@@ -30,6 +30,9 @@ export class WALLETS extends HTMLElement {
         // Holds the current currency/chain options arrays so triggers can look up names
         this._currencyOptions = []
         this._chainOptions = []
+        // Ephemeral wallet index/total used when data-no-persist is set (swap/withdraw routes)
+        this._ephemeralId = 0
+        this._ephemeralTotal = null
         // Wallet being previewed (selected but not yet committed); null = resting
         this._previewId = null
         // Unsubscribe fn for the active Zen wallet-label subscription
@@ -39,18 +42,22 @@ export class WALLETS extends HTMLElement {
     }
 
     get id() {
+        if (this.dataset.noPersist !== undefined) return this._ephemeralId
         return logic.id()
     }
 
     set id(value) {
+        if (this.dataset.noPersist !== undefined) { this._ephemeralId = Number(value); return Number(value) }
         return logic.setid(value, this.step, this.total)
     }
 
     get total() {
+        if (this.dataset.noPersist !== undefined) return this._ephemeralTotal ?? (logic.total() || 1)
         return Number(typeof this.dataset.total !== "undefined" ? this.dataset.total : logic.total() || 1)
     }
 
     set total(value) {
+        if (this.dataset.noPersist !== undefined) { this._ephemeralTotal = Number(value); return Number(value) }
         return logic.settotal(value)
     }
 
@@ -194,6 +201,7 @@ export class WALLETS extends HTMLElement {
 
         // ── Currency modal (deposit/withdraw only) ────────────────
         if (this.dataset.currency !== "false") {
+            this.shadowRoot.querySelector("#currency-row").hidden = false
             this.$currencyTrigger.setAttribute("data-visible", "")
             this._buildCurrencyModal(this.currencies, currency)
         }

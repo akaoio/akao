@@ -6,7 +6,7 @@ export const styles = css`
         --l1: 0%;
         --l1-inverted: 100%;
 
-        --background: #121c26;
+        --background: hsl(215, 20%, 9%);
         --background-accent: #1a2733;
         --background-focus: rgba(0, 229, 255, 0.08);
         --background-inverted: #c8dde8;
@@ -17,12 +17,12 @@ export const styles = css`
         --border: var(--border-width) solid #233c4d;
         --border-inset: inset 0 0 0 var(--border-width) #233c4d;
 
-        --header-background: rgba(18, 28, 38, 0.85);
+        --header-background: hsla(215, 20%, 9%, 0.88);
         --header-border-bottom: var(--border-width) solid var(--neon-c);
-        --footer-background: rgba(18, 28, 38, 0.85);
+        --footer-background: hsla(215, 20%, 9%, 0.88);
         --footer-border-top: var(--border-width) solid var(--neon-g);
 
-        --scrollbar-track: var(--background);
+        --scrollbar-track: hsl(215, 20%, 9%);
         --scrollbar-thumb: #233c4d;
         --scrollbar-thumb-hover: var(--neon-c);
         --scrollbar-corner: var(--background);

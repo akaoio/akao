@@ -67,7 +67,7 @@ export class IDENTICONS extends Component {
 
     onconnect() {
         this.$container = this.shadowRoot.querySelector("#container")
-        this.$loader    = this.shadowRoot.querySelector("#loader")
+        this.$loader = this.shadowRoot.querySelector("#loader")
 
         const onWheel = (e) => {
             if (e.deltaY === 0) return
@@ -101,13 +101,12 @@ export class IDENTICONS extends Component {
         const container = this.$container
         const containerRect = container.getBoundingClientRect()
         const itemRect = item.getBoundingClientRect()
-        const target = container.scrollLeft + itemRect.left - containerRect.left
-                       - (containerRect.width - itemRect.width) / 2
+        const target = container.scrollLeft + itemRect.left - containerRect.left - (containerRect.width - itemRect.width) / 2
         const start = container.scrollLeft
         const delta = target - start
         const duration = 345
         let startTime = null
-        const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+        const easeInOut = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t)
         const step = (now) => {
             if (!startTime) startTime = now
             const elapsed = Math.min((now - startTime) / duration, 1)
@@ -218,9 +217,8 @@ export class IDENTICONS extends Component {
             if (this.$container.children.length < this.$total) {
                 this._setLoading(true)
                 await this.create()
-                if (doScroll) {
-                    this.scrollTo(this.$id, "smooth")
-                }
+                if (doScroll) this.scrollTo(this.$id, "smooth")
+
                 this._setLoading(false)
             }
             if (this.$container.children.length > this.$total) this.remove()
@@ -240,15 +238,15 @@ export class IDENTICONS extends Component {
     _updateStatus() {
         const root = this.shadowRoot
         if (!root) return
-        const saved    = this.$savedId
+        const saved = this.$savedId
         const selected = this.$id
-        const total    = this.$total
-        const hasDiff  = selected !== saved
+        const total = this.$total
+        const hasDiff = selected !== saved
 
-        root.querySelector("#status-saved").textContent       = `#${saved + 1}`
+        root.querySelector("#status-saved").textContent = `#${saved + 1}`
         root.querySelector("#status-preview-num").textContent = `#${selected + 1}`
         root.querySelector("#status-preview").hidden = !hasDiff
-        root.querySelector("#status-arrow").hidden   = !hasDiff
+        root.querySelector("#status-arrow").hidden = !hasDiff
         root.querySelector("#status-total").textContent = total ? `${total} ${this.name}s` : ""
         root.querySelector("#status-decrease").disabled = total - this.step <= selected
     }

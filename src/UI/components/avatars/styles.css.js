@@ -11,6 +11,8 @@ export const styles = css`
         ui-identicons {
             flex: 1;
             min-height: 0;
+            --identicons-pad-v: var(--space-5);
+            --identicons-gap: var(--space-6);
         }
     }
 
