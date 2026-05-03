@@ -62,7 +62,7 @@
     "lint:fix": "eslint \"src/**/*.js\" --fix"
   },
   "devDependencies": {
-    "@akaoio/zen": "^1.0.6",
+    "@akaoio/zen": "^1.0.11",
     "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
     "adm-zip": "^0.5.17",
     "bootstrap-icons": "^1.13.1",
