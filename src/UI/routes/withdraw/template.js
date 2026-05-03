@@ -1,6 +1,7 @@
 import { html } from "/core/UI.js"
 import "/UI/layouts/main/index.js"
 import "/UI/components/context/index.js"
+import "/UI/components/label/index.js"
 import "/UI/components/svg/index.js"
 import "/UI/components/card/index.js"
 import "/UI/components/modal/index.js"
@@ -13,14 +14,14 @@ export const template = html`
     <layout-main>
         <main>
             <ui-card data-title="wallet">
-                <ui-wallets id="wallets"></ui-wallets>
+                <ui-wallets id="wallets" data-no-persist></ui-wallets>
             </ui-card>
             <ui-card id="withdraw-card" data-title="withdraw">
                 <!-- ── Send form ── -->
                 <form id="form">
                     <div class="field-wrap">
                         <label class="field-label">
-                            <span class="field-label-text"><ui-context data-key="dictionary.address" /></span>
+                            <ui-label data-key="dictionary.address"></ui-label>
                             <div class="address-input-wrap">
                                 <div class="address-display" id="address-display" contenteditable="plaintext-only" spellcheck="false" autocomplete="off" role="textbox" aria-label="address"></div>
                                 <input type="hidden" name="address" id="address-hidden" required />
@@ -32,7 +33,7 @@ export const template = html`
                     </div>
                     <label class="field-label">
                         <div class="amount-label-row">
-                            <span class="field-label-text"><ui-context data-key="dictionary.amount" /></span>
+                            <ui-label data-key="dictionary.amount"></ui-label>
                             <span id="available-balance"></span>
                         </div>
                         <div class="amount-input-row">

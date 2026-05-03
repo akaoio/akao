@@ -64,9 +64,6 @@ export class SWAP extends Route {
             this._pto = null
         }
 
-        const poolCount = chain && Lives.pools?.[chain] ? Object.keys(Lives.pools[chain]).length : null
-        this.$form.updateToolbar({ chain, chainName: Chains[chain]?.name || chain, poolCount })
-
         if (this.$form.from && this.$form.to) this.quote()
         else {
             this.$form.quoteOut = "0"
@@ -113,24 +110,8 @@ export class SWAP extends Route {
             this.$form.error = i18nKeys.includes(result.error) ? Context.get(["dictionary", result.error]) || result.error : result.error
             this.$form.quoteOut = "0"
             this.$form.submitReady = false
-            const poolCount = chain && Lives.pools?.[chain] ? Object.keys(Lives.pools[chain]).length : null
-            // Stop pulsing; preserve existing dexLabel/fee by not passing them
-            this.$form.updateToolbar({ chain, chainName: Chains[chain]?.name || chain, poolCount, polling: false })
             return
         }
-
-        const found = logic.find(this.$form.from?.address, this.$form.to?.address, chain, pools, Dexs)
-        if (found) {
-            const poolCount = chain && Lives.pools?.[chain] ? Object.keys(Lives.pools[chain]).length : null
-            this.$form.updateToolbar({
-                chain,
-                chainName: Chains[chain]?.name || chain,
-                dexLabel: `${found.dex.name || found.pool.dex} ${found.pool.version}`,
-                fee: found.pool.fee,
-                poolCount,
-                polling: false
-            })
-        } else this.$form.updateToolbar({ chain, chainName: Chains[chain]?.name || chain, polling: false })
 
         const { amountOut, gasAmount, gasSymbol } = result
 
@@ -187,7 +168,6 @@ export class SWAP extends Route {
     quote() {
         clearTimeout(this._qpend)
         const chain = this.$wallets.states.get("chain")
-        this.$form.updateToolbar({ chain, polling: true })
         this._qpend = setTimeout(() => this._run(), 500)
     }
 }

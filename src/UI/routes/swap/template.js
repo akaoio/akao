@@ -10,7 +10,7 @@ export const template = html`
     <layout-main>
         <main>
             <ui-card data-title="wallet">
-                <ui-wallets data-currency="false" />
+                <ui-wallets data-currency="false" data-no-persist />
             </ui-card>
             <ui-card id="swap-card" data-title="swap">
                 <ui-swap-form id="swap-form" />

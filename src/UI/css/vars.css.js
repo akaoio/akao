@@ -166,8 +166,8 @@ export const styles = css`
 
         /* Card surfaces */
         --card-bg: var(--navy-800);
-        --card-header-bg: color-mix(in hsl, var(--green-900) 60%, var(--navy-900));
-        --card-header-border: color-mix(in hsl, var(--green-700) 30%, var(--navy-700));
+        --card-header-bg: color-mix(in hsl, var(--green-700) 60%, var(--navy-900));
+        --card-header-border: color-mix(in hsl, var(--neon-g) 30%, transparent);
         --card-shadow: 0 6px 40px color-mix(in hsl, var(--neon-c) 10%, transparent);
 
         /* Card toolbar band (mirrors .catalog-toolbar anatomy) */

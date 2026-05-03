@@ -15,7 +15,7 @@ export const styles = css`
             flex-direction: column;
             align-items: center;
             padding: var(--space) var(--space-sm);
-            gap: var(--space-sm);
+            gap: var(--space-4);
         }
 
         ui-card {
@@ -65,7 +65,7 @@ export const styles = css`
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: var(--space-5);
+        gap: var(--space-2);
         width: 100%;
         padding: var(--space-4) var(--space-4) 0;
         box-sizing: border-box;
@@ -134,14 +134,8 @@ export const styles = css`
         gap: var(--space-1);
     }
 
-    .field-label-text {
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--color);
-        opacity: 0.4;
-        padding-left: var(--space-1);
+    ui-label {
+        --label-padding-left: var(--space-1);
     }
 
     #address-error,

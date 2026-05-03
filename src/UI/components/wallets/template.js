@@ -1,5 +1,6 @@
 import "/UI/components/identicons/index.js"
 import "/UI/components/icon/index.js"
+import "/UI/components/label/index.js"
 import "/UI/components/modal/index.js"
 import "/UI/components/svg/index.js"
 import "/UI/components/context/index.js"
@@ -45,8 +46,8 @@ export const template = html`
         </span>
     </ui-identicons>
 
-    <div id="currency-row">
-        <span id="currency-label"><ui-context data-key="dictionary.coin" /></span>
+    <div id="currency-row" hidden>
+        <ui-label id="currency-label" data-key="dictionary.coin"></ui-label>
         <button class="chain-trigger" id="currency-trigger">
             <span class="trigger-body">
                 <ui-svg class="trigger-icon" id="currency-icon"></ui-svg>
@@ -57,7 +58,7 @@ export const template = html`
     </div>
 
     <div id="chain-row">
-        <span id="chain-label"><ui-context data-key="dictionary.network" /></span>
+        <ui-label id="chain-label" data-key="dictionary.network"></ui-label>
         <button class="chain-trigger" id="chain-trigger">
             <span class="trigger-body">
                 <ui-svg class="trigger-icon" id="chain-icon"></ui-svg>

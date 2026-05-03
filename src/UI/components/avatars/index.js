@@ -52,6 +52,7 @@ export class AVATARS extends Component {
             this.$identicons.events.on("select", ({ detail: { id } }) => {
                 this._previewId = id
                 this.$identicons.id = id
+                this.$identicons.previewId = id
                 this.events.emit("preview", { id })
             }),
             this.$identicons.events.on("increase", ({ detail }) => {
@@ -89,18 +90,20 @@ export class AVATARS extends Component {
         if (this._previewId === null) return
         logic.setid(this._previewId, this.step, this.total)
         this.$identicons.savedId = this._previewId
+        this.$identicons.previewId = null
         this._previewId = null
     }
 
     revert(originalId) {
         this._previewId = null
+        this.$identicons.previewId = null
         this.$identicons.id = originalId
     }
 
     render() {
-        this.$identicons.savedId = this.id
-        this.$identicons.id = this._previewId ?? this.id
         this.$identicons.total = this.total
+        this.$identicons.id = this._previewId ?? this.id
+        this.$identicons.savedId = this.id
     }
 }
 

@@ -17,21 +17,15 @@ const PORT = 8080
 const CLI_ARGS = process.argv.slice(2)
 const HAS_HTTPS_FLAG = CLI_ARGS.includes("--https")
 const HTTPS_ENABLED = HAS_HTTPS_FLAG || ["1", "true", "yes", "on"].includes((process.env.HTTPS || "").toLowerCase())
-const SSL_KEY = process.env.SSL_KEY || process.env.HTTPS_KEY || (CLI_ARGS.find(arg => arg.startsWith("--ssl-key=")) || "").split("=").slice(1).join("=")
-const SSL_CERT = process.env.SSL_CERT || process.env.HTTPS_CERT || (CLI_ARGS.find(arg => arg.startsWith("--ssl-cert=")) || "").split("=").slice(1).join("=")
+const SSL_KEY = process.env.SSL_KEY || process.env.HTTPS_KEY || (CLI_ARGS.find((arg) => arg.startsWith("--ssl-key=")) || "").split("=").slice(1).join("=")
+const SSL_CERT = process.env.SSL_CERT || process.env.HTTPS_CERT || (CLI_ARGS.find((arg) => arg.startsWith("--ssl-cert=")) || "").split("=").slice(1).join("=")
 const DEV_CERT_DIR = ".certs"
 const DEV_CERT_KEY_PATH = path.join(DEV_CERT_DIR, "dev-key.pem")
 const DEV_CERT_CERT_PATH = path.join(DEV_CERT_DIR, "dev-cert.pem")
 const DEV_EVENTS_PATH = "/__dev_events"
 const DEV_CLIENT_MARKER = "__shop_dev_sse_client__"
 
-const FULL_CORE_REBUILD_PATHS = [
-    /^src[\\/]index\.html$/,
-    /^src[\\/]statics[\\/]locales\.ya?ml$/,
-    /^src[\\/]statics[\\/]system\.ya?ml$/,
-    /^src[\\/]statics[\\/]domains\.ya?ml$/
-]
-
+const FULL_CORE_REBUILD_PATHS = [/^src[\\/]index\.html$/, /^src[\\/]statics[\\/]locales\.ya?ml$/, /^src[\\/]statics[\\/]system\.ya?ml$/, /^src[\\/]statics[\\/]domains\.ya?ml$/]
 
 const cryptoPaths = /^src[\\/]statics[\\/](chains|ABIs)[\\/]/
 
@@ -48,10 +42,8 @@ function toPlatformPath(filePath) {
 }
 
 function shouldFullRebuild(normalizedPath) {
-    return FULL_CORE_REBUILD_PATHS.some(pattern => pattern.test(normalizedPath))
+    return FULL_CORE_REBUILD_PATHS.some((pattern) => pattern.test(normalizedPath))
 }
-
-
 
 function isYamlFile(filePath) {
     return /\.(yaml|yml)$/i.test(filePath)
@@ -99,9 +91,8 @@ async function copyOrConvert({ event, normalizedPath }) {
         return outputPath
     }
 
-    if (isYamlFile(normalizedPath)) {
-        await writeJsonFromYaml(srcPath, outputPath)
-    } else {
+    if (isYamlFile(normalizedPath)) await writeJsonFromYaml(srcPath, outputPath)
+    else {
         await ensureDir(outputPath)
         await fs.copyFile(srcPath, outputPath)
     }
@@ -121,7 +112,7 @@ async function walkFiles(dirPath, basePath = dirPath, files = []) {
 
 async function syncInitialItems() {
     const itemsRoot = path.join(SRC_ROOT, "statics", "items")
-    if (!await exists(itemsRoot)) return
+    if (!(await exists(itemsRoot))) return
 
     const files = await walkFiles(itemsRoot)
     for (const normalizedPath of files) await copyOrConvert({ event: "add", normalizedPath })
@@ -199,9 +190,7 @@ async function injectDevClient(htmlContent) {
     // Read HMR client code from file (SSE + full runtime loader)
     let hmrClientCode = ""
     const hmrClientPath = path.join("build", "core", "HMR", "client.js")
-    if (await exists(hmrClientPath)) {
-        hmrClientCode = await fs.readFile(hmrClientPath, "utf8")
-    }
+    if (await exists(hmrClientPath)) hmrClientCode = await fs.readFile(hmrClientPath, "utf8")
 
     const clientLoader = `<script type="module">
 ${hmrClientCode}
@@ -210,43 +199,41 @@ ${hmrClientCode}
     // Inject bootstrap FIRST (in head), then client loader
     const injected = bootstrap + clientLoader
 
-    if (/<script type="module" src="\/core\/Launcher\.js"/i.test(htmlContent)) {
+    if (/<script type="module" src="\/core\/Launcher\.js"/i.test(htmlContent))
         // Inject right before Launcher.js
         return htmlContent.replace(/<script type="module" src="\/core\/Launcher\.js"/i, `${injected}\n    <script type="module" src="/core/Launcher.js"`)
-    }
+
     if (/<\/head>/i.test(htmlContent)) return htmlContent.replace(/<\/head>/i, `${injected}</head>`)
     if (/<\/body>/i.test(htmlContent)) return htmlContent.replace(/<\/body>/i, `${injected}</body>`)
     return `${htmlContent}\n${injected}`
 }
 
 function broadcastReload() {
-    for (const client of sseClients) {
+    for (const client of sseClients)
         try {
             client.write("data: reload\n\n")
         } catch {
             sseClients.delete(client)
         }
-    }
 }
 
 function broadcastHMR(update) {
     const message = JSON.stringify(update)
-    for (const client of sseClients) {
+    for (const client of sseClients)
         try {
             client.write(`data: ${message}\n\n`)
         } catch {
             sseClients.delete(client)
         }
-    }
 }
 
 function determineUpdateType(normalizedPath) {
-    if (normalizedPath.includes('/template.js')) return 'template'
-    if (normalizedPath.endsWith('.css.js')) return 'css'
-    if (normalizedPath.endsWith('.js')) return 'js'
-    if (normalizedPath.endsWith('.json')) return 'json'
-    if (normalizedPath.endsWith('.yaml') || normalizedPath.endsWith('.yml')) return 'yaml'
-    return 'other'
+    if (normalizedPath.includes("/template.js")) return "template"
+    if (normalizedPath.endsWith(".css.js")) return "css"
+    if (normalizedPath.endsWith(".js")) return "js"
+    if (normalizedPath.endsWith(".json")) return "json"
+    if (normalizedPath.endsWith(".yaml") || normalizedPath.endsWith(".yml")) return "yaml"
+    return "other"
 }
 
 function getMimeType(filePath) {
@@ -290,43 +277,33 @@ function formatHost(host) {
 }
 
 async function loadHttpsCredentials() {
-    if (SSL_KEY && SSL_CERT) {
+    if (SSL_KEY && SSL_CERT)
         return {
             key: readFileSync(path.resolve(SSL_KEY)),
             cert: readFileSync(path.resolve(SSL_CERT)),
             source: "env"
         }
-    }
 
     const resolvedKeyPath = path.resolve(DEV_CERT_KEY_PATH)
     const resolvedCertPath = path.resolve(DEV_CERT_CERT_PATH)
 
-    if (existsSync(resolvedKeyPath) && existsSync(resolvedCertPath)) {
+    if (existsSync(resolvedKeyPath) && existsSync(resolvedCertPath))
         return {
             key: readFileSync(resolvedKeyPath),
             cert: readFileSync(resolvedCertPath),
             source: "cache"
         }
-    }
 
-    if (!existsSync(path.resolve(DEV_CERT_DIR))) {
-        mkdirSync(path.resolve(DEV_CERT_DIR), { recursive: true })
-    }
+    if (!existsSync(path.resolve(DEV_CERT_DIR))) mkdirSync(path.resolve(DEV_CERT_DIR), { recursive: true })
 
-    const altNames = [
-        { type: 2, value: "localhost" },
-        ...getAllLanIPs().map(ip => ({ type: 7, ip }))
-    ]
+    const altNames = [{ type: 2, value: "localhost" }, ...getAllLanIPs().map((ip) => ({ type: 7, ip }))]
 
-    const generated = await selfsigned.generate(
-        [{ name: "commonName", value: "localhost" }],
-        {
-            keySize: 2048,
-            algorithm: "sha256",
-            days: 365,
-            extensions: [{ name: "subjectAltName", altNames }]
-        }
-    )
+    const generated = await selfsigned.generate([{ name: "commonName", value: "localhost" }], {
+        keySize: 2048,
+        algorithm: "sha256",
+        days: 365,
+        extensions: [{ name: "subjectAltName", altNames }]
+    })
 
     writeFileSync(resolvedKeyPath, generated.private, "utf8")
     writeFileSync(resolvedCertPath, generated.cert, "utf8")
@@ -477,9 +454,7 @@ async function handleChange({ event, normalizedPath }) {
 
     if (normalizedPath === "importmap.json" || normalizedPath.startsWith("src/")) {
         const output = await copyOrConvert({ event, normalizedPath })
-        if (output) {
-            console.log(`⚡ Incremental ${event}: ${normalizedPath} -> ${normalizePath(output)}`)
-        }
+        if (output) console.log(`⚡ Incremental ${event}: ${normalizedPath} -> ${normalizePath(output)}`)
     }
 }
 
@@ -523,17 +498,17 @@ async function processQueue() {
                 if (cryptoPaths.test(change.normalizedPath)) continue
                 await handleChange(change)
                 batchChanged = true
-                
+
                 // Determine HMR update type
                 const updateType = determineUpdateType(change.normalizedPath)
                 const buildPath = toBuildPath(change.normalizedPath)
-                
-                if (buildPath && (updateType === 'js' || updateType === 'css' || updateType === 'template')) {
+
+                if (buildPath && (updateType === "js" || updateType === "css" || updateType === "template")) {
                     // Convert to browser-accessible path
-                    const browserPath = normalizePath(buildPath).replace(/^build\//, '/')
-                    
+                    const browserPath = normalizePath(buildPath).replace(/^build\//, "/")
+
                     hmrUpdates.push({
-                        type: 'hmr',
+                        type: "hmr",
                         path: browserPath,
                         updateType,
                         timestamp: Date.now()
@@ -544,12 +519,8 @@ async function processQueue() {
             // Send HMR updates or fallback to full reload
             if (hmrUpdates.length > 0) {
                 console.log(`🔥 HMR: Broadcasting ${hmrUpdates.length} update(s)`)
-                for (const update of hmrUpdates) {
-                    broadcastHMR(update)
-                }
-            } else if (batchChanged) {
-                broadcastReload()
-            }
+                for (const update of hmrUpdates) broadcastHMR(update)
+            } else if (batchChanged) broadcastReload()
         }
         console.log("✅ Incremental rebuild completed")
     } catch (error) {
@@ -579,12 +550,9 @@ const { protocol, httpsSource } = await startStaticServer()
 console.log(`✅ Server listening on ${HOST}:${PORT} (${protocol.toUpperCase()})`)
 if (HTTPS_ENABLED) {
     console.log("🔐 HTTPS enabled (secure context)")
-    if (httpsSource === "generated") {
-        console.log(`🧪 Generated local dev certificate at ${DEV_CERT_CERT_PATH}`)
-    }
-    if (httpsSource === "cache") {
-        console.log(`📄 Using cached local dev certificate at ${DEV_CERT_CERT_PATH}`)
-    }
+    if (httpsSource === "generated") console.log(`🧪 Generated local dev certificate at ${DEV_CERT_CERT_PATH}`)
+
+    if (httpsSource === "cache") console.log(`📄 Using cached local dev certificate at ${DEV_CERT_CERT_PATH}`)
 }
 for (const url of getDevUrls(protocol)) console.log(`🌐 ${url}`)
 console.log("👀 Watching src/ for file-based rebuilds...")

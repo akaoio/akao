@@ -11,24 +11,23 @@ export const styles = css`
 
     #scroll-wrap {
         flex: 1;
-        min-height: var(--icon-lg);
         position: relative;
         overflow: hidden;
-        padding-block: var(--space-3);
+        display: flex;
+        align-items: center;
     }
 
     #container {
         width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: var(--space-5);
+        padding-block: var(--identicons-pad-v, var(--space-5));
+        padding-inline: var(--identicons-pad-h, var(--space-5));
+        gap: var(--identicons-gap, var(--space-5));
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
-        /* vertical padding absorbs the scale(1.2) of selected item; extra right room for scaled last item */
-        padding: var(--identicons-pad-v, var(--space-6)) var(--space-9) var(--identicons-pad-v, var(--space-6)) var(--space-6);
         box-sizing: border-box;
 
         /* hide scrollbar on touch devices */
@@ -40,7 +39,6 @@ export const styles = css`
         @media ${mq.smUp} {
             scrollbar-width: thin;
             scrollbar-color: color-mix(in hsl, var(--color) 25%, transparent) transparent;
-            padding-bottom: var(--space-3);
 
             &::-webkit-scrollbar {
                 display: block;
@@ -119,9 +117,11 @@ export const styles = css`
                 }
             }
 
-            /* Saved item hover must not dim — preserve the committed state exactly */
-            &[data-saved] label:hover {
+            /* Saved item hover/active must not shrink — preserve committed scale exactly */
+            &[data-saved] label:hover,
+            &[data-saved] label:active {
                 opacity: 1;
+                transform: scale(1.2);
                 color: hsl(var(--item-hue) 100% 65%);
             }
         }
@@ -242,14 +242,6 @@ export const styles = css`
     :host([data-mode="picker"]) .status-nav-btn--carousel {
         display: none;
     }
-    /* add button hidden by default; visible only in picker mode */
-    .status-nav-btn--picker {
-        display: none;
-    }
-    :host([data-mode="picker"]) .status-nav-btn--picker {
-        display: inline-flex;
-        justify-content: flex-start;
-    }
 
     .status-item {
         &[hidden] {
@@ -284,9 +276,19 @@ export const styles = css`
         font-size: 0.85em;
     }
 
+    /* add button hidden by default; visible only in picker mode.
+       Declared after .status-nav-btn to win the cascade (equal specificity, last wins). */
+    .status-nav-btn.status-nav-btn--picker {
+        display: none;
+    }
+    :host([data-mode="picker"]) .status-nav-btn--picker {
+        display: inline-flex;
+        justify-content: flex-start;
+    }
+
     #status-add {
         min-width: unset;
-        padding-right: var(--space-3);
+        padding-right: var(--identicons-add-padding-right, var(--space-3));
     }
 
     .status-sep {
@@ -305,12 +307,12 @@ export const styles = css`
         justify-content: center;
         background: none;
         border: none;
-        min-width: 2.25rem;
-        min-height: 2.25rem;
+        min-width: var(--identicons-btn-size, 2.25rem);
+        min-height: var(--identicons-btn-size, 2.25rem);
         padding: 0;
         cursor: pointer;
         pointer-events: all;
-        color: var(--neon-g);
+        color: var(--identicons-btn-color, var(--neon-g));
         transition:
             opacity var(--speed),
             filter var(--speed);

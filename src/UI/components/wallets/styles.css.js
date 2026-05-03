@@ -21,7 +21,10 @@ export const styles = css`
     ui-identicons {
         flex: 1;
         min-height: 0;
-        --identicons-pad-v: var(--space-4);
+        --identicons-pad-v: var(--space-5);
+        --identicons-pad-h: var(--space-5);
+        --identicons-btn-size: 2rem;
+        --identicons-add-padding-right: var(--space-2);
         /* Hide the #N number indicator — wallet names replace it */
         --identicons-status-left-display: none;
         /* Allow the status-right (which holds the actions slot) to stretch full width */
@@ -332,17 +335,14 @@ export const styles = css`
         gap: var(--space-1);
         padding: 0 var(--space);
         margin-bottom: var(--space-3);
+
+        &[hidden] {
+            display: none;
+        }
     }
 
-    #currency-label,
-    #chain-label {
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--color);
-        opacity: 0.4;
-        white-space: nowrap;
+    ui-label {
+        display: block;
     }
 
     /* ── Address/balance card ────────────────────────────────────────────────── */
@@ -351,8 +351,6 @@ export const styles = css`
         flex-direction: column;
         gap: 0;
         padding: 0;
-        background: var(--field-bg);
-        box-shadow: 0 0 8px var(--accent-info-glow);
         transition:
             background var(--speed),
             border-color var(--speed),
