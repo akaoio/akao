@@ -98,6 +98,30 @@ Test.describe("Router — process()", () => {
         Test.assert.equal(r.params.item, "organic-tea")
     })
 
+    Test.it("extracts tag dynamic param", () => {
+        const r = Router.process({ path: "/en/tag/electronics", ...opts })
+        Test.assert.equal(r.route, "/tag/[tag]")
+        Test.assert.equal(r.params.tag, "electronics")
+    })
+
+    Test.it("tag route respects locale prefix", () => {
+        const r = Router.process({ path: "/fr/tag/soldes", ...opts })
+        Test.assert.equal(r.locale.code, "fr")
+        Test.assert.equal(r.route, "/tag/[tag]")
+        Test.assert.equal(r.params.tag, "soldes")
+    })
+
+    Test.it("tag route merges search params", () => {
+        const r = Router.process({ path: "/en/tag/electronics?currency=USDT", ...opts })
+        Test.assert.equal(r.params.tag, "electronics")
+        Test.assert.equal(r.params.currency, "USDT")
+    })
+
+    Test.it("tag path param overrides search param on conflict", () => {
+        const r = Router.process({ path: "/en/tag/electronics?tag=other", ...opts })
+        Test.assert.equal(r.params.tag, "electronics")
+    })
+
     Test.it("path params override search params on conflict", () => {
         const r = Router.process({ path: "/en/item/tea-slug?item=other", ...opts })
         Test.assert.equal(r.params.item, "tea-slug")

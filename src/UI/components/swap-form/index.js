@@ -27,30 +27,37 @@ export class SWAP_FORM extends HTMLElement {
         this.$error      = r("#error")
         this.$submit     = r("#submit")
         this.$slippage   = r("#slippage")
-        this.$fromPicker = r("#from-picker")
-        this.$toPicker   = r("#to-picker")
+        this.$fromModal  = r("#from-modal")
+        this.$fromList   = r("#from-list")
+        this.$toModal    = r("#to-modal")
+        this.$toList     = r("#to-list")
         this.$fromTrigger = r("#from-trigger")
         this.$toTrigger   = r("#to-trigger")
 
-        this.$fromPicker.callback = (address) => {
-            const opt = this._tokenMap.get(address)
+        this.$fromList.addEventListener("change", (e) => {
+            const opt = this._tokenMap.get(e.detail.value)
             if (!opt) return
+            this.$fromModal.close()
             this._fromOpt = opt
+            this.$fromList.setSelection(e.detail.value)
             this._updateTrigger(this.$fromTrigger, opt)
-            if (!this._toOpt || !this.amountIn) this.submitReady = false
+            this.submitReady = false
+            this.onfrom?.()
             this.onquote?.()
-        }
-        this.$toPicker.callback = (address) => {
-            const opt = this._tokenMap.get(address)
+        })
+        this.$toList.addEventListener("change", (e) => {
+            const opt = this._tokenMap.get(e.detail.value)
             if (!opt) return
+            this.$toModal.close()
             this._toOpt = opt
+            this.$toList.setSelection(e.detail.value)
             this._updateTrigger(this.$toTrigger, opt)
-            if (!this._fromOpt || !this.amountIn) this.submitReady = false
+            this.submitReady = false
             this.onquote?.()
-        }
+        })
 
-        this.$fromTrigger.addEventListener("click", () => this.$fromPicker.show())
-        this.$toTrigger.addEventListener("click",   () => this.$toPicker.show())
+        this.$fromTrigger.addEventListener("click", () => this.$fromModal.showModal())
+        this.$toTrigger.addEventListener("click",   () => this.$toModal.showModal())
         this.$amountIn.addEventListener("input", this._onInput)
         this.$submit.addEventListener("click", this._onSubmit)
         r("#flip-btn").addEventListener("click", this._onFlip)
@@ -72,26 +79,25 @@ export class SWAP_FORM extends HTMLElement {
 
     // ── Public API ────────────────────────────────────────────────────────────
 
-    /** Replace the token list. Resets both pickers; re-selects from/to if still present. */
     set options(opts) {
         this._tokenMap = new Map(opts.map(o => [o.address, o]))
-        const pickerOpts = opts.map(o => ({
-            value:  o.address,
-            icon:   o.configs?.symbol || "",
-            symbol: o.configs?.name   || o.address,
+        const listOpts = opts.map(o => ({
+            value:   o.address,
+            _name:   o.configs?.name   || o.address,
+            _symbol: o.configs?.symbol || "",
         }))
-        this.$fromPicker?.states.set({ options: pickerOpts })
-        this.$toPicker?.states.set({ options: pickerOpts })
+        this.$fromList?.setOptions(listOpts)
+        this.$toList?.setOptions(listOpts)
 
         // Re-select previously chosen tokens if still in the new list
         if (this._fromOpt) {
             const still = this._tokenMap.get(this._fromOpt.address)
-            if (still) { this.$fromPicker.select(still.address); this._updateTrigger(this.$fromTrigger, still) }
+            if (still) { this.$fromList.setSelection(this._fromOpt.address); this._updateTrigger(this.$fromTrigger, still) }
             else this._clearTrigger(this.$fromTrigger, "from")
         }
         if (this._toOpt) {
             const still = this._tokenMap.get(this._toOpt.address)
-            if (still) { this.$toPicker.select(still.address); this._updateTrigger(this.$toTrigger, still) }
+            if (still) { this.$toList.setSelection(this._toOpt.address); this._updateTrigger(this.$toTrigger, still) }
             else this._clearTrigger(this.$toTrigger, "to")
         }
     }
@@ -113,18 +119,20 @@ export class SWAP_FORM extends HTMLElement {
     }
 
     /** Select a token programmatically (e.g. from URL params). side = "from"|"to" */
-    selectToken(side, address) {
-        const opt = this._tokenMap.get(address)
+    selectToken(side, key) {
+        const opt = this._tokenMap.get(key)
         if (!opt) return
         if (side === "from") {
             this._fromOpt = opt
-            this.$fromPicker?.select(opt.address)
+            this.$fromList?.setSelection(key)
             this._updateTrigger(this.$fromTrigger, opt)
+            this.onfrom?.()
         } else {
             this._toOpt = opt
-            this.$toPicker?.select(opt.address)
+            this.$toList?.setSelection(key)
             this._updateTrigger(this.$toTrigger, opt)
         }
+        this.onquote?.()
     }
 
     get from()     { return this._fromOpt }
@@ -158,9 +166,9 @@ export class SWAP_FORM extends HTMLElement {
         const prevTo   = this._toOpt
         this._fromOpt = prevTo
         this._toOpt   = prevFrom
-        if (this._fromOpt) { this.$fromPicker.select(this._fromOpt.address); this._updateTrigger(this.$fromTrigger, this._fromOpt) }
+        if (this._fromOpt) { this.$fromList.setSelection(this._fromOpt.address); this._updateTrigger(this.$fromTrigger, this._fromOpt) }
         else this._clearTrigger(this.$fromTrigger, "from")
-        if (this._toOpt)   { this.$toPicker.select(this._toOpt.address);   this._updateTrigger(this.$toTrigger,   this._toOpt)   }
+        if (this._toOpt)   { this.$toList.setSelection(this._toOpt.address);   this._updateTrigger(this.$toTrigger,   this._toOpt)   }
         else this._clearTrigger(this.$toTrigger, "to")
         if (this.$amountIn) this.$amountIn.value = ""
         this.quoteOut  = "0"

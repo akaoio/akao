@@ -1,9 +1,8 @@
 import "/UI/components/identicons/index.js"
 import "/UI/components/icon/index.js"
-import "/UI/components/label/index.js"
 import "/UI/components/modal/index.js"
 import "/UI/components/svg/index.js"
-import "/UI/components/context/index.js"
+import "/UI/components/asset-select/index.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
 
@@ -46,27 +45,7 @@ export const template = html`
         </span>
     </ui-identicons>
 
-    <div id="currency-row" hidden>
-        <ui-label id="currency-label" data-key="dictionary.coin"></ui-label>
-        <button class="chain-trigger" id="currency-trigger">
-            <span class="trigger-body">
-                <ui-svg class="trigger-icon" id="currency-icon"></ui-svg>
-                <span class="trigger-placeholder"><ui-context data-key="dictionary.selectCoin" /></span>
-                <span class="trigger-value" id="currency-name"></span>
-            </span>
-        </button>
-    </div>
-
-    <div id="chain-row">
-        <ui-label id="chain-label" data-key="dictionary.network"></ui-label>
-        <button class="chain-trigger" id="chain-trigger">
-            <span class="trigger-body">
-                <ui-svg class="trigger-icon" id="chain-icon"></ui-svg>
-                <span class="trigger-placeholder"><ui-context data-key="dictionary.selectNetwork" /></span>
-                <span class="trigger-value" id="chain-name"></span>
-            </span>
-        </button>
-    </div>
+    <ui-asset-select id="asset-select"></ui-asset-select>
 
     <div id="wallet-row">
         <div id="address-wrap">
@@ -84,16 +63,6 @@ export const template = html`
             </span>
         </div>
     </div>
-
-    <!-- ── Currency picker modal (deposit/withdraw routes only) ── -->
-    <ui-modal id="currency-modal" data-header="currency">
-        <ul id="currency-list"></ul>
-    </ui-modal>
-
-    <!-- ── Chain picker modal ── -->
-    <ui-modal id="chain-modal" data-header="chain">
-        <ul id="chain-list"></ul>
-    </ui-modal>
 
     <!-- ── Delete wallet confirm modal ── -->
     <ui-modal id="delete-modal" data-header="confirm">

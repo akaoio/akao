@@ -531,7 +531,7 @@ async function processQueue() {
     }
 }
 
-const watcher = chokidar.watch(["src/**/*", "importmap.json"], {
+const watcher = chokidar.watch(["src", "importmap.json"], {
     ignored: /(^|[\/\\])\../,
     persistent: true,
     ignoreInitial: true

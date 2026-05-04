@@ -124,6 +124,7 @@ export const styles = css`
     #from-token,
     #to-token {
         flex-shrink: 0;
+        position: relative;
     }
 
     .token-trigger {

@@ -34,7 +34,7 @@ for (const name of itemDirs) {
     } else {
         const subDirs = await FS.dir([...paths.src.items, name])
         const nested = []
-        for (const sub of subDirs) {
+        for (const sub of subDirs)
             if (await FS.isDirectory([...paths.src.items, name, sub])) {
                 const subMeta = await FS.load([...paths.src.items, name, sub, "meta.yaml"])
                 if (subMeta) {
@@ -42,7 +42,7 @@ for (const name of itemDirs) {
                     normalizeTags(subMeta.tags).forEach((tag) => allTags.add(tag))
                 }
             }
-        }
+
         if (nested.length > 0) gameItemsMap[name] = nested
     }
 }
@@ -71,12 +71,11 @@ for (const tag of tagsList) {
         if (normalizeTags(meta?.tags).includes(tag)) tagItems.push(itemName)
     }
 
-    for (const [gameId, itemIds] of Object.entries(gameItemsMap)) {
+    for (const [gameId, itemIds] of Object.entries(gameItemsMap))
         for (const itemId of itemIds) {
             const meta = await FS.load([...paths.src.items, gameId, itemId, "meta.yaml"])
             if (normalizeTags(meta?.tags).includes(tag)) tagItems.push(`${gameId}/${itemId}`)
         }
-    }
 
     const tagPages = Math.ceil(tagItems.length / pagination)
     await FS.write([...paths.build.statics, "tags", tag, "meta.json"], {
@@ -103,6 +102,6 @@ for (const name of gamesDirs) {
 const indexContent = await FS.load(paths.src.index)
 log.info("Generating tag routes...")
 const tagRouteCount = await generateRoutes(locales, coreItems, tagsList, games, indexContent, "build", ["tag/[tag]"], gameItemsMap)
-log.ok(`Created ${tagRouteCount} tag-route files`) 
+log.ok(`Created ${tagRouteCount} tag-route files`)
 
 log.start("Index build completed successfully!")

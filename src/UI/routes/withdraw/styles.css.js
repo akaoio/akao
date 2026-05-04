@@ -20,7 +20,6 @@ export const styles = css`
 
         ui-card {
             width: 100%;
-            max-width: var(--container-form);
         }
 
         /* Withdraw card grows to fill remaining vertical space */
@@ -136,6 +135,8 @@ export const styles = css`
 
     ui-label {
         --label-padding-left: var(--space-1);
+        font-size: var(--text-2xs);
+        opacity: 0.75;
     }
 
     #address-error,

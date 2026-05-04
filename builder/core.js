@@ -379,7 +379,6 @@ const found = await FS.dir(paths.src.routes, /index\.js$/)
 // Keep only directories that have index.js by stripping the suffix
 // Sort: fixed-first-segment routes before fully-dynamic ones to ensure correct Router matching order
 const routeDirs = Array.from(new Set(found.filter((p) => p.endsWith("index.js")).map((p) => p.replace(/\/index\.js$/, ""))))
-    .filter((route) => route !== "tag/[tag]")
     .sort((a, b) => {
         const aFirstDynamic = a.split("/")[0]?.startsWith("[")
         const bFirstDynamic = b.split("/")[0]?.startsWith("[")

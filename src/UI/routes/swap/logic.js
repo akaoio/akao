@@ -17,6 +17,56 @@ export class Logic {
         return opts
     }
 
+    /**
+     * Build a deduplicated token list across all chains, keyed by symbol.
+     * Each entry carries a `chains` array of chainIds where it exists,
+     * plus all contract addresses per chain for later resolution.
+     */
+    static allTokens(Chains, allPools) {
+        const bySymbol = new Map()
+
+        const add = (chainId, address, configs) => {
+            const symbol = configs?.symbol
+            if (!symbol || !address) return
+            if (!bySymbol.has(symbol)) bySymbol.set(symbol, { address, configs, chains: [], _chainAddresses: {} })
+            const entry = bySymbol.get(symbol)
+            if (!entry.chains.includes(chainId)) {
+                entry.chains.push(chainId)
+                entry._chainAddresses[chainId] = address
+            }
+        }
+
+        for (const [chainId, chain] of Object.entries(Chains)) {
+            for (const [address, configs] of Object.entries(chain.currencies || {})) add(chainId, address, configs)
+            const pools = allPools?.[chainId]
+            if (pools) for (const pool of Object.values(pools))
+                for (const token of [pool.token0, pool.token1])
+                    if (token?.address && token?.configs) add(chainId, token.address, token.configs)
+        }
+
+        return Array.from(bySymbol.values())
+    }
+
+    /**
+     * Given two selected tokens and the full chain/pool data, return the set of
+     * chainIds where a pool exists for that pair.
+     * Returns [] when no shared chain has a matching pool.
+     */
+    static resolveChain(from, to, allPools) {
+        if (!from || !to) return []
+        const shared = from.chains.filter((c) => to.chains.includes(c))
+        return shared.filter((chainId) => {
+            const pools = allPools?.[chainId]
+            if (!pools) return false
+            const fromAddr = from._chainAddresses[chainId]
+            const toAddr = to._chainAddresses[chainId]
+            return Object.values(pools).some((pool) =>
+                (pool.token0?.address === fromAddr && pool.token1?.address === toAddr) ||
+                (pool.token0?.address === toAddr   && pool.token1?.address === fromAddr)
+            )
+        })
+    }
+
     static balance(chain, from, balances) {
         if (!chain || !from) return null
         const balance = balances?.[chain]?.[from.address]

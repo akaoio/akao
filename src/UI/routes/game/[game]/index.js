@@ -553,11 +553,17 @@ export class GAME extends HTMLElement {
         const buttons = [...sortBar.querySelectorAll("button")]
         const allDirs = buttons.map((b) => b.querySelector(".sort-dir"))
         allDirs.forEach((d) => {
-            if (d) { d.style.display = "inline-block"; d.textContent = "↑" }
+            if (d) {
+                d.style.display = "inline-block"
+                d.textContent = "↑"
+            }
         })
         const maxBtnW = Math.max(...buttons.map((b) => b.offsetWidth))
         allDirs.forEach((d) => {
-            if (d) { d.style.display = ""; d.textContent = "" }
+            if (d) {
+                d.style.display = ""
+                d.textContent = ""
+            }
         })
         buttons.forEach((b) => {
             b.style.minWidth = `${maxBtnW}px`

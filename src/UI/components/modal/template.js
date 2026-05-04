@@ -8,7 +8,7 @@ export const template = html`
         <div class="container">
             <header>
                 <ui-context id="header" />
-                <slot name="header"></slot>
+<slot name="header"></slot>
             </header>
             <section>
                 <slot></slot>

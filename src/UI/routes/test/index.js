@@ -2,15 +2,13 @@ import template from "./template.js"
 import Route from "/core/UI/Route.js"
 import { TESTS } from "/core/tests/manifest.js"
 
-const TEST_MODULES = TESTS
-    .filter((test) => test.browser !== false)
-    .map((test) => `/core/tests/${test.file}`)
+const TEST_MODULES = TESTS.filter((test) => test.browser !== false).map((test) => `/core/tests/${test.file}`)
 
 export class TEST extends Route {
     static module = import.meta.url
     constructor() {
         super(template)
-        this._results = []   // { suiteName, tests: [...], status }
+        this._results = [] // { suiteName, tests: [...], status }
         this._totals = { passed: 0, failed: 0, skipped: 0, total: 0 }
         this._running = false
         this._openSuites = new Set()
@@ -41,7 +39,11 @@ export class TEST extends Route {
         await Indexes.Cart.get("cart").del()
 
         for (const mod of TEST_MODULES)
-            try { await import(mod) } catch (e) { console.error("Failed to load", mod, e) }
+            try {
+                await import(mod)
+            } catch (e) {
+                console.error("Failed to load", mod, e)
+            }
 
         await Test.run(filter || null, (suiteResult) => {
             this._onSuiteComplete(suiteResult)
@@ -52,21 +54,16 @@ export class TEST extends Route {
     }
 
     async _runFailed() {
-        const failedSuites = this._results
-            .filter(s => s.tests.some(t => t.status === "fail"))
-            .map(s => s.name)
+        const failedSuites = this._results.filter((s) => s.tests.some((t) => t.status === "fail")).map((s) => s.name)
         if (!failedSuites.length) return
         // Re-run by filter (suite name match)
         for (const name of failedSuites) await this._runAll(name)
     }
 
     _onSuiteComplete(suiteResult) {
-        const existing = this._results.findIndex(s => s.name === suiteResult.name)
-        if (existing >= 0) 
-            this._results[existing] = suiteResult
-         else 
-            this._results.push(suiteResult)
-        
+        const existing = this._results.findIndex((s) => s.name === suiteResult.name)
+        if (existing >= 0) this._results[existing] = suiteResult
+        else this._results.push(suiteResult)
 
         for (const t of suiteResult.tests) {
             if (t.status === "pass") this._totals.passed++
@@ -80,7 +77,6 @@ export class TEST extends Route {
     }
 
     _updateSummary() {
-
         const root = this.shadowRoot
         const { passed, failed, skipped, total } = this._totals
         this.dataset.passed = String(passed)
@@ -115,7 +111,7 @@ export class TEST extends Route {
         }
 
         // Progress bar
-        const pct = total > 0 ? Math.round((passed + failed + skipped) / total * 100) : 0
+        const pct = total > 0 ? Math.round(((passed + failed + skipped) / total) * 100) : 0
         const fill = summary.querySelector(".fill")
         fill.style.width = `${pct}%`
         fill.classList.toggle("has-failures", failed > 0)
@@ -129,11 +125,11 @@ export class TEST extends Route {
         const existing = suitesEl.querySelector(`[data-suite="${CSS.escape(suite.name)}"]`)
         if (existing) existing.remove()
 
-        const hasFail = suite.tests.some(t => t.status === "fail")
-        const isInteractive = suite.tests.every(t => t.interactive)
+        const hasFail = suite.tests.some((t) => t.status === "fail")
+        const isInteractive = suite.tests.every((t) => t.interactive)
         const isOpen = this._openSuites.has(suite.name) || hasFail
 
-        const passCount = suite.tests.filter(t => t.status === "pass").length
+        const passCount = suite.tests.filter((t) => t.status === "pass").length
         const total = suite.tests.length
         const badgeText = isInteractive ? "interactive" : `${passCount}/${total}`
         const badgeClass = isInteractive ? "interactive" : hasFail ? "has-fail" : "all-pass"
@@ -172,9 +168,7 @@ export class TEST extends Route {
                 <span class="name">${this._esc(test.name)}</span>
             `
 
-            if (test.interactive) 
-                inner += `<button class="run-btn" data-test="${this._esc(test.name)}">Run</button>`
-            
+            if (test.interactive) inner += `<button class="run-btn" data-test="${this._esc(test.name)}">Run</button>`
 
             if (test.status === "fail" && test.error) {
                 const msg = this._esc(test.error.message || String(test.error))
@@ -221,11 +215,7 @@ export class TEST extends Route {
     }
 
     _esc(str) {
-        return String(str)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
     }
 }
 

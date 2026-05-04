@@ -55,7 +55,28 @@ export const styles = css`
         min-width: 0;
         gap: var(--space-1);
         border-radius: 2px;
-        transition: box-shadow var(--speed);
+        border-bottom: 1px solid transparent;
+        transition:
+            border-bottom-color var(--speed),
+            box-shadow var(--speed);
+
+        &:has(#label-input:hover) {
+            border-bottom-color: color-mix(in hsl, var(--accent-info) 30%, transparent);
+        }
+
+        &:has(#label-input:focus) {
+            border-bottom-color: var(--accent-info);
+            box-shadow: 0 1px 0 0 color-mix(in hsl, var(--accent-info) 40%, transparent);
+        }
+
+        &:has(#label-input.saving) {
+            border-bottom-color: color-mix(in hsl, var(--accent-action) 40%, transparent);
+        }
+
+        &:has(#label-input.saved) {
+            border-bottom-color: var(--neon-g);
+            box-shadow: 0 1px 0 0 color-mix(in hsl, var(--neon-g) 40%, transparent);
+        }
 
         &.editing {
             animation: label-edit-splash 0.38s ease-out forwards;
@@ -87,30 +108,17 @@ export const styles = css`
         color: var(--accent-info);
         background: transparent;
         border: none;
-        border-bottom: 1px solid transparent;
         outline: none;
-        padding: 0 0 1px;
+        padding: 0;
         caret-color: var(--accent-info);
         pointer-events: all;
-        transition:
-            border-bottom-color var(--speed),
-            box-shadow var(--speed),
-            opacity var(--speed);
+        transition: opacity var(--speed);
 
         &::placeholder {
             color: var(--color);
             opacity: 0.35;
             font-size: var(--text-xs);
             text-shadow: none;
-        }
-
-        &:hover {
-            border-bottom-color: color-mix(in hsl, var(--accent-info) 30%, transparent);
-        }
-
-        &:focus {
-            border-bottom-color: var(--accent-info);
-            box-shadow: 0 1px 0 0 color-mix(in hsl, var(--accent-info) 40%, transparent);
         }
 
         &:disabled {
@@ -121,14 +129,7 @@ export const styles = css`
 
         /* Dim while the Zen write is in-flight */
         &.saving {
-            border-bottom-color: color-mix(in hsl, var(--accent-action) 40%, transparent);
             opacity: 0.6;
-        }
-
-        /* Brief green glow after a successful Zen ack */
-        &.saved {
-            border-bottom-color: var(--neon-g);
-            box-shadow: 0 1px 0 0 color-mix(in hsl, var(--neon-g) 40%, transparent);
         }
     }
 
@@ -326,25 +327,6 @@ export const styles = css`
         }
     }
 
-    /* ── Selector rows — label above, trigger below at 80% width ───────────────── */
-    #currency-row,
-    #chain-row {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-1);
-        padding: 0 var(--space);
-        margin-bottom: var(--space-3);
-
-        &[hidden] {
-            display: none;
-        }
-    }
-
-    ui-label {
-        display: block;
-    }
-
     /* ── Address/balance card ────────────────────────────────────────────────── */
     #wallet-row {
         display: flex;
@@ -484,193 +466,6 @@ export const styles = css`
         }
     }
 
-    /* ── Chain trigger rows ──────────────────────────────────────────────────── */
-    .chain-trigger {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        width: 100%;
-        padding: var(--space-sm) var(--space);
-        background: transparent;
-        border: none;
-        box-sizing: border-box;
-        color: var(--color);
-        font-family: var(--header-font);
-        font-size: var(--text-xs);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        cursor: pointer;
-        outline: none;
-        transition:
-            color var(--speed),
-            background var(--speed);
-
-        /* Chevron — pushed to the right end */
-        &::after {
-            content: "";
-            pointer-events: none;
-            width: 10px;
-            height: 6px;
-            flex-shrink: 0;
-            margin-left: auto;
-            background-color: currentColor;
-            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
-            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
-            -webkit-mask-size: 10px 6px;
-            mask-size: 10px 6px;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            opacity: 0.35;
-            transition: opacity var(--speed);
-        }
-
-        &:hover {
-            color: var(--accent-info);
-            background: color-mix(in hsl, var(--accent-info) 5%, transparent);
-            &::after {
-                opacity: 1;
-            }
-            &::before {
-                opacity: 0.6;
-            }
-        }
-
-        &:focus-visible {
-            color: var(--accent-info);
-            background: color-mix(in hsl, var(--accent-info) 5%, transparent);
-        }
-
-        &:active {
-            background: color-mix(in hsl, var(--accent-info) 8%, transparent);
-        }
-
-        /* Content area — fills remaining space, never wraps */
-        .trigger-body {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-2);
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        /* Chain icon */
-        .trigger-icon {
-            width: var(--icon-sm);
-            height: var(--icon-sm);
-            min-width: var(--icon-sm);
-            flex-shrink: 0;
-        }
-
-        /* Selected value — accent color so it reads distinct from the dim prefix */
-        .trigger-value {
-            text-shadow: var(--glow-info);
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .trigger-placeholder {
-            opacity: 0.45;
-        }
-
-        /* Hide placeholder once a value is selected */
-        &[data-has-value] .trigger-placeholder {
-            display: none;
-        }
-
-        /* Hide icon + name until a value is set */
-        &:not([data-has-value]) .trigger-icon,
-        &:not([data-has-value]) #chain-name,
-        &:not([data-has-value]) #currency-name {
-            display: none;
-        }
-    }
-
-    /* ── Currency trigger — only shown in deposit/withdraw mode ────────────────
-       Hidden by default; JS shows it when dataset.currency !== "false".
-       ────────────────────────────────────────────────────────────────────────── */
-    #currency-trigger {
-        display: none;
-        border: 1px solid var(--accent-info-border);
-        box-shadow: 0 0 8px var(--accent-info-glow);
-
-        &[data-visible] {
-            display: flex;
-        }
-
-        &:hover {
-            border-color: var(--accent-info);
-            box-shadow: 0 0 16px var(--accent-info-border);
-        }
-    }
-
-    #chain-trigger {
-        align-items: center;
-        border: 1px solid var(--accent-info-border);
-        box-shadow: 0 0 8px var(--accent-info-glow);
-
-        &:hover {
-            border-color: var(--accent-info);
-            box-shadow: 0 0 16px var(--accent-info-border);
-        }
-
-        .trigger-icon {
-            align-self: center;
-        }
-    }
-
-    /* ── Currency picker modal list ─────────────────────────────────────────────
-       Mirrors #chain-list exactly.
-       ────────────────────────────────────────────────────────────────────────── */
-    #currency-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        min-width: 14rem;
-
-        li {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            padding: var(--space-sm) var(--space);
-            cursor: pointer;
-            font-family: var(--header-font);
-            font-size: var(--text-sm);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--color);
-            border-bottom: 1px solid color-mix(in hsl, var(--color) 8%, transparent);
-            transition:
-                background var(--speed),
-                color var(--speed);
-
-            &:last-child {
-                border-bottom: none;
-            }
-
-            &:hover {
-                background: var(--accent-info-surface);
-                color: var(--accent-info);
-            }
-
-            &[data-selected="true"] {
-                color: var(--accent-action);
-                background: color-mix(in hsl, var(--accent-action) 6%, transparent);
-                text-shadow: var(--glow-action);
-            }
-
-            ui-svg {
-                width: var(--icon-sm);
-                height: var(--icon-sm);
-                flex-shrink: 0;
-            }
-        }
-    }
-
     /* ── Balance wrap — right grid cell ────────────────────────────────────────
        Occupies the full right half. Amount + symbol left-aligned with padding
        from the divider, so the balance reads as a distinct zone.
@@ -726,63 +521,6 @@ export const styles = css`
         }
     }
 
-    /* ── Chain picker modal list ────────────────────────────────────────────────
-       Flat rows: icon + chain name. Active chain highlighted green;
-       hover previews in cyan — consistent with the rest of the UI.
-       ────────────────────────────────────────────────────────────────────────── */
-    #chain-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        min-width: 14rem;
-
-        li {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            padding: var(--space-sm) var(--space);
-            cursor: pointer;
-            font-family: var(--header-font);
-            font-size: var(--text-sm);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--color);
-            border-bottom: 1px solid color-mix(in hsl, var(--color) 8%, transparent);
-            transition:
-                background var(--speed),
-                color var(--speed);
-
-            &:last-child {
-                border-bottom: none;
-            }
-
-            &:hover {
-                background: var(--accent-info-surface);
-                color: var(--accent-info);
-            }
-
-            /* Currently active chain — green accent with glow */
-            &[data-selected="true"] {
-                color: var(--accent-action);
-                background: color-mix(in hsl, var(--accent-action) 6%, transparent);
-                text-shadow: var(--glow-action);
-            }
-
-            ui-svg {
-                width: var(--icon-sm);
-                height: var(--icon-sm);
-                flex-shrink: 0;
-            }
-
-            .chain-standard {
-                margin-left: auto;
-                font-size: var(--text-xs);
-                letter-spacing: 0.08em;
-                opacity: 0.5;
-                flex-shrink: 0;
-            }
-        }
-    }
 `
 
 export default styles

@@ -188,6 +188,7 @@ export const styles = css`
         --accent-action: var(--neon-g); /* confirm, submit, price, positive */
         --accent-success: var(--neon-g); /* success states, completed actions */
         --accent-warning: var(--neon-y); /* caution, irreversible actions, pre-error */
+        --accent-warning-text: var(--orange-500); /* readable dark-orange for warning text/icons */
         --accent-danger: var(--neon-m); /* error, destructive, blocked */
         --glow-info: var(--glow-c);
         --glow-action: var(--glow-g);

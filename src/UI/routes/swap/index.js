@@ -20,22 +20,27 @@ export class SWAP extends Route {
 
         this.$form.onquote = this.quote
         this.$form.onswap = this.submit
+        this.$form.onfrom = () => {
+            this.$wallets.setCurrency(this.$form.from?.configs?.name || null)
+            this._balance()
+        }
         this.$form.onflip = () => {
             if (this.$form.from) this._balance()
             if (this.$form.from && this.$form.to && this.$form.amountIn) this.quote()
         }
-
         this.sub(
             this.$wallets.states.on(
                 "address",
                 ({ value }) => {
                     this.$form.enabled = !!value
-                    if (value) this.options()
+                    if (value) this._loadTokens()
                 },
                 true
             ),
-            this.$wallets.states.on("chain", () => this.options()),
-            events.on("Lives.pools", () => this.options())
+            this.$wallets.states.on("chain", () => this._loadTokens()),
+            events.on("Lives.pools", () => {
+                if (this.$form.from && this.$form.to && this.$form.amountIn) this.quote()
+            })
         )
 
         // Pre-fill from URL params
@@ -46,34 +51,27 @@ export class SWAP extends Route {
         Elements.Access?.checkpoint()
     }
 
-    options() {
+    _loadTokens() {
         const chain = this.$wallets.states.get("chain")
         if (!chain) return
         const opts = logic.options(chain, Lives.pools?.[chain], Chains)
-
         this.$form.options = opts
 
         if (this._pfrom) {
-            const found = opts.find((o) => o.address.toLowerCase() === this._pfrom.toLowerCase())
+            const found = opts.find((o) => o.configs?.symbol?.toLowerCase() === this._pfrom.toLowerCase())
             if (found) this.$form.selectToken("from", found.address)
             this._pfrom = null
         }
         if (this._pto) {
-            const found = opts.find((o) => o.address.toLowerCase() === this._pto.toLowerCase())
+            const found = opts.find((o) => o.configs?.symbol?.toLowerCase() === this._pto.toLowerCase())
             if (found) this.$form.selectToken("to", found.address)
             this._pto = null
-        }
-
-        if (this.$form.from && this.$form.to) this.quote()
-        else {
-            this.$form.quoteOut = "0"
-            this.$form.gas = ""
-            this.$form.error = ""
         }
     }
 
     _balance() {
-        const balance = logic.balance(this.$wallets.states.get("chain"), this.$form.from, Lives.balances)
+        const chain = this.$wallets.states.get("chain")
+        const balance = logic.balance(chain, this._resolve(this.$form.from), Lives.balances)
         if (balance === null) {
             this.$form.balanceIn = ""
             return
@@ -81,6 +79,10 @@ export class SWAP extends Route {
         const label = Context.get(["dictionary", "balance"]) || "Balance"
         const symbol = this.$form.from?.configs?.name || ""
         this.$form.balanceIn = `${label}: ${formatNumber(balance)} ${symbol}`
+    }
+
+    _resolve(opt) {
+        return opt || null
     }
 
     async _run() {
@@ -92,8 +94,8 @@ export class SWAP extends Route {
         const pools = Lives.pools?.[chain]
 
         const result = await logic.quote({
-            from: this.$form.from,
-            to: this.$form.to,
+            from: this._resolve(this.$form.from),
+            to: this._resolve(this.$form.to),
             amount: this.$form.amountIn,
             chain,
             pools,
@@ -143,8 +145,8 @@ export class SWAP extends Route {
         this.$form.enabled = false
 
         const result = await logic.swap({
-            from,
-            to,
+            from: this._resolve(from),
+            to: this._resolve(to),
             amount,
             slippage,
             chain,
@@ -167,7 +169,6 @@ export class SWAP extends Route {
 
     quote() {
         clearTimeout(this._qpend)
-        const chain = this.$wallets.states.get("chain")
         this._qpend = setTimeout(() => this._run(), 500)
     }
 }

@@ -41,10 +41,7 @@ export class Logic {
     }
 
     static async item(gameId, itemId, locale) {
-        const [meta, loc] = await Promise.all([
-            DB.get(["statics", "items", gameId, itemId, "meta.json"]),
-            DB.get(["statics", "items", gameId, itemId, `${locale}.json`])
-        ])
+        const [meta, loc] = await Promise.all([DB.get(["statics", "items", gameId, itemId, "meta.json"]), DB.get(["statics", "items", gameId, itemId, `${locale}.json`])])
         if (!meta) return null
         const icon = meta.images?.[0] ? `/statics/items/${gameId}/${itemId}/images/${meta.images[0]}` : null
         return { ...meta, ...(loc || {}), id: itemId, game: gameId, icon, catalog: "game" }

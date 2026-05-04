@@ -34,11 +34,23 @@ export const styles = css`
         #breadcrumb {
             display: flex;
             align-items: center;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
             gap: var(--space-2);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--item-rarity-color);
             font-size: var(--text-sm);
-            opacity: 0.7;
-            a { color: var(--item-rarity-color); text-decoration: none; }
-            a:hover { text-decoration: underline; }
+            opacity: 0.75;
+            padding: var(--space-1) 0;
+            transition: opacity 0.15s;
+            .back-arrow { font-size: 1.1em; line-height: 1; }
+            &:hover { opacity: 1; }
+            &:active { opacity: 0.6; }
         }
 
         #image {
@@ -157,13 +169,62 @@ export const styles = css`
 
         #quantity {
             display: flex;
-            gap: var(--space);
+            align-items: center;
+            gap: 0;
+            border: 1px solid var(--border);
+            width: fit-content;
+
+            legend {
+                font-size: var(--text-xs);
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                opacity: 0.6;
+                padding: 0 var(--space-1);
+            }
+
+            ui-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.5rem;
+                height: 2.5rem;
+                cursor: pointer;
+                color: var(--color);
+                opacity: 0.7;
+                transition: opacity 0.15s, background 0.15s;
+                flex-shrink: 0;
+                &:hover { opacity: 1; background: color-mix(in hsl, var(--item-rarity-color) 10%, transparent); }
+                &:active { opacity: 0.5; }
+            }
+
+            input[type="number"] {
+                width: 3rem;
+                text-align: center;
+                border: none;
+                border-left: 1px solid var(--border);
+                border-right: 1px solid var(--border);
+                background: transparent;
+                color: var(--color);
+                font-family: var(--header-font);
+                font-weight: 700;
+                font-size: var(--text-base);
+                height: 2.5rem;
+                padding: 0;
+                -moz-appearance: textfield;
+                &::-webkit-inner-spin-button,
+                &::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+                &:focus { outline: none; background: color-mix(in hsl, var(--item-rarity-color) 6%, transparent); }
+            }
         }
 
         footer {
             display: flex;
             gap: var(--space-3);
             align-items: flex-end;
+
+            ui-button {
+                flex-shrink: 0;
+            }
         }
     }
 `
