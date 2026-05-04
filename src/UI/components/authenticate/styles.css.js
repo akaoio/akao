@@ -36,7 +36,7 @@ export const styles = css`
         }
 
         #wave-screen {
-            #epub {
+            #pub {
                 text-align: center;
                 font-family: monospace;
                 color: var(--color-accent);

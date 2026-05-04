@@ -11,9 +11,9 @@ import { read } from "./Trade/read.js"
 export class Trade {
     // runtime — ZEN graph instance
     // order   — Order instance / raw order intent (contains side, maker, base, quote, etc.)
-    // maker   — { pub, epub, pair? } maker's identity
-    // taker   — { pub, epub, pair? } taker's identity
-    // platform — { epub } platform identity (for DH shared secret)
+    // maker   — { pub, pair? } maker's identity
+    // taker   — { pub, pair? } taker's identity
+    // platform — { pub } platform identity (for DH shared secret)
     constructor({ zen, runtime, order, maker, taker, platform } = {}) {
         const db = runtime || zen
         if (!db || !order || !maker || !taker || !platform) throw new Error("invalidInput")

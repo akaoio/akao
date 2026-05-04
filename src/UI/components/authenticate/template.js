@@ -27,7 +27,7 @@ export const template = html`
     <div id="wave-screen" hidden>
         <h3><ui-context data-key="dictionary.wave" /></h3>
         <ui-wave/>
-        <span id="epub"></span>
+        <span id="pub"></span>
         <span class="msg" id="msg"></span>
         <div class="buttons">
             <ui-button class="full" data-left="soundwave" id="request-btn">

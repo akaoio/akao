@@ -1,9 +1,9 @@
 // Construct and return order id
 export function id({ maker, side, base } = {}) {
     // The expected id format:
-    // <timestamp>:<makerpub>/<makerepub>:<side>:<basetype>/<basecategory>/<baseid>/<baseqty>
+    // <timestamp>:<makerpub>:<side>:<basetype>/<basecategory>/<baseid>/<baseqty>
     let $maker = maker || this?.maker
-    $maker = $maker?.pub && $maker?.epub ? `${$maker.pub}/${$maker.epub}` : null
+    $maker = $maker?.pub ? $maker.pub : null
     const $side = side || this?.side
     let $base = base || this?.base
     if ($base.type && $base?.id && $base?.quantity) {

@@ -327,16 +327,16 @@ const credential = await navigator.credentials.create({
 })
 
 // 2. Generate Gun pair (random, good entropy)
-const gunPair = await SEA.pair()
-// gunPair = {
-//   pub: "~B7x8...",  // Gun public key
-//   priv: "private",  // Gun private key
-//   epub: "...",
-//   epriv: "..."
+const zenPair = await ZEN.pair()
+// zenPair = {
+//   curve: "secp256k1",
+//   pub: "...",
+//   priv: "...",
+//   address: "0x..."
 // }
 
-// 3. Wrap Gun pair với PRF
-const wrapped = await wrapPrivateKey(credential.rawId, gunPair)
+// 3. Wrap ZEN pair với PRF
+const wrapped = await wrapPrivateKey(credential.rawId, zenPair)
 // wrapped = {
 //   iv: "xT7pL9...",
 //   ciphertext: "8fH2k..."

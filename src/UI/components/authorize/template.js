@@ -12,7 +12,7 @@ export const template = html`
     <ui-modal data-header="authorization" class="center">
         <div class="wave">
             <ui-wave />
-            <span id="epub"></span>
+            <span id="pub"></span>
         </div>
         <div class="buttons">
             <ui-button class="full" data-left="shield-check" id="grant">

@@ -30,7 +30,7 @@ export const styles = css`
             flex-direction: column;
             gap: var(--space);
 
-            #epub {
+            #pub {
                 text-align: center;
                 font-family: monospace;
                 color: var(--color-accent);

@@ -14,8 +14,7 @@ export async function devplatform({ seed = DEV_PLATFORM_SEED, runtime = null } =
     return {
         seed,
         pair,
-        pub: pair.pub,
-        epub: pair.epub
+        pub: pair.pub
     }
 }
 
@@ -23,7 +22,7 @@ export async function siteplatform(site, { dev = DEV, seed = DEV_PLATFORM_SEED, 
     if (!site || typeof site !== "object") throw new Error("siteRequired")
 
     const platform = { ...(site.platform || {}) }
-    if (platform.pub && platform.epub) return platform
+    if (platform.pub) return platform
     if (!dev) return platform
     if (!canDeriveDevPlatform({ browser, scope })) {
         console.warn("Skipping dev platform fallback: WebCrypto is unavailable in this context")
@@ -35,8 +34,7 @@ export async function siteplatform(site, { dev = DEV, seed = DEV_PLATFORM_SEED, 
         ...fallback,
         ...platform,
         pair: platform.pair || fallback.pair,
-        pub: platform.pub || fallback.pub,
-        epub: platform.epub || fallback.epub
+        pub: platform.pub || fallback.pub
     }
 }
 

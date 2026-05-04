@@ -14,34 +14,40 @@ export class Logic {
     }
 
     async request(waveEl) {
-        if (!zen?.pair) throw new Error("ZEN is not available")
+        if (!zen?.pair || !zen?.sign) throw new Error("ZEN is not available")
         if (!this.session) {
             this.session = await zen.pair()
-            if (!this.session?.epub) throw new Error("Unable to create session pair")
+            if (!this.session?.pub) throw new Error("Unable to create session pair")
         }
         await waveEl.listen()
-        await waveEl.send({ "~": this.session.epub, ":": ">" })
+        const signed = await zen.sign(">", this.session)
+        await waveEl.send(signed)
     }
 
-    async handle(parsed) {
-        if (!parsed || typeof parsed !== "object") return null
-        if (parsed[":"] === "!>") return { type: "deny" }
-        if (parsed["~"] && parsed["!"] && parsed["@"] && parsed["#"]) {
-            if (!zen?.secret || !zen?.decrypt) return null
-            const secret = await zen.secret(parsed["~"], this.session)
-            const decrypted = await zen.decrypt({ ct: parsed["!"], iv: parsed["@"], s: parsed["#"] }, secret)
+    async handle(data) {
+        if (!data || typeof data !== "string") return null
+        if (data === "!>") return { type: "deny" }
+        if (!zen?.recover || !zen?.verify || !zen?.secret || !zen?.decrypt) return null
+        try {
+            const senderPub = await zen.recover(data)
+            const content = await zen.verify(data, senderPub)
+            if (!content) return null
+            if (content === "!>") return { type: "deny" }
+            const secret = await zen.secret(senderPub, this.session)
+            const decrypted = await zen.decrypt(content, secret)
             if (!decrypted) return null
             const seed = Array.isArray(decrypted) ? new Uint8Array(decrypted) : decrypted
             return { type: "grant", seed }
+        } catch {
+            return null
         }
-        return null
     }
 
     reset() {
         this.session = null
     }
 
-    epub(value) {
+    abbrev(value) {
         if (!value || value.length <= 12) return value || ""
         return `${value.slice(0, 5)}...${value.slice(-5)}`
     }

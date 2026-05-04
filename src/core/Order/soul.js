@@ -12,12 +12,12 @@ export function soul({ candle, side, base, quote } = {}) {
     quote = quote?.id || this?.quote?.id
     if (!side || !base || !quote) throw new Error("invalidInput")
     const sep = ":"
-    // key format: timestamp:pub/epub:side:type/game_or_chain/id/qty  (see Order/id.js)
+    // key format: timestamp:pub:side:type/game_or_chain/id/qty  (see Order/id.js)
     // seg 0: raw Date.now() timestamp — divide by 300000 to get 5-min candle number
     const timestamp = { tonum: { seg: { sep, idx: 0 } } }
     const key_candle = { divu: [timestamp, Statics?.system?.candle] }
-    // seg 1: pub/epub, extract pub (idx 0 split by "/")
-    const maker_pub = { seg: { sep: "/", of: { seg: { sep, idx: 1 } }, idx: 0 } }
+    // seg 1: maker pub key
+    const maker_pub = { seg: { sep, idx: 1 } }
     // seg 2: side
     const $side = { seg: { sep, idx: 2 } }
     // seg 3: type/game_or_chain/id/qty, extract id (idx 2 split by "/")

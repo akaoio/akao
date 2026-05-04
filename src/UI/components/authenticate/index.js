@@ -31,7 +31,7 @@ export class AUTHENTICATE extends Component {
         this.$wave = this.shadowRoot.querySelector("ui-wave")
         this.$requestbtn = this.shadowRoot.querySelector("#request-btn")
         this.$stopbtn = this.shadowRoot.querySelector("#stop-btn")
-        this.$epub = this.shadowRoot.querySelector("#epub")
+        this.$pub = this.shadowRoot.querySelector("#pub")
         this.listen(this.$requestbtn, "click", this.onrequestbtn)
         this.listen(this.$stopbtn, "click", this.onstopbtn)
         this.listen(this.shadowRoot.querySelector("#passkey"), "click", this.passkey)
@@ -50,8 +50,8 @@ export class AUTHENTICATE extends Component {
 
     async initpair() {
         const pair = await this.logic.pair()
-        if (!pair || !this.$epub) return
-        this.$epub.textContent = this.logic.epub(pair.epub)
+        if (!pair || !this.$pub) return
+        this.$pub.textContent = this.logic.abbrev(pair.pub)
     }
 
     setstate(state) {
@@ -65,8 +65,8 @@ export class AUTHENTICATE extends Component {
     }
 
     async onwave(event) {
-        const { parsed } = event?.detail || {}
-        const result = await this.logic.handle(parsed)
+        const { parsed, message } = event?.detail || {}
+        const result = await this.logic.handle(parsed ?? message)
         if (!result) return
         if (result.type === "deny") {
             notify({ content: Context.get(["dictionary", "accessDenied"]) })

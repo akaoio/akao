@@ -14,11 +14,11 @@ E: Platform - quyền tối cao, xử lý kiện tụng
 B: Buyer - trader
 S: Seller - trader
 
-Mỗi người có 1 pair gốc {pub, priv, epub, epriv}
+Mỗi người có 1 pair gốc {pub, priv} (ZEN secp256k1 — `pub` dùng cho cả ECDSA signing lẫn ECDH)
 
 1. B tạo secret với E -> secret seed BE -> derive ra ví BE
 2. S tạo secret với E -> secret seed SE -> derive ra ví SE
-3. 2 ví BE và SE trao đổi epub để tạo secret BSE -> encrypt/decrypt dựa vào secret BSE
+3. 2 ví BE và SE trao đổi pub để tạo secret BSE -> encrypt/decrypt dựa vào secret BSE
 
 => Như vậy ta có 1 cái secret BSE mà cả 3 người cùng biết, dùng để làm salt khi encrypt/decrypt.
 

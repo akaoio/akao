@@ -348,10 +348,8 @@ export async function createOrder({ baseId, side, baseQuantity, quoteQuantity, c
     // Order metadata (stored as value, not in key)
     const orderData = JSON.stringify({
         orderId: sha256(`${Access.states.pub}:${baseId}:${Date.now()}`),
-        // No xpub field: pub/epub are sufficient in the ZEN model.
         maker: {
-            pub: Access.states.pub,
-            epub: Access.states.epub
+            pub: Access.states.pub
         },
         side,
         base: { type: "item", id: baseId, quantity: baseQuantity },

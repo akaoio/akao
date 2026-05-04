@@ -27,7 +27,7 @@ export class AUTHORIZE extends Component {
         this.$authorize = this.shadowRoot.querySelector("#authorize")
         this.$modal = this.shadowRoot.querySelector("ui-modal")
         this.$wave = this.shadowRoot.querySelector("ui-wave")
-        this.$epub = this.shadowRoot.querySelector("#epub")
+        this.$pub = this.shadowRoot.querySelector("#pub")
         this.$grant = this.shadowRoot.querySelector("#grant")
         this.$deny = this.shadowRoot.querySelector("#deny")
         this.$stop = this.shadowRoot.querySelector("#stop")
@@ -55,18 +55,21 @@ export class AUTHORIZE extends Component {
     }
 
     async wave(event) {
-        const { parsed } = event?.detail || {}
-        if (!logic.isrequest(parsed)) return
+        const { parsed, message } = event?.detail || {}
+        const data = parsed ?? message
+        if (!logic.isrequest(data)) return
         if (this.states.get("state") !== "listening") return
-        this.pending = parsed
-        this.$epub.textContent = logic.epub(parsed["~"])
+        this.pending = data
+        const requesterPub = await logic.recover(data)
+        this.$pub.textContent = logic.abbrev(requesterPub ?? data)
         this.states.set({ state: "confirm" })
     }
 
     async deny() {
         if (!this.$wave) return
         this.states.set({ state: "sending" })
-        await this.$wave.send({ ":": "!>" })
+        const msg = await logic.deny()
+        await this.$wave.send(msg)
         this.pending = null
         this.states.set({ state: "listening" })
         if (this.$dialog?.open) this.$wave.listen()
@@ -80,7 +83,7 @@ export class AUTHORIZE extends Component {
 
     async grant() {
         if (!this.pending) return
-        const payload = await logic.encode(this.pending["~"])
+        const payload = await logic.encode(this.pending)
         if (!payload) return
         this.states.set({ state: "sending" })
         await this.$wave.send(payload)

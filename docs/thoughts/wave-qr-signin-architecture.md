@@ -111,24 +111,27 @@ neutral ──[Request]──→ requesting ──[phát xong]──→ listenin
   └──────[Stop]────────────┘
 ```
 
-**neutral**: vào đây ngay khi mount. Hiển thị epub rút gọn (`abcde...vwxyz`) và nút **Request**.
+**neutral**: vào đây ngay khi mount. Hiển thị pub rút gọn (`abcde...vwxyz`) và nút **Request**.
 
 **requesting**:
-1. Tạo ephemeral SEA pair: `session = await sea.pair()`
+1. Tạo ephemeral ZEN pair: `session = await zen.pair()`
 2. `waveEl.listen()` — bật mic trước
-3. Phát: `{ "~": session.epub, ":": ">" }`
-4. Chuyển sang trạng thái **listening** ngay sau khi phát xong
+3. Ký message: `signed = await zen.sign(">", session)`
+4. Phát `signed` (compact signed string — không kèm pub)
+5. Chuyển sang trạng thái **listening** ngay sau khi phát xong
 
 **listening**: đang chờ tín hiệu từ bên cho.
 - Nhận message → kiểm tra format → xử lý (xem phần Message Handling phía dưới)
 - Nút Stop → dừng `waveEl`, quay về **neutral**
 
 **Message Handling (bên xin):**
-- `parsed[":"] === "!>"` → Access denied — hiện thông báo
-- `parsed["~"] && parsed["!"] && parsed["@"] && parsed["#"]` → Grant → reconstruct + decrypt:
+- Message là `"!>"` hoặc signed string chứa `"!>"` → Access denied — hiện thông báo
+- Message là compact signed string → Grant → recover pub + decrypt:
   ```js
-  secret = sea.secret(parsed["~"], session)
-  seed   = sea.decrypt({ ct: parsed["!"], iv: parsed["@"], s: parsed["#"] }, secret)
+  senderPub = await zen.recover(message)         // lấy pub A từ chữ ký
+  enc       = await zen.verify(message, senderPub) // lấy nội dung encrypted
+  secret    = await zen.secret(senderPub, session)
+  seed      = await zen.decrypt(enc, secret)
   // → Access.wave({ seed }) → emit "done"
   ```
 
@@ -146,21 +149,26 @@ listening ──[nhận request]──→ confirming
 
 **listening**: vào đây **ngay khi mount**. `waveEl.listen()` được gọi tự động trong `connectedCallback`.
 
-**confirming**: nhận được `{ "~": epub_B, ":": ">" }` → hiện thông báo:
+**confirming**: nhận được compact signed string có format `^[0-9A-Za-z]{86}[01][:/]` → recover pub → hiện thông báo:
 > Thiết bị `abcde...vwxyz` xin cấp quyền truy cập
 > [Deny] [Grant]
 
-**Deny**: phát `{ ":": "!>" }` → quay về **listening**
+**Deny**: ký `"!>"` với pair của mình → phát → quay về **listening**
+```js
+msg = await zen.sign("!>", pair_A)  // fallback: "!>" nếu pair không có
+```
 
 **Grant**:
 ```js
-secret    = await sea.secret(parsed["~"], Access.get("pair"))
-encrypted = await sea.encrypt(Access.get("seed"), secret, null, { raw: true })
-reply     = { "~": Access.get("pair").epub, "!": encrypted.ct, "@": encrypted.iv, "#": encrypted.s }
+sessionPub = await zen.recover(pending)        // pub B từ chữ ký request
+content    = await zen.verify(pending, sessionPub) // phải === ">"
+secret     = await zen.secret(sessionPub, pair_A)
+enc        = await zen.encrypt(seed, secret)
+reply      = await zen.sign(enc, pair_A)       // compact signed string
 ```
 Phát reply → quay về **listening**
 
-> **Lưu ý:** Bên cho không dùng `":"` làm type discriminator trong Grant — bên nhận nhận biết Grant bằng sự hiện diện đồng thời của `"~"`, `"!"`, `"@"`, `"#"`.
+> **Lưu ý:** Không có pub nào được gửi tường minh. Bên nhận dùng `zen.recover()` để khôi phục pub từ chữ ký — đây là tư duy ZEN thay cho tư duy GUN cũ.
 
 ---
 
@@ -206,39 +214,64 @@ export async function wave({ seed, id } = {})
 
 ## Wire Format trên sóng
 
-Tất cả key dùng **1 ký tự** để tiết kiệm bandwidth.
+Tất cả messages là **compact signed strings** của ZEN — không có JSON object, không gửi pub tường minh. Pub được khôi phục từ chữ ký bằng `zen.recover()`.
 
 ### Auth request (B → broadcast)
-```json
-{ "~": "<epub B>", ":": ">" }
 ```
-- `"~"`: epub của bên xin (ECDH public key)
-- `":"`: `">"` = yêu cầu truy cập
+<86 base62 sig><v>:<">">
+```
+Bên xin ký message `">"` với session pair. Bên cho dùng `zen.recover()` để lấy `pub_B`, rồi `zen.verify()` để xác nhận nội dung là `">"`.
+
+```js
+// B phát:
+signed = await zen.sign(">", session)
+// A nhận:
+pub_B    = await zen.recover(signed)     // lấy session pub của B
+content  = await zen.verify(signed, pub_B) // === ">"
+```
 
 ### Auth deny (A → broadcast)
-```json
-{ ":": "!>" }
 ```
-- `"!>"` = không đồng ý (`!`) yêu cầu truy cập (`>`)
+<86 base62 sig><v>:<"!>">
+```
+Hoặc fallback `"!>"` nếu không có pair. Bên xin nhận biết deny bằng content `"!>"`.
+
+```js
+msg = await zen.sign("!>", pair_A)  // fallback: "!>"
+```
 
 ### Auth grant (A → broadcast)
-```json
-{ "~": "<epub A>", "!": "<ct>", "@": "<iv>", "#": "<s>" }
 ```
-- `"~"`: epub của bên cho (cần để bên xin tính ECDH)
-- `"!"`: ciphertext (ct)
-- `"@"`: initialization vector (iv)
-- `"#"`: salt (s)
+<86 base62 sig><v>:<enc>
+```
+Bên cho mã hóa seed, rồi ký ciphertext với pair của mình. Bên xin recover `pub_A` từ chữ ký, tính ECDH, rồi giải mã.
 
-Bên xin nhận biết grant bằng sự hiện diện đồng thời của `~`, `!`, `@`, `#`.
-
-### ECDH
 ```js
-// A tính:
-secret = sea.secret(session.epub /*epub B*/, pair_A)
-// B tính:
-secret = sea.secret(parsed["~"] /*epub A*/, session)
-// → cùng secret
+// A phát:
+secret = await zen.secret(pub_B, pair_A)
+enc    = await zen.encrypt(seed, secret)
+reply  = await zen.sign(enc, pair_A)
+
+// B nhận:
+pub_A   = await zen.recover(reply)
+enc     = await zen.verify(reply, pub_A)
+secret  = await zen.secret(pub_A, session)
+seed    = await zen.decrypt(enc, secret)
+```
+
+### ECDH — tại sao cùng secret
+```
+A tính: zen.secret(pub_B, priv_A)  →  ECDH(priv_A, pub_B)
+B tính: zen.secret(pub_A, priv_B)  →  ECDH(priv_B, pub_A)
+→ cùng shared secret (ECDH commutative)
+```
+
+### Phát hiện loại message
+```
+isrequest: /^[0-9A-Za-z]{86}[01][:/]/.test(data)
+  → content === ">"   → request
+  → content === "!>"  → deny
+  → content là encrypted string → grant
 ```
 
 ### Chunking
@@ -267,28 +300,33 @@ B (bên xin — ui-authenticate)        A (bên cho — ui-authorize)
 [mount → neutral]                     [mount → listening, waveEl.listen()]
 
 [user bấm Request]
-sea.pair() → session
+zen.pair() → session
 waveEl.listen()
-send({ "~": session.epub, ":": ">" })
-[→ listening]                         ← nhận request
+signed_req = zen.sign(">", session)
+send(signed_req)
+[→ listening]                         ← nhận signed_req
+                                      pub_B = zen.recover(signed_req)   // lấy session pub
+                                      content = zen.verify(signed_req, pub_B) // === ">"
                                       hiện: "Thiết bị abcde...vwxyz xin truy cập"
                                       [Deny]  [Grant]
 
                                       [Grant]:
-                                        secret = sea.secret(session.epub, pair_A)
-                                        enc = sea.encrypt(seed, secret, {raw:true})
-                                        send({ "~": pair_A.epub,
-                                               "!": enc.ct, "@": enc.iv, "#": enc.s })
-← nhận grant
-secret = sea.secret(parsed["~"], session)
-seed = sea.decrypt({ ct:parsed["!"],
-                     iv:parsed["@"],
-                     s:parsed["#"] }, secret)
+                                        secret = zen.secret(pub_B, pair_A)
+                                        enc    = zen.encrypt(seed, secret)
+                                        reply  = zen.sign(enc, pair_A)
+                                        send(reply)
+← nhận reply
+pub_A  = zen.recover(reply)
+enc    = zen.verify(reply, pub_A)
+secret = zen.secret(pub_A, session)
+seed   = zen.decrypt(enc, secret)
 Access.wave({ seed }) → authenticated ✓
 
                                       [Deny]:
-                                        send({ ":": "!>" })
+                                        msg = zen.sign("!>", pair_A)
+                                        send(msg)
 ← nhận deny
+content = zen.verify(msg, pub_A)      // === "!>"
 hiện: "Access denied"
 ```
 
@@ -299,11 +337,11 @@ hiện: "Access denied"
 **Nút trên bên xin:**
 - Trạng thái neutral: nút "**Request**" (kinh điển hơn "Start"; "Start" mơ hồ, "Request" nói rõ hành động — xin cấp quyền)
 - Trạng thái requesting/listening: nút "**Stop**" thay thế
-- Hiển thị epub rút gọn dưới nút: `abcde...vwxyz` (5 ký tự đầu + `...` + 5 ký tự cuối)
+- Hiển thị pub rút gọn dưới nút: `abcde...vwxyz` (5 ký tự đầu + `...` + 5 ký tự cuối)
 
 **Màn hình bên cho:**
 - Default: "Đang lắng nghe..." (không cần action của user)
-- Khi nhận request: hiện epub rút gọn của bên xin + [Deny] [Grant]
+- Khi nhận request: hiện pub rút gọn của bên xin + [Deny] [Grant]
 - Sau khi xử lý: quay về lắng nghe
 
 ---

@@ -15,8 +15,8 @@
 - 🧩 **Web Components** - Native custom elements with no framework dependency
 - 🔐 **Passwordless Auth** - WebAuthn passkeys (Face ID, Touch ID, Windows Hello)
 - 🔗 **DeFi Integration** - Uniswap V2/V3 DEX support, on-chain wallet, token swaps
-- 📡 **Decentralized** - Optional GunDB integration for peer-to-peer data sync
-- 📶 **WebRTC P2P** - Direct browser-to-browser DataChannel, signaling-agnostic (works with GunDB, HTTP, QR, anything)
+- 📡 **Decentralized** - ZEN P2P graph sync for real-time data without a central server
+- 📶 **WebRTC P2P** - Direct browser-to-browser DataChannel, signaling-agnostic (works with ZEN, HTTP, QR, anything)
 - 🌊 **WebTorrent** - In-browser BitTorrent over WebRTC — seed and stream files without a server
 - ⚡ **Fast** - Pre-rendered routes, hash-based caching, offline-first capabilities
 - 🎨 **Themeable** - Built-in light/dark mode with CSS custom properties
@@ -51,12 +51,12 @@ npm start
 
 The default dev surface is `http://localhost:8080`. If a hostname is mapped to the same site in `src/statics/domains.yaml` and resolves to this machine (for example `peer0.akao.io`), the same dev server can also be reached through that host. `npm start` restarts any matching `dev.js` / `market.js` listeners on ports `8080` and `8420` before starting a fresh stack.
 
-In DEV, `Construct.Site()` patches `Statics.site.platform` with a deterministic fallback identity when `platform.pub`, `platform.epub`, or `platform.xpub` is missing. The fallback is derived from the shared seed `"seed"` via `SEA.pair(null, { seed: "seed" })` plus the matching HD root `xpub`, so local development and tests do not need a separately stored platform keypair.
+In DEV, `Construct.Site()` patches `Statics.site.platform` with a deterministic fallback identity when `platform.pub` is missing. The fallback is derived from the shared seed `"seed"` via `zen.pair(null, { seed: "seed" })`, so local development and tests do not need a separately stored platform keypair.
 
 ### Development Workflow
 
 ```bash
-# Restart dev stack, start Gun relay, build crypto + core --dev, then serve app
+# Restart dev stack, start ZEN relay, build crypto + core --dev, then serve app
 npm start
 
 # Start Node headless runtime through build/core/Launcher.js
@@ -176,7 +176,7 @@ npm run setup:prod -- --domain akao.io --email dev@akao.io
 │   │   ├── Dex.js           # DEX instance (V2/V3)
 │   │   ├── Events.js        # Universal event bus (browser + Node.js)
 │   │   ├── Forex.js         # Foreign exchange rate management
-│   │   ├── GDB.js           # GunDB integration (Gun + SEA)
+│   │   ├── ZEN.js           # ZEN P2P graph + crypto runtime wrapper
 │   │   ├── IDB.js           # IndexedDB wrapper
 │   │   ├── RTC.js           # WebRTC DataChannel façade
 │   │   ├── Launcher.js      # Thread bootstrap
@@ -525,8 +525,8 @@ Access.on("authenticated", ({ value }) => {
 
 **Features:**
 - Platform authenticators (Touch ID, Face ID, Windows Hello, security keys)
-- SEA key pair derived deterministically from WebAuthn credential hash (no seed phrases)
-- Encrypted public key storage in GunDB
+- ZEN key pair derived deterministically from WebAuthn credential hash (no seed phrases)
+- Public key storage in ZEN P2P graph
 - Multi-wallet support (wallet ID selects BIP-32 derivation path)
 - Avatar support with deterministic identicons
 
@@ -537,7 +537,7 @@ Access.on("authenticated", ({ value }) => {
 | SQLite WASM | `SQL.js` | Full SQL queries, relational data, runs in dedicated worker via OPFS |
 | IndexedDB | `IDB.js` | Client-side persistent cache |
 | OPFS | `OPFS.js` | Origin Private File System — async file I/O (blobs, arbitrary files) |
-| GunDB | `GDB.js` | Decentralized graph database (optional) |
+| ZEN | `ZEN.js` | P2P graph database with built-in crypto (offline-first, realtime) |
 | WebRTC | `RTC.js` | P2P DataChannel — signaling-agnostic offer/answer/accept |
 | WebTorrent | `Torrent.js` | In-browser BitTorrent over WebRTC — seed and stream files |
 | Static Files | `DB.js` | Hash-validated JSON with auto-caching |
@@ -640,7 +640,7 @@ fiat: USD
 chains:
   - ETH
   - BSC
-peers: []   # GunDB peers for decentralized sync
+peers: []   # ZEN peers for decentralized sync
 ```
 
 `src/statics/domains.yaml`:

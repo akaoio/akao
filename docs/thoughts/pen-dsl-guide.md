@@ -558,11 +558,9 @@ async function createorder({ baseId, side, baseQuantity, quoteQuantity }) {
   const { nonce } = await ZEN.hash(key, null, null,
     { name: 'SHA-256', encode: 'hex', pow: { difficulty: 3 } })
 
-  gun.get(soul).get(key).put({
-    // No xpub field: pub/epub are sufficient in the ZEN model.
+  zen.get(soul).get(key).put({
     maker: {
-      pub: Access.states.pub,
-      epub: Access.states.epub
+      pub: Access.states.pub
     },
     side,
     base: { type: 'item', id: baseId, quantity: baseQuantity },
