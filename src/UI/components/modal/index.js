@@ -21,7 +21,7 @@ export class MODAL extends HTMLElement {
 
     attributeChangedCallback(name, last, value) {
         if (name !== "data-header" || last === value) return
-        this.shadowRoot.querySelector("#header").dataset.key = `dictionary.${this.dataset.header}`
+        this.shadowRoot.querySelector("#header").dataset.key = `dictionary.${value}`
     }
 
     connectedCallback() {

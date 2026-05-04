@@ -18,7 +18,7 @@ export const styles = css`
             --header-size: var(--icon-sm);
             --footer-size: var(--icon-md);
             width: auto;
-            height: auto;
+            max-height: 75%;
             margin: auto;
             padding: 0;
             display: flex;
@@ -33,7 +33,7 @@ export const styles = css`
 
             &::backdrop {
                 background-color: var(--background);
-                opacity: 0.75;
+                opacity: 0.88;
             }
 
             &:not([open]) {
@@ -69,7 +69,7 @@ export const styles = css`
                     text-transform: uppercase;
                 }
 
-                slot[name="header"] {
+slot[name="header"] {
                     position: absolute;
                     right: var(--space);
                     display: flex;
@@ -94,14 +94,13 @@ export const styles = css`
                 }
             }
 
-
             section {
                 display: block;
                 overflow: auto;
                 background-color: var(--background);
                 color: var(--color);
                 padding: var(--space);
-                padding-bottom: calc(var(--space) + var(--footer-size) * 0.5);
+                padding-bottom: calc(var(--footer-size) * 0.5);
                 border: var(--border);
             }
         }

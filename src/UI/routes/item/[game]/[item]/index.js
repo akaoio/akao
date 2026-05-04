@@ -70,9 +70,7 @@ export class GAME_ITEM_ROUTE extends Route {
             imageEl.src = `/statics/items/${meta.game}/${meta.id}/images/${firstImage}`
             imageEl.alt = ""
             imageEl.style.display = ""
-        } else 
-            imageEl.style.display = "none"
-        
+        } else imageEl.style.display = "none"
 
         const rarityKey = (meta.rarity || "common").toLowerCase().replace(/\s+/g, "-")
         const rarityColor = `var(--rarity-${rarityKey}, var(--color-accent, #888))`
@@ -92,14 +90,18 @@ export class GAME_ITEM_ROUTE extends Route {
         subtypeBadge.textContent = meta.subtype || ""
         subtypeBadge.style.display = meta.subtype ? "" : "none"
 
-        const backLink = root.querySelector("#back-link")
+        const backBtn = root.querySelector("#back-btn")
+        const backLabel = root.querySelector("#back-label")
         if (meta.game) {
-            backLink.textContent = meta.game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-            backLink.dataset.to = `/game/${meta.game}`
+            const gameName = meta.game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+            if (backLabel) backLabel.textContent = gameName
+            if (backBtn)
+                backBtn.onclick = () => {
+                    if (globalThis.history.length > 1) globalThis.history.back()
+                    else Router.navigate(`/game/${meta.game}`)
+                }
             root.querySelector("#breadcrumb").style.display = ""
-        } else 
-            root.querySelector("#breadcrumb").style.display = "none"
-        
+        } else root.querySelector("#breadcrumb").style.display = "none"
 
         const flavorEl = root.querySelector("#flavor-text")
         flavorEl.textContent = meta.flavor_text || ""
@@ -107,25 +109,28 @@ export class GAME_ITEM_ROUTE extends Route {
 
         const statBlock = root.querySelector("#stat-block")
         if (statBlock.children.length === 0 && meta.stat_block) {
-            const rows = Object.entries(meta.stat_block).map(([key, val]) =>
-                html`<div class="stat-row"><dt>${logic.label(key)}</dt><dd>${val}</dd></div>`
+            const rows = Object.entries(meta.stat_block).map(
+                ([key, val]) => html`
+                    <div class="stat-row">
+                        <dt>${logic.label(key)}</dt>
+                        <dd>${val}</dd>
+                    </div>
+                `
             )
             render(rows, statBlock)
             root.querySelector("#stats").style.display = ""
-        } else if (!meta.stat_block) 
-            root.querySelector("#stats").style.display = "none"
-        
+        } else if (!meta.stat_block) root.querySelector("#stats").style.display = "none"
 
         const slotsEl = root.querySelector("#loadout-slots")
         if (slotsEl.children.length === 0 && meta.loadout_slots?.length) {
-            const chips = meta.loadout_slots.map((slot) =>
-                html`<span class="slot-chip">${logic.label(slot)}</span>`
+            const chips = meta.loadout_slots.map(
+                (slot) => html`
+                    <span class="slot-chip">${logic.label(slot)}</span>
+                `
             )
             render(chips, slotsEl)
             root.querySelector("#slots").style.display = ""
-        } else if (!meta.loadout_slots?.length) 
-            root.querySelector("#slots").style.display = "none"
-        
+        } else if (!meta.loadout_slots?.length) root.querySelector("#slots").style.display = "none"
     }
 
     async render() {
@@ -137,10 +142,18 @@ export class GAME_ITEM_ROUTE extends Route {
             Context.set({ item: { name: "Item not found", description: "This item is no longer available." } })
 
             const root = this.shadowRoot
-            root.querySelector("#breadcrumb").style.display = game ? "" : "none"
-            root.querySelector("#back-link").textContent = game ? game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : ""
-            root.querySelector("#back-link").dataset.to = game ? `/game/${game}` : "/"
-            root.querySelector("#breadcrumb-name").textContent = id || ""
+            const backLabel = root.querySelector("#back-label")
+            const backBtn = root.querySelector("#back-btn")
+            if (game) {
+                const gameName = game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+                if (backLabel) backLabel.textContent = gameName
+                if (backBtn)
+                    backBtn.onclick = () => {
+                        if (globalThis.history.length > 1) globalThis.history.back()
+                        else Router.navigate(`/game/${game}`)
+                    }
+                root.querySelector("#breadcrumb").style.display = ""
+            } else root.querySelector("#breadcrumb").style.display = "none"
             root.querySelector("#image").style.display = "none"
             root.querySelector(".badges").style.display = "none"
             root.querySelector("#flavor-text").style.display = "none"
@@ -161,14 +174,16 @@ export class GAME_ITEM_ROUTE extends Route {
         Context.set({ item: { ...meta, ...data } })
 
         const root = this.shadowRoot
-        root.querySelector("#breadcrumb-name").textContent = data.name || ""
         root.querySelector("input[name=id]").value = `${game}/${id}`
         root.querySelector("input[name=sku]").value = meta?.sku || ""
 
         const sale = root.querySelector("#sale")
         const price = root.querySelector("#price")
         if (meta?.currency) sale.dataset.base = price.dataset.base = meta.currency
-        if (meta?.sale) sale.dataset.amount = meta.sale
+        if (meta?.sale) {
+            sale.dataset.amount = meta.sale
+            sale.style.display = ""
+        } else sale.style.display = "none"
         if (meta?.price) price.dataset.amount = meta.price
 
         if (meta) this._renderGameData(meta)

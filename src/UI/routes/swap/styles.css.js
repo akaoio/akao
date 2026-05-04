@@ -15,7 +15,6 @@ export const styles = css`
 
         ui-card {
             width: 100%;
-            max-width: var(--container-form);
         }
 
         /* Swap card grows to fill all remaining vertical space */

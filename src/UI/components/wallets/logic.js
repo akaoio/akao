@@ -17,14 +17,25 @@ export class Logic {
     static chains(Chains, currency = null) {
         return Object.values(Chains)
             .filter(chain => !currency || Object.values(chain.currencies).some(c => c.name === currency))
-            .map(chain => ({
-                id: String(chain.id),
-                name: chain.configs.name || String(chain.id),
-                symbol: chain.configs.symbol,
-                standard: (currency
-                    ? Object.values(chain.currencies).find(c => c.name === currency)?.ABI
-                    : Object.values(chain.currencies).find(c => c.ABI)?.ABI) || null
-            }))
+            .map(chain => {
+                let standard = null
+                if (currency) {
+                    const currencies = Object.values(chain.currencies)
+                    standard = currencies.find(c => c.name === currency)?.ABI || null
+                    if (!standard) {
+                        // native token — fall back to the dominant standard on this chain
+                        const counts = {}
+                        for (const c of currencies) if (c.ABI) counts[c.ABI] = (counts[c.ABI] || 0) + 1
+                        standard = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || null
+                    }
+                }
+                return {
+                    id: String(chain.id),
+                    name: chain.configs.name || String(chain.id),
+                    symbol: chain.configs.symbol,
+                    standard
+                }
+            })
     }
 
     static currency(wallet, name) {

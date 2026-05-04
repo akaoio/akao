@@ -67,9 +67,9 @@ export class ITEM extends Route {
             icon.src = meta.icon
             icon.alt = meta.name || ""
             icon.style.display = ""
-        } else 
+        } else
             icon.style.display = "none"
-        
+
 
         // Rarity + type badges
         const rarityKey = (meta.rarity || "common").toLowerCase().replace(/\s+/g, "-")
@@ -90,15 +90,20 @@ export class ITEM extends Route {
         subtypeBadge.textContent = meta.subtype || ""
         subtypeBadge.style.display = meta.subtype ? "" : "none"
 
-        // Breadcrumb
-        const backLink = root.querySelector("#back-link")
+        // Back button
+        const backBtn = root.querySelector("#back-btn")
+        const backLabel = root.querySelector("#back-label")
         if (meta.game) {
-            backLink.textContent = meta.game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-            backLink.dataset.to = `/game/${meta.game}`
+            const gameName = meta.game.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+            if (backLabel) backLabel.textContent = gameName
+            if (backBtn) backBtn.onclick = () => {
+                if (globalThis.history.length > 1) globalThis.history.back()
+                else Router.navigate(`/game/${meta.game}`)
+            }
             root.querySelector("#breadcrumb").style.display = ""
-        } else 
+        } else
             root.querySelector("#breadcrumb").style.display = "none"
-        
+
 
         // Flavor text
         const flavorEl = root.querySelector("#flavor-text")
@@ -113,9 +118,9 @@ export class ITEM extends Route {
             )
             render(rows, statBlock)
             root.querySelector("#stats").style.display = ""
-        } else if (!meta.stat_block) 
+        } else if (!meta.stat_block)
             root.querySelector("#stats").style.display = "none"
-        
+
 
         // Loadout slots
         const slotsEl = root.querySelector("#loadout-slots")
@@ -125,9 +130,9 @@ export class ITEM extends Route {
             )
             render(chips, slotsEl)
             root.querySelector("#slots").style.display = ""
-        } else if (!meta.loadout_slots?.length) 
+        } else if (!meta.loadout_slots?.length)
             root.querySelector("#slots").style.display = "none"
-        
+
     }
 
     async render() {
@@ -147,7 +152,6 @@ export class ITEM extends Route {
             root.querySelector("#pricing").style.display = "none"
             root.querySelector("#attributes").style.display = "none"
             root.querySelector("footer").style.display = "none"
-            root.querySelector("#breadcrumb-name").textContent = id || ""
             return
         }
         const data = await logic.locale(id, Context.get("locale").code)
@@ -160,14 +164,16 @@ export class ITEM extends Route {
         Context.set({ item: { ...meta, ...data } })
 
         const root = this.shadowRoot
-        root.querySelector("#breadcrumb-name").textContent = data.name || ""
         root.querySelector("input[name=id]").value = id
         root.querySelector("input[name=sku]").value = meta?.sku || ""
 
         const sale = root.querySelector("#sale")
         const price = root.querySelector("#price")
         if (meta?.currency) sale.dataset.base = price.dataset.base = meta.currency
-        if (meta?.sale) sale.dataset.amount = meta.sale
+        if (meta?.sale) {
+            sale.dataset.amount = meta.sale
+            sale.style.display = ""
+        } else sale.style.display = "none"
         if (meta?.price) price.dataset.amount = meta.price
 
         if (meta) this._renderGameData(meta)

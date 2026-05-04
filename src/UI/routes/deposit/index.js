@@ -37,9 +37,11 @@ export class DEPOSIT extends Route {
         this.$qrWrap = this.shadowRoot.querySelector("#qr-section")
         this.$qr = this.shadowRoot.querySelector("#qr")
         this.$addressWrap = this.shadowRoot.querySelector("#address-wrap")
+        this.$depositBody = this.shadowRoot.querySelector("#deposit-body")
         this.$addressBox = this.shadowRoot.querySelector("#address-box")
         this.$address = this.shadowRoot.querySelector("#address")
         this.$copyBtn = this.shadowRoot.querySelector("#copy-btn")
+        this.$chainWarning = this.shadowRoot.querySelector("#chain-warning")
 
         // ── Load currency contracts ───────────────────────────────
         for (const chain of Object.values(Chains)) {
@@ -51,7 +53,8 @@ export class DEPOSIT extends Route {
         this._currencyOptions = Logic.currencies(Chains).map((c) => ({
             value: c.name,
             _name: c.name,
-            _symbol: c.symbol
+            _symbol: c.symbol,
+            _meta: c.symbol ? c.symbol.replace(/-logo\.svg$/, "").replace(/-[^-]+$/, "").replace(/-/g, " ") : null
         }))
 
         // ── Seed from URL params ──────────────────────────────────
@@ -65,7 +68,10 @@ export class DEPOSIT extends Route {
         }
 
         // ── Wire modals ───────────────────────────────────────────
-        this._renderCoinModal()
+        this.$coinList.setOptions(this._currencyOptions)
+        this.$coinList.setSelection(this._currency)
+        this.$coinList.addEventListener("change", (e) => this._onCurrencyChange(e.detail.value))
+        this.$chainList.addEventListener("change", (e) => this._onChainChange(e.detail.value))
         this.$coinModal.setRequired(true)
         this.$coinBadge.addEventListener("click", () => this.$coinModal.showModal())
         this.$chainBadge.addEventListener("click", () => {
@@ -95,14 +101,15 @@ export class DEPOSIT extends Route {
         if (this._currency && this._chain) {
             // Both pre-filled from URL — go straight to address view
             this._syncBadges()
+            this.$depositBody.classList.add("ready")
             if (Access.get("authenticated")) await this._refresh()
         } else if (this._currency) {
             // Coin known, prompt chain
             this._syncBadges()
             this._promptChain()
         } else {
-            // Nothing known — prompt coin first
-            this.$coinModal.showModal()
+            // Nothing known — brief delay so user registers the deposit page before modal opens
+            setTimeout(() => this.$coinModal.showModal(), 150)
         }
     }
 
@@ -118,33 +125,11 @@ export class DEPOSIT extends Route {
 
     // ── Coin modal ────────────────────────────────────────────────
 
-    _renderCoinModal() {
-        this.$coinList.innerHTML = ""
-        for (const opt of this._currencyOptions) {
-            const li = document.createElement("li")
-            li.dataset.value = opt.value
-            const icon = document.createElement("ui-svg")
-            if (opt._symbol) icon.dataset.src = `/images/cryptos/${opt._symbol}`
-            const name = document.createElement("span")
-            name.textContent = opt._name || opt.value
-            li.append(icon, name)
-            li.addEventListener("click", () => this._onCurrencyChange(opt.value))
-            this.$coinList.append(li)
-        }
-        this._updateCoinListSelection(this._currency)
-    }
-
-    _updateCoinListSelection(currency) {
-        this.$coinList?.querySelectorAll("li").forEach((li) => {
-            li.dataset.selected = li.dataset.value === currency ? "true" : "false"
-        })
-    }
-
     _onCurrencyChange(currency) {
         this.$coinModal.setRequired(false)
         this.$coinModal.close()
         this._currency = currency
-        this._updateCoinListSelection(currency)
+        this.$coinList.setSelection(currency)
         this._clearAddress()
         this._promptChain()
         this._syncBadges()
@@ -157,46 +142,24 @@ export class DEPOSIT extends Route {
             value: c.id,
             _name: c.name,
             _symbol: c.symbol,
-            _standard: c.standard || null
+            _meta: c.standard || null
         }))
     }
 
     _renderChainModal(options, required = false) {
         this.$chainModal.setRequired(required)
         this._chainOptions = options
-        this.$chainList.innerHTML = ""
-        for (const opt of options) {
-            const li = document.createElement("li")
-            li.dataset.value = opt.value
-            const icon = document.createElement("ui-svg")
-            if (opt._symbol) icon.dataset.src = `/images/cryptos/${opt._symbol}`
-            const name = document.createElement("span")
-            name.textContent = opt._name || opt.value
-            li.append(icon, name)
-            if (opt._standard) {
-                const std = document.createElement("span")
-                std.className = "chain-standard"
-                std.textContent = opt._standard
-                li.append(std)
-            }
-            li.addEventListener("click", () => this._onChainChange(opt.value))
-            this.$chainList.append(li)
-        }
-        this._updateChainListSelection(this._chain)
-    }
-
-    _updateChainListSelection(chainId) {
-        this.$chainList?.querySelectorAll("li").forEach((li) => {
-            li.dataset.selected = li.dataset.value === chainId ? "true" : "false"
-        })
+        this.$chainList.setOptions(options)
+        this.$chainList.setSelection(this._chain)
     }
 
     _onChainChange(chainId) {
         this.$chainModal.setRequired(false)
         this.$chainModal.close()
         this._chain = chainId
-        this._updateChainListSelection(chainId)
+        this.$chainList.setSelection(chainId)
         this._syncBadges()
+        this.$depositBody.classList.add("ready")
         if (Access.get("authenticated")) this._refresh()
     }
 
@@ -210,13 +173,14 @@ export class DEPOSIT extends Route {
         if (this.$coinName) this.$coinName.textContent = coin?._name || coin?.value || ""
         if (this.$chainIcon) this.$chainIcon.dataset.src = chain?._symbol ? `/images/cryptos/${chain._symbol}` : ""
         if (this.$chainName) {
-            const std = chain?._standard ? ` (${chain._standard})` : ""
+            const std = chain?._meta ? ` (${chain._meta})` : ""
             this.$chainName.textContent = chain ? `${chain._name || chain.value}${std}` : ""
         }
 
         this.$selection.hidden = !coin
         this.$chainBadge.toggleAttribute("data-has-value", !!chain)
         this.$chainBadge.toggleAttribute("data-empty", !chain)
+        this.$chainWarning.hidden = !chain
     }
 
     // ── Address ───────────────────────────────────────────────────

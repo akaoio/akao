@@ -12,9 +12,10 @@ export const template = html`
     <layout-main>
         <form id="item" class="grid--sidebar">
             <nav id="breadcrumb" style="grid-area: breadcrumb;">
-                <a is="ui-a" id="back-link"></a>
-                <span id="breadcrumb-sep"> › </span>
-                <span id="breadcrumb-name"></span>
+                <button id="back-btn" type="button" class="back-btn">
+                    <span class="back-arrow">←</span>
+                    <span id="back-label"></span>
+                </button>
             </nav>
             <div id="image" style="grid-area: image;">
                 <img id="icon" alt="" loading="lazy" />

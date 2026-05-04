@@ -89,6 +89,21 @@ export const styles = css`
         --slate-800: hsl(215, 20%, 15%);
         --slate-900: hsl(215, 20%, 9%);   /* outer gutter behind cards */
 
+        /* ── Orange ──────────────────────────────────────────────────────────
+           H: 28  S: 90%
+           Warm amber-orange. Used for warning text and icon tints.
+           100 → pale peach   900 → deep burnt orange
+        ──────────────────────────────────────────────────────────────────── */
+        --orange-100: hsl(28, 90%, 94%);
+        --orange-200: hsl(28, 88%, 82%);
+        --orange-300: hsl(28, 85%, 68%);
+        --orange-400: hsl(28, 82%, 55%);
+        --orange-500: hsl(28, 80%, 44%);   /* readable dark-orange on dark bg */
+        --orange-600: hsl(28, 78%, 35%);
+        --orange-700: hsl(28, 75%, 26%);
+        --orange-800: hsl(28, 72%, 18%);
+        --orange-900: hsl(28, 70%, 12%);
+
         /* ── Teal ─────────────────────────────────────────────────────────────
            H: 180  S: 36%
            Midpoint between navy (205°) and green (155°).

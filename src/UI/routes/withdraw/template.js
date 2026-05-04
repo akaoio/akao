@@ -14,7 +14,7 @@ export const template = html`
     <layout-main>
         <main>
             <ui-card data-title="wallet">
-                <ui-wallets id="wallets" data-no-persist></ui-wallets>
+                <ui-wallets id="wallets" data-no-persist data-prompt-chain></ui-wallets>
             </ui-card>
             <ui-card id="withdraw-card" data-title="withdraw">
                 <!-- ── Send form ── -->

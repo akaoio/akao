@@ -103,7 +103,7 @@ export class PICKER extends Component {
         const name = this.name
         const isToken = this.mode === "token"
 
-        const options = this.states.get("options").map((option) => {
+        const options = [...this.states.get("options")].sort((a, b) => (a.symbol || a.value).localeCompare(b.symbol || b.value)).map((option) => {
             if (isToken) {
                 return html`
                     <div class="picker-row">

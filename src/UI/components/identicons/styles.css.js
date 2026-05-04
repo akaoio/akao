@@ -15,6 +15,7 @@ export const styles = css`
         overflow: hidden;
         display: flex;
         align-items: center;
+        min-height: calc(var(--icon-lg) + 2 * var(--identicons-pad-v, var(--space-5)));
     }
 
     #container {

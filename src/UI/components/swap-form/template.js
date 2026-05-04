@@ -3,7 +3,8 @@ import "/UI/components/context/index.js"
 import "/UI/components/label/index.js"
 import "/UI/components/button/index.js"
 import "/UI/components/icon/index.js"
-import "/UI/components/picker/index.js"
+import "/UI/components/modal/index.js"
+import "/UI/components/option-list/index.js"
 import "/UI/components/svg/index.js"
 import styles from "./styles.css.js"
 
@@ -20,7 +21,9 @@ export const template = html`
                         <span class="trigger-placeholder"><ui-context data-key="dictionary.selectToken" /></span>
                         <span class="trigger-value"></span>
                     </button>
-                    <ui-picker id="from-picker" data-name="from-token" data-mode="token" data-searchable data-header="selectToken" data-placeholder="Search…" />
+                    <ui-modal id="from-modal" data-header="selectToken">
+                        <ui-option-list id="from-list"></ui-option-list>
+                    </ui-modal>
                 </div>
             </div>
             <div class="field-hint" id="balance-in"></div>
@@ -40,7 +43,9 @@ export const template = html`
                         <span class="trigger-placeholder"><ui-context data-key="dictionary.selectToken" /></span>
                         <span class="trigger-value"></span>
                     </button>
-                    <ui-picker id="to-picker" data-name="to-token" data-mode="token" data-searchable data-header="selectToken" data-placeholder="Search…" />
+                    <ui-modal id="to-modal" data-header="selectToken">
+                        <ui-option-list id="to-list"></ui-option-list>
+                    </ui-modal>
                 </div>
             </div>
             <div class="field-hint" id="gas"></div>

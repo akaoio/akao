@@ -3,12 +3,16 @@ import { css } from "/core/UI.js"
 export const styles = css`
     :host {
         main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             width: 100%;
             max-width: 100%;
             padding-inline: 0;
         }
 
         ui-card {
+            flex: 1;
             width: 100%;
         }
     }
@@ -18,12 +22,52 @@ export const styles = css`
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: var(--space-5);
-        padding: var(--space-4) var(--space-4) var(--space-6);
+        justify-content: space-between;
+        gap: var(--space-4);
+        padding: var(--space);
         width: 100%;
         min-width: 0;
         box-sizing: border-box;
         align-self: stretch;
+        flex: 1;
+        opacity: 0;
+        transition: opacity calc(var(--speed) * 2);
+
+        &.ready {
+            opacity: 1;
+        }
+    }
+
+    /* ── Actions ── */
+    #deposit-actions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #save-share {
+        --btn-bg: var(--accent-action-surface);
+        --btn-border: var(--border-width) solid var(--accent-action-border);
+        --btn-radius: 0;
+        --btn-padding: var(--space-sm) var(--space);
+        --btn-color: var(--accent-action);
+        --btn-font: var(--header-font);
+        --btn-font-size: var(--text-md);
+        --btn-font-weight: 600;
+        --btn-letter-spacing: 0.12em;
+        --btn-text-transform: uppercase;
+        --btn-bg-hover: color-mix(in hsl, var(--accent-action) 20%, transparent);
+        --btn-color-hover: var(--accent-action);
+        --btn-border-color-hover: var(--accent-action);
+        --btn-glow-hover: var(--glow-action);
+        box-shadow: 0 0 10px var(--accent-action-glow);
+        width: 100%;
+        &[disabled] {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+        }
     }
 
     /* ── Selection badges ── */
@@ -39,130 +83,140 @@ export const styles = css`
         }
     }
 
-    #selection-coin {
-        display: flex;
-        justify-content: center;
-    }
-
+    #selection-coin,
     #selection-chain {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: var(--space-1);
         width: 100%;
+    }
 
-        #chain-badge {
-            width: 100%;
-            border-radius: var(--radius);
-            justify-content: flex-start;
-        }
+    #chain-warning[hidden] {
+        display: none;
     }
 
     #chain-warning {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: var(--space-2);
-        margin: var(--space-1) 0 0;
-        padding: var(--space-2) var(--space-3);
+        margin: 0;
+        padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
         background: var(--accent-warning-surface);
         border: 1px solid var(--accent-warning-border);
         border-radius: var(--radius);
         font-size: var(--text-xs);
         font-family: var(--content-font);
         line-height: 1.5;
-        color: var(--accent-warning);
-        opacity: 0.85;
+        color: var(--accent-warning-text);
         width: 100%;
         box-sizing: border-box;
 
-        &::before {
-            content: "⚠";
+        .warn-icon {
             flex-shrink: 0;
+            width: 1.1em;
+            height: 1.1em;
+            color: var(--accent-warning-text);
+            opacity: 0.95;
             font-size: var(--text-sm);
-            line-height: 1.4;
-            opacity: 0.9;
         }
     }
 
     .selection-label {
         font-family: var(--header-font);
-        font-size: var(--text-xs);
+        font-size: var(--text-2xs);
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--color);
-        opacity: 0.4;
-        padding-left: var(--space-1);
+        opacity: 0.75;
     }
 
     .badge {
-        display: inline-flex;
+        position: relative;
+        display: flex;
         align-items: center;
         gap: var(--space-2);
-        padding: var(--space-2) var(--space-3);
-        background: color-mix(in hsl, var(--accent-info) 6%, transparent);
-        border: 1px solid color-mix(in hsl, var(--accent-info) 22%, transparent);
-        border-radius: var(--radius-pill);
-        color: var(--accent-info);
+        width: 100%;
+        padding: var(--space-sm) var(--space);
+        background: transparent;
+        border: 1px solid var(--accent-info-border);
+        box-shadow: 0 0 8px var(--accent-info-glow);
+        box-sizing: border-box;
+        border-radius: var(--radius);
+        color: var(--color);
         font-family: var(--header-font);
         font-size: var(--text-xs);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         cursor: pointer;
         outline: none;
-        box-shadow: 0 0 8px var(--accent-info-glow);
-        text-shadow: var(--glow-info);
         transition:
-            border-color var(--speed),
             color var(--speed),
             background var(--speed),
+            border-color var(--speed),
             box-shadow var(--speed);
 
+        &::after {
+            content: "";
+            pointer-events: none;
+            width: 10px;
+            height: 6px;
+            flex-shrink: 0;
+            margin-left: auto;
+            background-color: currentColor;
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
+            -webkit-mask-size: 10px 6px;
+            mask-size: 10px 6px;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            opacity: 0.35;
+            transition: opacity var(--speed);
+        }
+
         &:hover {
-            border-color: color-mix(in hsl, var(--accent-info) 60%, transparent);
-            background: color-mix(in hsl, var(--accent-info) 12%, transparent);
-            box-shadow: 0 0 14px color-mix(in hsl, var(--accent-info) 25%, transparent);
+            color: var(--accent-info);
+            background: color-mix(in hsl, var(--accent-info) 5%, transparent);
+            border-color: var(--accent-info);
+            box-shadow: 0 0 16px var(--accent-info-border);
+            &::after { opacity: 1; }
         }
 
         &:focus-visible {
-            border-color: var(--accent-info);
-            box-shadow: var(--glow-info);
+            color: var(--accent-info);
+            background: color-mix(in hsl, var(--accent-info) 5%, transparent);
         }
 
         &:active {
-            opacity: 0.7;
-        }
-
-        &[data-empty] {
-            border-style: dashed;
-            opacity: 0.5;
-            box-shadow: none;
-            text-shadow: none;
+            background: color-mix(in hsl, var(--accent-info) 8%, transparent);
         }
     }
 
-    .badge-icon,
-    .badge-chevron {
+    .badge-body {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .badge-icon {
         width: var(--icon-sm);
         height: var(--icon-sm);
+        min-width: var(--icon-sm);
         flex-shrink: 0;
+        align-self: center;
     }
 
-    .badge-chevron {
-        opacity: 0.45;
-        transition: opacity var(--speed), transform var(--speed);
-    }
-
-    #coin-badge:hover .badge-chevron {
-        opacity: 1;
-    }
-
-    #chain-badge .badge-chevron {
-        margin-left: auto;
-    }
-
-    #chain-badge:hover .badge-chevron {
-        opacity: 1;
-        transform: translateX(2px);
+    #coin-name,
+    #chain-name {
+        text-shadow: var(--glow-info);
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     /* ── QR section ── */
@@ -180,7 +234,7 @@ export const styles = css`
 
     #scan-label {
         font-family: var(--header-font);
-        font-size: var(--text-xs);
+        font-size: var(--text-md);
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--accent-action);
@@ -260,22 +314,32 @@ export const styles = css`
     }
 
     /* Address pill container — full area is the copy target */
+    /* box-shadow used instead of border so border-radius is preserved while left/right edges fade */
     #address-box {
         display: flex;
         align-items: center;
         width: 100%;
         padding: var(--space-2) var(--space-3);
         background: color-mix(in hsl, var(--color) 5%, transparent);
-        border: 1px solid color-mix(in hsl, var(--color) 12%, transparent);
+        border: none;
         border-radius: var(--radius);
+        box-shadow:
+            0 -1px 0 0 color-mix(in hsl, var(--color) 12%, transparent),
+            0 1px 0 0 color-mix(in hsl, var(--color) 12%, transparent),
+            -1px 0 0 0 color-mix(in hsl, var(--color) 4%, transparent),
+            1px 0 0 0 color-mix(in hsl, var(--color) 4%, transparent);
         cursor: pointer;
         transition:
-            border-color var(--speed),
+            box-shadow var(--speed),
             background var(--speed);
 
         &:hover {
             background: color-mix(in hsl, var(--accent-info) 6%, transparent);
-            border-color: var(--accent-info-border);
+            box-shadow:
+                0 -1px 0 0 var(--accent-info-border),
+                0 1px 0 0 var(--accent-info-border),
+                -1px 0 0 0 color-mix(in hsl, var(--accent-info-border) 30%, transparent),
+                1px 0 0 0 color-mix(in hsl, var(--accent-info-border) 30%, transparent);
         }
 
         &:active {
@@ -287,6 +351,7 @@ export const styles = css`
         flex: 1;
         font-family: monospace;
         font-size: var(--text-md);
+        text-align: center;
         letter-spacing: 0.04em;
         word-break: break-all;
         line-height: 1.6;
@@ -299,7 +364,7 @@ export const styles = css`
 
         .addr-mid {
             color: var(--color);
-            opacity: 0.45;
+            opacity: 0.75;
         }
     }
 
@@ -329,60 +394,6 @@ export const styles = css`
 
     #address-box:hover #copy-btn {
         opacity: 0.75;
-    }
-
-    /* ── Coin + Chain picker modal lists ── */
-    #coin-list,
-    #chain-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        min-width: 14rem;
-
-        li {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            padding: var(--space-sm) var(--space);
-            cursor: pointer;
-            font-family: var(--header-font);
-            font-size: var(--text-sm);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--color);
-            border-bottom: 1px solid color-mix(in hsl, var(--color) 8%, transparent);
-            transition:
-                background var(--speed),
-                color var(--speed);
-
-            &:last-child {
-                border-bottom: none;
-            }
-
-            &:hover {
-                background: var(--accent-info-surface);
-                color: var(--accent-info);
-            }
-
-            &[data-selected="true"] {
-                color: var(--accent-action);
-                background: color-mix(in hsl, var(--accent-action) 6%, transparent);
-                text-shadow: var(--glow-action);
-            }
-
-            ui-svg {
-                width: var(--icon-sm);
-                height: var(--icon-sm);
-                flex-shrink: 0;
-            }
-
-            .chain-standard {
-                margin-left: auto;
-                font-size: 0.8em;
-                opacity: 0.4;
-                letter-spacing: 0.04em;
-            }
-        }
     }
 `
 
